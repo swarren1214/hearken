@@ -15,6 +15,8 @@ struct ReaderView: View {
     @State private var showsLocation = false
     @State private var startsAtEnd = false
     @AppStorage(SettingsKey.readerLayout) private var layout: ReaderLayout = .scroll
+    @AppStorage(SettingsKey.scriptureTextSize) private var textSize: Double = 20
+    @AppStorage(SettingsKey.pencilHighlighting) private var pencilHighlighting = false
 
     init(chapterID: String) {
         _chapterID = State(initialValue: chapterID)
@@ -38,14 +40,39 @@ struct ReaderView: View {
 
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
-                        Picker("Layout", selection: $layout) {
+                        Section("Text Size · \(Int(textSize)) pt") {
+                            // Menus can't hold sliders, so this is the system's in-menu stepper:
+                            // two buttons side by side that leave the menu open between taps.
+                            ControlGroup {
+                                Button("Smaller", systemImage: "textformat.size.smaller") {
+                                    textSize = max(15, textSize - 1)
+                                }
+                                .disabled(textSize <= 15)
+                                Button("Larger", systemImage: "textformat.size.larger") {
+                                    textSize = min(28, textSize + 1)
+                                }
+                                .disabled(textSize >= 28)
+                            }
+                            .menuActionDismissBehavior(.disabled)
+                        }
+                        Picker("Layout", systemImage: layout.symbol, selection: $layout) {
                             ForEach(ReaderLayout.allCases) { option in
                                 Label(option.title, systemImage: option.symbol).tag(option)
                             }
                         }
+                        if UIDevice.isPad {
+                            Section {
+                                // Menus show toggles as a checkmark item.
+                                Toggle(isOn: $pencilHighlighting) {
+                                    Text("Pencil Highlighting")
+                                    Text("Draw over text to highlight")
+                                }
+                            }
+                        }
                     } label: {
-                        Label("Reading Layout", systemImage: layout.symbol)
+                        Label("Reader Options", systemImage: "ellipsis")
                     }
+                    .tint(Color.primary)
                 }
             }
             .overlay(alignment: .top) {
@@ -74,10 +101,8 @@ struct ReaderView: View {
     }
 }
 
-/// Reads one chapter. Tap a verse (or an existing highlight) to open the highlight toolbar.
-///
-/// v1 highlights whole verses. Character-range highlights need a TextKit 2 text view,
-/// which is the next step for the reader (see the build plan).
+/// Reads one chapter as selectable text. Long-press a verse to select it, then drag the
+/// handles to any run of words; the highlight toolbar floats beside the selection.
 struct ReaderPage: View {
     let chapterID: String
     let layout: ReaderLayout
@@ -100,13 +125,25 @@ struct ReaderPage: View {
     @AppStorage(SettingsKey.scriptureTextSize) private var textSize: Double = 20
     @AppStorage(SettingsKey.showVerseNumbers) private var showVerseNumbers = true
     @AppStorage(SettingsKey.onboardingDone) private var onboardingDone = false
+    @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
+    @AppStorage(SettingsKey.pencilHighlighting) private var pencilHighlighting = false
+    @AppStorage(SettingsKey.pencilHue) private var pencilHue: HighlightHue = .yellow
+    @AppStorage(SettingsKey.pencilStyle) private var pencilStyle: HighlightStyle = .fill
     @ScaledMetric(relativeTo: .body) private var bodyMetric: CGFloat = 17
 
-    @State private var selectedVerse: Int?
+    @State private var selection: VerseSelection?
+    @State private var clearToken = 0
+    @State private var isAdjustingSelection = false
+    @State private var pencilErasing = false
+    @State private var recentStroke: RecentStroke?
     @State private var pendingStyle: HighlightStyle?
     @State private var noteTarget: NoteTarget?
     @State private var showSignInPrompt = false
     @State private var pageCache = PageCache()
+    /// Where each text view sits on screen (keyed by its first verse), and the bottom of the
+    /// reader's visible area. Used to float the toolbar above a selection near the bottom.
+    @State private var textFrames: [Int: CGRect] = [:]
+    @State private var visibleBottom: CGFloat = .infinity
 
     private let mastery = MasteryService()
 
@@ -136,15 +173,18 @@ struct ReaderPage: View {
                 pagedBody(chapter)
             } else if let chapter {
                 ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 4) {
+                    VStack(alignment: .leading, spacing: 4) {
                         header(chapter)
-                        ForEach(chapter.verses) { verse in
-                            verseBlock(verse)
-                        }
+                        chapterText(textLayout(chapter.verses, interactive: true))
                         footer
                     }
                     .padding(.horizontal, 24)
-                    .padding(.bottom, 40)
+                    // Room to scroll the last lines above the Pencil palette.
+                    .padding(.bottom, pencilOn ? 160 : 40)
+                }
+                // Scrolling away from a selection dismisses it, like Books.
+                .onScrollPhaseChange { _, phase in
+                    if phase == .interacting, selection != nil { closeSelection() }
                 }
             } else {
                 ContentUnavailableView(
@@ -154,15 +194,25 @@ struct ReaderPage: View {
                 )
             }
         }
-        .safeAreaInset(edge: .bottom) {
-            // Scroll: the toolbar takes space. Page Turn: it floats, so pages don't re-flow.
-            if layout == .scroll { selectionToolbar }
+        .onGeometryChange(for: CGFloat.self) { $0.frame(in: .global).maxY } action: { visibleBottom = $0 }
+        .animation(.snappy(duration: 0.25), value: selection)
+        .animation(.easeOut(duration: 0.15), value: isAdjustingSelection)
+        .overlay(alignment: .bottom) { pencilOverlay }
+        .animation(.snappy, value: pencilOn)
+        .animation(.snappy, value: UIDevice.isPad ? selection?.start : nil)
+        .animation(.snappy, value: recentStroke?.id)
+        .task(id: recentStroke?.id) {
+            // The after-stroke pill steps aside on its own.
+            guard recentStroke != nil else { return }
+            try? await Task.sleep(for: .seconds(5))
+            if !Task.isCancelled { recentStroke = nil }
         }
-        .overlay(alignment: .bottom) {
-            if layout == .pages { selectionToolbar }
+        .sensoryFeedback(.selection, trigger: selection?.start)
+        .onChange(of: selection?.start) { _, start in
+            guard let start, let progress else { return }
+            progress.lastVerse = start.verse
+            progress.updatedAt = .now
         }
-        .animation(.snappy, value: selectedVerse)
-        .sensoryFeedback(.selection, trigger: selectedVerse)
         .sheet(item: $noteTarget) { target in
             NoteEditorView(
                 chapterID: chapterID,
@@ -180,9 +230,184 @@ struct ReaderPage: View {
         .onAppear(perform: touchProgress)
     }
 
+    // MARK: Text
+
+    fileprivate func textLayout(_ verses: [Verse], interactive: Bool) -> ChapterTextLayout {
+        ChapterTextLayout(
+            verses: verses,
+            fontSize: fontSize,
+            showNumbers: showVerseNumbers,
+            tint: UIColor(accent.color),
+            highlights: interactive ? highlights : [],
+            noteVerses: interactive ? Set(notes.map(\.verse)) : []
+        )
+    }
+
+    /// Verses as one selectable text view, with the toolbar floating beside any selection in it.
+    /// In Page Turn, `pageRange` is this page's slice of the chapter's flowing text.
+    fileprivate func chapterText(
+        _ built: ChapterTextLayout,
+        interactive: Bool = true,
+        owner: Int = 0,
+        pageRange: NSRange? = nil
+    ) -> some View {
+        ChapterTextView(
+            layout: built,
+            interactive: interactive,
+            owner: owner,
+            pageRange: pageRange,
+            selection: $selection,
+            isAdjusting: $isAdjustingSelection,
+            clearToken: clearToken,
+            onOpenNote: openExistingNote,
+            pencil: interactive ? pencilConfig : PencilConfig(),
+            onPencilStroke: pencilStroke
+        )
+        .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { frame in
+            if interactive { textFrames[owner] = frame }
+        }
+        .overlay(alignment: .topLeading) {
+            // Hidden while a handle is being dragged, so the text stays visible; back on release.
+            // iPhone: the toolbar floats by the selection. iPad uses the bar at the bottom instead.
+            if !UIDevice.isPad, interactive, !isAdjustingSelection, let selection, selection.owner == owner {
+                floatingToolbar(for: selection)
+            }
+        }
+        .accessibilityHint(interactive ? "Touch and hold a verse to select it for highlighting." : "")
+    }
+
+    /// About how tall the toolbar is, plus a margin, for deciding which side of the selection it fits.
+    private static let toolbarClearance: CGFloat = 230
+    /// Gap between the selection and the toolbar, enough to keep the selection handles' grab
+    /// knobs (which sit just past the first and last lines) uncovered and easy to drag.
+    private static let handleClearance: CGFloat = 24
+
+    /// Below the selection when there's room before the bottom of the reader (above the tab bar),
+    /// otherwise above it.
+    private func placesToolbarBelow(_ selection: VerseSelection) -> Bool {
+        guard let frame = textFrames[selection.owner] else { return selection.placeBelow }
+        return frame.minY + selection.rect.maxY + Self.toolbarClearance <= visibleBottom
+    }
+
+    /// The highlight toolbar, just below the selection, or just above it near the bottom of the screen.
+    @ViewBuilder
+    private func floatingToolbar(for selection: VerseSelection) -> some View {
+        let below = placesToolbarBelow(selection)
+        toolbar(for: selection)
+            .padding(.horizontal, -20)
+            .alignmentGuide(VerticalAlignment.top) { dimensions in
+                below ? dimensions[.top] : dimensions[.bottom]
+            }
+            .offset(y: below ? selection.rect.maxY + Self.handleClearance : selection.rect.minY - Self.handleClearance)
+            .transition(.scale(scale: 0.94, anchor: below ? .top : .bottom).combined(with: .opacity))
+            .zIndex(1)
+    }
+
+    // MARK: Apple Pencil (iPad)
+
+    private struct RecentStroke: Identifiable {
+        let id = UUID()
+        let highlight: Highlight
+    }
+
+    private var pencilOn: Bool { UIDevice.isPad && pencilHighlighting }
+
+    private var pencilConfig: PencilConfig {
+        PencilConfig(enabled: pencilOn, color: UIColor(pencilHue.color), style: pencilStyle, erasing: pencilErasing)
+    }
+
+    @ViewBuilder
+    private var pencilOverlay: some View {
+        if UIDevice.isPad, let selection, !isAdjustingSelection {
+            iPadSelectionBar(for: selection)
+                .padding(.bottom, 12)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+        } else if pencilOn {
+            VStack(spacing: 12) {
+                if let stroke = recentStroke {
+                    PencilStrokePill(
+                        hue: stroke.highlight.hue,
+                        name: legend.name(for: stroke.highlight.hue),
+                        reference: reference(from: stroke.highlight.start, to: stroke.highlight.end),
+                        onNote: {
+                            recentStroke = nil
+                            openNote(verse: stroke.highlight.startVerse)
+                        },
+                        onRemove: {
+                            // Clears all highlighting under the stroke, including older highlights there.
+                            let start = stroke.highlight.start, end = stroke.highlight.end
+                            recentStroke = nil
+                            carve(from: start, to: end)
+                        },
+                        onUndo: {
+                            modelContext.delete(stroke.highlight)
+                            recentStroke = nil
+                        }
+                    )
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+                PencilPalette(
+                    entries: legend.entries,
+                    name: legend.name(for:),
+                    hue: $pencilHue,
+                    style: $pencilStyle,
+                    erasing: $pencilErasing,
+                    onDone: {
+                        pencilHighlighting = false
+                        pencilErasing = false
+                        recentStroke = nil
+                    }
+                )
+            }
+            .padding(.bottom, 12)
+            .transition(.move(edge: .bottom).combined(with: .opacity))
+        }
+    }
+
+    private func iPadSelectionBar(for selection: VerseSelection) -> some View {
+        let existing = existingHighlight(for: selection)
+        return IPadSelectionBar(
+            reference: reference(for: selection),
+            entries: legend.entries,
+            name: legend.name(for:),
+            selectedHue: existing?.hue,
+            style: existing?.style ?? pendingStyle ?? legend.defaultStyle,
+            onPick: { hue in pick(hue, selection: selection, existing: existing) },
+            onStyle: { style in setStyle(style, existing: existing) },
+            onNote: { openNote(verse: selection.start.verse) },
+            onCopy: { copy(selection) },
+            onRemove: {
+                removeHighlights(in: selection)
+                closeSelection()
+            },
+            onClose: closeSelection
+        )
+    }
+
+    private func reference(from start: VersePosition, to end: VersePosition) -> String {
+        let base = content.reference(chapterID: chapterID, verse: start.verse)
+        return end.verse > start.verse ? "\(base)–\(end.verse)" : base
+    }
+
+    /// A finished Pencil stroke: add a highlight in the palette's color and style, or erase.
+    private func pencilStroke(start: VersePosition, end: VersePosition) {
+        let start = normalized(start), end = normalized(end)
+        if pencilErasing {
+            // Drop the after-stroke pill first, so it never reads a deleted highlight.
+            recentStroke = nil
+            carve(from: start, to: end)
+            return
+        }
+        guard requireSignIn() else { return }
+        carve(from: start, to: end)
+        let highlight = Highlight(chapterID: chapterID, start: start, end: end, hue: pencilHue, style: pencilStyle)
+        modelContext.insert(highlight)
+        recentStroke = RecentStroke(highlight: highlight)
+    }
+
     // MARK: Pieces
 
-    private func header(_ chapter: Chapter) -> some View {
+    fileprivate func header(_ chapter: Chapter) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(content.bookTitle(forChapter: chapter.id).uppercased())
                 .font(.footnote.weight(.semibold))
@@ -205,53 +430,11 @@ struct ReaderPage: View {
         .padding(.bottom, 12)
     }
 
-    @ViewBuilder
-    private func verseBlock(_ verse: Verse) -> some View {
-        let highlight = highlights.first { $0.covers(verse: verse.number) }
-        let note = notes.first { $0.verse == verse.number }
-
-        VerseRow(
-            verse: verse,
-            highlight: highlight.map { (hue: $0.hue, style: $0.style) },
-            showNumber: showVerseNumbers,
-            fontSize: fontSize,
-            isSelected: selectedVerse == verse.number
-        )
-        .onTapGesture {
-            selectedVerse = selectedVerse == verse.number ? nil : verse.number
-            pendingStyle = nil
-            if let progress { progress.lastVerse = verse.number; progress.updatedAt = .now }
-        }
-        .accessibilityAddTraits(.isButton)
-        .accessibilityHint("Opens highlight options")
-
-        if let note {
-            Button {
-                noteTarget = NoteTarget(verse: verse)
-            } label: {
-                HStack(alignment: .top, spacing: 10) {
-                    Image(systemName: "square.and.pencil").foregroundStyle(.tint)
-                    Text(note.body)
-                        .font(.subheadline)
-                        .foregroundStyle(.primary)
-                        .multilineTextAlignment(.leading)
-                        .lineLimit(4)
-                    Spacer(minLength: 0)
-                }
-                .padding(12)
-                .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: 16))
-            }
-            .buttonStyle(.plain)
-            .padding(.bottom, 10)
-            .accessibilityLabel("Note on verse \(verse.number): \(note.body)")
-        }
-    }
-
-    private var footer: some View {
+    fileprivate var footer: some View {
         footerView(isRead: progress?.completedAt != nil, markRead: markRead)
     }
 
-    private func footerView(isRead: Bool, markRead: @escaping () -> Void) -> some View {
+    fileprivate func footerView(isRead: Bool, markRead: @escaping () -> Void) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             if isRead {
                 Label("Chapter read", systemImage: "checkmark.circle.fill")
@@ -270,29 +453,43 @@ struct ReaderPage: View {
         .padding(.top, 24)
     }
 
-    @ViewBuilder
-    private var selectionToolbar: some View {
-        if let selectedVerse, let verse = chapter?.verses.first(where: { $0.number == selectedVerse }) {
-            toolbar(for: verse)
-                .transition(.move(edge: .bottom).combined(with: .opacity))
-        }
+    private func reference(for selection: VerseSelection) -> String {
+        let base = content.reference(chapterID: chapterID, verse: selection.start.verse)
+        return selection.end.verse > selection.start.verse ? "\(base)–\(selection.end.verse)" : base
     }
 
-    private func toolbar(for verse: Verse) -> some View {
-        let existing = highlights.first { $0.covers(verse: verse.number) }
+    /// The highlight the toolbar edits: the one covering exactly the selection (tap a highlight to
+    /// select all of it). Any other selection is new text, so a color applied to part of a
+    /// highlight becomes its own highlight.
+    private func existingHighlight(for selection: VerseSelection) -> Highlight? {
+        highlights.first { normalized($0.start) == normalized(selection.start) && normalized($0.end) == normalized(selection.end) }
+    }
+
+    private func isWholeVerse(_ selection: VerseSelection) -> Bool {
+        selection.start.verse == selection.end.verse && selection.start.offset == 0 && selection.end.offset < 0
+    }
+
+    /// Treats "offset at the end of the verse" and -1 as the same position.
+    private func normalized(_ position: VersePosition) -> VersePosition {
+        guard let verse = chapter?.verses.first(where: { $0.number == position.verse }) else { return position }
+        return position.offset >= verse.text.utf16.count ? VersePosition(verse: position.verse, offset: -1) : position
+    }
+
+    private func toolbar(for selection: VerseSelection) -> some View {
+        let existing = existingHighlight(for: selection)
         return HighlightToolbar(
-            reference: content.reference(chapterID: chapterID, verse: verse.number),
+            reference: reference(for: selection),
             entries: legend.entries,
             name: legend.name(for:),
             showNames: legend.showNames,
             selectedHue: existing?.hue,
             style: existing?.style ?? pendingStyle ?? legend.defaultStyle,
-            onPick: { hue in pick(hue, verse: verse, existing: existing) },
+            onPick: { hue in pick(hue, selection: selection, existing: existing) },
             onStyle: { style in setStyle(style, existing: existing) },
-            onNote: { openNote(for: verse) },
-            onCopy: { copy(verse) },
-            onRemove: { if let existing { modelContext.delete(existing) } },
-            onClose: { selectedVerse = nil }
+            onNote: { openNote(verse: selection.start.verse) },
+            onCopy: { copy(selection) },
+            onRemove: { removeHighlights(in: selection) },
+            onClose: closeSelection
         )
     }
 
@@ -304,12 +501,21 @@ struct ReaderPage: View {
         return false
     }
 
-    private func pick(_ hue: HighlightHue, verse: Verse, existing: Highlight?) {
+    private func pick(_ hue: HighlightHue, selection: VerseSelection, existing: Highlight?) {
         guard requireSignIn() else { return }
         if let existing {
             existing.hue = hue
         } else {
-            modelContext.insert(Highlight(chapterID: chapterID, verse: verse.number, hue: hue, style: pendingStyle ?? legend.defaultStyle))
+            let start = normalized(selection.start), end = normalized(selection.end)
+            // Recoloring part of a highlight makes that part its own highlight.
+            carve(from: start, to: end)
+            modelContext.insert(Highlight(
+                chapterID: chapterID,
+                start: start,
+                end: end,
+                hue: hue,
+                style: pendingStyle ?? legend.defaultStyle
+            ))
         }
     }
 
@@ -318,13 +524,48 @@ struct ReaderPage: View {
         existing?.style = style
     }
 
-    private func openNote(for verse: Verse) {
-        guard requireSignIn() else { return }
+    /// Removes highlighting from just the selected text; highlight outside it stays.
+    private func removeHighlights(in selection: VerseSelection) {
+        carve(from: normalized(selection.start), to: normalized(selection.end))
+    }
+
+    /// Cuts the range out of every highlight it overlaps. Parts of a highlight before and after
+    /// the range are kept as their own highlights, in the same color and style.
+    private func carve(from start: VersePosition, to end: VersePosition) {
+        for highlight in highlights where highlight.start < end && start < highlight.end {
+            if highlight.start < start {
+                modelContext.insert(Highlight(chapterID: chapterID, start: highlight.start, end: start, hue: highlight.hue, style: highlight.style))
+            }
+            if end < highlight.end {
+                // A cut ending at the end of a verse resumes at the start of the next one.
+                let resume = end.offset < 0 ? VersePosition(verse: end.verse + 1, offset: 0) : end
+                if resume < highlight.end {
+                    modelContext.insert(Highlight(chapterID: chapterID, start: resume, end: highlight.end, hue: highlight.hue, style: highlight.style))
+                }
+            }
+            if recentStroke?.highlight === highlight { recentStroke = nil }
+            modelContext.delete(highlight)
+        }
+    }
+
+    private func openNote(verse number: Int) {
+        guard requireSignIn(), let verse = chapter?.verses.first(where: { $0.number == number }) else { return }
+        closeSelection()
         noteTarget = NoteTarget(verse: verse)
     }
 
-    private func copy(_ verse: Verse) {
-        UIPasteboard.general.string = "\(verse.text) (\(content.reference(chapterID: chapterID, verse: verse.number)))"
+    private func openExistingNote(_ number: Int) {
+        guard let verse = chapter?.verses.first(where: { $0.number == number }) else { return }
+        noteTarget = NoteTarget(verse: verse)
+    }
+
+    private func copy(_ selection: VerseSelection) {
+        UIPasteboard.general.string = "\u{201C}\(selection.text)\u{201D} (\(reference(for: selection)))"
+    }
+
+    private func closeSelection() {
+        selection = nil
+        clearToken += 1
     }
 
     private func touchProgress() {
@@ -351,22 +592,50 @@ struct ReaderPage: View {
 
 // MARK: - Page Turn
 
-/// One measurable block of a chapter. Pages are filled with whole units.
-enum ReaderUnit: Hashable {
-    case header
-    case verse(Int) // index into chapter.verses
-    case footer
+/// A chapter laid out as pages. The text is flowed through page-sized TextKit containers to
+/// find where each page breaks (always between lines, never at verse boundaries), then each
+/// page shows its slice of the text. The chapter heading takes the top of the first page; the
+/// "Mark as Read" footer follows the text, on its own page if the last one is full.
+final class PagedChapterText {
+    let pageRanges: [NSRange]
+    let footerOnOwnPage: Bool
+
+    init(layout: ChapterTextLayout, width: CGFloat, firstPageHeight: CGFloat, pageHeight: CGFloat, footerHeight: CGFloat) {
+        let storage = NSTextStorage(attributedString: layout.attributed)
+        let layoutManager = NSLayoutManager()
+        storage.addLayoutManager(layoutManager)
+
+        var ranges: [NSRange] = []
+        var lastUsedHeight: CGFloat = 0
+        var lastHeight: CGFloat = pageHeight
+        repeat {
+            let height = ranges.isEmpty ? max(firstPageHeight, 80) : pageHeight
+            let container = NSTextContainer(size: CGSize(width: max(width, 50), height: height))
+            container.lineFragmentPadding = 0
+            layoutManager.addTextContainer(container)
+            let glyphs = layoutManager.glyphRange(for: container)
+            ranges.append(layoutManager.characterRange(forGlyphRange: glyphs, actualGlyphRange: nil))
+            lastUsedHeight = layoutManager.usedRect(for: container).height
+            lastHeight = height
+            if glyphs.length == 0 && layoutManager.numberOfGlyphs > 0 && ranges.count > 1 { break }
+        } while NSMaxRange(ranges[ranges.count - 1]) < storage.length && ranges.count < 500
+
+        pageRanges = ranges
+        footerOnOwnPage = lastUsedHeight + footerHeight + 8 > lastHeight
+    }
+
+    var pageCount: Int { pageRanges.count + (footerOnOwnPage ? 1 : 0) }
 }
 
-/// Remembers the last pagination per chapter so pages aren't re-measured on every render.
+/// Remembers paginations so pages aren't re-laid out on every render.
 final class PageCache {
-    private var entries: [AnyHashable: [[ReaderUnit]]] = [:]
+    private var entries: [AnyHashable: PagedChapterText] = [:]
     private lazy var sizer = UIHostingController(rootView: AnyView(EmptyView()))
 
-    func pages(for key: AnyHashable, compute: (UIHostingController<AnyView>) -> [[ReaderUnit]]) -> [[ReaderUnit]] {
+    func pages(for key: AnyHashable, build: (UIHostingController<AnyView>) -> PagedChapterText) -> PagedChapterText {
         if let pages = entries[key] { return pages }
-        let pages = compute(sizer)
-        if entries.count > 12 { entries.removeAll() }
+        let pages = build(sizer)
+        if entries.count > 8 { entries.removeAll() }
         entries[key] = pages
         return pages
     }
@@ -375,26 +644,28 @@ final class PageCache {
 extension ReaderPage {
     private static let pageTopPadding: CGFloat = 12
     private static let pageFooterHeight: CGFloat = 40
-    private static let unitSpacing: CGFloat = 4
+    private static let headerSpacing: CGFloat = 4
 
     func pagedBody(_ chapter: Chapter) -> some View {
         GeometryReader { geo in
-            let pages = pagination(for: chapter, size: geo.size, interactive: true)
+            let built = textLayout(chapter.verses, interactive: true)
+            let paged = pagination(for: chapter, layout: built, size: geo.size, interactive: true)
             let previousID = LibraryCatalog.adjacentChapter(to: chapterID, offset: -1)
             let nextID = LibraryCatalog.adjacentChapter(to: chapterID, offset: 1)
 
             PageCurlView(
-                pageCount: pages.count,
-                startPage: startsAtEnd ? pages.count - 1 : 0,
+                pageCount: paged.pageCount,
+                startPage: startsAtEnd ? paged.pageCount - 1 : 0,
                 curl: !reduceMotion,
                 environment: environment,
                 page: { index in
-                    AnyView(pageView(pages[index], chapter: chapter, index: index, count: pages.count, interactive: true))
+                    AnyView(pageView(index, paged: paged, layout: built, chapter: chapter, interactive: true))
                 },
                 previousChapterPage: previousID.flatMap { neighborPage($0, last: true, size: geo.size) },
                 nextChapterPage: nextID.flatMap { neighborPage($0, last: false, size: geo.size) },
+                onTurnStart: { if selection != nil { closeSelection() } },
                 onLeaveChapter: { forward in
-                    selectedVerse = nil
+                    selection = nil
                     if let id = forward ? nextID : previousID {
                         onTurnChapter(id, !forward)
                     }
@@ -407,25 +678,33 @@ extension ReaderPage {
     /// It's what the curl reveals; the reader then switches to that chapter for real.
     private func neighborPage(_ id: String, last: Bool, size: CGSize) -> AnyView? {
         guard let neighbor = content.chapter(id) else { return nil }
-        let pages = pagination(for: neighbor, size: size, interactive: false)
-        guard let page = last ? pages.last : pages.first else { return nil }
-        let index = last ? pages.count - 1 : 0
-        return AnyView(pageView(page, chapter: neighbor, index: index, count: pages.count, interactive: false))
+        let built = textLayout(neighbor.verses, interactive: false)
+        let paged = pagination(for: neighbor, layout: built, size: size, interactive: false)
+        let index = last ? paged.pageCount - 1 : 0
+        return AnyView(pageView(index, paged: paged, layout: built, chapter: neighbor, interactive: false))
     }
 
-    private func pageView(_ units: [ReaderUnit], chapter: Chapter, index: Int, count: Int, interactive: Bool) -> some View {
-        VStack(alignment: .leading, spacing: Self.unitSpacing) {
-            ForEach(units, id: \.self) { unit in
-                unitView(unit, chapter: chapter, interactive: interactive)
+    private func pageView(_ index: Int, paged: PagedChapterText, layout built: ChapterTextLayout, chapter: Chapter, interactive: Bool) -> some View {
+        let pageRange = index < paged.pageRanges.count ? paged.pageRanges[index] : nil
+        let isLastTextPage = index == paged.pageRanges.count - 1
+        return VStack(alignment: .leading, spacing: Self.headerSpacing) {
+            if index == 0 {
+                header(chapter)
+            }
+            if let pageRange {
+                chapterText(built, interactive: interactive, owner: index, pageRange: pageRange)
+            }
+            if pageRange == nil || (isLastTextPage && !paged.footerOnOwnPage) {
+                if interactive { footer } else { footerView(isRead: false, markRead: {}) }
             }
             Spacer(minLength: 0)
-            Text("\(index + 1) of \(count)")
+            Text("\(index + 1) of \(paged.pageCount)")
                 .font(.caption)
                 .monospacedDigit()
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity)
                 .frame(height: Self.pageFooterHeight - 8)
-                .accessibilityLabel("Page \(index + 1) of \(count)")
+                .accessibilityLabel("Page \(index + 1) of \(paged.pageCount)")
         }
         .padding(.horizontal, 24)
         .padding(.top, Self.pageTopPadding)
@@ -434,58 +713,33 @@ extension ReaderPage {
         .background(Color(.systemBackground))
     }
 
-    @ViewBuilder
-    private func unitView(_ unit: ReaderUnit, chapter: Chapter, interactive: Bool) -> some View {
-        switch unit {
-        case .header:
-            header(chapter)
-        case .verse(let index):
-            if interactive {
-                verseBlock(chapter.verses[index])
-            } else {
-                VerseRow(verse: chapter.verses[index], highlight: nil, showNumber: showVerseNumbers, fontSize: fontSize, isSelected: false)
-            }
-        case .footer:
-            if interactive {
-                footer
-            } else {
-                footerView(isRead: false, markRead: {})
-            }
-        }
-    }
-
-    /// Splits a chapter into pages of whole verses that fit `size`.
-    /// A verse taller than a page gets a page to itself.
-    private func pagination(for chapter: Chapter, size: CGSize, interactive: Bool) -> [[ReaderUnit]] {
-        let noteVerses = interactive ? notes.map(\.verse).sorted() : []
+    /// Lays the chapter out into page-sized containers.
+    private func pagination(for chapter: Chapter, layout built: ChapterTextLayout, size: CGSize, interactive: Bool) -> PagedChapterText {
         let key = PaginationKey(
             chapterID: chapter.id, width: size.width, height: size.height, textSize: textSize,
-            showNumbers: showVerseNumbers, dynamicType: environment.dynamicTypeSize, noteVerses: noteVerses,
-            isRead: interactive && progress?.completedAt != nil
+            showNumbers: showVerseNumbers, dynamicType: environment.dynamicTypeSize,
+            noteVerses: interactive ? notes.map(\.verse).sorted() : [],
+            isRead: interactive && progress?.completedAt != nil,
+            interactive: interactive
         )
         return pageCache.pages(for: key) { sizer in
             let width = size.width - 48
-            let available = size.height - Self.pageTopPadding - Self.pageFooterHeight
-            let units: [ReaderUnit] = [.header] + chapter.verses.indices.map { .verse($0) } + [.footer]
+            let pageHeight = size.height - Self.pageTopPadding - Self.pageFooterHeight - 8
 
-            var pages: [[ReaderUnit]] = []
-            var current: [ReaderUnit] = []
-            var used: CGFloat = 0
-            for unit in units {
-                sizer.rootView = AnyView(unitView(unit, chapter: chapter, interactive: interactive).environment(\.self, environment))
-                let height = sizer.sizeThatFits(in: CGSize(width: width, height: .greatestFiniteMagnitude)).height
-                let needed = current.isEmpty ? height : used + Self.unitSpacing + height
-                if needed > available && !current.isEmpty {
-                    pages.append(current)
-                    current = [unit]
-                    used = height
-                } else {
-                    current.append(unit)
-                    used = needed
-                }
+            func measure(_ view: some View) -> CGFloat {
+                sizer.rootView = AnyView(view.environment(\.self, environment))
+                return sizer.sizeThatFits(in: CGSize(width: width, height: .greatestFiniteMagnitude)).height
             }
-            if !current.isEmpty { pages.append(current) }
-            return pages.isEmpty ? [[.header]] : pages
+            let headerHeight = measure(header(chapter)) + Self.headerSpacing
+            let footerHeight = interactive ? measure(footer) : measure(footerView(isRead: false, markRead: {}))
+
+            return PagedChapterText(
+                layout: built,
+                width: width,
+                firstPageHeight: pageHeight - headerHeight,
+                pageHeight: pageHeight,
+                footerHeight: footerHeight
+            )
         }
     }
 }
@@ -499,6 +753,7 @@ private struct PaginationKey: Hashable {
     let dynamicType: DynamicTypeSize
     let noteVerses: [Int]
     let isRead: Bool
+    let interactive: Bool
 }
 
 /// One verse, with its highlight drawn inline and the verse number in the tint color.

@@ -35,7 +35,7 @@ struct RootTabView: View {
             }
 
             Tab(value: AppTab.search, role: .search) {
-                NavigationStack { SearchView() }
+                SearchTab()
             } label: {
                 Image(systemName: "magnifyingglass").accessibilityLabel("Search")
             }

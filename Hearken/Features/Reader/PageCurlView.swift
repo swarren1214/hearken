@@ -15,6 +15,8 @@ struct PageCurlView: UIViewControllerRepresentable {
     let page: (Int) -> AnyView
     let previousChapterPage: AnyView?
     let nextChapterPage: AnyView?
+    /// A page turn has begun (used to dismiss any text selection).
+    var onTurnStart: () -> Void = {}
     let onLeaveChapter: (_ forward: Bool) -> Void
 
     func makeCoordinator() -> Coordinator { Coordinator(parent: self) }
@@ -60,11 +62,20 @@ struct PageCurlView: UIViewControllerRepresentable {
             self.parent = parent
         }
 
+        /// One host per page, reused, so each page's text view (tied to that page's text
+        /// container) is created once rather than every time the page comes back into view.
+        private var hosts: [Slot: UIHostingController<AnyView>] = [:]
+
         func host(for slot: Slot) -> UIViewController {
+            if let cached = hosts[slot] {
+                cached.rootView = rootView(for: slot)
+                return cached
+            }
             let host = UIHostingController(rootView: rootView(for: slot))
             host.safeAreaRegions = []
             host.view.backgroundColor = .systemBackground
             slots[ObjectIdentifier(host)] = slot
+            hosts[slot] = host
             return host
         }
 
@@ -105,15 +116,16 @@ struct PageCurlView: UIViewControllerRepresentable {
             return parent.nextChapterPage == nil ? nil : host(for: .nextChapter)
         }
 
+        func pageViewController(_ controller: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
+            parent.onTurnStart()
+        }
+
         func pageViewController(
             _ controller: UIPageViewController,
             didFinishAnimating finished: Bool,
             previousViewControllers: [UIViewController],
             transitionCompleted completed: Bool
         ) {
-            for previous in previousViewControllers where previous !== controller.viewControllers?.first {
-                slots[ObjectIdentifier(previous)] = nil
-            }
             guard completed else { return }
             switch slot(of: controller.viewControllers?.first) {
             case .previousChapter: parent.onLeaveChapter(false)

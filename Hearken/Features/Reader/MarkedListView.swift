@@ -72,6 +72,7 @@ struct MarkedListView: View {
                 } label: {
                     Label("Filter", systemImage: filter == nil ? "line.3.horizontal.decrease.circle" : "line.3.horizontal.decrease.circle.fill")
                 }
+                .tint(Color.primary)
             }
         }
     }

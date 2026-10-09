@@ -11,7 +11,7 @@ Requires Xcode 26 and iOS 26.
 
 1. Open `Hearken.xcodeproj`.
 2. Select the **Hearken** target › **Signing & Capabilities** and choose your **Team**.
-3. If `tech.productguy.hearken` isn't available to your team, change the **Bundle Identifier**,
+3. If `com.stephenwarren.hearken` isn't available to your team, change the **Bundle Identifier**,
    then update the iCloud container in `Hearken.entitlements` and `AppConfig.cloudKitContainerID`
    to match (`iCloud.<your bundle id>`).
 4. Run on an iPhone simulator or device. Sign in with Apple needs a simulator or device that is

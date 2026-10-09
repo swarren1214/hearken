@@ -5,7 +5,7 @@ enum AppConfig {
     /// Turn on once the iCloud capability is set up for your team (see README).
     /// When false, user data stays on this device.
     static let cloudSyncEnabled = false
-    static let cloudKitContainerID = "iCloud.tech.productguy.hearken"
+    static let cloudKitContainerID = "iCloud.com.stephenwarren.hearken"
 
     // Placeholders until the site is live.
     static let termsURL = URL(string: "https://example.com/hearken/terms")!

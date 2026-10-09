@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 /// Keys for settings stored with @AppStorage. Keep every key here so views stay in sync.
 enum SettingsKey {
@@ -7,6 +8,9 @@ enum SettingsKey {
     static let scriptureTextSize = "settings.scriptureTextSize"
     static let showVerseNumbers = "settings.showVerseNumbers"
     static let readerLayout = "settings.readerLayout"
+    static let pencilHighlighting = "settings.pencilHighlighting"
+    static let pencilHue = "settings.pencilHue"
+    static let pencilStyle = "settings.pencilStyle"
     static let dailyGoalMinutes = "settings.dailyGoalMinutes"
     static let studyReminder = "settings.studyReminder"
     static let onboardingDone = "onboarding.done"
@@ -83,4 +87,9 @@ extension Font {
     static func scripture(size: CGFloat, weight: Font.Weight = .regular) -> Font {
         .system(size: size, weight: weight, design: .serif)
     }
+}
+
+extension UIDevice {
+    /// Apple Pencil features only appear on iPad.
+    static var isPad: Bool { current.userInterfaceIdiom == .pad }
 }

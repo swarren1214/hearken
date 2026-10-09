@@ -56,6 +56,7 @@ struct LibraryBookView: View {
                 } label: {
                     Label("Book Options", systemImage: "ellipsis")
                 }
+                .tint(Color.primary)
             }
         }
         .overlay { openingCover }

@@ -1,94 +1,1476 @@
 {
-  "contentVersion": 1,
+  "contentVersion": 2,
   "subjects": [
     {
       "id": "doctrinal-mastery",
       "name": "Doctrinal Mastery",
       "symbol": "text.book.closed",
-      "summary": "The 100 key passages from the Church's seminary curriculum and the doctrines that tie them together.",
+      "summary": "Latter-day Saint seminary study: the 96 references (24 per course) listed on the linked Core Document page, plus spiritual learning and doctrinal themes. Course groups are not identical to canonical volumes.",
       "units": [
-        { "id": "dm.u1", "number": 1, "title": "Learning spiritual knowledge", "range": "Principles", "readingChapterIDs": [] },
-        { "id": "dm.u2", "number": 2, "title": "Old Testament passages", "range": "25 passages", "readingChapterIDs": [] },
-        { "id": "dm.u3", "number": 3, "title": "New Testament passages", "range": "25 passages", "readingChapterIDs": [] },
-        { "id": "dm.u4", "number": 4, "title": "Book of Mormon passages", "range": "25 passages", "readingChapterIDs": [] },
-        { "id": "dm.u5", "number": 5, "title": "Doctrine and Covenants and Church History passages", "range": "25 passages", "readingChapterIDs": [] },
-        { "id": "dm.u6", "number": 6, "title": "Doctrinal themes", "range": "The Godhead to commandments", "readingChapterIDs": [] }
+        {
+          "id": "dm.u1",
+          "number": 1,
+          "title": "Learning spiritual knowledge",
+          "range": "Principles",
+          "readingChapterIDs": [
+            "nt.james.1",
+            "dc-testament.dc.88"
+          ]
+        },
+        {
+          "id": "dm.u2",
+          "number": 2,
+          "title": "Old Testament passages",
+          "range": "24 passages · linked Core Document edition",
+          "readingChapterIDs": [
+            "pgp.moses.1",
+            "pgp.moses.7",
+            "pgp.abr.2",
+            "pgp.abr.3",
+            "ot.gen.1",
+            "ot.gen.2",
+            "ot.gen.39",
+            "ot.ex.20",
+            "ot.josh.24",
+            "ot.ps.24",
+            "ot.prov.3",
+            "ot.isa.1",
+            "ot.isa.5",
+            "ot.isa.29",
+            "ot.isa.53",
+            "ot.isa.58",
+            "ot.jer.1",
+            "ot.ezek.3",
+            "ot.ezek.37",
+            "ot.dan.2",
+            "ot.amos.3",
+            "ot.mal.3",
+            "ot.mal.4"
+          ]
+        },
+        {
+          "id": "dm.u3",
+          "number": 3,
+          "title": "New Testament passages",
+          "range": "24 passages · linked Core Document edition",
+          "readingChapterIDs": [
+            "nt.matt.5",
+            "nt.matt.11",
+            "nt.matt.16",
+            "nt.matt.22",
+            "nt.luke.2",
+            "nt.luke.22",
+            "nt.luke.24",
+            "nt.john.3",
+            "nt.john.7",
+            "nt.john.17",
+            "nt.1-cor.6",
+            "nt.1-cor.11",
+            "nt.1-cor.15",
+            "nt.eph.1",
+            "nt.eph.2",
+            "nt.2-thes.2",
+            "nt.2-tim.3",
+            "nt.heb.12",
+            "nt.james.1",
+            "nt.james.2",
+            "nt.1-pet.4",
+            "nt.rev.20"
+          ]
+        },
+        {
+          "id": "dm.u4",
+          "number": 4,
+          "title": "Book of Mormon passages",
+          "range": "24 passages · linked Core Document edition",
+          "readingChapterIDs": [
+            "bofm.1-ne.3",
+            "bofm.2-ne.2",
+            "bofm.2-ne.26",
+            "bofm.2-ne.28",
+            "bofm.2-ne.32",
+            "bofm.mosiah.2",
+            "bofm.mosiah.3",
+            "bofm.mosiah.4",
+            "bofm.mosiah.18",
+            "bofm.alma.7",
+            "bofm.alma.34",
+            "bofm.alma.39",
+            "bofm.alma.41",
+            "bofm.hel.5",
+            "bofm.3-ne.11",
+            "bofm.3-ne.12",
+            "bofm.3-ne.27",
+            "bofm.ether.12",
+            "bofm.moro.7",
+            "bofm.moro.10"
+          ]
+        },
+        {
+          "id": "dm.u5",
+          "number": 5,
+          "title": "Doctrine and Covenants and Church History passages",
+          "range": "24 passages · linked Core Document edition",
+          "readingChapterIDs": [
+            "pgp.js-h.1",
+            "dc-testament.dc.1",
+            "dc-testament.dc.6",
+            "dc-testament.dc.8",
+            "dc-testament.dc.13",
+            "dc-testament.dc.18",
+            "dc-testament.dc.19",
+            "dc-testament.dc.21",
+            "dc-testament.dc.29",
+            "dc-testament.dc.49",
+            "dc-testament.dc.58",
+            "dc-testament.dc.64",
+            "dc-testament.dc.76",
+            "dc-testament.dc.82",
+            "dc-testament.dc.84",
+            "dc-testament.dc.88",
+            "dc-testament.dc.89",
+            "dc-testament.dc.107",
+            "dc-testament.dc.121",
+            "dc-testament.dc.130",
+            "dc-testament.dc.131",
+            "dc-testament.dc.135"
+          ]
+        },
+        {
+          "id": "dm.u6",
+          "number": 6,
+          "title": "Doctrinal themes",
+          "range": "The Godhead to commandments",
+          "readingChapterIDs": [
+            "dc-testament.dc.130",
+            "nt.john.17"
+          ]
+        }
       ],
       "resources": [
-        { "id": "dm.r1", "kind": "article", "title": "Doctrinal Mastery Core Document", "author": "The Church, Seminaries and Institutes" },
-        { "id": "dm.r2", "kind": "manual", "title": "Doctrinal Mastery teacher materials", "author": "The Church, Seminaries and Institutes" },
-        { "id": "dm.r3", "kind": "manual", "title": "Come, Follow Me", "author": "The Church" },
-        { "id": "dm.r4", "kind": "manual", "title": "Preach My Gospel", "author": "The Church" },
-        { "id": "dm.r5", "kind": "manual", "title": "Teaching in the Savior's Way", "author": "The Church" }
+        {
+          "id": "dm.r1",
+          "kind": "article",
+          "title": "Doctrinal Mastery Core Document",
+          "author": "The Church, Seminaries and Institutes",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "note": "LDS official curriculum; edition linked here lists 24 references per course."
+        },
+        {
+          "id": "dm.r2",
+          "kind": "manual",
+          "title": "Doctrinal Mastery teacher materials",
+          "author": "The Church, Seminaries and Institutes"
+        },
+        {
+          "id": "dm.r3",
+          "kind": "manual",
+          "title": "Come, Follow Me",
+          "author": "The Church"
+        },
+        {
+          "id": "dm.r4",
+          "kind": "manual",
+          "title": "Preach My Gospel",
+          "author": "The Church"
+        },
+        {
+          "id": "dm.r5",
+          "kind": "manual",
+          "title": "Teaching in the Savior's Way",
+          "author": "The Church"
+        },
+        {
+          "id": "dm.passage.moses-1-39",
+          "kind": "scripture",
+          "title": "Moses 1:39",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "pgp.moses.1"
+        },
+        {
+          "id": "dm.passage.moses-7-18",
+          "kind": "scripture",
+          "title": "Moses 7:18",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "pgp.moses.7"
+        },
+        {
+          "id": "dm.passage.abraham-2-9-11",
+          "kind": "scripture",
+          "title": "Abraham 2:9–11",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "pgp.abr.2"
+        },
+        {
+          "id": "dm.passage.abraham-3-22-23",
+          "kind": "scripture",
+          "title": "Abraham 3:22–23",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "pgp.abr.3"
+        },
+        {
+          "id": "dm.passage.genesis-1-26-27",
+          "kind": "scripture",
+          "title": "Genesis 1:26–27",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "ot.gen.1"
+        },
+        {
+          "id": "dm.passage.genesis-2-24",
+          "kind": "scripture",
+          "title": "Genesis 2:24",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "ot.gen.2"
+        },
+        {
+          "id": "dm.passage.genesis-39-9",
+          "kind": "scripture",
+          "title": "Genesis 39:9",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "ot.gen.39"
+        },
+        {
+          "id": "dm.passage.exodus-20-3-17",
+          "kind": "scripture",
+          "title": "Exodus 20:3–17",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "ot.ex.20"
+        },
+        {
+          "id": "dm.passage.joshua-24-15",
+          "kind": "scripture",
+          "title": "Joshua 24:15",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "ot.josh.24"
+        },
+        {
+          "id": "dm.passage.psalm-24-3-4",
+          "kind": "scripture",
+          "title": "Psalm 24:3–4",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "ot.ps.24"
+        },
+        {
+          "id": "dm.passage.proverbs-3-5-6",
+          "kind": "scripture",
+          "title": "Proverbs 3:5–6",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "ot.prov.3"
+        },
+        {
+          "id": "dm.passage.isaiah-1-18",
+          "kind": "scripture",
+          "title": "Isaiah 1:18",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "ot.isa.1"
+        },
+        {
+          "id": "dm.passage.isaiah-5-20",
+          "kind": "scripture",
+          "title": "Isaiah 5:20",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "ot.isa.5"
+        },
+        {
+          "id": "dm.passage.isaiah-29-13-14",
+          "kind": "scripture",
+          "title": "Isaiah 29:13–14",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "ot.isa.29"
+        },
+        {
+          "id": "dm.passage.isaiah-53-3-5",
+          "kind": "scripture",
+          "title": "Isaiah 53:3–5",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "ot.isa.53"
+        },
+        {
+          "id": "dm.passage.isaiah-58-6-7",
+          "kind": "scripture",
+          "title": "Isaiah 58:6–7",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "ot.isa.58"
+        },
+        {
+          "id": "dm.passage.isaiah-58-13-14",
+          "kind": "scripture",
+          "title": "Isaiah 58:13–14",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "ot.isa.58"
+        },
+        {
+          "id": "dm.passage.jeremiah-1-4-5",
+          "kind": "scripture",
+          "title": "Jeremiah 1:4–5",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "ot.jer.1"
+        },
+        {
+          "id": "dm.passage.ezekiel-3-16-17",
+          "kind": "scripture",
+          "title": "Ezekiel 3:16–17",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "ot.ezek.3"
+        },
+        {
+          "id": "dm.passage.ezekiel-37-15-17",
+          "kind": "scripture",
+          "title": "Ezekiel 37:15–17",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "ot.ezek.37"
+        },
+        {
+          "id": "dm.passage.daniel-2-44-45",
+          "kind": "scripture",
+          "title": "Daniel 2:44–45",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "ot.dan.2"
+        },
+        {
+          "id": "dm.passage.amos-3-7",
+          "kind": "scripture",
+          "title": "Amos 3:7",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "ot.amos.3"
+        },
+        {
+          "id": "dm.passage.malachi-3-8-10",
+          "kind": "scripture",
+          "title": "Malachi 3:8–10",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "ot.mal.3"
+        },
+        {
+          "id": "dm.passage.malachi-4-5-6",
+          "kind": "scripture",
+          "title": "Malachi 4:5–6",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "ot.mal.4"
+        },
+        {
+          "id": "dm.passage.matthew-5-14-16",
+          "kind": "scripture",
+          "title": "Matthew 5:14–16",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "nt.matt.5"
+        },
+        {
+          "id": "dm.passage.matthew-11-28-30",
+          "kind": "scripture",
+          "title": "Matthew 11:28–30",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "nt.matt.11"
+        },
+        {
+          "id": "dm.passage.matthew-16-15-19",
+          "kind": "scripture",
+          "title": "Matthew 16:15–19",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "nt.matt.16"
+        },
+        {
+          "id": "dm.passage.matthew-22-36-39",
+          "kind": "scripture",
+          "title": "Matthew 22:36–39",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "nt.matt.22"
+        },
+        {
+          "id": "dm.passage.luke-2-10-12",
+          "kind": "scripture",
+          "title": "Luke 2:10–12",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "nt.luke.2"
+        },
+        {
+          "id": "dm.passage.luke-22-19-20",
+          "kind": "scripture",
+          "title": "Luke 22:19–20",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "nt.luke.22"
+        },
+        {
+          "id": "dm.passage.luke-24-36-39",
+          "kind": "scripture",
+          "title": "Luke 24:36–39",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "nt.luke.24"
+        },
+        {
+          "id": "dm.passage.john-3-5",
+          "kind": "scripture",
+          "title": "John 3:5",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "nt.john.3"
+        },
+        {
+          "id": "dm.passage.john-3-16",
+          "kind": "scripture",
+          "title": "John 3:16",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "nt.john.3"
+        },
+        {
+          "id": "dm.passage.john-7-17",
+          "kind": "scripture",
+          "title": "John 7:17",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "nt.john.7"
+        },
+        {
+          "id": "dm.passage.john-17-3",
+          "kind": "scripture",
+          "title": "John 17:3",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "nt.john.17"
+        },
+        {
+          "id": "dm.passage.1-corinthians-6-19-20",
+          "kind": "scripture",
+          "title": "1 Corinthians 6:19–20",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "nt.1-cor.6"
+        },
+        {
+          "id": "dm.passage.1-corinthians-11-11",
+          "kind": "scripture",
+          "title": "1 Corinthians 11:11",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "nt.1-cor.11"
+        },
+        {
+          "id": "dm.passage.1-corinthians-15-20-22",
+          "kind": "scripture",
+          "title": "1 Corinthians 15:20–22",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "nt.1-cor.15"
+        },
+        {
+          "id": "dm.passage.1-corinthians-15-40-42",
+          "kind": "scripture",
+          "title": "1 Corinthians 15:40–42",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "nt.1-cor.15"
+        },
+        {
+          "id": "dm.passage.ephesians-1-10",
+          "kind": "scripture",
+          "title": "Ephesians 1:10",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "nt.eph.1"
+        },
+        {
+          "id": "dm.passage.ephesians-2-19-20",
+          "kind": "scripture",
+          "title": "Ephesians 2:19–20",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "nt.eph.2"
+        },
+        {
+          "id": "dm.passage.2-thessalonians-2-1-3",
+          "kind": "scripture",
+          "title": "2 Thessalonians 2:1–3",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "nt.2-thes.2"
+        },
+        {
+          "id": "dm.passage.2-timothy-3-15-17",
+          "kind": "scripture",
+          "title": "2 Timothy 3:15–17",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "nt.2-tim.3"
+        },
+        {
+          "id": "dm.passage.hebrews-12-9",
+          "kind": "scripture",
+          "title": "Hebrews 12:9",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "nt.heb.12"
+        },
+        {
+          "id": "dm.passage.james-1-5-6",
+          "kind": "scripture",
+          "title": "James 1:5–6",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "nt.james.1"
+        },
+        {
+          "id": "dm.passage.james-2-17-18",
+          "kind": "scripture",
+          "title": "James 2:17–18",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "nt.james.2"
+        },
+        {
+          "id": "dm.passage.1-peter-4-6",
+          "kind": "scripture",
+          "title": "1 Peter 4:6",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "nt.1-pet.4"
+        },
+        {
+          "id": "dm.passage.revelation-20-12",
+          "kind": "scripture",
+          "title": "Revelation 20:12",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "nt.rev.20"
+        },
+        {
+          "id": "dm.passage.1-nephi-3-7",
+          "kind": "scripture",
+          "title": "1 Nephi 3:7",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "bofm.1-ne.3"
+        },
+        {
+          "id": "dm.passage.2-nephi-2-25",
+          "kind": "scripture",
+          "title": "2 Nephi 2:25",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "bofm.2-ne.2"
+        },
+        {
+          "id": "dm.passage.2-nephi-2-27",
+          "kind": "scripture",
+          "title": "2 Nephi 2:27",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "bofm.2-ne.2"
+        },
+        {
+          "id": "dm.passage.2-nephi-26-33",
+          "kind": "scripture",
+          "title": "2 Nephi 26:33",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "bofm.2-ne.26"
+        },
+        {
+          "id": "dm.passage.2-nephi-28-30",
+          "kind": "scripture",
+          "title": "2 Nephi 28:30",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "bofm.2-ne.28"
+        },
+        {
+          "id": "dm.passage.2-nephi-32-3",
+          "kind": "scripture",
+          "title": "2 Nephi 32:3",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "bofm.2-ne.32"
+        },
+        {
+          "id": "dm.passage.2-nephi-32-8-9",
+          "kind": "scripture",
+          "title": "2 Nephi 32:8–9",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "bofm.2-ne.32"
+        },
+        {
+          "id": "dm.passage.mosiah-2-17",
+          "kind": "scripture",
+          "title": "Mosiah 2:17",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "bofm.mosiah.2"
+        },
+        {
+          "id": "dm.passage.mosiah-2-41",
+          "kind": "scripture",
+          "title": "Mosiah 2:41",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "bofm.mosiah.2"
+        },
+        {
+          "id": "dm.passage.mosiah-3-19",
+          "kind": "scripture",
+          "title": "Mosiah 3:19",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "bofm.mosiah.3"
+        },
+        {
+          "id": "dm.passage.mosiah-4-9",
+          "kind": "scripture",
+          "title": "Mosiah 4:9",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "bofm.mosiah.4"
+        },
+        {
+          "id": "dm.passage.mosiah-18-8-10",
+          "kind": "scripture",
+          "title": "Mosiah 18:8–10",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "bofm.mosiah.18"
+        },
+        {
+          "id": "dm.passage.alma-7-11-13",
+          "kind": "scripture",
+          "title": "Alma 7:11–13",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "bofm.alma.7"
+        },
+        {
+          "id": "dm.passage.alma-34-9-10",
+          "kind": "scripture",
+          "title": "Alma 34:9–10",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "bofm.alma.34"
+        },
+        {
+          "id": "dm.passage.alma-39-9",
+          "kind": "scripture",
+          "title": "Alma 39:9",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "bofm.alma.39"
+        },
+        {
+          "id": "dm.passage.alma-41-10",
+          "kind": "scripture",
+          "title": "Alma 41:10",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "bofm.alma.41"
+        },
+        {
+          "id": "dm.passage.helaman-5-12",
+          "kind": "scripture",
+          "title": "Helaman 5:12",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "bofm.hel.5"
+        },
+        {
+          "id": "dm.passage.3-nephi-11-10-11",
+          "kind": "scripture",
+          "title": "3 Nephi 11:10–11",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "bofm.3-ne.11"
+        },
+        {
+          "id": "dm.passage.3-nephi-12-48",
+          "kind": "scripture",
+          "title": "3 Nephi 12:48",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "bofm.3-ne.12"
+        },
+        {
+          "id": "dm.passage.3-nephi-27-20",
+          "kind": "scripture",
+          "title": "3 Nephi 27:20",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "bofm.3-ne.27"
+        },
+        {
+          "id": "dm.passage.ether-12-6",
+          "kind": "scripture",
+          "title": "Ether 12:6",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "bofm.ether.12"
+        },
+        {
+          "id": "dm.passage.ether-12-27",
+          "kind": "scripture",
+          "title": "Ether 12:27",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "bofm.ether.12"
+        },
+        {
+          "id": "dm.passage.moroni-7-45-48",
+          "kind": "scripture",
+          "title": "Moroni 7:45–48",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "bofm.moro.7"
+        },
+        {
+          "id": "dm.passage.moroni-10-4-5",
+          "kind": "scripture",
+          "title": "Moroni 10:4–5",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "bofm.moro.10"
+        },
+        {
+          "id": "dm.passage.joseph-smith-history-1-15-20",
+          "kind": "scripture",
+          "title": "Joseph Smith—History 1:15–20",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "pgp.js-h.1"
+        },
+        {
+          "id": "dm.passage.doctrine-and-covenants-1-30",
+          "kind": "scripture",
+          "title": "Doctrine and Covenants 1:30",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "dc-testament.dc.1"
+        },
+        {
+          "id": "dm.passage.doctrine-and-covenants-1-37-38",
+          "kind": "scripture",
+          "title": "Doctrine and Covenants 1:37–38",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "dc-testament.dc.1"
+        },
+        {
+          "id": "dm.passage.doctrine-and-covenants-6-36",
+          "kind": "scripture",
+          "title": "Doctrine and Covenants 6:36",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "dc-testament.dc.6"
+        },
+        {
+          "id": "dm.passage.doctrine-and-covenants-8-2-3",
+          "kind": "scripture",
+          "title": "Doctrine and Covenants 8:2–3",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "dc-testament.dc.8"
+        },
+        {
+          "id": "dm.passage.doctrine-and-covenants-13-1",
+          "kind": "scripture",
+          "title": "Doctrine and Covenants 13:1",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "dc-testament.dc.13"
+        },
+        {
+          "id": "dm.passage.doctrine-and-covenants-18-10-11",
+          "kind": "scripture",
+          "title": "Doctrine and Covenants 18:10–11",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "dc-testament.dc.18"
+        },
+        {
+          "id": "dm.passage.doctrine-and-covenants-18-15-16",
+          "kind": "scripture",
+          "title": "Doctrine and Covenants 18:15–16",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "dc-testament.dc.18"
+        },
+        {
+          "id": "dm.passage.doctrine-and-covenants-19-16-19",
+          "kind": "scripture",
+          "title": "Doctrine and Covenants 19:16–19",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "dc-testament.dc.19"
+        },
+        {
+          "id": "dm.passage.doctrine-and-covenants-21-4-6",
+          "kind": "scripture",
+          "title": "Doctrine and Covenants 21:4–6",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "dc-testament.dc.21"
+        },
+        {
+          "id": "dm.passage.doctrine-and-covenants-29-10-11",
+          "kind": "scripture",
+          "title": "Doctrine and Covenants 29:10–11",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "dc-testament.dc.29"
+        },
+        {
+          "id": "dm.passage.doctrine-and-covenants-49-15-17",
+          "kind": "scripture",
+          "title": "Doctrine and Covenants 49:15–17",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "dc-testament.dc.49"
+        },
+        {
+          "id": "dm.passage.doctrine-and-covenants-58-42-43",
+          "kind": "scripture",
+          "title": "Doctrine and Covenants 58:42–43",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "dc-testament.dc.58"
+        },
+        {
+          "id": "dm.passage.doctrine-and-covenants-64-9-11",
+          "kind": "scripture",
+          "title": "Doctrine and Covenants 64:9–11",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "dc-testament.dc.64"
+        },
+        {
+          "id": "dm.passage.doctrine-and-covenants-76-22-24",
+          "kind": "scripture",
+          "title": "Doctrine and Covenants 76:22–24",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "dc-testament.dc.76"
+        },
+        {
+          "id": "dm.passage.doctrine-and-covenants-82-10",
+          "kind": "scripture",
+          "title": "Doctrine and Covenants 82:10",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "dc-testament.dc.82"
+        },
+        {
+          "id": "dm.passage.doctrine-and-covenants-84-20-22",
+          "kind": "scripture",
+          "title": "Doctrine and Covenants 84:20–22",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "dc-testament.dc.84"
+        },
+        {
+          "id": "dm.passage.doctrine-and-covenants-88-118",
+          "kind": "scripture",
+          "title": "Doctrine and Covenants 88:118",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "dc-testament.dc.88"
+        },
+        {
+          "id": "dm.passage.doctrine-and-covenants-89-18-21",
+          "kind": "scripture",
+          "title": "Doctrine and Covenants 89:18–21",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "dc-testament.dc.89"
+        },
+        {
+          "id": "dm.passage.doctrine-and-covenants-107-8",
+          "kind": "scripture",
+          "title": "Doctrine and Covenants 107:8",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "dc-testament.dc.107"
+        },
+        {
+          "id": "dm.passage.doctrine-and-covenants-121-36-41-42",
+          "kind": "scripture",
+          "title": "Doctrine and Covenants 121:36, 41–42",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "dc-testament.dc.121"
+        },
+        {
+          "id": "dm.passage.doctrine-and-covenants-130-22-23",
+          "kind": "scripture",
+          "title": "Doctrine and Covenants 130:22–23",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "dc-testament.dc.130"
+        },
+        {
+          "id": "dm.passage.doctrine-and-covenants-131-1-4",
+          "kind": "scripture",
+          "title": "Doctrine and Covenants 131:1–4",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "dc-testament.dc.131"
+        },
+        {
+          "id": "dm.passage.doctrine-and-covenants-135-3",
+          "kind": "scripture",
+          "title": "Doctrine and Covenants 135:3",
+          "author": "LDS seminary course reference",
+          "note": "Latter-day Saint curriculum; read the complete chapter for context.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/doctrinal-mastery-passages-and-key-phrases?lang=eng",
+          "chapterID": "dc-testament.dc.135"
+        },
+        {
+          "id": "dm.r.spiritual-knowledge",
+          "kind": "article",
+          "title": "Acquiring Spiritual Knowledge",
+          "author": "The Church of Jesus Christ of Latter-day Saints",
+          "url": "https://www.churchofjesuschrist.org/study/manual/doctrinal-mastery-core-document-2023/acquiring-spiritual-knowledge?lang=eng",
+          "note": "LDS curriculum: faith, eternal perspective and further study of divinely appointed sources."
+        }
       ]
     },
     {
       "id": "bofm-history",
-      "name": "Book of Mormon History",
+      "name": "Book of Mormon Narrative and Geography",
       "symbol": "book.closed",
-      "summary": "From Lehi leaving Jerusalem (c. 600 BC) to Moroni sealing the record (c. AD 421).",
+      "summary": "Study the Book of Mormon’s narrated chronology and internal geography. Its ancient setting is a Latter-day Saint faith claim; proposed modern American locations are not established historical identifications.",
       "units": [
-        { "id": "bofm.u1", "number": 1, "title": "From Jerusalem to the land of promise", "range": "1 Nephi – Omni", "readingChapterIDs": [] },
-        { "id": "bofm.u2", "number": 2, "title": "Zarahemla and the Nephite kings", "range": "Words of Mormon – Mosiah", "readingChapterIDs": [] },
-        { "id": "bofm.u3", "number": 3, "title": "The reign of the judges", "range": "Alma – Helaman", "readingChapterIDs": ["bofm.alma.32"] },
-        { "id": "bofm.u4", "number": 4, "title": "Christ among the Nephites", "range": "3 Nephi – 4 Nephi", "readingChapterIDs": [] },
-        { "id": "bofm.u5", "number": 5, "title": "The final record", "range": "Mormon – Moroni", "readingChapterIDs": [] }
+        {
+          "id": "bofm.u1",
+          "number": 1,
+          "title": "From Jerusalem to the land of promise",
+          "range": "1 Nephi – Omni",
+          "readingChapterIDs": [
+            "bofm.1-ne.1",
+            "bofm.1-ne.16",
+            "bofm.1-ne.17",
+            "bofm.omni.1"
+          ]
+        },
+        {
+          "id": "bofm.u2",
+          "number": 2,
+          "title": "Zarahemla and the Nephite kings",
+          "range": "Words of Mormon – Mosiah",
+          "readingChapterIDs": [
+            "bofm.w-of-m.1",
+            "bofm.mosiah.2",
+            "bofm.mosiah.18",
+            "bofm.mosiah.29"
+          ]
+        },
+        {
+          "id": "bofm.u3",
+          "number": 3,
+          "title": "The reign of the judges",
+          "range": "Alma – Helaman",
+          "readingChapterIDs": [
+            "bofm.alma.32",
+            "bofm.alma.46",
+            "bofm.alma.22",
+            "bofm.hel.13"
+          ]
+        },
+        {
+          "id": "bofm.u4",
+          "number": 4,
+          "title": "Christ among the Nephites",
+          "range": "3 Nephi – 4 Nephi",
+          "readingChapterIDs": [
+            "bofm.3-ne.8",
+            "bofm.3-ne.11",
+            "bofm.4-ne.1"
+          ]
+        },
+        {
+          "id": "bofm.u5",
+          "number": 5,
+          "title": "The final record",
+          "range": "Mormon – Moroni",
+          "readingChapterIDs": [
+            "bofm.morm.6",
+            "bofm.moro.10",
+            "bofm.ether.1"
+          ]
+        }
       ],
       "resources": [
-        { "id": "bofm.r1", "kind": "scripture", "title": "Alma 32", "author": "Faith compared to a seed", "chapterID": "bofm.alma.32" },
-        { "id": "bofm.r2", "kind": "article", "title": "Book of Mormon Translation", "author": "Gospel Topics Essays, the Church" },
-        { "id": "bofm.r3", "kind": "article", "title": "Book of Mormon Geography", "author": "Gospel Topics, the Church" },
-        { "id": "bofm.r4", "kind": "video", "title": "Book of Mormon Videos", "author": "The Church" },
-        { "id": "bofm.r5", "kind": "website", "title": "KnoWhy articles", "author": "Scripture Central" },
-        { "id": "bofm.r6", "kind": "book", "title": "Understanding the Book of Mormon: A Reader's Guide", "author": "Grant Hardy" },
-        { "id": "bofm.r7", "kind": "book", "title": "Charting the Book of Mormon", "author": "John W. Welch and J. Gregory Welch" },
-        { "id": "bofm.r8", "kind": "book", "title": "By the Hand of Mormon", "author": "Terryl L. Givens" },
-        { "id": "bofm.r9", "kind": "book", "title": "An Ancient American Setting for the Book of Mormon", "author": "John L. Sorenson", "note": "Mesoamerican geography model" },
-        { "id": "bofm.r10", "kind": "book", "title": "Prophecies and Promises", "author": "Bruce H. Porter and Rod L. Meldrum", "note": "Heartland geography model" }
+        {
+          "id": "bofm.r1",
+          "kind": "scripture",
+          "title": "Alma 32",
+          "author": "Faith compared to a seed",
+          "chapterID": "bofm.alma.32"
+        },
+        {
+          "id": "bofm.r2",
+          "kind": "article",
+          "title": "Book of Mormon Translation",
+          "author": "Gospel Topics Essays, the Church",
+          "url": "https://www.churchofjesuschrist.org/study/manual/gospel-topics-essays/book-of-mormon-translation?lang=eng",
+          "note": "LDS official account of translation; historical evidence and revelatory claims require different evaluation."
+        },
+        {
+          "id": "bofm.r3",
+          "kind": "article",
+          "title": "Book of Mormon Geography",
+          "author": "Gospel Topics, the Church",
+          "url": "https://www.churchofjesuschrist.org/study/manual/gospel-topics/book-of-mormon-geography?lang=eng",
+          "note": "LDS official position; no specific modern American geography is endorsed."
+        },
+        {
+          "id": "bofm.r4",
+          "kind": "video",
+          "title": "Book of Mormon Videos",
+          "author": "The Church"
+        },
+        {
+          "id": "bofm.r5",
+          "kind": "website",
+          "title": "KnoWhy articles",
+          "author": "Scripture Central",
+          "note": "Latter-day Saint apologetic interpretation; evaluate historical claims alongside independent scholarship."
+        },
+        {
+          "id": "bofm.r6",
+          "kind": "book",
+          "title": "Understanding the Book of Mormon: A Reader's Guide",
+          "author": "Grant Hardy"
+        },
+        {
+          "id": "bofm.r7",
+          "kind": "book",
+          "title": "Charting the Book of Mormon",
+          "author": "John W. Welch and J. Gregory Welch"
+        },
+        {
+          "id": "bofm.r8",
+          "kind": "book",
+          "title": "By the Hand of Mormon",
+          "author": "Terryl L. Givens"
+        },
+        {
+          "id": "bofm.r9",
+          "kind": "book",
+          "title": "An Ancient American Setting for the Book of Mormon",
+          "author": "John L. Sorenson",
+          "note": "Advocacy for a proposed geography; neither Church-endorsed nor an established archaeological identification."
+        },
+        {
+          "id": "bofm.r10",
+          "kind": "book",
+          "title": "Prophecies and Promises",
+          "author": "Bruce H. Porter and Rod L. Meldrum",
+          "note": "Advocacy for a proposed geography; neither Church-endorsed nor an established archaeological identification."
+        }
       ]
     },
     {
       "id": "biblical-timeline",
       "name": "Biblical Timeline",
       "symbol": "calendar.day.timeline.left",
-      "summary": "Eight eras from Creation to the end of the apostolic age.",
+      "summary": "Biblical narrative from Genesis to the apostles, with traditional chronology distinguished from independently supported history. Primeval stories and patriarchal or Exodus dates are not securely dated historical events.",
       "units": [
-        { "id": "bt.u1", "number": 1, "title": "Beginnings", "range": "Genesis 1–11", "readingChapterIDs": [] },
-        { "id": "bt.u2", "number": 2, "title": "The patriarchs", "range": "Genesis 12–50", "readingChapterIDs": [] },
-        { "id": "bt.u3", "number": 3, "title": "Exodus and wilderness", "range": "Exodus – Deuteronomy", "readingChapterIDs": [] },
-        { "id": "bt.u4", "number": 4, "title": "Conquest and judges", "range": "Joshua, Judges, Ruth", "readingChapterIDs": [] },
-        { "id": "bt.u5", "number": 5, "title": "The united monarchy", "range": "c. 1050–930 BC", "readingChapterIDs": ["ot.ps.23"] },
-        { "id": "bt.u6", "number": 6, "title": "The divided kingdom", "range": "c. 930–587 BC", "readingChapterIDs": [] },
-        { "id": "bt.u7", "number": 7, "title": "Exile, return and between the testaments", "range": "587 BC – c. 4 BC", "readingChapterIDs": [] },
-        { "id": "bt.u8", "number": 8, "title": "Jesus and the apostles", "range": "c. 4 BC – c. AD 100", "readingChapterIDs": [] }
+        {
+          "id": "bt.u1",
+          "number": 1,
+          "title": "Beginnings",
+          "range": "Genesis 1–11",
+          "readingChapterIDs": [
+            "ot.gen.1",
+            "ot.gen.11"
+          ]
+        },
+        {
+          "id": "bt.u2",
+          "number": 2,
+          "title": "The patriarchs",
+          "range": "Genesis 12–50",
+          "readingChapterIDs": [
+            "ot.gen.12",
+            "ot.gen.37"
+          ]
+        },
+        {
+          "id": "bt.u3",
+          "number": 3,
+          "title": "Exodus and wilderness",
+          "range": "Exodus – Deuteronomy",
+          "readingChapterIDs": [
+            "ot.ex.12",
+            "ot.ex.19"
+          ]
+        },
+        {
+          "id": "bt.u4",
+          "number": 4,
+          "title": "Conquest and judges",
+          "range": "Joshua, Judges, Ruth",
+          "readingChapterIDs": [
+            "ot.josh.1",
+            "ot.judg.4",
+            "ot.ruth.1"
+          ]
+        },
+        {
+          "id": "bt.u5",
+          "number": 5,
+          "title": "The united monarchy",
+          "range": "Traditional chronology: c. 1050–930 BCE; scope debated",
+          "readingChapterIDs": [
+            "ot.1-sam.8",
+            "ot.2-sam.7",
+            "ot.1-kgs.6",
+            "ot.ps.23"
+          ]
+        },
+        {
+          "id": "bt.u6",
+          "number": 6,
+          "title": "The divided kingdom",
+          "range": "c. 930–587 BC",
+          "readingChapterIDs": [
+            "ot.1-kgs.12",
+            "ot.2-kgs.17"
+          ]
+        },
+        {
+          "id": "bt.u7",
+          "number": 7,
+          "title": "Exile, return and between the testaments",
+          "range": "587 BC – c. 4 BC",
+          "readingChapterIDs": [
+            "ot.2-kgs.25",
+            "ot.ezra.1",
+            "ot.neh.8"
+          ]
+        },
+        {
+          "id": "bt.u8",
+          "number": 8,
+          "title": "Jesus and the apostles",
+          "range": "c. 4 BC – c. AD 100",
+          "readingChapterIDs": [
+            "nt.luke.2",
+            "nt.acts.2",
+            "nt.acts.15"
+          ]
+        }
       ],
       "resources": [
-        { "id": "bt.r1", "kind": "reference", "title": "Bible Dictionary and Bible Chronology", "author": "The Church" },
-        { "id": "bt.r2", "kind": "reference", "title": "Bible Maps and Photographs", "author": "The Church" },
-        { "id": "bt.r3", "kind": "book", "title": "Jesus the Christ", "author": "James E. Talmage" },
-        { "id": "bt.r4", "kind": "book", "title": "Jehovah and the World of the Old Testament", "author": "Holzapfel, Pike and Seely" },
-        { "id": "bt.r5", "kind": "book", "title": "Jesus Christ and the World of the New Testament", "author": "Holzapfel, Huntsman and Wayment" }
+        {
+          "id": "bt.r1",
+          "kind": "reference",
+          "title": "Bible Dictionary and Bible Chronology",
+          "author": "The Church"
+        },
+        {
+          "id": "bt.r2",
+          "kind": "reference",
+          "title": "Bible Maps and Photographs",
+          "author": "The Church",
+          "url": "https://www.churchofjesuschrist.org/study/scriptures/bible-maps?lang=eng",
+          "note": "LDS reference maps; proposed routes and identifications require independent evaluation."
+        },
+        {
+          "id": "bt.r3",
+          "kind": "book",
+          "title": "Jesus the Christ",
+          "author": "James E. Talmage"
+        },
+        {
+          "id": "bt.r4",
+          "kind": "book",
+          "title": "Jehovah and the World of the Old Testament",
+          "author": "Holzapfel, Pike and Seely"
+        },
+        {
+          "id": "bt.r5",
+          "kind": "book",
+          "title": "Jesus Christ and the World of the New Testament",
+          "author": "Holzapfel, Huntsman and Wayment"
+        },
+        {
+          "id": "bt.r.babylonian-chronicle",
+          "kind": "reference",
+          "title": "Babylonian Chronicle: Jerusalem campaign, 597 BCE",
+          "author": "British Museum, collection object 1896,0409.51",
+          "url": "https://www.britishmuseum.org/collection/object/W_1896-0409-51",
+          "note": "Ancient documentary evidence with museum dating; compare 2 Kings 24:17 for the installation of Zedekiah."
+        }
       ]
     },
     {
       "id": "doctrine-and-covenants",
-      "name": "Doctrine and Covenants",
+      "name": "Doctrine and Covenants and LDS History",
       "symbol": "scroll",
-      "summary": "The revelations read in the places and moments that prompted them.",
+      "summary": "Read revelations alongside documentary history, including women’s experiences, migration, plural marriage, race and the global Church. Theological claims are identified as Latter-day Saint beliefs.",
       "units": [
-        { "id": "dc.u1", "number": 1, "title": "The Restoration begins", "range": "New York and Pennsylvania, 1820–1831", "readingChapterIDs": [] },
-        { "id": "dc.u2", "number": 2, "title": "Kirtland, Ohio", "range": "1831–1838", "readingChapterIDs": [] },
-        { "id": "dc.u3", "number": 3, "title": "Zion in Missouri", "range": "1831–1839", "readingChapterIDs": [] },
-        { "id": "dc.u4", "number": 4, "title": "Nauvoo, Illinois", "range": "1839–1846", "readingChapterIDs": [] },
-        { "id": "dc.u5", "number": 5, "title": "The trek west and after", "range": "1847 onward", "readingChapterIDs": [] },
-        { "id": "dc.u6", "number": 6, "title": "The Official Declarations", "range": "1890 and 1978", "readingChapterIDs": [] }
+        {
+          "id": "dc.u1",
+          "number": 1,
+          "title": "The Restoration begins",
+          "range": "New York and Pennsylvania, 1820–1831",
+          "readingChapterIDs": [
+            "pgp.js-h.1",
+            "dc-testament.dc.20"
+          ]
+        },
+        {
+          "id": "dc.u2",
+          "number": 2,
+          "title": "Kirtland, Ohio",
+          "range": "1831–1838",
+          "readingChapterIDs": [
+            "dc-testament.dc.76",
+            "dc-testament.dc.109"
+          ]
+        },
+        {
+          "id": "dc.u3",
+          "number": 3,
+          "title": "Zion in Missouri",
+          "range": "1831–1839",
+          "readingChapterIDs": [
+            "dc-testament.dc.57",
+            "dc-testament.dc.121"
+          ]
+        },
+        {
+          "id": "dc.u4",
+          "number": 4,
+          "title": "Nauvoo, Illinois",
+          "range": "1839–1846",
+          "readingChapterIDs": [
+            "dc-testament.dc.124",
+            "dc-testament.dc.132",
+            "dc-testament.dc.135"
+          ]
+        },
+        {
+          "id": "dc.u5",
+          "number": 5,
+          "title": "The trek west and after",
+          "range": "1847 onward",
+          "readingChapterIDs": [
+            "dc-testament.dc.136",
+            "dc-testament.dc.138"
+          ]
+        },
+        {
+          "id": "dc.u6",
+          "number": 6,
+          "title": "The Official Declarations",
+          "range": "1890 and 1978",
+          "readingChapterIDs": []
+        }
       ],
       "resources": [
-        { "id": "dc.r1", "kind": "website", "title": "The Joseph Smith Papers", "author": "The Church Historian's Press" },
-        { "id": "dc.r2", "kind": "book", "title": "Revelations in Context", "author": "The Church" },
-        { "id": "dc.r3", "kind": "book", "title": "Saints, volumes 1–4", "author": "The Church" },
-        { "id": "dc.r4", "kind": "book", "title": "Making Sense of the Doctrine and Covenants", "author": "Steven C. Harper" },
-        { "id": "dc.r5", "kind": "book", "title": "Joseph Smith: Rough Stone Rolling", "author": "Richard Lyman Bushman" }
+        {
+          "id": "dc.r1",
+          "kind": "website",
+          "title": "The Joseph Smith Papers",
+          "author": "The Church Historian's Press",
+          "url": "https://www.josephsmithpapers.org/",
+          "note": "Documentary edition sponsored by the Church Historian’s Press; distinguish documents from editorial interpretation."
+        },
+        {
+          "id": "dc.r2",
+          "kind": "book",
+          "title": "Revelations in Context",
+          "author": "The Church"
+        },
+        {
+          "id": "dc.r3",
+          "kind": "book",
+          "title": "Saints, volumes 1–4",
+          "author": "The Church"
+        },
+        {
+          "id": "dc.r4",
+          "kind": "book",
+          "title": "Making Sense of the Doctrine and Covenants",
+          "author": "Steven C. Harper"
+        },
+        {
+          "id": "dc.r5",
+          "kind": "book",
+          "title": "Joseph Smith: Rough Stone Rolling",
+          "author": "Richard Lyman Bushman"
+        },
+        {
+          "id": "dc.r.vision",
+          "kind": "article",
+          "title": "Accounts of the First Vision",
+          "author": "Joseph Smith Papers",
+          "note": "Primary sources with editorial framing; earliest surviving firsthand account is from 1832.",
+          "url": "https://www.josephsmithpapers.org/site/accounts-of-the-first-vision"
+        },
+        {
+          "id": "dc.r.race",
+          "kind": "article",
+          "title": "Race and the Priesthood",
+          "author": "The Church of Jesus Christ of Latter-day Saints",
+          "note": "LDS official essay: restrictions, Black members’ experiences, 1978 change, and disavowal of racial theories.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/gospel-topics-essays/race-and-the-priesthood?lang=eng"
+        },
+        {
+          "id": "dc.r.plural",
+          "kind": "article",
+          "title": "Plural Marriage in Kirtland and Nauvoo",
+          "author": "The Church of Jesus Christ of Latter-day Saints",
+          "note": "LDS official historical interpretation; read with attention to women, consent and unequal power.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/gospel-topics-essays/plural-marriage-in-kirtland-and-nauvoo?lang=eng"
+        },
+        {
+          "id": "dc.r.manifesto",
+          "kind": "article",
+          "title": "The Manifesto and the End of Plural Marriage",
+          "author": "The Church of Jesus Christ of Latter-day Saints",
+          "note": "LDS official essay; the 1890 declaration did not immediately end every plural marriage.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/gospel-topics-essays/the-manifesto-and-the-end-of-plural-marriage?lang=eng"
+        },
+        {
+          "id": "dc.r.od1",
+          "kind": "article",
+          "title": "Official Declaration 1",
+          "author": "The Church of Jesus Christ of Latter-day Saints",
+          "note": "External canonical reading; not present in the bundled scripture dataset.",
+          "url": "https://www.churchofjesuschrist.org/study/scriptures/dc-testament/od/1?lang=eng"
+        },
+        {
+          "id": "dc.r.od2",
+          "kind": "article",
+          "title": "Official Declaration 2",
+          "author": "The Church of Jesus Christ of Latter-day Saints",
+          "note": "External canonical reading; not present in the bundled scripture dataset.",
+          "url": "https://www.churchofjesuschrist.org/study/scriptures/dc-testament/od/2?lang=eng"
+        }
       ]
     },
     {
@@ -97,41 +1479,213 @@
       "symbol": "building.columns",
       "summary": "How ancient Israel understood God, covenant and worship.",
       "units": [
-        { "id": "ai.u1", "number": 1, "title": "Covenant", "range": "Abraham and Sinai", "readingChapterIDs": [] },
-        { "id": "ai.u2", "number": 2, "title": "Names and nature of God", "range": "YHWH, Elohim, El", "readingChapterIDs": [] },
-        { "id": "ai.u3", "number": 3, "title": "Tabernacle and temple", "range": "Sacred space", "readingChapterIDs": [] },
-        { "id": "ai.u4", "number": 4, "title": "The law of Moses and sacrifice", "range": "Leviticus", "readingChapterIDs": [] },
-        { "id": "ai.u5", "number": 5, "title": "Feasts and the sacred calendar", "range": "Passover, Shavuot, Sukkot", "readingChapterIDs": [] },
-        { "id": "ai.u6", "number": 6, "title": "Kings and prophets", "range": "Kingship and prophecy", "readingChapterIDs": [] },
-        { "id": "ai.u7", "number": 7, "title": "Wisdom and worship", "range": "Psalms, Proverbs, Job", "readingChapterIDs": ["ot.ps.23"] },
-        { "id": "ai.u8", "number": 8, "title": "Messianic hope", "range": "Isaiah and the Davidic promise", "readingChapterIDs": [] }
+        {
+          "id": "ai.u1",
+          "number": 1,
+          "title": "Covenant",
+          "range": "Abraham and Sinai",
+          "readingChapterIDs": [
+            "ot.gen.15",
+            "ot.ex.19"
+          ]
+        },
+        {
+          "id": "ai.u2",
+          "number": 2,
+          "title": "Names and nature of God",
+          "range": "YHWH, Elohim, El",
+          "readingChapterIDs": [
+            "ot.ex.3",
+            "ot.deut.6"
+          ]
+        },
+        {
+          "id": "ai.u3",
+          "number": 3,
+          "title": "Tabernacle and temple",
+          "range": "Sacred space",
+          "readingChapterIDs": [
+            "ot.ex.25",
+            "ot.1-kgs.8"
+          ]
+        },
+        {
+          "id": "ai.u4",
+          "number": 4,
+          "title": "The law of Moses and sacrifice",
+          "range": "Leviticus",
+          "readingChapterIDs": [
+            "ot.lev.16"
+          ]
+        },
+        {
+          "id": "ai.u5",
+          "number": 5,
+          "title": "Feasts and the sacred calendar",
+          "range": "Passover, Shavuot, Sukkot",
+          "readingChapterIDs": [
+            "ot.lev.23"
+          ]
+        },
+        {
+          "id": "ai.u6",
+          "number": 6,
+          "title": "Kings and prophets",
+          "range": "Kingship and prophecy",
+          "readingChapterIDs": [
+            "ot.2-sam.7",
+            "ot.amos.5"
+          ]
+        },
+        {
+          "id": "ai.u7",
+          "number": 7,
+          "title": "Wisdom and worship",
+          "range": "Psalms, Proverbs, Job",
+          "readingChapterIDs": [
+            "ot.ps.23",
+            "ot.job.38"
+          ]
+        },
+        {
+          "id": "ai.u8",
+          "number": 8,
+          "title": "Messianic hope",
+          "range": "Isaiah and the Davidic promise",
+          "readingChapterIDs": [
+            "ot.isa.11"
+          ]
+        }
       ],
       "resources": [
-        { "id": "ai.r1", "kind": "reference", "title": "Bible Dictionary", "author": "The Church" },
-        { "id": "ai.r2", "kind": "book", "title": "The Jewish Study Bible", "author": "Adele Berlin and Marc Zvi Brettler (eds.)" },
-        { "id": "ai.r3", "kind": "book", "title": "Sinai and Zion", "author": "Jon D. Levenson" },
-        { "id": "ai.r4", "kind": "book", "title": "The Early History of God", "author": "Mark S. Smith" }
+        {
+          "id": "ai.r1",
+          "kind": "reference",
+          "title": "Bible Dictionary",
+          "author": "The Church"
+        },
+        {
+          "id": "ai.r2",
+          "kind": "book",
+          "title": "The Jewish Study Bible",
+          "author": "Adele Berlin and Marc Zvi Brettler (eds.)"
+        },
+        {
+          "id": "ai.r3",
+          "kind": "book",
+          "title": "Sinai and Zion",
+          "author": "Jon D. Levenson"
+        },
+        {
+          "id": "ai.r4",
+          "kind": "book",
+          "title": "The Early History of God",
+          "author": "Mark S. Smith"
+        }
       ]
     },
     {
       "id": "history-of-christianity",
       "name": "History of Christianity",
       "symbol": "books.vertical",
-      "summary": "From the apostles to the religious world of early 19th-century America.",
+      "summary": "Christian communities, councils and reform movements. Interpretations of apostasy, authority and continuity differ among Catholic, Orthodox, Protestant and Latter-day Saint traditions.",
       "units": [
-        { "id": "hc.u1", "number": 1, "title": "The apostolic age", "range": "c. AD 30–100", "readingChapterIDs": [] },
-        { "id": "hc.u2", "number": 2, "title": "The early church", "range": "100–313", "readingChapterIDs": [] },
-        { "id": "hc.u3", "number": 3, "title": "Councils and creeds", "range": "313–451", "readingChapterIDs": [] },
-        { "id": "hc.u4", "number": 4, "title": "The medieval church", "range": "451–1500", "readingChapterIDs": [] },
-        { "id": "hc.u5", "number": 5, "title": "The Reformations", "range": "1517–1648", "readingChapterIDs": [] },
-        { "id": "hc.u6", "number": 6, "title": "Revival and the new world", "range": "1648–1850", "readingChapterIDs": [] },
-        { "id": "hc.u7", "number": 7, "title": "The Restoration in context", "range": "The Apostasy and the Restoration", "readingChapterIDs": [] }
+        {
+          "id": "hc.u1",
+          "number": 1,
+          "title": "The apostolic age",
+          "range": "c. AD 30–100",
+          "readingChapterIDs": [
+            "nt.acts.15"
+          ]
+        },
+        {
+          "id": "hc.u2",
+          "number": 2,
+          "title": "The early church",
+          "range": "100–313",
+          "readingChapterIDs": []
+        },
+        {
+          "id": "hc.u3",
+          "number": 3,
+          "title": "Councils and creeds",
+          "range": "313–451",
+          "readingChapterIDs": []
+        },
+        {
+          "id": "hc.u4",
+          "number": 4,
+          "title": "The medieval church",
+          "range": "451–1500",
+          "readingChapterIDs": []
+        },
+        {
+          "id": "hc.u5",
+          "number": 5,
+          "title": "The Reformations",
+          "range": "1517–1648",
+          "readingChapterIDs": []
+        },
+        {
+          "id": "hc.u6",
+          "number": 6,
+          "title": "Revival and the new world",
+          "range": "1648–1850",
+          "readingChapterIDs": []
+        },
+        {
+          "id": "hc.u7",
+          "number": 7,
+          "title": "The Restoration in context",
+          "range": "LDS apostasy/restoration claims and other traditions’ continuity claims",
+          "readingChapterIDs": [
+            "nt.2-thes.2",
+            "pgp.js-h.1"
+          ]
+        }
       ],
       "resources": [
-        { "id": "hc.r1", "kind": "book", "title": "The Story of Christianity", "author": "Justo L. González" },
-        { "id": "hc.r2", "kind": "book", "title": "Christianity: The First Three Thousand Years", "author": "Diarmaid MacCulloch" },
-        { "id": "hc.r3", "kind": "book", "title": "The Early Church", "author": "Henry Chadwick" },
-        { "id": "hc.r4", "kind": "book", "title": "The Democratization of American Christianity", "author": "Nathan O. Hatch" }
+        {
+          "id": "hc.r1",
+          "kind": "book",
+          "title": "The Story of Christianity",
+          "author": "Justo L. González"
+        },
+        {
+          "id": "hc.r2",
+          "kind": "book",
+          "title": "Christianity: The First Three Thousand Years",
+          "author": "Diarmaid MacCulloch"
+        },
+        {
+          "id": "hc.r3",
+          "kind": "book",
+          "title": "The Early Church",
+          "author": "Henry Chadwick"
+        },
+        {
+          "id": "hc.r4",
+          "kind": "book",
+          "title": "The Democratization of American Christianity",
+          "author": "Nathan O. Hatch"
+        },
+        {
+          "id": "hc.r.creed",
+          "kind": "reference",
+          "title": "Nicene Creed",
+          "author": "Orthodox Church in America",
+          "note": "Orthodox self-description of the creed associated with Nicaea and Constantinople.",
+          "url": "https://www.oca.org/orthodoxy/the-orthodox-faith/doctrine-scripture/the-symbol-of-faith/nicene-creed"
+        },
+        {
+          "id": "hc.r.trinity",
+          "kind": "reference",
+          "title": "Trinitarian doctrine and councils",
+          "author": "Catholic Church",
+          "note": "Catholic interpretation, §§242–256; compare with Orthodox and LDS teachings.",
+          "url": "https://www.vatican.va/archive/ENG0015/__P17.HTM"
+        }
       ]
     },
     {
@@ -140,94 +1694,1008 @@
       "symbol": "globe.europe.africa",
       "summary": "Catholic, Orthodox, Protestant, Jewish and Muslim belief, in each tradition's own words.",
       "units": [
-        { "id": "wf.u1", "number": 1, "title": "Catholicism", "range": "Catechism of the Catholic Church", "readingChapterIDs": [] },
-        { "id": "wf.u2", "number": 2, "title": "Eastern Orthodoxy", "range": "Nicene Creed and the Divine Liturgy", "readingChapterIDs": [] },
-        { "id": "wf.u3", "number": 3, "title": "Lutheranism", "range": "The Book of Concord", "readingChapterIDs": [] },
-        { "id": "wf.u4", "number": 4, "title": "Calvinism and Reformed traditions", "range": "Heidelberg Catechism, Westminster Confession", "readingChapterIDs": [] },
-        { "id": "wf.u5", "number": 5, "title": "Evangelicalism", "range": "The Lausanne Covenant", "readingChapterIDs": [] },
-        { "id": "wf.u6", "number": 6, "title": "Judaism", "range": "Tanakh, Mishnah, Talmud", "readingChapterIDs": [] },
-        { "id": "wf.u7", "number": 7, "title": "Islam", "range": "The Qur'an and hadith", "readingChapterIDs": [] },
-        { "id": "wf.u8", "number": 8, "title": "Comparisons", "range": "Side by side", "readingChapterIDs": [] }
+        {
+          "id": "wf.u1",
+          "number": 1,
+          "title": "Catholicism",
+          "range": "Catechism of the Catholic Church",
+          "readingChapterIDs": []
+        },
+        {
+          "id": "wf.u2",
+          "number": 2,
+          "title": "Eastern Orthodoxy",
+          "range": "Nicene Creed and the Divine Liturgy",
+          "readingChapterIDs": []
+        },
+        {
+          "id": "wf.u3",
+          "number": 3,
+          "title": "Lutheranism",
+          "range": "The Book of Concord",
+          "readingChapterIDs": []
+        },
+        {
+          "id": "wf.u4",
+          "number": 4,
+          "title": "Calvinism and Reformed traditions",
+          "range": "Heidelberg Catechism, Westminster Confession",
+          "readingChapterIDs": []
+        },
+        {
+          "id": "wf.u5",
+          "number": 5,
+          "title": "Evangelicalism",
+          "range": "The Lausanne Covenant",
+          "readingChapterIDs": []
+        },
+        {
+          "id": "wf.u6",
+          "number": 6,
+          "title": "Judaism",
+          "range": "Tanakh, Mishnah, Talmud",
+          "readingChapterIDs": []
+        },
+        {
+          "id": "wf.u7",
+          "number": 7,
+          "title": "Islam",
+          "range": "The Qur'an and hadith",
+          "readingChapterIDs": []
+        },
+        {
+          "id": "wf.u8",
+          "number": 8,
+          "title": "Comparisons",
+          "range": "Side by side",
+          "readingChapterIDs": [
+            "nt.matt.28",
+            "dc-testament.dc.130"
+          ]
+        }
       ],
       "resources": [
-        { "id": "wf.r1", "kind": "reference", "title": "Catechism of the Catholic Church", "author": "The Catholic Church" },
-        { "id": "wf.r2", "kind": "book", "title": "The Orthodox Church", "author": "Timothy (Kallistos) Ware" },
-        { "id": "wf.r3", "kind": "book", "title": "The Study Quran", "author": "Seyyed Hossein Nasr (ed.)" },
-        { "id": "wf.r4", "kind": "book", "title": "Jewish Literacy", "author": "Joseph Telushkin" },
-        { "id": "wf.r5", "kind": "book", "title": "How Wide the Divide?", "author": "Craig L. Blomberg and Stephen E. Robinson" }
+        {
+          "id": "wf.r1",
+          "kind": "reference",
+          "title": "Catechism of the Catholic Church",
+          "author": "The Catholic Church",
+          "url": "https://www.vatican.va/archive/ENG0015/__P17.HTM",
+          "note": "Catholic self-description; selected section on the Trinity, §§232–267."
+        },
+        {
+          "id": "wf.r2",
+          "kind": "book",
+          "title": "The Orthodox Church",
+          "author": "Timothy (Kallistos) Ware"
+        },
+        {
+          "id": "wf.r3",
+          "kind": "book",
+          "title": "The Study Quran",
+          "author": "Seyyed Hossein Nasr (ed.)"
+        },
+        {
+          "id": "wf.r4",
+          "kind": "book",
+          "title": "Jewish Literacy",
+          "author": "Joseph Telushkin"
+        },
+        {
+          "id": "wf.r5",
+          "kind": "book",
+          "title": "How Wide the Divide?",
+          "author": "Craig L. Blomberg and Stephen E. Robinson"
+        },
+        {
+          "id": "wf.r.orthodox",
+          "kind": "reference",
+          "title": "Nicene Creed",
+          "author": "Orthodox Church in America",
+          "note": "Eastern Orthodox self-description; do not assume the Latin filioque wording.",
+          "url": "https://www.oca.org/orthodoxy/the-orthodox-faith/doctrine-scripture/the-symbol-of-faith/nicene-creed"
+        },
+        {
+          "id": "wf.r.lds",
+          "kind": "scripture",
+          "title": "Doctrine and Covenants 130",
+          "author": "Latter-day Saint scripture",
+          "note": "LDS teaching on the Godhead, distinct from Nicene accounts.",
+          "url": "https://www.churchofjesuschrist.org/study/scriptures/dc-testament/dc/130?lang=eng",
+          "chapterID": "dc-testament.dc.130"
+        }
+      ]
+    },
+    {
+      "id": "biblical-geography",
+      "name": "Biblical Geography",
+      "symbol": "map",
+      "summary": "Biblical places and routes, with narrative settings distinguished from modern identifications. Exodus routes and many ancient sites remain debated.",
+      "units": [
+        {
+          "id": "bg.u1",
+          "number": 1,
+          "title": "Land, water and regions",
+          "range": "Levant, Egypt and Mesopotamia",
+          "readingChapterIDs": [
+            "ot.gen.12",
+            "ot.ex.3"
+          ]
+        },
+        {
+          "id": "bg.u2",
+          "number": 2,
+          "title": "Jerusalem and exile",
+          "range": "Judah, Babylon and return",
+          "readingChapterIDs": [
+            "ot.2-kgs.25",
+            "ot.ezra.1"
+          ]
+        },
+        {
+          "id": "bg.u3",
+          "number": 3,
+          "title": "Galilee and Judea",
+          "range": "Gospel settings",
+          "readingChapterIDs": [
+            "nt.mark.1",
+            "nt.john.4"
+          ]
+        },
+        {
+          "id": "bg.u4",
+          "number": 4,
+          "title": "Journeys in Acts",
+          "range": "Eastern Mediterranean",
+          "readingChapterIDs": [
+            "nt.acts.16",
+            "nt.acts.27"
+          ]
+        }
+      ],
+      "resources": [
+        {
+          "id": "bg.r.maps",
+          "kind": "reference",
+          "title": "Bible Maps",
+          "author": "The Church of Jesus Christ of Latter-day Saints",
+          "note": "LDS atlas reference; narrative routes do not establish archaeological certainty.",
+          "url": "https://www.churchofjesuschrist.org/study/scriptures/bible-maps?lang=eng"
+        }
+      ]
+    },
+    {
+      "id": "textual-scholarship",
+      "name": "Scriptural Texts and Transmission",
+      "symbol": "doc.text.magnifyingglass",
+      "summary": "Manuscripts, variants, translation and canon. Historical methods investigate surviving evidence; they do not decide whether a text is divinely inspired.",
+      "units": [
+        {
+          "id": "ts.u1",
+          "number": 1,
+          "title": "How to compare witnesses",
+          "range": "Text, manuscript and edition",
+          "readingChapterIDs": []
+        },
+        {
+          "id": "ts.u2",
+          "number": 2,
+          "title": "Hebrew Bible and Dead Sea Scrolls",
+          "range": "Textual stability and diversity",
+          "readingChapterIDs": [
+            "ot.isa.40"
+          ]
+        },
+        {
+          "id": "ts.u3",
+          "number": 3,
+          "title": "New Testament transmission",
+          "range": "Compare editions and translation notes",
+          "readingChapterIDs": [
+            "nt.mark.16",
+            "nt.john.8"
+          ]
+        },
+        {
+          "id": "ts.u4",
+          "number": 4,
+          "title": "Book of Mormon and revelation records",
+          "range": "Publication and documentary history",
+          "readingChapterIDs": [
+            "bofm.w-of-m.1",
+            "dc-testament.dc.1"
+          ]
+        }
+      ],
+      "resources": [
+        {
+          "id": "ts.r.scrolls",
+          "kind": "reference",
+          "title": "Dead Sea Scrolls: Introduction",
+          "author": "Israel Antiquities Authority",
+          "note": "Archaeological collection overview; surviving manuscripts demonstrate both continuity and variation.",
+          "url": "https://www.deadseascrolls.org.il/learn-about-the-scrolls/introduction"
+        },
+        {
+          "id": "ts.r.jsp",
+          "kind": "reference",
+          "title": "Accounts of the First Vision",
+          "author": "Joseph Smith Papers",
+          "note": "Documentary witness comparison; separate event dates from recording and publication dates.",
+          "url": "https://www.josephsmithpapers.org/site/accounts-of-the-first-vision"
+        },
+        {
+          "id": "ts.r.bom",
+          "kind": "article",
+          "title": "Book of Mormon Translation",
+          "author": "The Church of Jesus Christ of Latter-day Saints",
+          "note": "LDS institutional interpretation; useful for distinguishing translation claims and surviving testimony.",
+          "url": "https://www.churchofjesuschrist.org/study/manual/gospel-topics-essays/book-of-mormon-translation?lang=eng"
+        },
+        {
+          "id": "ts.r.intf",
+          "kind": "website",
+          "title": "Institute for New Testament Textual Research",
+          "author": "University of Münster",
+          "url": "https://www.uni-muenster.de/INTF/",
+          "note": "Academic textual research; editions and manuscript witnesses support reconstruction of textual history, with judgments open to revision."
+        }
+      ]
+    },
+    {
+      "id": "early-church-fathers",
+      "name": "Early Christian Writers",
+      "symbol": "person.3.sequence",
+      "summary": "Read early Christian texts in context. These writers differ in genre, audience and authority across traditions; an individual author does not speak for every Christian.",
+      "units": [
+        {
+          "id": "ef.u1",
+          "number": 1,
+          "title": "Didache: community practice",
+          "range": "Anonymous church instruction",
+          "readingChapterIDs": []
+        },
+        {
+          "id": "ef.u2",
+          "number": 2,
+          "title": "Justin: worship and defense",
+          "range": "First Apology, 1–3 and 65–67",
+          "readingChapterIDs": []
+        },
+        {
+          "id": "ef.u3",
+          "number": 3,
+          "title": "Irenaeus: competing claims",
+          "range": "Against Heresies, Book III",
+          "readingChapterIDs": []
+        },
+        {
+          "id": "ef.u4",
+          "number": 4,
+          "title": "Polycarp: memory and martyrdom",
+          "range": "Martyrdom of Polycarp",
+          "readingChapterIDs": []
+        }
+      ],
+      "resources": [
+        {
+          "id": "ef.r.didache",
+          "kind": "article",
+          "title": "Didache",
+          "author": "Anonymous; historical English translation",
+          "note": "Primary text, chapters 7–15. Anonymous work, not a letter written by the twelve apostles.",
+          "url": "https://www.newadvent.org/fathers/0714.htm"
+        },
+        {
+          "id": "ef.r.justin",
+          "kind": "article",
+          "title": "First Apology",
+          "author": "Justin Martyr; historical English translation",
+          "note": "Primary text, chapters 1–3 and 65–67; apologetic account of worship.",
+          "url": "https://www.newadvent.org/fathers/0126.htm"
+        },
+        {
+          "id": "ef.r.irenaeus",
+          "kind": "article",
+          "title": "Against Heresies, Book III",
+          "author": "Irenaeus; historical English translation",
+          "note": "Primary text, III.3; polemical argument about apostolic succession.",
+          "url": "https://www.newadvent.org/fathers/0103.htm"
+        },
+        {
+          "id": "ef.r.polycarp",
+          "kind": "article",
+          "title": "Martyrdom of Polycarp",
+          "author": "Church of Smyrna; historical English translation",
+          "note": "Primary martyr narrative; distinguish commemorative purpose from independent corroboration.",
+          "url": "https://www.newadvent.org/fathers/0102.htm"
+        }
       ]
     }
   ],
   "questions": [
     {
-      "id": "q.bofm.0001", "subjectID": "bofm-history", "unitID": "bofm.u2",
-      "prompt": "Who abridged the large plates of Nephi into most of the Book of Mormon?",
-      "options": ["Nephi", "Mormon", "Moroni", "Mosiah"], "answer": 1,
+      "id": "q.bofm.0001",
+      "subjectID": "bofm-history",
+      "unitID": "bofm.u2",
+      "prompt": "In the Book of Mormon narrative, who abridged the large plates of Nephi into most of the Book of Mormon?",
+      "options": [
+        "Nephi",
+        "Mormon",
+        "Moroni",
+        "Mosiah"
+      ],
+      "answer": 1,
       "reference": "Words of Mormon 1",
-      "explanation": "Mormon abridged centuries of Nephite records onto the plates that bear his name; his son Moroni finished them."
+      "explanation": "Narrative reading: Mormon abridged centuries of Nephite records onto the plates that bear his name; his son Moroni finished them."
     },
     {
-      "id": "q.bofm.0002", "subjectID": "bofm-history", "unitID": "bofm.u2",
-      "prompt": "Which of these happened first?",
-      "options": ["Captain Moroni raises the title of liberty", "Samuel the Lamanite prophesies from the wall", "King Benjamin gives his final address", "Christ appears at the temple"], "answer": 2,
+      "id": "q.bofm.0002",
+      "subjectID": "bofm-history",
+      "unitID": "bofm.u2",
+      "prompt": "In the Book of Mormon narrative, which of these happened first?",
+      "options": [
+        "Captain Moroni raises the title of liberty",
+        "Samuel the Lamanite prophesies from the wall",
+        "King Benjamin gives his final address",
+        "Christ appears at the temple"
+      ],
+      "answer": 2,
       "reference": "Mosiah 2–5",
-      "explanation": "King Benjamin's address comes about 124 BC — roughly fifty years before the title of liberty and more than a century before Samuel."
+      "explanation": "Narrative reading: King Benjamin's address comes about 124 BC — roughly fifty years before the title of liberty and more than a century before Samuel."
     },
     {
-      "id": "q.bofm.0003", "subjectID": "bofm-history", "unitID": "bofm.u2",
-      "prompt": "Where did Alma baptize those who believed Abinadi's words?",
-      "options": ["River Sidon", "Waters of Mormon", "Land of Bountiful", "City of Zarahemla"], "answer": 1,
+      "id": "q.bofm.0003",
+      "subjectID": "bofm-history",
+      "unitID": "bofm.u2",
+      "prompt": "In the Book of Mormon narrative, where did Alma baptize those who believed Abinadi's words?",
+      "options": [
+        "River Sidon",
+        "Waters of Mormon",
+        "Land of Bountiful",
+        "City of Zarahemla"
+      ],
+      "answer": 1,
       "reference": "Mosiah 18",
-      "explanation": "Alma gathered believers in secret at the Waters of Mormon, where about 204 were baptized."
+      "explanation": "Narrative reading: Alma gathered believers in secret at the Waters of Mormon, where about 204 were baptized."
     },
     {
-      "id": "q.bofm.0004", "subjectID": "bofm-history", "unitID": "bofm.u1",
-      "prompt": "Roughly when did Lehi's family leave Jerusalem?",
-      "options": ["c. 921 BC", "c. 600 BC", "c. 587 BC", "c. 124 BC"], "answer": 1,
-      "reference": "1 Nephi 1–2",
-      "explanation": "They left around 600 BC, in the first year of Zedekiah's reign — before Babylon destroyed Jerusalem in 587 BC."
+      "id": "q.bofm.0004",
+      "subjectID": "bofm-history",
+      "unitID": "bofm.u1",
+      "prompt": "In the Book of Mormon narrative, roughly when did Lehi's family leave Jerusalem?",
+      "options": [
+        "c. 921 BC",
+        "c. 600 BC",
+        "c. 587 BC",
+        "c. 124 BC"
+      ],
+      "answer": 1,
+      "reference": "1 Nephi 1–2; 2 Kings 24:17; https://www.britishmuseum.org/collection/object/W_1896-0409-51",
+      "explanation": "The Book of Mormon’s chronology places the departure about 600 BCE. Its identification of Zedekiah’s first regnal year creates a chronological difficulty: conventional historical dating places his accession in 597 BCE. Do not treat these dates as reconciled."
     },
     {
-      "id": "q.bofm.0005", "subjectID": "bofm-history", "unitID": "bofm.u4",
-      "prompt": "The resurrected Christ first appeared to the Nephites at the temple in which land?",
-      "options": ["Zarahemla", "Bountiful", "Nephi", "Desolation"], "answer": 1,
+      "id": "q.bofm.0005",
+      "subjectID": "bofm-history",
+      "unitID": "bofm.u4",
+      "prompt": "In the Book of Mormon narrative, the resurrected Christ first appeared to the Nephites at the temple in which land?",
+      "options": [
+        "Zarahemla",
+        "Bountiful",
+        "Nephi",
+        "Desolation"
+      ],
+      "answer": 1,
       "reference": "3 Nephi 11",
-      "explanation": "A multitude gathered around the temple in the land Bountiful when they heard the Father's voice introduce His Son."
+      "explanation": "Narrative reading: A multitude gathered around the temple in the land Bountiful when they heard the Father's voice introduce His Son."
     },
     {
-      "id": "q.bofm.0006", "subjectID": "bofm-history", "unitID": "bofm.u3",
-      "prompt": "In Alma 32, Alma compares the word of God to what?",
-      "options": ["A lamp", "A seed", "A river", "A sword"], "answer": 1,
-      "reference": "Alma 32:28", "chapterID": "bofm.alma.32",
-      "explanation": "Alma invites his listeners to plant the word like a seed and watch whether it swells, sprouts and grows."
+      "id": "q.bofm.0006",
+      "subjectID": "bofm-history",
+      "unitID": "bofm.u3",
+      "prompt": "In the Book of Mormon narrative, in Alma 32, Alma compares the word of God to what?",
+      "options": [
+        "A lamp",
+        "A seed",
+        "A river",
+        "A sword"
+      ],
+      "answer": 1,
+      "reference": "Alma 32:28",
+      "chapterID": "bofm.alma.32",
+      "explanation": "Narrative reading: Alma invites his listeners to plant the word like a seed and watch whether it swells, sprouts and grows."
     },
     {
-      "id": "q.bofm.0007", "subjectID": "bofm-history", "unitID": "bofm.u3",
-      "prompt": "Who was Alma teaching in Alma 32?",
-      "options": ["The humble poor among the Zoramites", "The Nephite chief judges", "The people of Ammonihah", "The sons of Mosiah"], "answer": 0,
-      "reference": "Alma 32", "chapterID": "bofm.alma.32",
-      "explanation": "The poor had been cast out of the Zoramite synagogues, and Alma taught them that humility prepared them to receive the word."
+      "id": "q.bofm.0007",
+      "subjectID": "bofm-history",
+      "unitID": "bofm.u3",
+      "prompt": "In the Book of Mormon narrative, who was Alma teaching in Alma 32?",
+      "options": [
+        "The humble poor among the Zoramites",
+        "The Nephite chief judges",
+        "The people of Ammonihah",
+        "The sons of Mosiah"
+      ],
+      "answer": 0,
+      "reference": "Alma 32",
+      "chapterID": "bofm.alma.32",
+      "explanation": "Narrative reading: The poor had been cast out of the Zoramite synagogues, and Alma taught them that humility prepared them to receive the word."
     },
     {
-      "id": "q.bofm.0008", "subjectID": "bofm-history", "unitID": "bofm.u3",
-      "prompt": "According to Alma 32:27, what is enough to begin the experiment upon the word?",
-      "options": ["A perfect knowledge", "A sign from heaven", "Even a desire to believe", "A witness from an angel"], "answer": 2,
-      "reference": "Alma 32:27", "chapterID": "bofm.alma.32",
-      "explanation": "Alma says that if they can no more than desire to believe, they should let that desire work in them."
+      "id": "q.bofm.0008",
+      "subjectID": "bofm-history",
+      "unitID": "bofm.u3",
+      "prompt": "In the Book of Mormon narrative, according to Alma 32:27, what is enough to begin the experiment upon the word?",
+      "options": [
+        "A perfect knowledge",
+        "A sign from heaven",
+        "Even a desire to believe",
+        "A witness from an angel"
+      ],
+      "answer": 2,
+      "reference": "Alma 32:27",
+      "chapterID": "bofm.alma.32",
+      "explanation": "Narrative reading: Alma says that if they can no more than desire to believe, they should let that desire work in them."
     },
     {
-      "id": "q.bt.0001", "subjectID": "biblical-timeline", "unitID": "bt.u6",
+      "id": "q.bt.0001",
+      "subjectID": "biblical-timeline",
+      "unitID": "bt.u6",
       "prompt": "Which empire conquered the northern kingdom of Israel in 722 BC?",
-      "options": ["Babylon", "Persia", "Assyria", "Egypt"], "answer": 2,
+      "options": [
+        "Babylon",
+        "Persia",
+        "Assyria",
+        "Egypt"
+      ],
+      "answer": 2,
       "reference": "2 Kings 17",
       "explanation": "Assyria took Samaria and carried the northern tribes away; Judah fell to Babylon more than a century later, in 587 BC."
     },
     {
-      "id": "q.bt.0002", "subjectID": "biblical-timeline", "unitID": "bt.u5",
-      "prompt": "Who built the first temple in Jerusalem?",
-      "options": ["David", "Solomon", "Hezekiah", "Zerubbabel"], "answer": 1,
+      "id": "q.bt.0002",
+      "subjectID": "biblical-timeline",
+      "unitID": "bt.u5",
+      "prompt": "According to 1 Kings 6, who built the first temple in Jerusalem?",
+      "options": [
+        "David",
+        "Solomon",
+        "Hezekiah",
+        "Zerubbabel"
+      ],
+      "answer": 1,
       "reference": "1 Kings 6",
       "explanation": "David prepared for it, but his son Solomon built the temple; Zerubbabel led the rebuilding after the exile."
+    },
+    {
+      "id": "q.starter.dm-learning",
+      "subjectID": "doctrinal-mastery",
+      "unitID": "dm.u1",
+      "prompt": "In James 1:5, what should someone who lacks wisdom do?",
+      "options": [
+        "Ask God",
+        "Stop asking questions",
+        "Consult only kings",
+        "Wait for wealth"
+      ],
+      "answer": 0,
+      "reference": "James 1:5",
+      "explanation": "Scriptural reading: James directs the reader to ask God. LDS seminary applies this passage to acquiring spiritual knowledge.",
+      "chapterID": "nt.james.1"
+    },
+    {
+      "id": "q.starter.dm-image",
+      "subjectID": "doctrinal-mastery",
+      "unitID": "dm.u2",
+      "prompt": "What does Genesis 1:26–27 say about humanity?",
+      "options": [
+        "Created by Pharaoh",
+        "Unable to choose",
+        "Created only for warfare",
+        "Made in God’s image"
+      ],
+      "answer": 3,
+      "reference": "Genesis 1:26–27",
+      "explanation": "Scriptural reading: the passage describes humanity in relation to God’s image. Traditions interpret that relationship differently.",
+      "chapterID": "ot.gen.1"
+    },
+    {
+      "id": "q.starter.dm-love",
+      "subjectID": "doctrinal-mastery",
+      "unitID": "dm.u3",
+      "prompt": "Which pair of commandments does Matthew 22:36–39 emphasize?",
+      "options": [
+        "Acquire wealth and rank",
+        "Avoid all outsiders",
+        "Love God and neighbor",
+        "Build cities and armies"
+      ],
+      "answer": 2,
+      "reference": "Matthew 22:36–39",
+      "explanation": "Scriptural reading: Jesus joins love of God with love of neighbor.",
+      "chapterID": "nt.matt.22"
+    },
+    {
+      "id": "q.starter.dm-service",
+      "subjectID": "doctrinal-mastery",
+      "unitID": "dm.u4",
+      "prompt": "In Mosiah 2:17, serving other people is also described as what?",
+      "options": [
+        "Earning social rank",
+        "Serving God",
+        "Obtaining political office",
+        "Replacing prayer entirely"
+      ],
+      "answer": 1,
+      "reference": "Mosiah 2:17",
+      "explanation": "LDS scriptural reading: Benjamin connects service to others with service to God.",
+      "chapterID": "bofm.mosiah.2"
+    },
+    {
+      "id": "q.starter.dm-learning-faith",
+      "subjectID": "doctrinal-mastery",
+      "unitID": "dm.u5",
+      "prompt": "What two approaches to learning are joined in D&C 88:118?",
+      "options": [
+        "Study and faith",
+        "War and conquest",
+        "Wealth and fame",
+        "Secrecy and rank"
+      ],
+      "answer": 0,
+      "reference": "Doctrine and Covenants 88:118",
+      "explanation": "LDS scriptural reading: the revelation commends both study and faith.",
+      "chapterID": "dc-testament.dc.88"
+    },
+    {
+      "id": "q.starter.dm-godhead",
+      "subjectID": "doctrinal-mastery",
+      "unitID": "dm.u6",
+      "prompt": "Which source explicitly teaches the LDS understanding of the Father’s embodied nature?",
+      "options": [
+        "Didache 7",
+        "Nicene Creed",
+        "Acts 27",
+        "D&C 130:22"
+      ],
+      "answer": 3,
+      "reference": "Doctrine and Covenants 130:22",
+      "explanation": "LDS doctrine: this revelation describes the Father and Son as embodied. Nicene traditions use a different account of divine being.",
+      "chapterID": "dc-testament.dc.130"
+    },
+    {
+      "id": "q.starter.bofm-geography",
+      "subjectID": "bofm-history",
+      "unitID": "bofm.u3",
+      "prompt": "Which modern American geography does the LDS Church officially endorse for Book of Mormon events?",
+      "options": [
+        "Only the Mesoamerican model",
+        "Only South America",
+        "No specific modern locations",
+        "Only the Heartland model"
+      ],
+      "answer": 2,
+      "reference": "https://www.churchofjesuschrist.org/study/manual/gospel-topics/book-of-mormon-geography?lang=eng",
+      "explanation": "LDS institutional position: specific American locations are not endorsed. Geographic proposals must remain labeled as proposals."
+    },
+    {
+      "id": "q.starter.bofm-final",
+      "subjectID": "bofm-history",
+      "unitID": "bofm.u5",
+      "prompt": "In Moroni 10, who addresses future readers of the record?",
+      "options": [
+        "Solomon",
+        "Moroni",
+        "Pontius Pilate",
+        "Cyrus"
+      ],
+      "answer": 1,
+      "reference": "Moroni 10:1–5",
+      "explanation": "Narrative reading: Moroni addresses later readers and invites them to ask God about the record.",
+      "chapterID": "bofm.moro.10"
+    },
+    {
+      "id": "q.starter.bg-regions",
+      "subjectID": "biblical-geography",
+      "unitID": "bg.u1",
+      "prompt": "In Genesis 12:10, where does Abram go because of famine?",
+      "options": [
+        "Egypt",
+        "Rome",
+        "Corinth",
+        "Patmos"
+      ],
+      "answer": 0,
+      "reference": "Genesis 12:10",
+      "explanation": "Biblical narrative: Abram travels to Egypt. This answer identifies the setting in the text, not a reconstructed itinerary.",
+      "chapterID": "ot.gen.12"
+    },
+    {
+      "id": "q.starter.bg-exile",
+      "subjectID": "biblical-geography",
+      "unitID": "bg.u2",
+      "prompt": "In 2 Kings 25, which power captures Jerusalem?",
+      "options": [
+        "Rome",
+        "Macedon",
+        "Persia",
+        "Babylon"
+      ],
+      "answer": 3,
+      "reference": "2 Kings 25",
+      "explanation": "Biblical narrative: the text depicts the Babylonian conquest and deportation.",
+      "chapterID": "ot.2-kgs.25"
+    },
+    {
+      "id": "q.starter.bg-galilee",
+      "subjectID": "biblical-geography",
+      "unitID": "bg.u3",
+      "prompt": "In Mark 1:16, Jesus encounters Simon and Andrew beside which body of water?",
+      "options": [
+        "Red Sea",
+        "Mediterranean Sea",
+        "Sea of Galilee",
+        "Dead Sea"
+      ],
+      "answer": 2,
+      "reference": "Mark 1:16",
+      "explanation": "Gospel narrative: the encounter takes place beside the Sea of Galilee.",
+      "chapterID": "nt.mark.1"
+    },
+    {
+      "id": "q.starter.bg-acts",
+      "subjectID": "biblical-geography",
+      "unitID": "bg.u4",
+      "prompt": "Which island is named after the shipwreck in Acts 28:1?",
+      "options": [
+        "Patmos",
+        "Melita (Malta)",
+        "Cyprus",
+        "Crete"
+      ],
+      "answer": 1,
+      "reference": "Acts 28:1",
+      "explanation": "Narrative geography: the KJV calls the island Melita, conventionally identified with Malta.",
+      "chapterID": "nt.acts.28"
+    },
+    {
+      "id": "q.starter.ts-witness",
+      "subjectID": "textual-scholarship",
+      "unitID": "ts.u1",
+      "prompt": "Which distinction matters when evaluating a historical account?",
+      "options": [
+        "Event date versus date the account was recorded",
+        "Paper color versus font size only",
+        "Chapter number versus app color",
+        "Author’s fame versus screen size"
+      ],
+      "answer": 0,
+      "reference": "https://www.josephsmithpapers.org/site/accounts-of-the-first-vision",
+      "explanation": "Historical method: an account written later can describe an earlier event. The First Vision documents illustrate why these dates must be recorded separately."
+    },
+    {
+      "id": "q.starter.ts-scrolls",
+      "subjectID": "textual-scholarship",
+      "unitID": "ts.u2",
+      "prompt": "How does the Israel Antiquities Authority describe biblical Dead Sea Scroll manuscripts?",
+      "options": [
+        "All are identical to a modern printed Bible",
+        "All are Christian gospels",
+        "All are complete bound books",
+        "Some closely resemble the Masoretic Text; others differ"
+      ],
+      "answer": 3,
+      "reference": "https://www.deadseascrolls.org.il/learn-about-the-scrolls/introduction",
+      "explanation": "Manuscript evidence: the collection preserves both textual continuity and variant readings."
+    },
+    {
+      "id": "q.starter.ts-canon",
+      "subjectID": "textual-scholarship",
+      "unitID": "ts.u3",
+      "prompt": "What does the University of Münster’s Institute for New Testament Textual Research investigate?",
+      "options": [
+        "Modern American geography models",
+        "Only the weather in Jerusalem",
+        "The transmission history of the Greek New Testament",
+        "Only contemporary hymn tunes"
+      ],
+      "answer": 2,
+      "reference": "https://www.uni-muenster.de/INTF/",
+      "explanation": "Academic method: the institute studies Greek manuscript transmission and prepares critical editions. Reconstructing textual history is a different question from evaluating divine inspiration."
+    },
+    {
+      "id": "q.starter.ts-vision",
+      "subjectID": "textual-scholarship",
+      "unitID": "ts.u4",
+      "prompt": "According to the Joseph Smith Papers, when was the earliest surviving firsthand First Vision account recorded?",
+      "options": [
+        "1978",
+        "1832",
+        "1820",
+        "1890"
+      ],
+      "answer": 1,
+      "reference": "https://www.josephsmithpapers.org/site/accounts-of-the-first-vision",
+      "explanation": "Documentary history: the 1832 account records an earlier reported experience. Its recording date is not the claimed event date."
+    },
+    {
+      "id": "q.starter.ef-water",
+      "subjectID": "early-church-fathers",
+      "unitID": "ef.u1",
+      "prompt": "In Didache 7, what alternative is allowed if suitable baptismal water is unavailable?",
+      "options": [
+        "Pouring water on the head three times",
+        "No baptism under any circumstances",
+        "A monetary payment",
+        "A military oath"
+      ],
+      "answer": 0,
+      "reference": "Didache 7; https://www.newadvent.org/fathers/0714.htm",
+      "explanation": "Primary-text reading: this instruction allows pouring as an alternative. One community text does not establish uniform practice everywhere."
+    },
+    {
+      "id": "q.starter.ef-justin",
+      "subjectID": "early-church-fathers",
+      "unitID": "ef.u2",
+      "prompt": "In First Apology 67, which activity is part of the gathering Justin describes?",
+      "options": [
+        "Electing the Roman emperor",
+        "Training gladiators",
+        "Rejecting all readings",
+        "Reading apostolic memoirs and prophetic writings"
+      ],
+      "answer": 3,
+      "reference": "Justin, First Apology 67; https://www.newadvent.org/fathers/0126.htm",
+      "explanation": "Primary-text reading: Justin describes readings, exhortation and communal worship in his defense of Christians."
+    },
+    {
+      "id": "q.starter.ef-irenaeus",
+      "subjectID": "early-church-fathers",
+      "unitID": "ef.u3",
+      "prompt": "What does Irenaeus appeal to in Against Heresies III.3?",
+      "options": [
+        "The Council of Trent",
+        "The 1890 Manifesto",
+        "Public apostolic tradition and succession",
+        "An anonymous modern atlas"
+      ],
+      "answer": 2,
+      "reference": "Irenaeus, Against Heresies III.3; https://www.newadvent.org/fathers/0103.htm",
+      "explanation": "Primary-text reading: Irenaeus uses succession to argue against rival teachings. Later traditions evaluate this argument differently."
+    },
+    {
+      "id": "q.starter.ef-genre",
+      "subjectID": "early-church-fathers",
+      "unitID": "ef.u4",
+      "prompt": "What kind of text is the Martyrdom of Polycarp?",
+      "options": [
+        "An LDS revelation",
+        "A commemorative account of martyrdom",
+        "A modern archaeological excavation report",
+        "A Gospel attributed to Luke"
+      ],
+      "answer": 1,
+      "reference": "Martyrdom of Polycarp; https://www.newadvent.org/fathers/0102.htm",
+      "explanation": "Genre: the narrative commemorates a Christian martyr. Its religious and literary purposes belong in historical evaluation."
+    },
+    {
+      "id": "q.starter.hc-councils",
+      "subjectID": "history-of-christianity",
+      "unitID": "hc.u3",
+      "prompt": "Which council came first?",
+      "options": [
+        "Nicaea (325)",
+        "Constantinople (381)",
+        "Chalcedon (451)",
+        "Fourth Lateran (1215)"
+      ],
+      "answer": 0,
+      "reference": "https://www.vatican.va/archive/ENG0015/__P17.HTM; §§242, 253",
+      "explanation": "Historical chronology: Nicaea preceded Constantinople and Chalcedon. Theological judgments about councils differ among traditions."
+    },
+    {
+      "id": "q.starter.hc-continuity",
+      "subjectID": "history-of-christianity",
+      "unitID": "hc.u7",
+      "prompt": "How should an app present a universal loss of priesthood authority followed by restoration?",
+      "options": [
+        "As a conclusion shared by every historian",
+        "As Catholic official teaching",
+        "As a date proved by a map",
+        "As an LDS theological claim, with other traditions’ views identified"
+      ],
+      "answer": 3,
+      "reference": "Joseph Smith—History 1:18–20; Catholic Catechism §§249–250; https://www.vatican.va/archive/ENG0015/__P17.HTM",
+      "explanation": "Comparative theology: LDS restoration claims differ from Catholic and Orthodox accounts of continuity. Historical documentation alone does not resolve divine authority.",
+      "chapterID": "pgp.js-h.1"
+    },
+    {
+      "id": "q.starter.wf-trinity",
+      "subjectID": "world-faiths",
+      "unitID": "wf.u1",
+      "prompt": "How does the Catholic Catechism describe the Trinity?",
+      "options": [
+        "One person with three temporary names",
+        "Only the Father is divine",
+        "One God in three distinct persons",
+        "Three unrelated gods"
+      ],
+      "answer": 2,
+      "reference": "https://www.vatican.va/archive/ENG0015/__P17.HTM; §§253–255",
+      "explanation": "Catholic self-description: unity of divine being and distinction of persons are both affirmed."
+    },
+    {
+      "id": "q.starter.wf-creed",
+      "subjectID": "world-faiths",
+      "unitID": "wf.u2",
+      "prompt": "In the Orthodox creed linked here, the Holy Spirit proceeds from whom?",
+      "options": [
+        "The Roman emperor",
+        "The Father",
+        "Only Mary",
+        "Only the apostles"
+      ],
+      "answer": 1,
+      "reference": "https://www.oca.org/orthodoxy/the-orthodox-faith/doctrine-scripture/the-symbol-of-faith/nicene-creed",
+      "explanation": "Orthodox self-description: this wording differs from the Latin filioque formulation. Use each tradition’s own formulation."
+    },
+    {
+      "id": "q.starter.dc-organization",
+      "subjectID": "doctrine-and-covenants",
+      "unitID": "dc.u1",
+      "prompt": "What organization date is recorded in D&C 20:1?",
+      "options": [
+        "April 6, 1830",
+        "July 24, 1847",
+        "September 24, 1890",
+        "June 8, 1978"
+      ],
+      "answer": 0,
+      "reference": "Doctrine and Covenants 20:1",
+      "explanation": "LDS canonical source: section 20 identifies April 6, 1830 as the organization date.",
+      "chapterID": "dc-testament.dc.20"
+    },
+    {
+      "id": "q.starter.dc-kirtland",
+      "subjectID": "doctrine-and-covenants",
+      "unitID": "dc.u2",
+      "prompt": "Which section is the Kirtland Temple dedicatory prayer?",
+      "options": [
+        "D&C 20",
+        "D&C 136",
+        "D&C 138",
+        "D&C 109"
+      ],
+      "answer": 3,
+      "reference": "Doctrine and Covenants 109",
+      "explanation": "LDS canonical source: section 109 contains the dedicatory prayer.",
+      "chapterID": "dc-testament.dc.109"
+    },
+    {
+      "id": "q.starter.dc-liberty",
+      "subjectID": "doctrine-and-covenants",
+      "unitID": "dc.u3",
+      "prompt": "Which passage describes influence through persuasion and gentleness?",
+      "options": [
+        "Acts 27:1",
+        "Mosiah 29:1",
+        "D&C 121:41–42",
+        "Genesis 11:1"
+      ],
+      "answer": 2,
+      "reference": "Doctrine and Covenants 121:41–42",
+      "explanation": "LDS scriptural reading: the passage describes persuasion, patience and gentleness as principles of priesthood influence.",
+      "chapterID": "dc-testament.dc.121"
+    },
+    {
+      "id": "q.starter.dc-nauvoo",
+      "subjectID": "doctrine-and-covenants",
+      "unitID": "dc.u4",
+      "prompt": "Which source directly addresses plural marriage in Kirtland and Nauvoo?",
+      "options": [
+        "The Nicene Creed",
+        "The Gospel Topics Essay of that title",
+        "Didache 7",
+        "Acts 28"
+      ],
+      "answer": 1,
+      "reference": "https://www.churchofjesuschrist.org/study/manual/gospel-topics-essays/plural-marriage-in-kirtland-and-nauvoo?lang=eng",
+      "explanation": "LDS institutional historical interpretation: read the essay alongside section 132 and the documents cited in its notes.",
+      "chapterID": "dc-testament.dc.132"
+    },
+    {
+      "id": "q.starter.dc-trek",
+      "subjectID": "doctrine-and-covenants",
+      "unitID": "dc.u5",
+      "prompt": "Which section gives instructions for the westward migration?",
+      "options": [
+        "D&C 136",
+        "D&C 1",
+        "D&C 6",
+        "D&C 13"
+      ],
+      "answer": 0,
+      "reference": "Doctrine and Covenants 136",
+      "explanation": "LDS canonical source: section 136 addresses the organization and conduct of the migrating camps.",
+      "chapterID": "dc-testament.dc.136"
+    },
+    {
+      "id": "q.starter.dc-manifesto",
+      "subjectID": "doctrine-and-covenants",
+      "unitID": "dc.u6",
+      "prompt": "Which statement best matches the Church’s essay about the 1890 Manifesto?",
+      "options": [
+        "Every plural marriage ended immediately in 1890",
+        "The Manifesto was issued in 1978",
+        "The Manifesto began plural marriage",
+        "Ending plural marriage was a process extending beyond 1890"
+      ],
+      "answer": 3,
+      "reference": "https://www.churchofjesuschrist.org/study/manual/gospel-topics-essays/the-manifesto-and-the-end-of-plural-marriage?lang=eng",
+      "explanation": "Documented history in an LDS official essay: some new plural marriages continued after 1890; later measures enforced cessation."
+    },
+    {
+      "id": "q.starter.dc-race",
+      "subjectID": "doctrine-and-covenants",
+      "unitID": "dc.u6",
+      "prompt": "What did the 1978 change described in Official Declaration 2 address?",
+      "options": [
+        "The date of Nicaea",
+        "The translation of the Didache",
+        "Priesthood and temple restrictions affecting Black members",
+        "The location of Babylon"
+      ],
+      "answer": 2,
+      "reference": "https://www.churchofjesuschrist.org/study/manual/gospel-topics-essays/race-and-the-priesthood?lang=eng",
+      "explanation": "LDS historical account: the change removed race-based priesthood and temple restrictions. The Church now rejects earlier racial explanations."
+    },
+    {
+      "id": "q.starter.ai-covenant",
+      "subjectID": "ancient-israel",
+      "unitID": "ai.u1",
+      "prompt": "Which narrative connects Israel’s covenant with Sinai?",
+      "options": [
+        "D&C 136",
+        "Exodus 19",
+        "Acts 27",
+        "Moroni 10"
+      ],
+      "answer": 1,
+      "reference": "Exodus 19",
+      "explanation": "Hebrew Bible narrative: Exodus 19 sets the covenant encounter at Sinai. Later Jewish and Christian interpretations differ.",
+      "chapterID": "ot.ex.19"
+    },
+    {
+      "id": "q.starter.ai-name",
+      "subjectID": "ancient-israel",
+      "unitID": "ai.u2",
+      "prompt": "Which passage connects Moses’ call with the divine name?",
+      "options": [
+        "Exodus 3",
+        "Ruth 4",
+        "Acts 16",
+        "Alma 46"
+      ],
+      "answer": 0,
+      "reference": "Exodus 3:13–15",
+      "explanation": "Hebrew Bible reading: the passage connects the divine self-identification with Moses’ commission. Translation and interpretation require care.",
+      "chapterID": "ot.ex.3"
+    },
+    {
+      "id": "q.starter.ai-calendar",
+      "subjectID": "ancient-israel",
+      "unitID": "ai.u5",
+      "prompt": "Which chapter gathers instructions for Israel’s appointed festivals?",
+      "options": [
+        "Genesis 1",
+        "Acts 28",
+        "Moroni 10",
+        "Leviticus 23"
+      ],
+      "answer": 3,
+      "reference": "Leviticus 23",
+      "explanation": "Hebrew Bible reading: the chapter describes sacred occasions and their observance. Modern Jewish practice has its own subsequent history.",
+      "chapterID": "ot.lev.23"
     }
   ]
 }

@@ -43,4 +43,15 @@ struct LibraryCatalogTests {
         #expect(LibraryCatalog.adjacentChapter(to: "ot.gen.1", offset: -1) == nil)
         #expect(LibraryCatalog.adjacentChapter(to: "nt.rev.22", offset: 1) == nil)
     }
+
+    @Test func typedReferencesResolve() {
+        #expect(LibraryCatalog.parseReference("Alma 32:27")?.chapterID == "bofm.alma.32")
+        #expect(LibraryCatalog.parseReference("alma 32:27")?.verse == 27)
+        #expect(LibraryCatalog.parseReference("1 ne 3")?.chapterID == "bofm.1-ne.3")
+        #expect(LibraryCatalog.parseReference("mt 5:3")?.chapterID == "nt.matt.5")
+        #expect(LibraryCatalog.parseReference("D&C 76:22")?.chapterID == "dc-testament.dc.76")
+        #expect(LibraryCatalog.parseReference("Psalm 23")?.chapterID == "ot.ps.23")
+        #expect(LibraryCatalog.parseReference("Alma 99") == nil)
+        #expect(LibraryCatalog.parseReference("faith") == nil)
+    }
 }

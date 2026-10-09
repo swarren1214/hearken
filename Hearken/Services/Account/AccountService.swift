@@ -2,6 +2,7 @@ import AuthenticationServices
 import CloudKit
 import Foundation
 import Observation
+import OSLog
 import SwiftData
 
 /// Sign in with Apple is the only way to sign in. The Apple user ID is kept in the
@@ -14,7 +15,14 @@ final class AccountService {
 
     enum AccountError: LocalizedError {
         case unexpectedCredential
-        var errorDescription: String? { "Sign in with Apple returned an unexpected credential." }
+        case couldNotSave
+
+        var errorDescription: String? {
+            switch self {
+            case .unexpectedCredential: "Sign in with Apple returned an unexpected credential."
+            case .couldNotSave: "Your sign-in couldn't be saved on this device. Please try again."
+            }
+        }
     }
 
     private(set) var status: Status = .unknown
@@ -23,6 +31,8 @@ final class AccountService {
     private(set) var iCloudAvailable: Bool? = nil
 
     var isSignedIn: Bool { status == .signedIn }
+
+    private let log = Logger(subsystem: "com.stephenwarren.hearken", category: "account")
 
     private enum Keys {
         static let userID = "appleUserID"
@@ -36,35 +46,49 @@ final class AccountService {
 
     /// Re-checks the Apple ID credential and iCloud status. Call on launch and when returning to the foreground.
     func refresh() async {
-        if let userID = KeychainStore.read(Keys.userID) {
-            do {
-                let state = try await ASAuthorizationAppleIDProvider().credentialState(forUserID: userID)
-                switch state {
-                case .authorized:
-                    status = .signedIn
-                case .revoked, .notFound:
-                    signOut()
-                default:
-                    break
-                }
-            } catch {
-                // Offline or the check failed: keep the cached state.
-            }
-        } else {
+        guard let userID = KeychainStore.read(Keys.userID) else {
+            log.info("refresh: no saved Apple user ID, signed out")
             status = .signedOut
+            await refreshICloudStatus()
+            return
         }
+
+        #if targetEnvironment(simulator)
+        // The Simulator can't answer credential-state checks reliably (it fails with
+        // AKAuthenticationError -7084 or reports .notFound for valid sign-ins), so trust the saved ID.
+        log.info("refresh: Simulator, keeping saved sign-in for \(userID.prefix(6), privacy: .public)…")
+        status = .signedIn
+        #else
+        do {
+            let state = try await ASAuthorizationAppleIDProvider().credentialState(forUserID: userID)
+            log.info("refresh: credential state \(state.rawValue, privacy: .public)")
+            switch state {
+            case .authorized:
+                status = .signedIn
+            case .revoked, .notFound:
+                // Revoked: the person stopped using Sign in with Apple for Hearken in their Apple Account settings.
+                signOut()
+            default:
+                break
+            }
+        } catch {
+            // Offline or the check failed: keep the saved sign-in.
+            log.error("refresh: credential check failed, keeping sign-in: \(error.localizedDescription, privacy: .public)")
+            status = .signedIn
+        }
+        #endif
         await refreshICloudStatus()
     }
 
     func refreshICloudStatus() async {
-        guard AppConfig.cloudSyncEnabled else {
-            iCloudAvailable = FileManager.default.ubiquityIdentityToken != nil
-            return
-        }
+        // Ask CloudKit directly. (The old ubiquity-token check only reflects iCloud Drive,
+        // which Hearken doesn't use, so it read "Off" even when iCloud was fine.)
         do {
             let accountStatus = try await CKContainer(identifier: AppConfig.cloudKitContainerID).accountStatus()
+            log.info("iCloud account status \(accountStatus.rawValue, privacy: .public)")
             iCloudAvailable = accountStatus == .available
         } catch {
+            log.error("iCloud account status failed: \(error.localizedDescription, privacy: .public)")
             iCloudAvailable = false
         }
     }
@@ -75,7 +99,11 @@ final class AccountService {
         guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential else {
             throw AccountError.unexpectedCredential
         }
-        KeychainStore.save(credential.user, for: Keys.userID)
+        guard KeychainStore.save(credential.user, for: Keys.userID) else {
+            log.error("completeSignIn: Keychain refused to save the Apple user ID")
+            throw AccountError.couldNotSave
+        }
+        log.info("completeSignIn: saved Apple user ID")
 
         // Apple only sends the name on the first authorization, so save it right away.
         if let name = credential.fullName {
@@ -94,6 +122,7 @@ final class AccountService {
     }
 
     func signOut() {
+        log.info("signOut")
         KeychainStore.delete(Keys.userID)
         status = .signedOut
     }

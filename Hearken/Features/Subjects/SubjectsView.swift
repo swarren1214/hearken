@@ -14,7 +14,7 @@ struct SubjectsView: View {
             NavigationLink {
                 SubjectDetailView(subject: subject)
             } label: {
-                SubjectRow(subject: subject, mastery: mastery.subjectMastery(subject, content: content, snapshot: snapshot))
+                SubjectRow(subject: subject, mastery: mastery.subjectMastery(subject, content: content, snapshot: snapshot), showsChevron: false)
             }
         }
         .listStyle(.insetGrouped)

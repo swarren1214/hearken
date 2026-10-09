@@ -14,6 +14,7 @@ struct SettingsView: View {
     @AppStorage(SettingsKey.scriptureTextSize) private var textSize: Double = 20
     @AppStorage(SettingsKey.showVerseNumbers) private var showVerseNumbers = true
     @AppStorage(SettingsKey.readerLayout) private var readerLayout: ReaderLayout = .scroll
+    @AppStorage(SettingsKey.pencilHighlighting) private var pencilHighlighting = false
     @AppStorage(SettingsKey.dailyGoalMinutes) private var dailyGoal = 15
     @AppStorage(SettingsKey.studyReminder) private var studyReminder = false
 
@@ -40,6 +41,35 @@ struct SettingsView: View {
                 Text("Used for buttons, progress rings and mastery meters. Highlight colors are set separately.")
             }
 
+            Section {
+                VerseRow(
+                    verse: Verse(id: "preview", number: 27, text: "But behold, if ye will awake and arouse your faculties, even to an experiment upon my words, and exercise a particle of faith."),
+                    highlight: nil,
+                    showNumber: showVerseNumbers,
+                    fontSize: CGFloat(textSize),
+                    isSelected: false
+                )
+                .animation(.snappy, value: textSize)
+                .accessibilityLabel("Preview of scripture text")
+                HStack(spacing: 12) {
+                    Image(systemName: "textformat.size.smaller").accessibilityHidden(true)
+                    Slider(value: $textSize, in: 15...28, step: 1) {
+                        Text("Scripture Text Size")
+                    }
+                    .accessibilityValue("\(Int(textSize)) points")
+                    Image(systemName: "textformat.size.larger").accessibilityHidden(true)
+                }
+                .foregroundStyle(.secondary)
+            } header: {
+                HStack {
+                    Text("Text Size")
+                    Spacer()
+                    Text("\(Int(textSize)) pt").monospacedDigit()
+                }
+            } footer: {
+                Text("Alma 32:27. Also adjustable from the … menu in the reader.")
+            }
+
             Section("Reading") {
                 NavigationLink {
                     HighlightColorsView()
@@ -58,24 +88,16 @@ struct SettingsView: View {
                         Text("\(legend.entries.count)").foregroundStyle(.secondary)
                     }
                 }
-                VStack(alignment: .leading) {
-                    Text("Scripture Text Size")
-                    HStack {
-                        Image(systemName: "textformat.size.smaller").accessibilityHidden(true)
-                        Slider(value: $textSize, in: 15...28, step: 1) {
-                            Text("Scripture Text Size")
-                        }
-                        Image(systemName: "textformat.size.larger").accessibilityHidden(true)
-                    }
-                    .foregroundStyle(.secondary)
-                    Text("For Alma it was a seed; for you it might be a verse.")
-                        .font(.scripture(size: textSize))
-                        .padding(.top, 4)
-                }
                 Toggle("Verse Numbers", isOn: $showVerseNumbers)
                 Picker("Layout", selection: $readerLayout) {
                     ForEach(ReaderLayout.allCases) { layout in
                         Label(layout.title, systemImage: layout.symbol).tag(layout)
+                    }
+                }
+                if UIDevice.isPad {
+                    Toggle(isOn: $pencilHighlighting) {
+                        Text("Pencil Highlighting")
+                        Text("Draw over text with Apple Pencil to highlight it.")
                     }
                 }
             }
@@ -128,19 +150,11 @@ struct SettingsView: View {
                         Text("Sign in with Apple").font(.footnote).foregroundStyle(.secondary)
                     }
                 }
-                LabeledContent("iCloud") {
-                    switch account.iCloudAvailable {
-                    case .some(true):
-                        Label(AppConfig.cloudSyncEnabled ? "Syncing" : "Available", systemImage: "checkmark.icloud")
-                            .foregroundStyle(.green)
-                    case .some(false):
-                        Label("Off", systemImage: "xmark.icloud").foregroundStyle(.secondary)
-                    case .none:
-                        ProgressView()
-                    }
+                HStack {
+                    Text("iCloud")
+                    Spacer()
+                    iCloudStatus
                 }
-                Button("Sign Out") { account.signOut() }
-                Button("Delete Account", role: .destructive) { confirmDelete = true }
             } else {
                 SignInWithAppleButton(.signIn) { request in
                     request.requestedScopes = [.fullName]
@@ -153,9 +167,10 @@ struct SettingsView: View {
                     }
                 }
                 .signInWithAppleButtonStyle(colorScheme == .dark ? .white : .black)
-                .frame(height: 48)
+                .frame(height: 50)
                 .clipShape(Capsule())
-                .listRowInsets(EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16))
+                .listRowInsets(EdgeInsets())
+                .listRowBackground(Color.clear)
             }
         } header: {
             Text("Account")
@@ -165,6 +180,48 @@ struct SettingsView: View {
             } else if account.iCloudAvailable == false {
                 Text("Your work stays on this iPhone until iCloud is turned on in Settings.")
             }
+        }
+
+        if account.isSignedIn {
+            Section {
+                VStack(spacing: 10) {
+                    // Primary: filled with the accent color, white text and icon.
+                    Button {
+                        account.signOut()
+                    } label: {
+                        Label("Sign Out", systemImage: "rectangle.portrait.and.arrow.right")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.glassProminent)
+
+                    // Destructive: filled red, white text and icon.
+                    Button(role: .destructive) {
+                        confirmDelete = true
+                    } label: {
+                        Label("Delete Account", systemImage: "trash")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.glassProminent)
+                    .tint(.red)
+                }
+                .controlSize(.large)
+                .listRowInsets(EdgeInsets())
+                .listRowBackground(Color.clear)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var iCloudStatus: some View {
+        switch account.iCloudAvailable {
+        case .some(true):
+            Label(AppConfig.cloudSyncEnabled ? "Syncing" : "Available", systemImage: "checkmark.icloud")
+                .foregroundStyle(.green)
+        case .some(false):
+            Label("Off", systemImage: "xmark.icloud")
+                .foregroundStyle(.secondary)
+        case .none:
+            ProgressView()
         }
     }
 

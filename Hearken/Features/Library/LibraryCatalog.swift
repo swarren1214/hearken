@@ -76,6 +76,18 @@ struct LibraryBook: Identifiable, Hashable {
     func contains(chapterID: String) -> Bool { chapterID.hasPrefix(id + ".") }
 }
 
+struct ScriptureReference: Hashable {
+    let book: LibraryBook
+    let chapter: Int
+    let verse: Int?
+
+    var chapterID: String { book.chapterID(chapter) }
+    var title: String {
+        let name = book.id == "dc-testament.dc" ? "Doctrine and Covenants" : book.title
+        return verse.map { "\(name) \(chapter):\($0)" } ?? "\(name) \(chapter)"
+    }
+}
+
 struct LibraryLocation {
     let work: LibraryWork
     let volume: LibraryVolume
@@ -125,6 +137,39 @@ enum LibraryCatalog {
             return previous.chapterID(previous.chapterCount)
         }
         return nil
+    }
+
+    /// Parses a typed reference like "Alma 32:27", "1 ne 3", "mt 5:3" or "D&C 76:22".
+    static func parseReference(_ text: String) -> ScriptureReference? {
+        let pattern = #/^\s*(.+?)\s*(\d+)(?:\s*:\s*(\d+))?\s*$/#
+        guard let match = text.wholeMatch(of: pattern) else { return nil }
+        let typed = normalize(String(match.1))
+        guard !typed.isEmpty, let chapter = Int(match.2) else { return nil }
+        let verse = match.3.flatMap { Int($0) }
+
+        let books = shelves.flatMap(\.works).flatMap(\.books)
+        let found = books.first { aliases(for: $0).contains(typed) }
+            ?? books.first { normalize($0.title).hasPrefix(typed) && typed.count >= 2 }
+        guard let book = found, (1...book.chapterCount).contains(chapter) else { return nil }
+        return ScriptureReference(book: book, chapter: chapter, verse: verse)
+    }
+
+    private static func normalize(_ text: String) -> String {
+        text.lowercased().filter { $0.isLetter || $0.isNumber || $0 == "&" }
+    }
+
+    /// Exact short forms: the URL slug ("1-ne" → "1ne") plus a few common abbreviations.
+    private static func aliases(for book: LibraryBook) -> Set<String> {
+        let slug = normalize(String(book.id.split(separator: ".").last ?? ""))
+        var names: Set<String> = [slug, normalize(book.title)]
+        let extra: [String: [String]] = [
+            "dc-testament.dc": ["dc", "d&c", "doctrineandcovenants"],
+            "nt.matt": ["mt"], "nt.mark": ["mk"], "nt.luke": ["lk"], "nt.john": ["jn"],
+            "ot.ps": ["psalm", "psa"], "ot.gen": ["gn"], "ot.isa": ["is"],
+            "bofm.w-of-m": ["wom"], "pgp.js-h": ["jsh"], "pgp.js-m": ["jsm"], "pgp.a-of-f": ["aof"],
+        ]
+        names.formUnion(extra[book.id] ?? [])
+        return names
     }
 
     /// Where a chapter sits in the library, e.g. Holy Bible › Old Testament › Exodus › 4.

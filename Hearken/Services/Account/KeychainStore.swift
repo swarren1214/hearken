@@ -3,16 +3,22 @@ import Security
 
 /// Minimal Keychain wrapper for small strings such as the Apple user ID.
 enum KeychainStore {
-    private static let service = "tech.productguy.hearken.account"
+    private static let service = "com.stephenwarren.hearken.account"
 
-    static func save(_ value: String, for key: String) {
+    /// Returns false if the Keychain refused the write.
+    @discardableResult
+    static func save(_ value: String, for key: String) -> Bool {
         let query = baseQuery(for: key)
         SecItemDelete(query as CFDictionary)
 
         var attributes = query
         attributes[kSecValueData as String] = Data(value.utf8)
         attributes[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
-        SecItemAdd(attributes as CFDictionary, nil)
+        let result = SecItemAdd(attributes as CFDictionary, nil)
+        if result != errSecSuccess {
+            print("KeychainStore: save failed with OSStatus \(result)")
+        }
+        return result == errSecSuccess
     }
 
     static func read(_ key: String) -> String? {

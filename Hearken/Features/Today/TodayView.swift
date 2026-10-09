@@ -42,7 +42,7 @@ struct TodayView: View {
                         .contentTransition(.numericText())
                 }
                 .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.tint)
+                .foregroundStyle(.primary)
                 .padding(.horizontal, 8)
                 .fixedSize()
                 .accessibilityElement(children: .ignore)
@@ -50,6 +50,7 @@ struct TodayView: View {
             }
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Profile and settings", systemImage: "person.crop.circle") { showSettings = true }
+                    .tint(Color.primary)
             }
         }
         .sheet(isPresented: $showSettings) {
@@ -207,6 +208,8 @@ private struct Stat: View {
 struct SubjectRow: View {
     let subject: Subject
     let mastery: Double
+    /// Off inside a List, where NavigationLink already draws the chevron.
+    var showsChevron = true
 
     var body: some View {
         HStack(spacing: 12) {
@@ -224,7 +227,9 @@ struct SubjectRow: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
-            Image(systemName: "chevron.right").font(.footnote.weight(.semibold)).foregroundStyle(.tertiary)
+            if showsChevron {
+                Image(systemName: "chevron.right").font(.footnote.weight(.semibold)).foregroundStyle(.tertiary)
+            }
         }
         .contentShape(.rect)
         .accessibilityElement(children: .combine)

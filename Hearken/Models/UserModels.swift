@@ -8,16 +8,22 @@ import SwiftData
 // Content (scripture, subjects, questions) never lives here. Models point at content
 // by its stable string ID, for example "bofm.alma.32" or "q.bofm.0001".
 
+/// A highlighted or underlined run of text. It can be part of a verse or span several:
+/// it runs from `startOffset` in `startVerse` to `endOffset` in `endVerse`, where offsets
+/// are UTF-16 positions in the verse text and an `endOffset` of -1 means the end of the verse.
 @Model
 final class Highlight {
     var chapterID: String = ""
     var startVerse: Int = 0
     var endVerse: Int = 0
+    var startOffset: Int = 0
+    var endOffset: Int = -1
     var hueRaw: String = "yellow"
     var styleRaw: String = "fill"
     var createdAt: Date = Date.now
     var updatedAt: Date = Date.now
 
+    /// A whole verse.
     init(chapterID: String, verse: Int, hue: HighlightHue, style: HighlightStyle) {
         self.chapterID = chapterID
         self.startVerse = verse
@@ -25,6 +31,20 @@ final class Highlight {
         self.hueRaw = hue.rawValue
         self.styleRaw = style.rawValue
     }
+
+    /// Any run of text.
+    init(chapterID: String, start: VersePosition, end: VersePosition, hue: HighlightHue, style: HighlightStyle) {
+        self.chapterID = chapterID
+        self.startVerse = start.verse
+        self.startOffset = start.offset
+        self.endVerse = end.verse
+        self.endOffset = end.offset
+        self.hueRaw = hue.rawValue
+        self.styleRaw = style.rawValue
+    }
+
+    var start: VersePosition { VersePosition(verse: startVerse, offset: startOffset) }
+    var end: VersePosition { VersePosition(verse: endVerse, offset: endOffset) }
 
     var hue: HighlightHue {
         get { HighlightHue(rawValue: hueRaw) ?? .yellow }
