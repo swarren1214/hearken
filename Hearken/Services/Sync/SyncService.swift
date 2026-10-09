@@ -16,6 +16,11 @@ import SwiftData
 final class SyncService {
     private(set) var lastSynced: Date?
     private(set) var isSyncing = false
+    /// CloudKit is uploading or downloading on its own (on launch, after saves, or when
+    /// another device changed something).
+    private(set) var isCloudKitBusy = false
+    /// Syncing right now, by Sync Now or on its own.
+    var isActive: Bool { isSyncing || isCloudKitBusy }
     private(set) var lastError: String?
 
     private let log = Logger(subsystem: "com.stephenwarren.hearken", category: "sync")
@@ -85,9 +90,11 @@ final class SyncService {
     private func handle(id: UUID, endDate: Date?, succeeded: Bool, error: String?) {
         guard let endDate else {
             activeEvents.insert(id)
+            isCloudKitBusy = true
             return
         }
         activeEvents.remove(id)
+        isCloudKitBusy = !activeEvents.isEmpty
         if succeeded {
             markSynced(endDate)
         } else if let error {

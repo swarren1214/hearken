@@ -11,6 +11,12 @@ private struct NoteTarget: Identifiable {
 /// which expands into breadcrumbs for jumping to any chapter.
 struct ReaderView: View {
     /// A bookmark added from the bookmark button's menu, confirmed in a pill with a Name button.
+    private struct BookmarksPresentation: Identifiable {
+        let id = UUID()
+        let here: BookmarkTarget?
+        let route: BookmarkRoute?
+    }
+
     private struct QuickAdd: Identifiable {
         let id = UUID()
         let bookmark: Bookmark
@@ -27,9 +33,10 @@ struct ReaderView: View {
     @State private var targetVerse: Int?
     @State private var jumpToken = 0
     @State private var probe = ReaderProbe()
-    @State private var showsBookmarks = false
-    @State private var bookmarkRoute: BookmarkRoute?
-    @State private var bookmarkHere: BookmarkTarget?
+    /// The open bookmarks sheet, with where the reader was when it opened. Presenting by item
+    /// (not a Bool) hands the sheet these values directly; with a Bool, the first presentation
+    /// could build the sheet from the values before they were set (no + or Add Bookmark Here).
+    @State private var bookmarksSheet: BookmarksPresentation?
     @State private var quickAdd: QuickAdd?
     @State private var showSignInPrompt = false
     @Query private var bookmarks: [Bookmark]
@@ -85,11 +92,11 @@ struct ReaderView: View {
                     }
                     .tint(Color.primary)
                     .accessibilityHint("Shows your bookmarks. Touch and hold to bookmark this page.")
-                    .popover(isPresented: $showsBookmarks, arrowEdge: .top) {
+                    .popover(item: $bookmarksSheet, arrowEdge: .top) { presentation in
                         BookmarksSheet(
                             workID: LibraryCatalog.location(ofChapter: chapterID)?.work.id,
-                            current: bookmarkHere,
-                            startRoute: bookmarkRoute,
+                            current: presentation.here,
+                            startRoute: presentation.route,
                             onGo: go(to:)
                         )
                         .frame(idealWidth: 400, idealHeight: 620)
@@ -123,10 +130,7 @@ struct ReaderView: View {
                         if UIDevice.isPad {
                             Section {
                                 // Menus show toggles as a checkmark item.
-                                Toggle(isOn: $pencilHighlighting) {
-                                    Text("Pencil Highlighting")
-                                    Text("Draw over text to highlight")
-                                }
+                                Toggle("Pencil Mode", systemImage: "applepencil", isOn: $pencilHighlighting)
                             }
                         }
                     } label: {
@@ -210,9 +214,7 @@ struct ReaderView: View {
             return
         }
         quickAdd = nil
-        bookmarkHere = here
-        bookmarkRoute = route
-        showsBookmarks = true
+        bookmarksSheet = BookmarksPresentation(here: here, route: route)
     }
 
     private func addBookmarkHere() {
@@ -233,7 +235,7 @@ struct ReaderView: View {
     }
 
     private func go(to target: BookmarkTarget) {
-        showsBookmarks = false
+        bookmarksSheet = nil
         withAnimation(.snappy) {
             if target.chapterID != chapterID {
                 startsAtEnd = false
@@ -291,6 +293,9 @@ struct ReaderPage: View {
     @State private var noteTarget: NoteTarget?
     @State private var showSignInPrompt = false
     @State private var pageCache = PageCache()
+    /// Page Turn: the verse at the top of the page on screen, so a rebuilt page view (for
+    /// example after rotating into or out of a two-page spread) opens where you were.
+    @State private var pageMemory = PageMemory()
     /// Where each text view sits on screen (keyed by its first verse), and the bottom of the
     /// reader's visible area. Used to float the toolbar above a selection near the bottom.
     @State private var textFrames: [Int: CGRect] = [:]
@@ -805,6 +810,12 @@ final class PagedChapterText {
     var pageCount: Int { pageRanges.count + (footerOnOwnPage ? 1 : 0) }
 }
 
+/// Where the reader was in Page Turn, kept outside SwiftUI state so turning a page doesn't
+/// re-render the reader.
+final class PageMemory {
+    var verse: Int?
+}
+
 /// Remembers paginations so pages aren't re-laid out on every render.
 final class PageCache {
     private var entries: [AnyHashable: PagedChapterText] = [:]
@@ -824,10 +835,17 @@ extension ReaderPage {
     private static let pageFooterHeight: CGFloat = 40
     private static let headerSpacing: CGFloat = 4
 
+    /// Two pages side by side: a large iPad screen in landscape, with the page curl.
+    private func showsSpread(in size: CGSize) -> Bool {
+        UIDevice.isPad && !reduceMotion && size.width > size.height && size.width >= 1000
+    }
+
     func pagedBody(_ chapter: Chapter) -> some View {
         GeometryReader { geo in
+            let spread = showsSpread(in: geo.size)
+            let pageSize = spread ? CGSize(width: geo.size.width / 2, height: geo.size.height) : geo.size
             let built = textLayout(chapter.verses, interactive: true)
-            let paged = pagination(for: chapter, layout: built, size: geo.size, interactive: true)
+            let paged = pagination(for: chapter, layout: built, size: pageSize, interactive: true)
             let _ = probe.map { probe in
                 probe.layout = built
                 probe.pageRanges = paged.pageRanges
@@ -835,18 +853,31 @@ extension ReaderPage {
             let previousID = LibraryCatalog.adjacentChapter(to: chapterID, offset: -1)
             let nextID = LibraryCatalog.adjacentChapter(to: chapterID, offset: 1)
 
+            let startPage: Int = {
+                if let verse = pageMemory.verse ?? initialVerse, let page = page(ofVerse: verse, layout: built, paged: paged) {
+                    return page
+                }
+                return startsAtEnd ? paged.pageCount - 1 : 0
+            }()
+
             PageCurlView(
                 pageCount: paged.pageCount,
-                startPage: startsAtEnd ? paged.pageCount - 1 : initialVerse.flatMap { page(ofVerse: $0, layout: built, paged: paged) } ?? 0,
+                startPage: startPage,
                 curl: !reduceMotion,
+                spread: spread,
                 environment: environment,
                 page: { index in
                     AnyView(pageView(index, paged: paged, layout: built, chapter: chapter, interactive: true))
                 },
-                previousChapterPage: previousID.flatMap { neighborPage($0, last: true, size: geo.size) },
-                nextChapterPage: nextID.flatMap { neighborPage($0, last: false, size: geo.size) },
+                previousChapterPages: previousID.map { neighborPages($0, last: true, size: pageSize, spread: spread) } ?? [],
+                nextChapterPages: nextID.map { neighborPages($0, last: false, size: pageSize, spread: spread) } ?? [],
                 onTurnStart: { if selection != nil { closeSelection() } },
-                onPageChange: { probe?.currentPage = $0 },
+                onPageChange: { page in
+                    probe?.currentPage = page
+                    if page < paged.pageRanges.count {
+                        pageMemory.verse = built.position(at: paged.pageRanges[page].location, preferEnd: false)?.verse
+                    }
+                },
                 onLeaveChapter: { forward in
                     selection = nil
                     if let id = forward ? nextID : previousID {
@@ -854,6 +885,8 @@ extension ReaderPage {
                     }
                 }
             )
+            // The spine is fixed when the page view is made, so rotating rebuilds it.
+            .id(spread)
         }
     }
 
@@ -863,14 +896,26 @@ extension ReaderPage {
         return paged.pageRanges.firstIndex { NSLocationInRange(index, $0) }
     }
 
-    /// A neighboring chapter's first or last page, drawn without highlights or notes.
-    /// It's what the curl reveals; the reader then switches to that chapter for real.
-    private func neighborPage(_ id: String, last: Bool, size: CGSize) -> AnyView? {
-        guard let neighbor = content.chapter(id) else { return nil }
+    /// A neighboring chapter's first or last page (in a spread, its first or last two),
+    /// drawn without highlights or notes. It's what the curl reveals; the reader then
+    /// switches to that chapter for real.
+    private func neighborPages(_ id: String, last: Bool, size: CGSize, spread: Bool) -> [AnyView] {
+        guard let neighbor = content.chapter(id) else { return [] }
         let built = textLayout(neighbor.verses, interactive: false)
         let paged = pagination(for: neighbor, layout: built, size: size, interactive: false)
-        let index = last ? paged.pageCount - 1 : 0
-        return AnyView(pageView(index, paged: paged, layout: built, chapter: neighbor, interactive: false))
+        let count = paged.pageCount
+        let indices: [Int]
+        if spread {
+            let left = last ? (count - 1) - (count - 1) % 2 : 0
+            indices = [left, left + 1]
+        } else {
+            indices = [last ? count - 1 : 0]
+        }
+        return indices.map { index in
+            index < count
+                ? AnyView(pageView(index, paged: paged, layout: built, chapter: neighbor, interactive: false))
+                : AnyView(Color(.systemBackground))
+        }
     }
 
     private func pageView(_ index: Int, paged: PagedChapterText, layout built: ChapterTextLayout, chapter: Chapter, interactive: Bool) -> some View {

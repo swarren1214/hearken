@@ -99,7 +99,7 @@ struct SettingsView: View {
                 }
                 if UIDevice.isPad {
                     Toggle(isOn: $pencilHighlighting) {
-                        Text("Pencil Highlighting")
+                        Text("Pencil Mode")
                         Text("Draw over text with Apple Pencil to highlight it.")
                     }
                 }
@@ -175,6 +175,7 @@ struct SettingsView: View {
                             .truncationMode(.middle)
                     }
                 }
+                .fullWidthSeparator()
                 .onChange(of: avatarItem) { _, item in
                     guard let item else { return }
                     Task {
@@ -190,7 +191,9 @@ struct SettingsView: View {
                     Spacer()
                     iCloudStatus
                 }
+                .fullWidthSeparator()
                 syncRow
+                    .fullWidthSeparator()
             } else {
                 SignInWithAppleButton(.signIn) { request in
                     request.requestedScopes = [.fullName, .email]
@@ -285,7 +288,7 @@ struct SettingsView: View {
     }
 
     private func lastSyncedText(now: Date) -> String {
-        if sync.isSyncing { return "Syncing…" }
+        if sync.isActive { return "Syncing…" }
         guard let date = sync.lastSynced else { return "Not yet synced" }
         let elapsed = now.timeIntervalSince(date)
         if elapsed < 60 { return "Just now" }
@@ -298,8 +301,18 @@ struct SettingsView: View {
     @ViewBuilder
     private var iCloudStatus: some View {
         switch account.iCloudAvailable {
+        case .some(true) where !AppConfig.cloudSyncEnabled:
+            Label("Available", systemImage: "checkmark.icloud")
+                .foregroundStyle(.green)
+        case .some(true) where sync.isActive:
+            Label("Syncing", systemImage: "arrow.triangle.2.circlepath.icloud")
+                .foregroundStyle(.secondary)
+                .symbolEffect(.pulse, options: .repeat(.continuous))
+        case .some(true) where sync.lastError != nil:
+            Label("Not Synced", systemImage: "exclamationmark.icloud")
+                .foregroundStyle(.orange)
         case .some(true):
-            Label(AppConfig.cloudSyncEnabled ? "Syncing" : "Available", systemImage: "checkmark.icloud")
+            Label("Synced", systemImage: "checkmark.icloud")
                 .foregroundStyle(.green)
         case .some(false):
             Label("Off", systemImage: "xmark.icloud")
@@ -520,5 +533,14 @@ struct AccountAvatar: View {
                                   width: image.size.width * scale, height: image.size.height * scale))
         }
         return thumb.jpegData(compressionQuality: 0.8)
+    }
+}
+
+private extension View {
+    /// Starts the row's separator at the row's leading edge. By default a separator lines up
+    /// with the first text it finds, so rows with an avatar or an icon label (like the iCloud
+    /// status) got separators of different lengths.
+    func fullWidthSeparator() -> some View {
+        alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
     }
 }

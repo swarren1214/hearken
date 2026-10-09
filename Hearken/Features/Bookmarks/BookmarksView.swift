@@ -1,5 +1,6 @@
 import SwiftData
 import SwiftUI
+import UIKit
 
 /// Where a bookmark points: a verse in a chapter.
 struct BookmarkTarget: Hashable, Identifiable {
@@ -82,22 +83,14 @@ struct BookmarksSheet: View {
     var body: some View {
         NavigationStack(path: $path) {
             List {
-                if let work {
-                    Picker("Show", selection: $scope.animation(.snappy)) {
-                        Text(work.title).tag(Scope.book)
-                        Text("All Books").tag(Scope.all)
-                    }
-                    .pickerStyle(.segmented)
-                    .listRowInsets(EdgeInsets())
-                    .listRowBackground(Color.clear)
-                }
-
                 if let current {
                     Section {
                         Button { path.append(.new) } label: {
                             Label {
                                 VStack(alignment: .leading, spacing: 2) {
-                                    Text("Add Bookmark Here").font(.body.weight(.semibold))
+                                    Text("Add Bookmark Here")
+                                        .font(.body.weight(.semibold))
+                                        .foregroundStyle(.primary)
                                     Text("\(content.reference(chapterID: current.chapterID, verse: current.verse)) · top of the page")
                                         .font(.footnote)
                                         .foregroundStyle(.secondary)
@@ -111,22 +104,37 @@ struct BookmarksSheet: View {
                     }
                 }
 
-                ForEach(groups) { group in
-                    Section(group.title) {
-                        ForEach(group.items) { row($0) }
+                if groups.isEmpty {
+                    // In the list (not laid over it), so it sits below Add Bookmark Here.
+                    Section {
+                        ContentUnavailableView {
+                            Label("No Bookmarks", systemImage: "bookmark")
+                        } description: {
+                            Text(emptyMessage)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .listRowBackground(Color.clear)
+                    }
+                } else {
+                    ForEach(groups) { group in
+                        Section(group.title) {
+                            ForEach(group.items) { row($0) }
+                        }
                     }
                 }
             }
-            .overlay {
-                if groups.isEmpty {
-                    ContentUnavailableView {
-                        Label("No Bookmarks", systemImage: "bookmark")
-                    } description: {
-                        Text(current == nil
-                             ? "Bookmark a page from the reader and it shows up here."
-                             : "Tap + to bookmark the verse at the top of the page.")
+            .listSectionSpacing(.compact)
+            .safeAreaInset(edge: .top, spacing: 0) {
+                // Pinned under the title rather than a list row, so it doesn't float in its own gap.
+                if let work {
+                    Picker("Show", selection: $scope.animation(.snappy)) {
+                        Text(work.title).tag(Scope.book)
+                        Text("All Books").tag(Scope.all)
                     }
-                    .padding(.top, current == nil ? 0 : 120)
+                    .pickerStyle(.segmented)
+                    .padding(.horizontal, 20)
+                    .padding(.top, 4)
+                    .padding(.bottom, 8)
                 }
             }
             .navigationTitle("Bookmarks")
@@ -153,6 +161,12 @@ struct BookmarksSheet: View {
         }
     }
 
+    private var emptyMessage: String {
+        if current == nil { return "Bookmark a page from the reader and it shows up here." }
+        if scope == .book, let work { return "No bookmarks in the \(work.title) yet. Add one here, or see All Books." }
+        return "Tap + to bookmark the verse at the top of the page."
+    }
+
     private func row(_ bookmark: Bookmark) -> some View {
         let reference = content.reference(chapterID: bookmark.chapterID, verse: bookmark.verse)
         let here = bookmark.chapterID == current?.chapterID
@@ -162,7 +176,7 @@ struct BookmarksSheet: View {
             HStack(spacing: 12) {
                 Image(systemName: "bookmark.fill")
                     .font(.title3)
-                    .foregroundStyle(.tint)
+                    .foregroundStyle(accent.color)
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 6) {
                         Text(bookmark.displayName(in: content))
@@ -171,10 +185,10 @@ struct BookmarksSheet: View {
                         if here {
                             Text("HERE")
                                 .font(.caption2.weight(.bold))
-                                .foregroundStyle(.tint)
+                                .foregroundStyle(accent.color)
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 2)
-                                .background(.tint.opacity(0.15), in: Capsule())
+                                .background(accent.color.opacity(0.15), in: Capsule())
                         }
                     }
                     Text(detail)
@@ -191,6 +205,7 @@ struct BookmarksSheet: View {
         .accessibilityHint("Opens the bookmark. Swipe or touch and hold for more.")
         .swipeActions(edge: .trailing) {
             Button("Delete", systemImage: "trash", role: .destructive) { modelContext.delete(bookmark) }
+                .tint(.red)
             Button("Edit", systemImage: "pencil") { path.append(.edit(bookmark)) }
                 .tint(.gray)
         }
@@ -205,8 +220,15 @@ struct BookmarksSheet: View {
                 }
             }
             Divider()
-            Button("Delete", systemImage: "trash", role: .destructive) { modelContext.delete(bookmark) }
+            Button(role: .destructive) {
+                modelContext.delete(bookmark)
+            } label: {
+                Label { Text("Delete") } icon: { Image.redTrash }
+            }
         }
+        // Menu icons follow the row's tint: black or white, not the accent. (The bookmark icon
+        // and HERE badge above use the accent explicitly.)
+        .tint(Color.primary)
     }
 
     static func date(_ date: Date) -> String {
@@ -360,6 +382,15 @@ struct BookmarkEditor: View {
             modelContext.insert(Bookmark(name: trimmed, chapterID: location.chapterID, verse: location.verse))
         }
         dismiss()
+    }
+}
+
+extension Image {
+    /// A red trash icon for destructive menu items. Menu icons otherwise take the view's tint,
+    /// so the color is baked into the image.
+    static var redTrash: Image {
+        let symbol = UIImage(systemName: "trash")?.withTintColor(.systemRed, renderingMode: .alwaysOriginal)
+        return symbol.map { Image(uiImage: $0) } ?? Image(systemName: "trash")
     }
 }
 
