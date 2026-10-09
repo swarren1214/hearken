@@ -3,6 +3,16 @@
     {
       "filename" : "HearkenMark.png",
       "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "HearkenMark-Dark.png",
+      "idiom" : "universal"
     }
   ],
   "info" : {
