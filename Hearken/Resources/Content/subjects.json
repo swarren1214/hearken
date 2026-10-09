@@ -1,0 +1,233 @@
+{
+  "contentVersion": 1,
+  "subjects": [
+    {
+      "id": "doctrinal-mastery",
+      "name": "Doctrinal Mastery",
+      "symbol": "text.book.closed",
+      "summary": "The 100 key passages from the Church's seminary curriculum and the doctrines that tie them together.",
+      "units": [
+        { "id": "dm.u1", "number": 1, "title": "Learning spiritual knowledge", "range": "Principles", "readingChapterIDs": [] },
+        { "id": "dm.u2", "number": 2, "title": "Old Testament passages", "range": "25 passages", "readingChapterIDs": [] },
+        { "id": "dm.u3", "number": 3, "title": "New Testament passages", "range": "25 passages", "readingChapterIDs": [] },
+        { "id": "dm.u4", "number": 4, "title": "Book of Mormon passages", "range": "25 passages", "readingChapterIDs": [] },
+        { "id": "dm.u5", "number": 5, "title": "Doctrine and Covenants and Church History passages", "range": "25 passages", "readingChapterIDs": [] },
+        { "id": "dm.u6", "number": 6, "title": "Doctrinal themes", "range": "The Godhead to commandments", "readingChapterIDs": [] }
+      ],
+      "resources": [
+        { "id": "dm.r1", "kind": "article", "title": "Doctrinal Mastery Core Document", "author": "The Church, Seminaries and Institutes" },
+        { "id": "dm.r2", "kind": "manual", "title": "Doctrinal Mastery teacher materials", "author": "The Church, Seminaries and Institutes" },
+        { "id": "dm.r3", "kind": "manual", "title": "Come, Follow Me", "author": "The Church" },
+        { "id": "dm.r4", "kind": "manual", "title": "Preach My Gospel", "author": "The Church" },
+        { "id": "dm.r5", "kind": "manual", "title": "Teaching in the Savior's Way", "author": "The Church" }
+      ]
+    },
+    {
+      "id": "bofm-history",
+      "name": "Book of Mormon History",
+      "symbol": "book.closed",
+      "summary": "From Lehi leaving Jerusalem (c. 600 BC) to Moroni sealing the record (c. AD 421).",
+      "units": [
+        { "id": "bofm.u1", "number": 1, "title": "From Jerusalem to the land of promise", "range": "1 Nephi – Omni", "readingChapterIDs": [] },
+        { "id": "bofm.u2", "number": 2, "title": "Zarahemla and the Nephite kings", "range": "Words of Mormon – Mosiah", "readingChapterIDs": [] },
+        { "id": "bofm.u3", "number": 3, "title": "The reign of the judges", "range": "Alma – Helaman", "readingChapterIDs": ["bofm.alma.32"] },
+        { "id": "bofm.u4", "number": 4, "title": "Christ among the Nephites", "range": "3 Nephi – 4 Nephi", "readingChapterIDs": [] },
+        { "id": "bofm.u5", "number": 5, "title": "The final record", "range": "Mormon – Moroni", "readingChapterIDs": [] }
+      ],
+      "resources": [
+        { "id": "bofm.r1", "kind": "scripture", "title": "Alma 32", "author": "Faith compared to a seed", "chapterID": "bofm.alma.32" },
+        { "id": "bofm.r2", "kind": "article", "title": "Book of Mormon Translation", "author": "Gospel Topics Essays, the Church" },
+        { "id": "bofm.r3", "kind": "article", "title": "Book of Mormon Geography", "author": "Gospel Topics, the Church" },
+        { "id": "bofm.r4", "kind": "video", "title": "Book of Mormon Videos", "author": "The Church" },
+        { "id": "bofm.r5", "kind": "website", "title": "KnoWhy articles", "author": "Scripture Central" },
+        { "id": "bofm.r6", "kind": "book", "title": "Understanding the Book of Mormon: A Reader's Guide", "author": "Grant Hardy" },
+        { "id": "bofm.r7", "kind": "book", "title": "Charting the Book of Mormon", "author": "John W. Welch and J. Gregory Welch" },
+        { "id": "bofm.r8", "kind": "book", "title": "By the Hand of Mormon", "author": "Terryl L. Givens" },
+        { "id": "bofm.r9", "kind": "book", "title": "An Ancient American Setting for the Book of Mormon", "author": "John L. Sorenson", "note": "Mesoamerican geography model" },
+        { "id": "bofm.r10", "kind": "book", "title": "Prophecies and Promises", "author": "Bruce H. Porter and Rod L. Meldrum", "note": "Heartland geography model" }
+      ]
+    },
+    {
+      "id": "biblical-timeline",
+      "name": "Biblical Timeline",
+      "symbol": "calendar.day.timeline.left",
+      "summary": "Eight eras from Creation to the end of the apostolic age.",
+      "units": [
+        { "id": "bt.u1", "number": 1, "title": "Beginnings", "range": "Genesis 1–11", "readingChapterIDs": [] },
+        { "id": "bt.u2", "number": 2, "title": "The patriarchs", "range": "Genesis 12–50", "readingChapterIDs": [] },
+        { "id": "bt.u3", "number": 3, "title": "Exodus and wilderness", "range": "Exodus – Deuteronomy", "readingChapterIDs": [] },
+        { "id": "bt.u4", "number": 4, "title": "Conquest and judges", "range": "Joshua, Judges, Ruth", "readingChapterIDs": [] },
+        { "id": "bt.u5", "number": 5, "title": "The united monarchy", "range": "c. 1050–930 BC", "readingChapterIDs": ["ot.ps.23"] },
+        { "id": "bt.u6", "number": 6, "title": "The divided kingdom", "range": "c. 930–587 BC", "readingChapterIDs": [] },
+        { "id": "bt.u7", "number": 7, "title": "Exile, return and between the testaments", "range": "587 BC – c. 4 BC", "readingChapterIDs": [] },
+        { "id": "bt.u8", "number": 8, "title": "Jesus and the apostles", "range": "c. 4 BC – c. AD 100", "readingChapterIDs": [] }
+      ],
+      "resources": [
+        { "id": "bt.r1", "kind": "reference", "title": "Bible Dictionary and Bible Chronology", "author": "The Church" },
+        { "id": "bt.r2", "kind": "reference", "title": "Bible Maps and Photographs", "author": "The Church" },
+        { "id": "bt.r3", "kind": "book", "title": "Jesus the Christ", "author": "James E. Talmage" },
+        { "id": "bt.r4", "kind": "book", "title": "Jehovah and the World of the Old Testament", "author": "Holzapfel, Pike and Seely" },
+        { "id": "bt.r5", "kind": "book", "title": "Jesus Christ and the World of the New Testament", "author": "Holzapfel, Huntsman and Wayment" }
+      ]
+    },
+    {
+      "id": "doctrine-and-covenants",
+      "name": "Doctrine and Covenants",
+      "symbol": "scroll",
+      "summary": "The revelations read in the places and moments that prompted them.",
+      "units": [
+        { "id": "dc.u1", "number": 1, "title": "The Restoration begins", "range": "New York and Pennsylvania, 1820–1831", "readingChapterIDs": [] },
+        { "id": "dc.u2", "number": 2, "title": "Kirtland, Ohio", "range": "1831–1838", "readingChapterIDs": [] },
+        { "id": "dc.u3", "number": 3, "title": "Zion in Missouri", "range": "1831–1839", "readingChapterIDs": [] },
+        { "id": "dc.u4", "number": 4, "title": "Nauvoo, Illinois", "range": "1839–1846", "readingChapterIDs": [] },
+        { "id": "dc.u5", "number": 5, "title": "The trek west and after", "range": "1847 onward", "readingChapterIDs": [] },
+        { "id": "dc.u6", "number": 6, "title": "The Official Declarations", "range": "1890 and 1978", "readingChapterIDs": [] }
+      ],
+      "resources": [
+        { "id": "dc.r1", "kind": "website", "title": "The Joseph Smith Papers", "author": "The Church Historian's Press" },
+        { "id": "dc.r2", "kind": "book", "title": "Revelations in Context", "author": "The Church" },
+        { "id": "dc.r3", "kind": "book", "title": "Saints, volumes 1–4", "author": "The Church" },
+        { "id": "dc.r4", "kind": "book", "title": "Making Sense of the Doctrine and Covenants", "author": "Steven C. Harper" },
+        { "id": "dc.r5", "kind": "book", "title": "Joseph Smith: Rough Stone Rolling", "author": "Richard Lyman Bushman" }
+      ]
+    },
+    {
+      "id": "ancient-israel",
+      "name": "Ancient Israelite Theology",
+      "symbol": "building.columns",
+      "summary": "How ancient Israel understood God, covenant and worship.",
+      "units": [
+        { "id": "ai.u1", "number": 1, "title": "Covenant", "range": "Abraham and Sinai", "readingChapterIDs": [] },
+        { "id": "ai.u2", "number": 2, "title": "Names and nature of God", "range": "YHWH, Elohim, El", "readingChapterIDs": [] },
+        { "id": "ai.u3", "number": 3, "title": "Tabernacle and temple", "range": "Sacred space", "readingChapterIDs": [] },
+        { "id": "ai.u4", "number": 4, "title": "The law of Moses and sacrifice", "range": "Leviticus", "readingChapterIDs": [] },
+        { "id": "ai.u5", "number": 5, "title": "Feasts and the sacred calendar", "range": "Passover, Shavuot, Sukkot", "readingChapterIDs": [] },
+        { "id": "ai.u6", "number": 6, "title": "Kings and prophets", "range": "Kingship and prophecy", "readingChapterIDs": [] },
+        { "id": "ai.u7", "number": 7, "title": "Wisdom and worship", "range": "Psalms, Proverbs, Job", "readingChapterIDs": ["ot.ps.23"] },
+        { "id": "ai.u8", "number": 8, "title": "Messianic hope", "range": "Isaiah and the Davidic promise", "readingChapterIDs": [] }
+      ],
+      "resources": [
+        { "id": "ai.r1", "kind": "reference", "title": "Bible Dictionary", "author": "The Church" },
+        { "id": "ai.r2", "kind": "book", "title": "The Jewish Study Bible", "author": "Adele Berlin and Marc Zvi Brettler (eds.)" },
+        { "id": "ai.r3", "kind": "book", "title": "Sinai and Zion", "author": "Jon D. Levenson" },
+        { "id": "ai.r4", "kind": "book", "title": "The Early History of God", "author": "Mark S. Smith" }
+      ]
+    },
+    {
+      "id": "history-of-christianity",
+      "name": "History of Christianity",
+      "symbol": "books.vertical",
+      "summary": "From the apostles to the religious world of early 19th-century America.",
+      "units": [
+        { "id": "hc.u1", "number": 1, "title": "The apostolic age", "range": "c. AD 30–100", "readingChapterIDs": [] },
+        { "id": "hc.u2", "number": 2, "title": "The early church", "range": "100–313", "readingChapterIDs": [] },
+        { "id": "hc.u3", "number": 3, "title": "Councils and creeds", "range": "313–451", "readingChapterIDs": [] },
+        { "id": "hc.u4", "number": 4, "title": "The medieval church", "range": "451–1500", "readingChapterIDs": [] },
+        { "id": "hc.u5", "number": 5, "title": "The Reformations", "range": "1517–1648", "readingChapterIDs": [] },
+        { "id": "hc.u6", "number": 6, "title": "Revival and the new world", "range": "1648–1850", "readingChapterIDs": [] },
+        { "id": "hc.u7", "number": 7, "title": "The Restoration in context", "range": "The Apostasy and the Restoration", "readingChapterIDs": [] }
+      ],
+      "resources": [
+        { "id": "hc.r1", "kind": "book", "title": "The Story of Christianity", "author": "Justo L. González" },
+        { "id": "hc.r2", "kind": "book", "title": "Christianity: The First Three Thousand Years", "author": "Diarmaid MacCulloch" },
+        { "id": "hc.r3", "kind": "book", "title": "The Early Church", "author": "Henry Chadwick" },
+        { "id": "hc.r4", "kind": "book", "title": "The Democratization of American Christianity", "author": "Nathan O. Hatch" }
+      ]
+    },
+    {
+      "id": "world-faiths",
+      "name": "World Faiths",
+      "symbol": "globe.europe.africa",
+      "summary": "Catholic, Orthodox, Protestant, Jewish and Muslim belief, in each tradition's own words.",
+      "units": [
+        { "id": "wf.u1", "number": 1, "title": "Catholicism", "range": "Catechism of the Catholic Church", "readingChapterIDs": [] },
+        { "id": "wf.u2", "number": 2, "title": "Eastern Orthodoxy", "range": "Nicene Creed and the Divine Liturgy", "readingChapterIDs": [] },
+        { "id": "wf.u3", "number": 3, "title": "Lutheranism", "range": "The Book of Concord", "readingChapterIDs": [] },
+        { "id": "wf.u4", "number": 4, "title": "Calvinism and Reformed traditions", "range": "Heidelberg Catechism, Westminster Confession", "readingChapterIDs": [] },
+        { "id": "wf.u5", "number": 5, "title": "Evangelicalism", "range": "The Lausanne Covenant", "readingChapterIDs": [] },
+        { "id": "wf.u6", "number": 6, "title": "Judaism", "range": "Tanakh, Mishnah, Talmud", "readingChapterIDs": [] },
+        { "id": "wf.u7", "number": 7, "title": "Islam", "range": "The Qur'an and hadith", "readingChapterIDs": [] },
+        { "id": "wf.u8", "number": 8, "title": "Comparisons", "range": "Side by side", "readingChapterIDs": [] }
+      ],
+      "resources": [
+        { "id": "wf.r1", "kind": "reference", "title": "Catechism of the Catholic Church", "author": "The Catholic Church" },
+        { "id": "wf.r2", "kind": "book", "title": "The Orthodox Church", "author": "Timothy (Kallistos) Ware" },
+        { "id": "wf.r3", "kind": "book", "title": "The Study Quran", "author": "Seyyed Hossein Nasr (ed.)" },
+        { "id": "wf.r4", "kind": "book", "title": "Jewish Literacy", "author": "Joseph Telushkin" },
+        { "id": "wf.r5", "kind": "book", "title": "How Wide the Divide?", "author": "Craig L. Blomberg and Stephen E. Robinson" }
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "id": "q.bofm.0001", "subjectID": "bofm-history", "unitID": "bofm.u2",
+      "prompt": "Who abridged the large plates of Nephi into most of the Book of Mormon?",
+      "options": ["Nephi", "Mormon", "Moroni", "Mosiah"], "answer": 1,
+      "reference": "Words of Mormon 1",
+      "explanation": "Mormon abridged centuries of Nephite records onto the plates that bear his name; his son Moroni finished them."
+    },
+    {
+      "id": "q.bofm.0002", "subjectID": "bofm-history", "unitID": "bofm.u2",
+      "prompt": "Which of these happened first?",
+      "options": ["Captain Moroni raises the title of liberty", "Samuel the Lamanite prophesies from the wall", "King Benjamin gives his final address", "Christ appears at the temple"], "answer": 2,
+      "reference": "Mosiah 2–5",
+      "explanation": "King Benjamin's address comes about 124 BC — roughly fifty years before the title of liberty and more than a century before Samuel."
+    },
+    {
+      "id": "q.bofm.0003", "subjectID": "bofm-history", "unitID": "bofm.u2",
+      "prompt": "Where did Alma baptize those who believed Abinadi's words?",
+      "options": ["River Sidon", "Waters of Mormon", "Land of Bountiful", "City of Zarahemla"], "answer": 1,
+      "reference": "Mosiah 18",
+      "explanation": "Alma gathered believers in secret at the Waters of Mormon, where about 204 were baptized."
+    },
+    {
+      "id": "q.bofm.0004", "subjectID": "bofm-history", "unitID": "bofm.u1",
+      "prompt": "Roughly when did Lehi's family leave Jerusalem?",
+      "options": ["c. 921 BC", "c. 600 BC", "c. 587 BC", "c. 124 BC"], "answer": 1,
+      "reference": "1 Nephi 1–2",
+      "explanation": "They left around 600 BC, in the first year of Zedekiah's reign — before Babylon destroyed Jerusalem in 587 BC."
+    },
+    {
+      "id": "q.bofm.0005", "subjectID": "bofm-history", "unitID": "bofm.u4",
+      "prompt": "The resurrected Christ first appeared to the Nephites at the temple in which land?",
+      "options": ["Zarahemla", "Bountiful", "Nephi", "Desolation"], "answer": 1,
+      "reference": "3 Nephi 11",
+      "explanation": "A multitude gathered around the temple in the land Bountiful when they heard the Father's voice introduce His Son."
+    },
+    {
+      "id": "q.bofm.0006", "subjectID": "bofm-history", "unitID": "bofm.u3",
+      "prompt": "In Alma 32, Alma compares the word of God to what?",
+      "options": ["A lamp", "A seed", "A river", "A sword"], "answer": 1,
+      "reference": "Alma 32:28", "chapterID": "bofm.alma.32",
+      "explanation": "Alma invites his listeners to plant the word like a seed and watch whether it swells, sprouts and grows."
+    },
+    {
+      "id": "q.bofm.0007", "subjectID": "bofm-history", "unitID": "bofm.u3",
+      "prompt": "Who was Alma teaching in Alma 32?",
+      "options": ["The humble poor among the Zoramites", "The Nephite chief judges", "The people of Ammonihah", "The sons of Mosiah"], "answer": 0,
+      "reference": "Alma 32", "chapterID": "bofm.alma.32",
+      "explanation": "The poor had been cast out of the Zoramite synagogues, and Alma taught them that humility prepared them to receive the word."
+    },
+    {
+      "id": "q.bofm.0008", "subjectID": "bofm-history", "unitID": "bofm.u3",
+      "prompt": "According to Alma 32:27, what is enough to begin the experiment upon the word?",
+      "options": ["A perfect knowledge", "A sign from heaven", "Even a desire to believe", "A witness from an angel"], "answer": 2,
+      "reference": "Alma 32:27", "chapterID": "bofm.alma.32",
+      "explanation": "Alma says that if they can no more than desire to believe, they should let that desire work in them."
+    },
+    {
+      "id": "q.bt.0001", "subjectID": "biblical-timeline", "unitID": "bt.u6",
+      "prompt": "Which empire conquered the northern kingdom of Israel in 722 BC?",
+      "options": ["Babylon", "Persia", "Assyria", "Egypt"], "answer": 2,
+      "reference": "2 Kings 17",
+      "explanation": "Assyria took Samaria and carried the northern tribes away; Judah fell to Babylon more than a century later, in 587 BC."
+    },
+    {
+      "id": "q.bt.0002", "subjectID": "biblical-timeline", "unitID": "bt.u5",
+      "prompt": "Who built the first temple in Jerusalem?",
+      "options": ["David", "Solomon", "Hezekiah", "Zerubbabel"], "answer": 1,
+      "reference": "1 Kings 6",
+      "explanation": "David prepared for it, but his son Solomon built the temple; Zerubbabel led the rebuilding after the exile."
+    }
+  ]
+}
