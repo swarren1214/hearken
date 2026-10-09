@@ -25,7 +25,7 @@ struct RootTabView: View {
             Tab(value: AppTab.play) {
                 NavigationStack { PlayView() }
             } label: {
-                Image(systemName: "gamecontroller.fill").accessibilityLabel("Play")
+                Image(systemName: "play.fill").accessibilityLabel("Play")
             }
 
             Tab(value: AppTab.scriptures) {

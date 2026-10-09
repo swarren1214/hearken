@@ -190,6 +190,8 @@ struct SettingsView: View {
                         account.signOut()
                     } label: {
                         Label("Sign Out", systemImage: "rectangle.portrait.and.arrow.right")
+                            // Inside a Form the icon would pick up the accent; keep it white like the text.
+                            .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.glassProminent)
@@ -199,6 +201,8 @@ struct SettingsView: View {
                         confirmDelete = true
                     } label: {
                         Label("Delete Account", systemImage: "trash")
+                            // Inside a Form the icon would pick up the accent; keep it white like the text.
+                            .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.glassProminent)
