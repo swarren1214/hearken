@@ -27,6 +27,11 @@ final class AccountService {
 
     private(set) var status: Status = .unknown
     private(set) var displayName: String? = nil
+    /// From Sign in with Apple; may be a private relay address. Apple only shares it on the
+    /// first sign-in, so people who signed in before this was asked for won't have one.
+    private(set) var email: String? = nil
+    /// The person's chosen profile photo (small JPEG), synced through their iCloud key-value store.
+    private(set) var avatarData: Data? = nil
     /// nil until checked.
     private(set) var iCloudAvailable: Bool? = nil
 
@@ -37,11 +42,52 @@ final class AccountService {
     private enum Keys {
         static let userID = "appleUserID"
         static let displayName = "account.displayName"
+        static let email = "account.email"
+        static let avatar = "account.avatar"
     }
+
+    @ObservationIgnored private var avatarObserver: NSObjectProtocol?
 
     init() {
         status = KeychainStore.read(Keys.userID) == nil ? .signedOut : .signedIn
         displayName = UserDefaults.standard.string(forKey: Keys.displayName)
+        email = UserDefaults.standard.string(forKey: Keys.email)
+        avatarData = NSUbiquitousKeyValueStore.default.data(forKey: Keys.avatar)
+            ?? UserDefaults.standard.data(forKey: Keys.avatar)
+        // A photo chosen on another device arrives through iCloud.
+        avatarObserver = NotificationCenter.default.addObserver(
+            forName: NSUbiquitousKeyValueStore.didChangeExternallyNotification,
+            object: NSUbiquitousKeyValueStore.default,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in
+                guard let self else { return }
+                let data = NSUbiquitousKeyValueStore.default.data(forKey: Keys.avatar)
+                self.avatarData = data
+                UserDefaults.standard.set(data, forKey: Keys.avatar)
+            }
+        }
+    }
+
+    /// Initials for the monogram avatar, e.g. "SW".
+    var initials: String? {
+        guard let displayName, let components = PersonNameComponentsFormatter().personNameComponents(from: displayName) else { return nil }
+        let formatter = PersonNameComponentsFormatter()
+        formatter.style = .abbreviated
+        let value = formatter.string(from: components)
+        return value.isEmpty ? nil : value
+    }
+
+    /// Saves (or with nil, removes) the profile photo on this device and in iCloud.
+    func setAvatar(_ data: Data?) {
+        avatarData = data
+        UserDefaults.standard.set(data, forKey: Keys.avatar)
+        if let data {
+            NSUbiquitousKeyValueStore.default.set(data, forKey: Keys.avatar)
+        } else {
+            NSUbiquitousKeyValueStore.default.removeObject(forKey: Keys.avatar)
+        }
+        NSUbiquitousKeyValueStore.default.synchronize()
     }
 
     /// Re-checks the Apple ID credential and iCloud status. Call on launch and when returning to the foreground.
@@ -105,7 +151,11 @@ final class AccountService {
         }
         log.info("completeSignIn: saved Apple user ID")
 
-        // Apple only sends the name on the first authorization, so save it right away.
+        // Apple only sends the name and email on the first authorization, so save them right away.
+        if let address = credential.email, !address.isEmpty {
+            email = address
+            UserDefaults.standard.set(address, forKey: Keys.email)
+        }
         if let name = credential.fullName {
             let formatted = name.formatted()
             if !formatted.isEmpty {
@@ -134,7 +184,10 @@ final class AccountService {
     func deleteAccount(context: ModelContext) throws {
         try Persistence.eraseAll(in: context)
         UserDefaults.standard.removeObject(forKey: Keys.displayName)
+        UserDefaults.standard.removeObject(forKey: Keys.email)
         displayName = nil
+        email = nil
+        setAvatar(nil)
         signOut()
     }
 }

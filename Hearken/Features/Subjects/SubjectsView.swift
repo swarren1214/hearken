@@ -1,27 +1,6 @@
 import SwiftData
 import SwiftUI
 
-struct SubjectsView: View {
-    @Environment(ContentService.self) private var content
-    @Query private var reviews: [ItemReview]
-    @Query private var progress: [ReadingProgress]
-
-    private let mastery = MasteryService()
-
-    var body: some View {
-        let snapshot = MasterySnapshot(reviews: reviews, progress: progress)
-        List(content.subjects) { subject in
-            NavigationLink {
-                SubjectDetailView(subject: subject)
-            } label: {
-                SubjectRow(subject: subject, mastery: mastery.subjectMastery(subject, content: content, snapshot: snapshot), showsChevron: false)
-            }
-        }
-        .listStyle(.insetGrouped)
-        .navigationTitle("Subjects")
-    }
-}
-
 struct SubjectDetailView: View {
     enum Pane: String, CaseIterable, Identifiable {
         case learn = "Learn", play = "Play", library = "Library"
@@ -312,6 +291,6 @@ struct UnitView: View {
 }
 
 #Preview {
-    NavigationStack { SubjectsView() }
+    NavigationStack { PlayView() }
         .previewEnvironment()
 }

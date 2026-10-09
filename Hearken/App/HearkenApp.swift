@@ -7,6 +7,7 @@ struct HearkenApp: App {
     @State private var content = ContentService()
     @State private var account = AccountService()
     @State private var legend = HighlightLegend()
+    @State private var sync = SyncService()
     private let container = Persistence.makeContainer()
 
     init() {
@@ -21,6 +22,7 @@ struct HearkenApp: App {
                 .environment(content)
                 .environment(account)
                 .environment(legend)
+                .environment(sync)
         }
         .modelContainer(container)
     }

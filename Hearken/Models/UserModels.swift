@@ -84,11 +84,28 @@ final class ReadingProgress {
     var chapterID: String = ""
     var lastVerse: Int = 0
     var completedAt: Date?
+    var hasEarnedReadXP: Bool = false
     var updatedAt: Date = Date.now
 
     init(chapterID: String, lastVerse: Int = 0) {
         self.chapterID = chapterID
         self.lastVerse = lastVerse
+    }
+}
+
+/// A named place in the scriptures: a verse in a chapter. A blank name shows the reference.
+@Model
+final class Bookmark {
+    var name: String = ""
+    var chapterID: String = ""
+    var verse: Int = 1
+    var createdAt: Date = Date.now
+    var updatedAt: Date = Date.now
+
+    init(name: String = "", chapterID: String, verse: Int) {
+        self.name = name
+        self.chapterID = chapterID
+        self.verse = verse
     }
 }
 

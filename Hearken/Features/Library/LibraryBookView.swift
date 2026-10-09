@@ -18,6 +18,8 @@ struct LibraryBookView: View {
     @State private var didRestorePosition = false
     @State private var coverSwung = false
     @State private var coverGone = false
+    @State private var showsBookmarks = false
+    @State private var bookmarkJump: BookmarkTarget?
 
     init(work: LibraryWork) {
         self.work = work
@@ -51,6 +53,19 @@ struct LibraryBookView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
+                Button("Bookmarks", systemImage: "bookmark") { showsBookmarks = true }
+                    .tint(Color.primary)
+                    .popover(isPresented: $showsBookmarks, arrowEdge: .top) {
+                        BookmarksSheet(workID: work.id, current: nil) { target in
+                            showsBookmarks = false
+                            bookmarkJump = target
+                        }
+                        .frame(idealWidth: 400, idealHeight: 620)
+                        .presentationCompactAdaptation(.sheet)
+                        .presentationDetents([.medium, .large])
+                    }
+            }
+            ToolbarItem(placement: .topBarTrailing) {
                 Menu {
                     Button("Collapse All", systemImage: "rectangle.compress.vertical") { collapseAll() }
                 } label: {
@@ -58,6 +73,9 @@ struct LibraryBookView: View {
                 }
                 .tint(Color.primary)
             }
+        }
+        .navigationDestination(item: $bookmarkJump) { target in
+            ReaderView(chapterID: target.chapterID, verse: target.verse)
         }
         .overlay { openingCover }
         .task { await openCover() }
@@ -335,10 +353,16 @@ struct BreadcrumbBar: View {
     }
 }
 
-/// Six chapters per row; each opens the reader.
+/// Six chapters per row; each opens the reader. Touch and hold a chapter to mark it read or unread.
 private struct ChapterGrid: View {
     let book: LibraryBook
     let progress: LibraryProgress
+
+    @Environment(\.modelContext) private var modelContext
+    @Environment(AccountService.self) private var account
+    @Query private var records: [ReadingProgress]
+
+    private let mastery = MasteryService()
 
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 8), count: 6)
 
@@ -358,7 +382,27 @@ private struct ChapterGrid: View {
                     )
                 }
                 .buttonStyle(.plain)
+                .contextMenu {
+                    if account.isSignedIn {
+                        let isRead = progress.read.contains(id)
+                        Button(isRead ? "Mark as Unread" : "Mark as Read",
+                               systemImage: isRead ? "arrow.uturn.backward.circle" : "checkmark.circle") {
+                            setRead(!isRead, chapterID: id)
+                        }
+                    }
+                }
             }
+        }
+    }
+
+    private func setRead(_ isRead: Bool, chapterID: String) {
+        let record = records.first { $0.chapterID == chapterID } ?? {
+            let new = ReadingProgress(chapterID: chapterID)
+            modelContext.insert(new)
+            return new
+        }()
+        withAnimation(.snappy) {
+            mastery.setChapterRead(isRead, progress: record, in: modelContext)
         }
     }
 }

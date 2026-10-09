@@ -1,4 +1,5 @@
 import AuthenticationServices
+import PhotosUI
 import SwiftData
 import SwiftUI
 
@@ -8,6 +9,7 @@ struct SettingsView: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(AccountService.self) private var account
     @Environment(HighlightLegend.self) private var legend
+    @Environment(SyncService.self) private var sync
 
     @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
     @AppStorage(SettingsKey.appearance) private var appearance: AppearanceOption = .system
@@ -19,6 +21,7 @@ struct SettingsView: View {
     @AppStorage(SettingsKey.studyReminder) private var studyReminder = false
 
     @State private var confirmDelete = false
+    @State private var avatarItem: PhotosPickerItem?
     @State private var errorMessage: String?
 
     var body: some View {
@@ -144,10 +147,42 @@ struct SettingsView: View {
         Section {
             if account.isSignedIn {
                 HStack(spacing: 14) {
-                    AppIconBadge(size: 52)
+                    PhotosPicker(selection: $avatarItem, matching: .images) {
+                        AccountAvatar(initials: account.initials, imageData: account.avatarData, size: 56)
+                            .overlay(alignment: .bottomTrailing) {
+                                Image(systemName: "camera.fill")
+                                    .font(.system(size: 10, weight: .semibold))
+                                    .foregroundStyle(.white)
+                                    .frame(width: 22, height: 22)
+                                    .background(.tint, in: Circle())
+                                    .overlay(Circle().stroke(Color(.secondarySystemGroupedBackground), lineWidth: 2))
+                                    .offset(x: 2, y: 2)
+                            }
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(account.avatarData == nil ? "Add profile photo" : "Change profile photo")
+                    .contextMenu {
+                        if account.avatarData != nil {
+                            Button("Remove Photo", systemImage: "trash", role: .destructive) { account.setAvatar(nil) }
+                        }
+                    }
                     VStack(alignment: .leading, spacing: 2) {
                         Text(account.displayName ?? "Signed in").font(.headline)
-                        Text("Sign in with Apple").font(.footnote).foregroundStyle(.secondary)
+                        Text(account.email ?? "Signed in with Apple")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                    }
+                }
+                .onChange(of: avatarItem) { _, item in
+                    guard let item else { return }
+                    Task {
+                        if let data = try? await item.loadTransferable(type: Data.self),
+                           let jpeg = AccountAvatar.thumbnail(from: data) {
+                            account.setAvatar(jpeg)
+                        }
+                        avatarItem = nil
                     }
                 }
                 HStack {
@@ -155,9 +190,10 @@ struct SettingsView: View {
                     Spacer()
                     iCloudStatus
                 }
+                syncRow
             } else {
                 SignInWithAppleButton(.signIn) { request in
-                    request.requestedScopes = [.fullName]
+                    request.requestedScopes = [.fullName, .email]
                 } onCompletion: { result in
                     do {
                         try account.completeSignIn(result)
@@ -179,6 +215,9 @@ struct SettingsView: View {
                 Text("Sign in to save highlights, notes and progress to your own iCloud.")
             } else if account.iCloudAvailable == false {
                 Text("Your work stays on this iPhone until iCloud is turned on in Settings.")
+            } else if let error = sync.lastError {
+                Text("Couldn't sync: \(error)")
+                    .foregroundStyle(.red)
             }
         }
 
@@ -213,6 +252,47 @@ struct SettingsView: View {
                 .listRowBackground(Color.clear)
             }
         }
+    }
+
+    /// Last synced time and a Sync Now button. The time refreshes every 30 seconds.
+    private var syncRow: some View {
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Last Synced")
+                TimelineView(.periodic(from: .now, by: 30)) { context in
+                    Text(lastSyncedText(now: context.date))
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .contentTransition(.numericText())
+                }
+            }
+            Spacer()
+            Button {
+                Task { await sync.syncNow(context: modelContext) }
+            } label: {
+                Label(sync.isSyncing ? "Syncing" : "Sync Now", systemImage: "arrow.triangle.2.circlepath")
+                    .symbolEffect(.rotate, options: .repeat(.continuous), isActive: sync.isSyncing)
+                    .contentTransition(.interpolate)
+            }
+            .buttonStyle(.glass)
+            .tint(Color.primary)
+            .disabled(sync.isSyncing || account.iCloudAvailable != true)
+            .accessibilityHint("Saves your highlights, notes and progress to iCloud now.")
+        }
+        .animation(.snappy, value: sync.isSyncing)
+        .sensoryFeedback(.success, trigger: sync.lastSynced)
+        .sensoryFeedback(.error, trigger: sync.lastError) { _, error in error != nil }
+    }
+
+    private func lastSyncedText(now: Date) -> String {
+        if sync.isSyncing { return "Syncing…" }
+        guard let date = sync.lastSynced else { return "Not yet synced" }
+        let elapsed = now.timeIntervalSince(date)
+        if elapsed < 60 { return "Just now" }
+        if elapsed < 60 * 60 { return date.formatted(.relative(presentation: .named)) }
+        if Calendar.current.isDateInToday(date) { return "Today at \(date.formatted(date: .omitted, time: .shortened))" }
+        if Calendar.current.isDateInYesterday(date) { return "Yesterday at \(date.formatted(date: .omitted, time: .shortened))" }
+        return date.formatted(date: .abbreviated, time: .shortened)
     }
 
     @ViewBuilder
@@ -392,4 +472,53 @@ private extension Bundle {
 #Preview {
     NavigationStack { SettingsView() }
         .previewEnvironment(signedIn: true)
+}
+
+/// The person's profile photo, or their initials in the accent color when there's no photo.
+struct AccountAvatar: View {
+    let initials: String?
+    let imageData: Data?
+    var size: CGFloat = 56
+
+    var body: some View {
+        Group {
+            if let imageData, let image = UIImage(data: imageData) {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+            } else {
+                ZStack {
+                    Circle().fill(.tint)
+                    if let initials {
+                        Text(initials)
+                            .font(.system(size: size * 0.38, weight: .semibold, design: .rounded))
+                            .foregroundStyle(.white)
+                    } else {
+                        Image(systemName: "person.fill")
+                            .font(.system(size: size * 0.42))
+                            .foregroundStyle(.white)
+                    }
+                }
+            }
+        }
+        .frame(width: size, height: size)
+        .clipShape(Circle())
+        .accessibilityHidden(true)
+    }
+
+    /// A square, 256-point JPEG of the chosen photo: small enough to sync through iCloud
+    /// key-value storage (which allows 1 MB in total).
+    static func thumbnail(from data: Data) -> Data? {
+        guard let image = UIImage(data: data) else { return nil }
+        let side = min(image.size.width, image.size.height)
+        let crop = CGRect(x: (image.size.width - side) / 2, y: (image.size.height - side) / 2, width: side, height: side)
+        let target = CGSize(width: 256, height: 256)
+        let renderer = UIGraphicsImageRenderer(size: target)
+        let thumb = renderer.image { _ in
+            let scale = target.width / side
+            image.draw(in: CGRect(x: -crop.minX * scale, y: -crop.minY * scale,
+                                  width: image.size.width * scale, height: image.size.height * scale))
+        }
+        return thumb.jpegData(compressionQuality: 0.8)
+    }
 }

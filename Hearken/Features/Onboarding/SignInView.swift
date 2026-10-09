@@ -85,7 +85,7 @@ struct SignInView: View {
     private var signInControls: some View {
         VStack(spacing: 6) {
             SignInWithAppleButton(.signIn) { request in
-                request.requestedScopes = [.fullName]
+                request.requestedScopes = [.fullName, .email]
             } onCompletion: { result in
                 do {
                     try account.completeSignIn(result)

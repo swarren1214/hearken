@@ -43,7 +43,9 @@ The highlight color legend already syncs with iCloud key-value storage.
 - **Games** — multiple-choice engine used by the Daily Challenge, Chronology Challenge, Unit Check
   and Spaced Review. Green checkmark for correct, red X for incorrect, haptics, results ring.
 - **Reader** — New York text with adjustable size, tap a verse for the floating glass highlight
-  toolbar (legend colors, Highlight / Underline, Note, Copy, Remove), inline notes, mark as read.
+  toolbar (legend colors, Highlight / Underline, Note, Copy, Remove), inline notes, and a chapter-read
+  toggle in both reader layouts. Unmarking preserves reading position and earned XP; each chapter
+  awards reading XP only once.
 - **Notes and Highlights** — everything marked, filterable by color.
 - **Search** — scripture text and subjects.
 - **Settings** — account, appearance, accent color, Highlight Colors legend, text size,

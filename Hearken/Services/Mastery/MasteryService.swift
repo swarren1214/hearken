@@ -93,6 +93,21 @@ struct MasteryService {
         context.insert(XPEvent(amount: amount, reason: reason))
     }
 
+    func setChapterRead(_ isRead: Bool, progress: ReadingProgress, in context: ModelContext, now: Date = .now) {
+        // Chapters completed before the toggle was added have already earned their XP.
+        if progress.completedAt != nil { progress.hasEarnedReadXP = true }
+        guard (progress.completedAt != nil) != isRead else { return }
+
+        progress.completedAt = isRead ? now : nil
+        progress.updatedAt = now
+        if isRead && !progress.hasEarnedReadXP {
+            progress.hasEarnedReadXP = true
+            let event = XPEvent(amount: config.chapterReadXP, reason: "chapter")
+            event.createdAt = now
+            context.insert(event)
+        }
+    }
+
     // A small deterministic hash; String.hashValue changes between launches.
     private func stableHash(_ text: String, _ seed: Int) -> Int {
         text.unicodeScalars.reduce(seed &* 31) { ($0 &* 31) &+ Int($1.value) }

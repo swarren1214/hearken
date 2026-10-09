@@ -57,7 +57,8 @@ struct ChapterTextLayout {
         showNumbers: Bool,
         tint: UIColor,
         highlights: [Highlight],
-        noteVerses: Set<Int>
+        noteVerses: Set<Int>,
+        bookmarkVerses: Set<Int> = []
     ) {
         let bodyFont = Self.serifFont(size: fontSize)
         let numberFont = UIFont.systemFont(ofSize: fontSize * 0.6, weight: .semibold)
@@ -69,6 +70,21 @@ struct ChapterTextLayout {
         var spans: [Span] = []
         for (index, verse) in verses.enumerated() {
             let paragraphStart = text.length
+            if bookmarkVerses.contains(verse.number) {
+                // A tappable bookmark ribbon before the verse; tap it to edit the bookmark.
+                let symbol = UIImage(
+                    systemName: "bookmark.fill",
+                    withConfiguration: UIImage.SymbolConfiguration(pointSize: fontSize * 0.62, weight: .semibold)
+                )?.withTintColor(tint, renderingMode: .alwaysOriginal)
+                if let symbol {
+                    let attachment = NSTextAttachment(image: symbol)
+                    attachment.bounds = CGRect(x: 0, y: fontSize * 0.02, width: symbol.size.width, height: symbol.size.height)
+                    let ribbon = NSMutableAttributedString(attachment: attachment)
+                    ribbon.append(NSAttributedString(string: "\u{2009}", attributes: [.font: numberFont]))
+                    ribbon.addAttribute(.link, value: URL(string: "hearken-bookmark://\(verse.number)")!, range: NSRange(location: 0, length: ribbon.length))
+                    text.append(ribbon)
+                }
+            }
             if showNumbers {
                 text.append(NSAttributedString(string: "\(verse.number)\u{2009}", attributes: [
                     .font: numberFont,
@@ -116,6 +132,7 @@ struct ChapterTextLayout {
         signature.combine(showNumbers)
         signature.combine(tint.hashValue)
         signature.combine(noteVerses.sorted())
+        signature.combine(bookmarkVerses.sorted())
         for highlight in highlights.sorted(by: { $0.createdAt < $1.createdAt }) {
             signature.combine(highlight.startVerse); signature.combine(highlight.startOffset)
             signature.combine(highlight.endVerse); signature.combine(highlight.endOffset)
@@ -214,6 +231,10 @@ struct ChapterTextView: UIViewRepresentable {
     /// Bump to clear the current selection (for example when the toolbar closes).
     var clearToken: Int = 0
     var onOpenNote: (Int) -> Void = { _ in }
+    /// The bookmark ribbon before a verse was tapped.
+    var onOpenBookmark: (Int) -> Void = { _ in }
+    /// Scroll layout: lets the reader find the verse at the top of the screen and scroll to one.
+    var probe: ReaderProbe? = nil
     /// Pencil mode: the Pencil highlights, fingers scroll and select as usual.
     var pencil = PencilConfig()
     /// A finished Pencil stroke, in whole-chapter terms.
@@ -239,6 +260,10 @@ struct ChapterTextView: UIViewRepresentable {
         textView.attributedText = displayedText
         context.coordinator.signature = layout.signature
         context.coordinator.pageRange = pageRange
+        if let probe {
+            probe.textView = textView
+            probe.layout = layout
+        }
 
         if interactive {
             let press = UILongPressGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.longPress(_:)))
@@ -263,6 +288,10 @@ struct ChapterTextView: UIViewRepresentable {
     func updateUIView(_ textView: UITextView, context: Context) {
         let coordinator = context.coordinator
         coordinator.parent = self
+        if let probe {
+            probe.textView = textView
+            probe.layout = layout
+        }
         // Text views add some of their selection gestures once on screen; adopt those too.
         if interactive, let window = textView.window, !coordinator.adoptedOnScreen {
             coordinator.adoptLongPress(in: textView)
@@ -707,11 +736,14 @@ struct ChapterTextView: UIViewRepresentable {
             UIMenu(children: [])
         }
 
-        // Note buttons at the end of verses.
+        // Note buttons at the end of verses, and bookmark ribbons before them.
         func textView(_ textView: UITextView, primaryActionFor textItem: UITextItem, defaultAction: UIAction) -> UIAction? {
-            guard case .link(let url) = textItem.content, url.scheme == "hearken-note",
-                  let verse = Int(url.host() ?? "") else { return defaultAction }
-            return UIAction { [weak self] _ in self?.parent.onOpenNote(verse) }
+            guard case .link(let url) = textItem.content, let verse = Int(url.host() ?? "") else { return defaultAction }
+            switch url.scheme {
+            case "hearken-note": return UIAction { [weak self] _ in self?.parent.onOpenNote(verse) }
+            case "hearken-bookmark": return UIAction { [weak self] _ in self?.parent.onOpenBookmark(verse) }
+            default: return defaultAction
+            }
         }
 
         func textView(_ textView: UITextView, menuConfigurationFor textItem: UITextItem, defaultMenu: UIMenu) -> UITextItem.MenuConfiguration? {

@@ -17,6 +17,8 @@ struct PageCurlView: UIViewControllerRepresentable {
     let nextChapterPage: AnyView?
     /// A page turn has begun (used to dismiss any text selection).
     var onTurnStart: () -> Void = {}
+    /// The page now on screen (its index), after opening or a completed turn.
+    var onPageChange: (Int) -> Void = { _ in }
     let onLeaveChapter: (_ forward: Bool) -> Void
 
     func makeCoordinator() -> Coordinator { Coordinator(parent: self) }
@@ -40,6 +42,7 @@ struct PageCurlView: UIViewControllerRepresentable {
 
         let start = min(max(startPage, 0), max(pageCount - 1, 0))
         controller.setViewControllers([context.coordinator.host(for: .page(start))], direction: .forward, animated: false)
+        onPageChange(start)
         return controller
     }
 
@@ -130,7 +133,8 @@ struct PageCurlView: UIViewControllerRepresentable {
             switch slot(of: controller.viewControllers?.first) {
             case .previousChapter: parent.onLeaveChapter(false)
             case .nextChapter: parent.onLeaveChapter(true)
-            default: break
+            case .page(let index): parent.onPageChange(index)
+            case nil: break
             }
         }
     }

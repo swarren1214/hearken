@@ -10,24 +10,58 @@ private struct NoteTarget: Identifiable {
 /// The reader. Shows one chapter at a time and carries the location control at the top,
 /// which expands into breadcrumbs for jumping to any chapter.
 struct ReaderView: View {
+    /// A bookmark added from the bookmark button's menu, confirmed in a pill with a Name button.
+    private struct QuickAdd: Identifiable {
+        let id = UUID()
+        let bookmark: Bookmark
+        let reference: String
+    }
+
     @Environment(ContentService.self) private var content
+    @Environment(AccountService.self) private var account
+    @Environment(\.modelContext) private var modelContext
     @State private var chapterID: String
     @State private var showsLocation = false
     @State private var startsAtEnd = false
+    /// A verse to open on (from a bookmark), and a token that reloads the page for each jump.
+    @State private var targetVerse: Int?
+    @State private var jumpToken = 0
+    @State private var probe = ReaderProbe()
+    @State private var showsBookmarks = false
+    @State private var bookmarkRoute: BookmarkRoute?
+    @State private var bookmarkHere: BookmarkTarget?
+    @State private var quickAdd: QuickAdd?
+    @State private var showSignInPrompt = false
+    @Query private var bookmarks: [Bookmark]
     @AppStorage(SettingsKey.readerLayout) private var layout: ReaderLayout = .scroll
     @AppStorage(SettingsKey.scriptureTextSize) private var textSize: Double = 20
     @AppStorage(SettingsKey.pencilHighlighting) private var pencilHighlighting = false
+    @AppStorage(SettingsKey.onboardingDone) private var onboardingDone = false
 
-    init(chapterID: String) {
+    /// Opens `chapterID`, scrolled (or paged) to `verse` when given.
+    init(chapterID: String, verse: Int? = nil) {
         _chapterID = State(initialValue: chapterID)
+        _targetVerse = State(initialValue: verse)
+    }
+
+    private var chapterHasBookmark: Bool {
+        bookmarks.contains { $0.chapterID == chapterID }
     }
 
     var body: some View {
-        ReaderPage(chapterID: chapterID, layout: layout, startsAtEnd: startsAtEnd) { id, atEnd in
+        ReaderPage(
+            chapterID: chapterID,
+            layout: layout,
+            startsAtEnd: startsAtEnd,
+            initialVerse: targetVerse,
+            probe: probe,
+            onOpenBookmark: openBookmark(atVerse:)
+        ) { id, atEnd in
             startsAtEnd = atEnd
+            targetVerse = nil
             chapterID = id
         }
-            .id(chapterID)
+            .id("\(chapterID)#\(jumpToken)")
             .navigationTitle(content.title(forChapter: chapterID))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -37,6 +71,32 @@ struct ReaderView: View {
                     }
                 }
                 .sharedBackgroundVisibility(.hidden)
+
+                ToolbarItem(placement: .topBarTrailing) {
+                    // Tap: the bookmarks list. Touch and hold: add one here straight away.
+                    Menu {
+                        Button("Add Bookmark Here", systemImage: "plus", action: addBookmarkHere)
+                        Button("Show Bookmarks", systemImage: "list.bullet") { openBookmarks() }
+                    } label: {
+                        Label("Bookmarks", systemImage: chapterHasBookmark ? "bookmark.fill" : "bookmark")
+                            .contentTransition(.symbolEffect(.replace))
+                    } primaryAction: {
+                        openBookmarks()
+                    }
+                    .tint(Color.primary)
+                    .accessibilityHint("Shows your bookmarks. Touch and hold to bookmark this page.")
+                    .popover(isPresented: $showsBookmarks, arrowEdge: .top) {
+                        BookmarksSheet(
+                            workID: LibraryCatalog.location(ofChapter: chapterID)?.work.id,
+                            current: bookmarkHere,
+                            startRoute: bookmarkRoute,
+                            onGo: go(to:)
+                        )
+                        .frame(idealWidth: 400, idealHeight: 620)
+                        .presentationCompactAdaptation(.sheet)
+                        .presentationDetents([.medium, .large])
+                    }
+                }
 
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
@@ -87,6 +147,7 @@ struct ReaderView: View {
                         ReaderLocationPanel(chapterID: chapterID) { id in
                             withAnimation(.snappy) {
                                 startsAtEnd = false
+                                targetVerse = nil
                                 chapterID = id
                                 showsLocation = false
                             }
@@ -97,7 +158,90 @@ struct ReaderView: View {
                     }
                 }
             }
+            .overlay(alignment: .bottom) {
+                if let quickAdd {
+                    BookmarkAddedPill(reference: quickAdd.reference) {
+                        let bookmark = quickAdd.bookmark
+                        self.quickAdd = nil
+                        openBookmarks(route: .edit(bookmark))
+                    }
+                    .padding(.horizontal, 16)
+                    // Clear of the Pencil palette on iPad.
+                    .padding(.bottom, UIDevice.isPad && pencilHighlighting ? 96 : 16)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+            }
+            .animation(.snappy, value: quickAdd?.id)
+            .task(id: quickAdd?.id) {
+                guard quickAdd != nil else { return }
+                try? await Task.sleep(for: .seconds(4))
+                if !Task.isCancelled { quickAdd = nil }
+            }
+            .background {
+                // ⌘D adds a bookmark here, like Safari, from a hardware keyboard on iPad.
+                Button("Add Bookmark Here", action: addBookmarkHere)
+                    .keyboardShortcut("d", modifiers: .command)
+                    .frame(width: 0, height: 0)
+                    .opacity(0)
+                    .accessibilityHidden(true)
+            }
             .sensoryFeedback(.selection, trigger: chapterID)
+            .sensoryFeedback(.success, trigger: quickAdd?.id) { _, new in new != nil }
+            .alert("Sign in to save bookmarks", isPresented: $showSignInPrompt) {
+                Button("Sign In") { onboardingDone = false }
+                Button("Not Now", role: .cancel) {}
+            } message: {
+                Text("Your bookmarks, highlights and notes are saved to your own iCloud.")
+            }
+    }
+
+    // MARK: Bookmarks
+
+    /// The verse at the top of the page, where new bookmarks go.
+    private var here: BookmarkTarget? {
+        guard let chapter = content.chapter(chapterID) else { return nil }
+        let verse = probe.topVerse() ?? chapter.verses.first?.number ?? 1
+        return BookmarkTarget(chapterID: chapterID, verse: verse)
+    }
+
+    private func openBookmarks(route: BookmarkRoute? = nil) {
+        guard account.isSignedIn else {
+            showSignInPrompt = true
+            return
+        }
+        quickAdd = nil
+        bookmarkHere = here
+        bookmarkRoute = route
+        showsBookmarks = true
+    }
+
+    private func addBookmarkHere() {
+        guard account.isSignedIn else {
+            showSignInPrompt = true
+            return
+        }
+        guard let here else { return }
+        let bookmark = Bookmark(chapterID: here.chapterID, verse: here.verse)
+        modelContext.insert(bookmark)
+        quickAdd = QuickAdd(bookmark: bookmark, reference: content.reference(chapterID: here.chapterID, verse: here.verse))
+    }
+
+    /// The ribbon beside a verse was tapped: edit that bookmark.
+    private func openBookmark(atVerse verse: Int) {
+        guard let bookmark = bookmarks.first(where: { $0.chapterID == chapterID && $0.verse == verse }) else { return }
+        openBookmarks(route: .edit(bookmark))
+    }
+
+    private func go(to target: BookmarkTarget) {
+        showsBookmarks = false
+        withAnimation(.snappy) {
+            if target.chapterID != chapterID {
+                startsAtEnd = false
+                chapterID = target.chapterID
+            }
+            targetVerse = target.verse
+            jumpToken += 1
+        }
     }
 }
 
@@ -108,6 +252,12 @@ struct ReaderPage: View {
     let layout: ReaderLayout
     /// Page Turn only: open on the last page (after turning back from the next chapter).
     let startsAtEnd: Bool
+    /// Open on this verse: scrolled to it, or on its page.
+    let initialVerse: Int?
+    /// Shared with the reader, for the verse at the top of the page and scrolling to a verse.
+    let probe: ReaderProbe?
+    /// The bookmark ribbon before a verse was tapped.
+    let onOpenBookmark: (Int) -> Void
     /// Page Turn only: called after a page turn crosses into the previous or next chapter.
     let onTurnChapter: (_ chapterID: String, _ atEnd: Bool) -> Void
 
@@ -121,6 +271,7 @@ struct ReaderPage: View {
     @Query private var highlights: [Highlight]
     @Query private var notes: [Note]
     @Query private var progressRecords: [ReadingProgress]
+    @Query private var bookmarks: [Bookmark]
 
     @AppStorage(SettingsKey.scriptureTextSize) private var textSize: Double = 20
     @AppStorage(SettingsKey.showVerseNumbers) private var showVerseNumbers = true
@@ -151,16 +302,23 @@ struct ReaderPage: View {
         chapterID: String,
         layout: ReaderLayout = .scroll,
         startsAtEnd: Bool = false,
+        initialVerse: Int? = nil,
+        probe: ReaderProbe? = nil,
+        onOpenBookmark: @escaping (Int) -> Void = { _ in },
         onTurnChapter: @escaping (_ chapterID: String, _ atEnd: Bool) -> Void = { _, _ in }
     ) {
         self.chapterID = chapterID
         self.layout = layout
         self.startsAtEnd = startsAtEnd
+        self.initialVerse = initialVerse
+        self.probe = probe
+        self.onOpenBookmark = onOpenBookmark
         self.onTurnChapter = onTurnChapter
         let id = chapterID
         _highlights = Query(filter: #Predicate<Highlight> { $0.chapterID == id })
         _notes = Query(filter: #Predicate<Note> { $0.chapterID == id })
         _progressRecords = Query(filter: #Predicate<ReadingProgress> { $0.chapterID == id })
+        _bookmarks = Query(filter: #Predicate<Bookmark> { $0.chapterID == id })
     }
 
     private var chapter: Chapter? { content.chapter(chapterID) }
@@ -168,6 +326,7 @@ struct ReaderPage: View {
     private var progress: ReadingProgress? { progressRecords.first }
 
     var body: some View {
+        let _ = probe.map { $0.isPaged = layout == .pages }
         Group {
             if let chapter, layout == .pages {
                 pagedBody(chapter)
@@ -185,6 +344,12 @@ struct ReaderPage: View {
                 // Scrolling away from a selection dismisses it, like Books.
                 .onScrollPhaseChange { _, phase in
                     if phase == .interacting, selection != nil { closeSelection() }
+                }
+                .task {
+                    // Opening a bookmark: scroll to its verse once the text is laid out.
+                    guard let initialVerse else { return }
+                    try? await Task.sleep(for: .milliseconds(150))
+                    probe?.reveal(verse: initialVerse)
                 }
             } else {
                 ContentUnavailableView(
@@ -239,7 +404,8 @@ struct ReaderPage: View {
             showNumbers: showVerseNumbers,
             tint: UIColor(accent.color),
             highlights: interactive ? highlights : [],
-            noteVerses: interactive ? Set(notes.map(\.verse)) : []
+            noteVerses: interactive ? Set(notes.map(\.verse)) : [],
+            bookmarkVerses: interactive ? Set(bookmarks.map(\.verse)) : []
         )
     }
 
@@ -260,6 +426,8 @@ struct ReaderPage: View {
             isAdjusting: $isAdjustingSelection,
             clearToken: clearToken,
             onOpenNote: openExistingNote,
+            onOpenBookmark: onOpenBookmark,
+            probe: interactive && pageRange == nil ? probe : nil,
             pencil: interactive ? pencilConfig : PencilConfig(),
             onPencilStroke: pencilStroke
         )
@@ -431,25 +599,37 @@ struct ReaderPage: View {
     }
 
     fileprivate var footer: some View {
-        footerView(isRead: progress?.completedAt != nil, markRead: markRead)
+        footerView(isRead: Binding(
+            get: { progress?.completedAt != nil },
+            set: setRead
+        ))
     }
 
-    fileprivate func footerView(isRead: Bool, markRead: @escaping () -> Void) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            if isRead {
-                Label("Chapter read", systemImage: "checkmark.circle.fill")
-                    .foregroundStyle(.green)
-            } else {
-                Button {
-                    markRead()
-                } label: {
-                    Label("Mark Chapter as Read", systemImage: "checkmark.circle")
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.glass)
-                .controlSize(.large)
+    /// The read-status switch, in a Liquid Glass container. The label and icon follow the
+    /// state, and turning it on or off gives a haptic.
+    fileprivate func footerView(isRead: Binding<Bool>) -> some View {
+        let read = isRead.wrappedValue
+        return Toggle(isOn: isRead.animation(.snappy)) {
+            HStack(spacing: 10) {
+                Image(systemName: read ? "checkmark.circle.fill" : "circle")
+                    .font(.title3)
+                    .foregroundStyle(read ? AnyShapeStyle(.tint) : AnyShapeStyle(.secondary))
+                    .contentTransition(.symbolEffect(.replace))
+                Text(read ? "Chapter read" : "Mark as read")
+                    .font(.body.weight(.medium))
+                    .lineLimit(1)
+                    .contentTransition(.interpolate)
             }
         }
+        .toggleStyle(.switch)
+        .padding(.leading, 16)
+        .padding(.trailing, 14)
+        .padding(.vertical, 12)
+        .glassEffect(.regular.interactive(), in: .capsule)
+        .sensoryFeedback(trigger: read) { _, isOn in
+            isOn ? .success : .impact(weight: .light)
+        }
+        .accessibilityHint("Turn on to mark this chapter as read, or off to mark it as unread.")
         .padding(.top, 24)
     }
 
@@ -577,16 +757,14 @@ struct ReaderPage: View {
         }
     }
 
-    private func markRead() {
+    private func setRead(_ isRead: Bool) {
         guard requireSignIn() else { return }
         let record = progress ?? {
             let new = ReadingProgress(chapterID: chapterID)
             modelContext.insert(new)
             return new
         }()
-        record.completedAt = .now
-        record.updatedAt = .now
-        mastery.award(MasteryConfig.standard.chapterReadXP, reason: "chapter", in: modelContext)
+        mastery.setChapterRead(isRead, progress: record, in: modelContext)
     }
 }
 
@@ -595,7 +773,7 @@ struct ReaderPage: View {
 /// A chapter laid out as pages. The text is flowed through page-sized TextKit containers to
 /// find where each page breaks (always between lines, never at verse boundaries), then each
 /// page shows its slice of the text. The chapter heading takes the top of the first page; the
-/// "Mark as Read" footer follows the text, on its own page if the last one is full.
+/// read-status toggle follows the text, on its own page if the last one is full.
 final class PagedChapterText {
     let pageRanges: [NSRange]
     let footerOnOwnPage: Bool
@@ -650,12 +828,16 @@ extension ReaderPage {
         GeometryReader { geo in
             let built = textLayout(chapter.verses, interactive: true)
             let paged = pagination(for: chapter, layout: built, size: geo.size, interactive: true)
+            let _ = probe.map { probe in
+                probe.layout = built
+                probe.pageRanges = paged.pageRanges
+            }
             let previousID = LibraryCatalog.adjacentChapter(to: chapterID, offset: -1)
             let nextID = LibraryCatalog.adjacentChapter(to: chapterID, offset: 1)
 
             PageCurlView(
                 pageCount: paged.pageCount,
-                startPage: startsAtEnd ? paged.pageCount - 1 : 0,
+                startPage: startsAtEnd ? paged.pageCount - 1 : initialVerse.flatMap { page(ofVerse: $0, layout: built, paged: paged) } ?? 0,
                 curl: !reduceMotion,
                 environment: environment,
                 page: { index in
@@ -664,6 +846,7 @@ extension ReaderPage {
                 previousChapterPage: previousID.flatMap { neighborPage($0, last: true, size: geo.size) },
                 nextChapterPage: nextID.flatMap { neighborPage($0, last: false, size: geo.size) },
                 onTurnStart: { if selection != nil { closeSelection() } },
+                onPageChange: { probe?.currentPage = $0 },
                 onLeaveChapter: { forward in
                     selection = nil
                     if let id = forward ? nextID : previousID {
@@ -672,6 +855,12 @@ extension ReaderPage {
                 }
             )
         }
+    }
+
+    /// The page that a verse starts on.
+    private func page(ofVerse verse: Int, layout built: ChapterTextLayout, paged: PagedChapterText) -> Int? {
+        guard let index = built.verseText(verse)?.location else { return nil }
+        return paged.pageRanges.firstIndex { NSLocationInRange(index, $0) }
     }
 
     /// A neighboring chapter's first or last page, drawn without highlights or notes.
@@ -695,7 +884,7 @@ extension ReaderPage {
                 chapterText(built, interactive: interactive, owner: index, pageRange: pageRange)
             }
             if pageRange == nil || (isLastTextPage && !paged.footerOnOwnPage) {
-                if interactive { footer } else { footerView(isRead: false, markRead: {}) }
+                if interactive { footer } else { footerView(isRead: .constant(false)).disabled(true) }
             }
             Spacer(minLength: 0)
             Text("\(index + 1) of \(paged.pageCount)")
@@ -719,6 +908,7 @@ extension ReaderPage {
             chapterID: chapter.id, width: size.width, height: size.height, textSize: textSize,
             showNumbers: showVerseNumbers, dynamicType: environment.dynamicTypeSize,
             noteVerses: interactive ? notes.map(\.verse).sorted() : [],
+            bookmarkVerses: interactive ? bookmarks.map(\.verse).sorted() : [],
             isRead: interactive && progress?.completedAt != nil,
             interactive: interactive
         )
@@ -731,7 +921,7 @@ extension ReaderPage {
                 return sizer.sizeThatFits(in: CGSize(width: width, height: .greatestFiniteMagnitude)).height
             }
             let headerHeight = measure(header(chapter)) + Self.headerSpacing
-            let footerHeight = interactive ? measure(footer) : measure(footerView(isRead: false, markRead: {}))
+            let footerHeight = interactive ? measure(footer) : measure(footerView(isRead: .constant(false)).disabled(true))
 
             return PagedChapterText(
                 layout: built,
@@ -752,6 +942,7 @@ private struct PaginationKey: Hashable {
     let showNumbers: Bool
     let dynamicType: DynamicTypeSize
     let noteVerses: [Int]
+    let bookmarkVerses: [Int]
     let isRead: Bool
     let interactive: Bool
 }

@@ -13,6 +13,7 @@ private struct PreviewEnvironment: ViewModifier {
     @State private var content = ContentService()
     @State private var account = AccountService()
     @State private var legend = HighlightLegend(defaults: UserDefaults(suiteName: "preview") ?? .standard)
+    @State private var sync = SyncService(defaults: UserDefaults(suiteName: "preview") ?? .standard)
     @State private var container = Persistence.makeContainer(inMemory: true)
 
     func body(content view: Content) -> some View {
@@ -20,6 +21,7 @@ private struct PreviewEnvironment: ViewModifier {
             .environment(content)
             .environment(account)
             .environment(legend)
+            .environment(sync)
             .modelContainer(container)
             .tint(AccentOption.blue.color)
             .onAppear {
