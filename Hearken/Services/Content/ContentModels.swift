@@ -4,9 +4,10 @@ import Foundation
 // Every item has a stable string ID. Never renumber an ID once it ships:
 // user highlights, notes and reviews point at these IDs.
 
-struct ScriptureLibrary: Decodable {
+/// One bundled volume file, e.g. scripture-bofm.json (built by scripts/import_standard_works.py).
+struct ScriptureVolumeFile: Decodable {
     let contentVersion: Int
-    let volumes: [Volume]
+    let volume: Volume
 }
 
 struct Volume: Decodable, Identifiable, Hashable {

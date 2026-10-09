@@ -7,17 +7,91 @@ private struct NoteTarget: Identifiable {
     var id: String { verse.id }
 }
 
+/// The reader. Shows one chapter at a time and carries the location control at the top,
+/// which expands into breadcrumbs for jumping to any chapter.
+struct ReaderView: View {
+    @Environment(ContentService.self) private var content
+    @State private var chapterID: String
+    @State private var showsLocation = false
+    @State private var startsAtEnd = false
+    @AppStorage(SettingsKey.readerLayout) private var layout: ReaderLayout = .scroll
+
+    init(chapterID: String) {
+        _chapterID = State(initialValue: chapterID)
+    }
+
+    var body: some View {
+        ReaderPage(chapterID: chapterID, layout: layout, startsAtEnd: startsAtEnd) { id, atEnd in
+            startsAtEnd = atEnd
+            chapterID = id
+        }
+            .id(chapterID)
+            .navigationTitle(content.title(forChapter: chapterID))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    ReaderLocationPill(title: content.title(forChapter: chapterID), expanded: showsLocation) {
+                        withAnimation(.snappy) { showsLocation.toggle() }
+                    }
+                }
+                .sharedBackgroundVisibility(.hidden)
+
+                ToolbarItem(placement: .topBarTrailing) {
+                    Menu {
+                        Picker("Layout", selection: $layout) {
+                            ForEach(ReaderLayout.allCases) { option in
+                                Label(option.title, systemImage: option.symbol).tag(option)
+                            }
+                        }
+                    } label: {
+                        Label("Reading Layout", systemImage: layout.symbol)
+                    }
+                }
+            }
+            .overlay(alignment: .top) {
+                ZStack(alignment: .top) {
+                    if showsLocation {
+                        Rectangle()
+                            .fill(Color.black.opacity(0.18))
+                            .ignoresSafeArea()
+                            .onTapGesture { withAnimation(.snappy) { showsLocation = false } }
+                            .accessibilityHidden(true)
+                            .transition(.opacity)
+                        ReaderLocationPanel(chapterID: chapterID) { id in
+                            withAnimation(.snappy) {
+                                startsAtEnd = false
+                                chapterID = id
+                                showsLocation = false
+                            }
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.top, 4)
+                        .transition(.scale(scale: 0.92, anchor: .top).combined(with: .opacity))
+                    }
+                }
+            }
+            .sensoryFeedback(.selection, trigger: chapterID)
+    }
+}
+
 /// Reads one chapter. Tap a verse (or an existing highlight) to open the highlight toolbar.
 ///
 /// v1 highlights whole verses. Character-range highlights need a TextKit 2 text view,
 /// which is the next step for the reader (see the build plan).
-struct ReaderView: View {
+struct ReaderPage: View {
     let chapterID: String
+    let layout: ReaderLayout
+    /// Page Turn only: open on the last page (after turning back from the next chapter).
+    let startsAtEnd: Bool
+    /// Page Turn only: called after a page turn crosses into the previous or next chapter.
+    let onTurnChapter: (_ chapterID: String, _ atEnd: Bool) -> Void
 
     @Environment(ContentService.self) private var content
     @Environment(HighlightLegend.self) private var legend
     @Environment(AccountService.self) private var account
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.self) private var environment
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @Query private var highlights: [Highlight]
     @Query private var notes: [Note]
@@ -32,11 +106,20 @@ struct ReaderView: View {
     @State private var pendingStyle: HighlightStyle?
     @State private var noteTarget: NoteTarget?
     @State private var showSignInPrompt = false
+    @State private var pageCache = PageCache()
 
     private let mastery = MasteryService()
 
-    init(chapterID: String) {
+    init(
+        chapterID: String,
+        layout: ReaderLayout = .scroll,
+        startsAtEnd: Bool = false,
+        onTurnChapter: @escaping (_ chapterID: String, _ atEnd: Bool) -> Void = { _, _ in }
+    ) {
         self.chapterID = chapterID
+        self.layout = layout
+        self.startsAtEnd = startsAtEnd
+        self.onTurnChapter = onTurnChapter
         let id = chapterID
         _highlights = Query(filter: #Predicate<Highlight> { $0.chapterID == id })
         _notes = Query(filter: #Predicate<Note> { $0.chapterID == id })
@@ -49,7 +132,9 @@ struct ReaderView: View {
 
     var body: some View {
         Group {
-            if let chapter {
+            if let chapter, layout == .pages {
+                pagedBody(chapter)
+            } else if let chapter {
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 4) {
                         header(chapter)
@@ -62,16 +147,19 @@ struct ReaderView: View {
                     .padding(.bottom, 40)
                 }
             } else {
-                ContentUnavailableView("Chapter not found", systemImage: "book.closed")
+                ContentUnavailableView(
+                    "Not Imported Yet",
+                    systemImage: "book.closed",
+                    description: Text("This chapter's text arrives with the full scripture import.")
+                )
             }
         }
-        .navigationTitle(content.title(forChapter: chapterID))
-        .navigationBarTitleDisplayMode(.inline)
         .safeAreaInset(edge: .bottom) {
-            if let selectedVerse, let verse = chapter?.verses.first(where: { $0.number == selectedVerse }) {
-                toolbar(for: verse)
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
-            }
+            // Scroll: the toolbar takes space. Page Turn: it floats, so pages don't re-flow.
+            if layout == .scroll { selectionToolbar }
+        }
+        .overlay(alignment: .bottom) {
+            if layout == .pages { selectionToolbar }
         }
         .animation(.snappy, value: selectedVerse)
         .sensoryFeedback(.selection, trigger: selectedVerse)
@@ -96,7 +184,7 @@ struct ReaderView: View {
 
     private func header(_ chapter: Chapter) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(content.bookTitle(forChapter: chapterID).uppercased())
+            Text(content.bookTitle(forChapter: chapter.id).uppercased())
                 .font(.footnote.weight(.semibold))
                 .foregroundStyle(.secondary)
             Text("Chapter \(chapter.number)")
@@ -160,8 +248,12 @@ struct ReaderView: View {
     }
 
     private var footer: some View {
+        footerView(isRead: progress?.completedAt != nil, markRead: markRead)
+    }
+
+    private func footerView(isRead: Bool, markRead: @escaping () -> Void) -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            if progress?.completedAt != nil {
+            if isRead {
                 Label("Chapter read", systemImage: "checkmark.circle.fill")
                     .foregroundStyle(.green)
             } else {
@@ -176,6 +268,14 @@ struct ReaderView: View {
             }
         }
         .padding(.top, 24)
+    }
+
+    @ViewBuilder
+    private var selectionToolbar: some View {
+        if let selectedVerse, let verse = chapter?.verses.first(where: { $0.number == selectedVerse }) {
+            toolbar(for: verse)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+        }
     }
 
     private func toolbar(for verse: Verse) -> some View {
@@ -247,6 +347,158 @@ struct ReaderView: View {
         record.updatedAt = .now
         mastery.award(MasteryConfig.standard.chapterReadXP, reason: "chapter", in: modelContext)
     }
+}
+
+// MARK: - Page Turn
+
+/// One measurable block of a chapter. Pages are filled with whole units.
+enum ReaderUnit: Hashable {
+    case header
+    case verse(Int) // index into chapter.verses
+    case footer
+}
+
+/// Remembers the last pagination per chapter so pages aren't re-measured on every render.
+final class PageCache {
+    private var entries: [AnyHashable: [[ReaderUnit]]] = [:]
+    private lazy var sizer = UIHostingController(rootView: AnyView(EmptyView()))
+
+    func pages(for key: AnyHashable, compute: (UIHostingController<AnyView>) -> [[ReaderUnit]]) -> [[ReaderUnit]] {
+        if let pages = entries[key] { return pages }
+        let pages = compute(sizer)
+        if entries.count > 12 { entries.removeAll() }
+        entries[key] = pages
+        return pages
+    }
+}
+
+extension ReaderPage {
+    private static let pageTopPadding: CGFloat = 12
+    private static let pageFooterHeight: CGFloat = 40
+    private static let unitSpacing: CGFloat = 4
+
+    func pagedBody(_ chapter: Chapter) -> some View {
+        GeometryReader { geo in
+            let pages = pagination(for: chapter, size: geo.size, interactive: true)
+            let previousID = LibraryCatalog.adjacentChapter(to: chapterID, offset: -1)
+            let nextID = LibraryCatalog.adjacentChapter(to: chapterID, offset: 1)
+
+            PageCurlView(
+                pageCount: pages.count,
+                startPage: startsAtEnd ? pages.count - 1 : 0,
+                curl: !reduceMotion,
+                environment: environment,
+                page: { index in
+                    AnyView(pageView(pages[index], chapter: chapter, index: index, count: pages.count, interactive: true))
+                },
+                previousChapterPage: previousID.flatMap { neighborPage($0, last: true, size: geo.size) },
+                nextChapterPage: nextID.flatMap { neighborPage($0, last: false, size: geo.size) },
+                onLeaveChapter: { forward in
+                    selectedVerse = nil
+                    if let id = forward ? nextID : previousID {
+                        onTurnChapter(id, !forward)
+                    }
+                }
+            )
+        }
+    }
+
+    /// A neighboring chapter's first or last page, drawn without highlights or notes.
+    /// It's what the curl reveals; the reader then switches to that chapter for real.
+    private func neighborPage(_ id: String, last: Bool, size: CGSize) -> AnyView? {
+        guard let neighbor = content.chapter(id) else { return nil }
+        let pages = pagination(for: neighbor, size: size, interactive: false)
+        guard let page = last ? pages.last : pages.first else { return nil }
+        let index = last ? pages.count - 1 : 0
+        return AnyView(pageView(page, chapter: neighbor, index: index, count: pages.count, interactive: false))
+    }
+
+    private func pageView(_ units: [ReaderUnit], chapter: Chapter, index: Int, count: Int, interactive: Bool) -> some View {
+        VStack(alignment: .leading, spacing: Self.unitSpacing) {
+            ForEach(units, id: \.self) { unit in
+                unitView(unit, chapter: chapter, interactive: interactive)
+            }
+            Spacer(minLength: 0)
+            Text("\(index + 1) of \(count)")
+                .font(.caption)
+                .monospacedDigit()
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity)
+                .frame(height: Self.pageFooterHeight - 8)
+                .accessibilityLabel("Page \(index + 1) of \(count)")
+        }
+        .padding(.horizontal, 24)
+        .padding(.top, Self.pageTopPadding)
+        .padding(.bottom, 8)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .background(Color(.systemBackground))
+    }
+
+    @ViewBuilder
+    private func unitView(_ unit: ReaderUnit, chapter: Chapter, interactive: Bool) -> some View {
+        switch unit {
+        case .header:
+            header(chapter)
+        case .verse(let index):
+            if interactive {
+                verseBlock(chapter.verses[index])
+            } else {
+                VerseRow(verse: chapter.verses[index], highlight: nil, showNumber: showVerseNumbers, fontSize: fontSize, isSelected: false)
+            }
+        case .footer:
+            if interactive {
+                footer
+            } else {
+                footerView(isRead: false, markRead: {})
+            }
+        }
+    }
+
+    /// Splits a chapter into pages of whole verses that fit `size`.
+    /// A verse taller than a page gets a page to itself.
+    private func pagination(for chapter: Chapter, size: CGSize, interactive: Bool) -> [[ReaderUnit]] {
+        let noteVerses = interactive ? notes.map(\.verse).sorted() : []
+        let key = PaginationKey(
+            chapterID: chapter.id, width: size.width, height: size.height, textSize: textSize,
+            showNumbers: showVerseNumbers, dynamicType: environment.dynamicTypeSize, noteVerses: noteVerses,
+            isRead: interactive && progress?.completedAt != nil
+        )
+        return pageCache.pages(for: key) { sizer in
+            let width = size.width - 48
+            let available = size.height - Self.pageTopPadding - Self.pageFooterHeight
+            let units: [ReaderUnit] = [.header] + chapter.verses.indices.map { .verse($0) } + [.footer]
+
+            var pages: [[ReaderUnit]] = []
+            var current: [ReaderUnit] = []
+            var used: CGFloat = 0
+            for unit in units {
+                sizer.rootView = AnyView(unitView(unit, chapter: chapter, interactive: interactive).environment(\.self, environment))
+                let height = sizer.sizeThatFits(in: CGSize(width: width, height: .greatestFiniteMagnitude)).height
+                let needed = current.isEmpty ? height : used + Self.unitSpacing + height
+                if needed > available && !current.isEmpty {
+                    pages.append(current)
+                    current = [unit]
+                    used = height
+                } else {
+                    current.append(unit)
+                    used = needed
+                }
+            }
+            if !current.isEmpty { pages.append(current) }
+            return pages.isEmpty ? [[.header]] : pages
+        }
+    }
+}
+
+private struct PaginationKey: Hashable {
+    let chapterID: String
+    let width: CGFloat
+    let height: CGFloat
+    let textSize: Double
+    let showNumbers: Bool
+    let dynamicType: DynamicTypeSize
+    let noteVerses: [Int]
+    let isRead: Bool
 }
 
 /// One verse, with its highlight drawn inline and the verse number in the tint color.

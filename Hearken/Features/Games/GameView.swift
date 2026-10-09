@@ -68,9 +68,13 @@ struct GameView: View {
             return newValue == current.answer ? .success : .error
         }
         .overlay {
-            if showConfetti {
-                ConfettiView()
+            ZStack {
+                if showConfetti {
+                    ConfettiView()
+                        .transition(.opacity)
+                }
             }
+            .animation(.easeOut(duration: 0.4), value: showConfetti)
         }
         .sensoryFeedback(.success, trigger: showConfetti) { _, new in new }
         .sheet(item: $readerLink) { link in
@@ -231,6 +235,10 @@ struct GameView: View {
         withAnimation { finished = true }
         if !questions.isEmpty && score == questions.count && !reduceMotion {
             showConfetti = true
+            Task {
+                try? await Task.sleep(for: .seconds(4.5))
+                showConfetti = false
+            }
         }
         guard account.isSignedIn else { return }
         var bonus = 0

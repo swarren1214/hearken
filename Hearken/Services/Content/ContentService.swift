@@ -3,58 +3,75 @@ import Observation
 
 /// Loads the bundled content and answers lookups.
 ///
-/// v1 reads JSON from Resources/Content. The plan is to compile this into a SQLite store
-/// with full-text search at build time once the full standard works are imported;
-/// keep callers on this API so that swap stays invisible to views.
+/// Scripture ships as one JSON file per volume and each volume loads the first time
+/// something inside it is asked for. The plan is to compile this into a SQLite store
+/// with full-text search at build time; keep callers on this API so that swap stays
+/// invisible to views.
 @Observable
 final class ContentService {
-    let volumes: [Volume]
+    static let volumeIDs = ["ot", "nt", "bofm", "dc-testament", "pgp"]
+
     let subjects: [Subject]
     let questions: [Question]
 
-    private let chapters: [String: Chapter]
-    private let bookTitles: [String: String]
+    private let bundle: Bundle
     private let questionsByID: [String: Question]
 
-    init(bundle: Bundle = .main) {
-        let library = Self.load(ScriptureLibrary.self, named: "scripture", in: bundle)
-        let catalog = Self.load(SubjectCatalog.self, named: "subjects", in: bundle)
+    // Caches fill lazily and the content never changes, so views needn't observe them.
+    @ObservationIgnored private var loadedVolumes: [String: Volume] = [:]
+    @ObservationIgnored private var chapters: [String: Chapter] = [:]
+    @ObservationIgnored private var bookTitles: [String: String] = [:]
 
-        let loadedVolumes = library?.volumes ?? []
+    init(bundle: Bundle = .main) {
+        let catalog = Self.load(SubjectCatalog.self, named: "subjects", in: bundle)
         let loadedQuestions = catalog?.questions ?? []
 
-        var chapterIndex: [String: Chapter] = [:]
-        var titleIndex: [String: String] = [:]
-        for volume in loadedVolumes {
-            for book in volume.books {
-                for chapter in book.chapters {
-                    chapterIndex[chapter.id] = chapter
-                    titleIndex[chapter.id] = book.title
-                }
-            }
-        }
-
-        volumes = loadedVolumes
+        self.bundle = bundle
         subjects = catalog?.subjects ?? []
         questions = loadedQuestions
-        chapters = chapterIndex
-        bookTitles = titleIndex
         questionsByID = Dictionary(loadedQuestions.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+    }
+
+    /// Every volume, loading any that haven't been read yet.
+    var volumes: [Volume] { Self.volumeIDs.compactMap { volume($0) } }
+
+    func volume(_ id: String) -> Volume? {
+        if let volume = loadedVolumes[id] { return volume }
+        guard let file = Self.load(ScriptureVolumeFile.self, named: "scripture-\(id)", in: bundle) else { return nil }
+        let volume = file.volume
+        for book in volume.books {
+            for chapter in book.chapters {
+                chapters[chapter.id] = chapter
+                bookTitles[chapter.id] = book.title
+            }
+        }
+        loadedVolumes[id] = volume
+        return volume
     }
 
     // MARK: Scripture
 
     var defaultChapterID: String { "bofm.alma.32" }
 
-    func chapter(_ id: String) -> Chapter? { chapters[id] }
+    func chapter(_ id: String) -> Chapter? {
+        if let chapter = chapters[id] { return chapter }
+        // "bofm.alma.32" lives in volume "bofm".
+        let volumeID = String(id.prefix { $0 != "." })
+        guard Self.volumeIDs.contains(volumeID) else { return nil }
+        _ = volume(volumeID)
+        return chapters[id]
+    }
 
     /// "Alma 32"
     func title(forChapter id: String) -> String {
-        guard let chapter = chapters[id], let book = bookTitles[id] else { return "" }
+        guard let chapter = chapter(id), let book = bookTitles[id] else { return "" }
         return "\(book) \(chapter.number)"
     }
 
-    func bookTitle(forChapter id: String) -> String { bookTitles[id] ?? "" }
+    func bookTitle(forChapter id: String) -> String {
+        _ = chapter(id)
+        return bookTitles[id] ?? ""
+    }
 
     /// "Alma 32:27"
     func reference(chapterID: String, verse: Int) -> String {

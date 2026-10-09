@@ -9,6 +9,12 @@ struct HearkenApp: App {
     @State private var legend = HighlightLegend()
     private let container = Persistence.makeContainer()
 
+    init() {
+        // Alerts and confirmation dialogs use the system label color (black in Light Mode,
+        // white in Dark Mode) rather than the app's accent. Destructive buttons stay red.
+        UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = .label
+    }
+
     var body: some Scene {
         WindowGroup {
             AppRoot()

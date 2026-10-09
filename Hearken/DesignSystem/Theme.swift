@@ -6,9 +6,19 @@ enum SettingsKey {
     static let appearance = "settings.appearance"
     static let scriptureTextSize = "settings.scriptureTextSize"
     static let showVerseNumbers = "settings.showVerseNumbers"
+    static let readerLayout = "settings.readerLayout"
     static let dailyGoalMinutes = "settings.dailyGoalMinutes"
     static let studyReminder = "settings.studyReminder"
     static let onboardingDone = "onboarding.done"
+}
+
+/// How the reader presents a chapter: one long scroll, or pages that turn with a page curl.
+enum ReaderLayout: String, CaseIterable, Identifiable {
+    case scroll, pages
+
+    var id: String { rawValue }
+    var title: String { self == .scroll ? "Scroll" : "Page Turn" }
+    var symbol: String { self == .scroll ? "scroll" : "book.pages" }
 }
 
 /// The user-selectable app tint (Settings › Accent Color). Blue is the default.

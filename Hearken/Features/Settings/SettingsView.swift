@@ -13,6 +13,7 @@ struct SettingsView: View {
     @AppStorage(SettingsKey.appearance) private var appearance: AppearanceOption = .system
     @AppStorage(SettingsKey.scriptureTextSize) private var textSize: Double = 20
     @AppStorage(SettingsKey.showVerseNumbers) private var showVerseNumbers = true
+    @AppStorage(SettingsKey.readerLayout) private var readerLayout: ReaderLayout = .scroll
     @AppStorage(SettingsKey.dailyGoalMinutes) private var dailyGoal = 15
     @AppStorage(SettingsKey.studyReminder) private var studyReminder = false
 
@@ -72,6 +73,11 @@ struct SettingsView: View {
                         .padding(.top, 4)
                 }
                 Toggle("Verse Numbers", isOn: $showVerseNumbers)
+                Picker("Layout", selection: $readerLayout) {
+                    ForEach(ReaderLayout.allCases) { layout in
+                        Label(layout.title, systemImage: layout.symbol).tag(layout)
+                    }
+                }
             }
 
             Section("Study") {

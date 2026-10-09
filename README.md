@@ -88,3 +88,14 @@ HearkenTests/     Swift Testing
 
 Hearken is an independent study app. It is not made, sponsored or endorsed by The Church of
 Jesus Christ of Latter-day Saints.
+
+## Scripture content
+
+The standard works come from [Atreyu4EVR/Standard-Works](https://github.com/Atreyu4EVR/Standard-Works) (public domain). To regenerate the bundled files:
+
+```sh
+git clone https://github.com/Atreyu4EVR/Standard-Works /tmp/Standard-Works
+python3 scripts/import_standard_works.py /tmp/Standard-Works Hearken/Resources/Content
+```
+
+The source leaves out copyrighted material (chapter summaries, footnotes, the Official Declarations, introductions), so those arrive with the Church content license.

@@ -1,54 +1,6 @@
 import SwiftData
 import SwiftUI
 
-/// The Scriptures tab: the standard works, plus everything the user has marked.
-struct ScripturesView: View {
-    @Environment(ContentService.self) private var content
-
-    var body: some View {
-        List {
-            Section {
-                NavigationLink {
-                    MarkedListView()
-                } label: {
-                    Label("Notes and Highlights", systemImage: "square.and.pencil")
-                }
-            }
-
-            ForEach(content.volumes) { volume in
-                Section(volume.title) {
-                    ForEach(volume.books) { book in
-                        ForEach(book.chapters) { chapter in
-                            NavigationLink {
-                                ReaderView(chapterID: chapter.id)
-                            } label: {
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text("\(book.title) \(chapter.number)")
-                                        .font(.scripture(size: 18, weight: .semibold))
-                                    if let heading = chapter.heading {
-                                        Text(heading)
-                                            .font(.footnote)
-                                            .foregroundStyle(.secondary)
-                                            .lineLimit(2)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            Section {
-                Text("This build includes sample chapters. The full standard works arrive with the content import.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            }
-        }
-        .listStyle(.insetGrouped)
-        .navigationTitle("Scriptures")
-    }
-}
-
 /// All notes and highlights, filterable by highlight color.
 struct MarkedListView: View {
     @Environment(ContentService.self) private var content
