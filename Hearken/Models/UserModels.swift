@@ -109,6 +109,45 @@ final class Bookmark {
     }
 }
 
+/// Someone following a reading plan. The schedule itself is computed (see PlanEngine) from
+/// the plan's chapters and an anchor: the start, or the last time it was rescheduled.
+@Model
+final class PlanEnrollment {
+    var planID: String = ""
+    var startDate: Date = Date.now
+    /// Reading weekdays as a bitmask: Sunday = 1 << 0 … Saturday = 1 << 6 (see ReadingDays).
+    var readingDays: Int = 127
+    var reminderEnabled: Bool = false
+    /// Minutes after midnight, e.g. 420 = 7:00 AM.
+    var reminderMinutes: Int = 420
+    /// Custom plans only.
+    var customTitle: String = ""
+    var customChapterIDs: [String] = []
+    /// The schedule runs from chapter `anchorIndex` over `anchorDays` reading days starting
+    /// `anchorDate`, numbered from `anchorDayNumber`. Reschedule moves the anchor.
+    var anchorDate: Date = Date.now
+    var anchorIndex: Int = 0
+    var anchorDays: Int = 0
+    var anchorDayNumber: Int = 1
+    var createdAt: Date = Date.now
+    /// Set when the plan is finished or ended. Only one plan is active at a time.
+    var endedAt: Date?
+
+    init(planID: String, startDate: Date, days: Int, readingDays: Int, reminderEnabled: Bool, reminderMinutes: Int) {
+        let start = Calendar.current.startOfDay(for: startDate)
+        self.planID = planID
+        self.startDate = start
+        self.readingDays = readingDays
+        self.reminderEnabled = reminderEnabled
+        self.reminderMinutes = reminderMinutes
+        self.anchorDate = start
+        self.anchorDays = days
+    }
+
+    /// Reading days in the whole plan, including any before the last reschedule.
+    var totalDays: Int { anchorDayNumber - 1 + anchorDays }
+}
+
 /// Spaced repetition state for one question.
 @Model
 final class ItemReview {

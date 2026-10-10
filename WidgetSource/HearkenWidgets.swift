@@ -141,6 +141,13 @@ struct ReadingPlanWidget: Widget {
     }
 }
 
+@main
+struct HearkenWidgetsBundle: WidgetBundle {
+    var body: some Widget {
+        ReadingPlanWidget()
+    }
+}
+
 extension PlanSnapshot {
     static let sample = PlanSnapshot(
         title: "Book of Mormon in 90 Days", dayNumber: 38, totalDays: 90, fraction: 0.41, statusLine: "On track",

@@ -1,16 +1,9 @@
-//
-//  HearkenWidgetsBundle.swift
-//  HearkenWidgets
-//
-//  Created by Stephen Warren on 10/9/26.
-//
-
-import WidgetKit
 import SwiftUI
+import WidgetKit
 
 @main
 struct HearkenWidgetsBundle: WidgetBundle {
     var body: some Widget {
-        HearkenWidgets()
+        ReadingPlanWidget()
     }
 }

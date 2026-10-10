@@ -175,6 +175,8 @@ struct IPadSelectionBar: View {
     var onCopy: () -> Void
     var onRemove: () -> Void
     var onClose: () -> Void
+    /// Explain with Apple Intelligence; nil hides the button (device can't run it).
+    var onExplain: (() -> Void)? = nil
 
     @State private var copied = false
 
@@ -227,6 +229,9 @@ struct IPadSelectionBar: View {
             Divider().frame(height: 28)
 
             HStack(spacing: 4) {
+                if let onExplain {
+                    iconButton("Explain", "sparkles", action: onExplain)
+                }
                 iconButton("Note", "square.and.pencil", action: onNote)
                 iconButton(copied ? "Copied" : "Copy", copied ? "checkmark" : "doc.on.doc") {
                     onCopy()

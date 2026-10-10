@@ -9,6 +9,7 @@ struct TodayView: View {
     @Query private var highlights: [Highlight]
     @Query private var notes: [Note]
     @Query(sort: \GameSession.playedAt, order: .reverse) private var sessions: [GameSession]
+    @Query(sort: \PlanEnrollment.createdAt, order: .reverse) private var enrollments: [PlanEnrollment]
     @State private var showSettings = false
     @State private var activeGame: GameRequest?
     @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
@@ -21,9 +22,19 @@ struct TodayView: View {
         let level = MasteryMath.level(forXP: totalXP)
         let streak = MasteryMath.streak(activityDates: xpEvents.map(\.createdAt), now: .now)
 
+        let plan = PlanReading.active(enrollments)
+        let planState = plan.flatMap { PlanEngine.shared.state(for: $0, content: content, read: PlanReading.readSet(progress)) }
+
         ScrollView {
             VStack(alignment: .leading, spacing: 22) {
-                dailyChallenge(snapshot: snapshot)
+                if let plan, let planState {
+                    // A running plan leads; the Daily Challenge steps down to a row.
+                    PlanTodayCard(state: planState, enrollment: plan)
+                    compactDailyChallenge(snapshot: snapshot)
+                } else {
+                    dailyChallenge(snapshot: snapshot)
+                    StartPlanCard()
+                }
                 progressCard(level: level)
                 continueReading
                 subjectsSection(snapshot: snapshot)
@@ -105,6 +116,37 @@ struct TodayView: View {
             .foregroundStyle(.white)
             .padding(20)
             .background(accent.color.gradient, in: .rect(cornerRadius: 26))
+        }
+        .buttonStyle(.plain)
+        .disabled(questions.isEmpty)
+    }
+
+    private func compactDailyChallenge(snapshot: MasterySnapshot) -> some View {
+        let doneToday = sessions.contains { $0.gameType == GameKind.daily.rawValue && Calendar.current.isDateInToday($0.playedAt) }
+        let questions = mastery.dailyChallenge(content: content, snapshot: snapshot)
+
+        return Button {
+            activeGame = GameRequest(title: "Daily Challenge", kind: .daily, subjectID: nil, questions: questions)
+        } label: {
+            HStack(spacing: 14) {
+                SymbolTile(systemName: "sun.max.fill", size: 46)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Daily Challenge").font(.headline)
+                    Text(doneToday ? "Done today · play again for practice" : "\(questions.count) questions · +\(MasteryConfig.standard.dailyChallengeBonus) XP")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                Text(doneToday ? "Again" : "Start")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 16)
+                    .frame(height: 34)
+                    .background(accent.color, in: Capsule())
+            }
+            .padding(16)
+            .background(Color(.secondarySystemGroupedBackground), in: .rect(cornerRadius: 22))
+            .contentShape(.rect)
         }
         .buttonStyle(.plain)
         .disabled(questions.isEmpty)

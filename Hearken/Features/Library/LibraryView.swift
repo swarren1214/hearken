@@ -22,6 +22,16 @@ struct LibraryView: View {
         }
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Library")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                NavigationLink {
+                    ReadingPlansView()
+                } label: {
+                    Label("Reading Plans", systemImage: "calendar")
+                }
+                .tint(Color.primary)
+            }
+        }
         .navigationDestination(for: LibraryRoute.self) { route in
             if let work = LibraryCatalog.work(route.workID) {
                 LibraryBookView(work: work)

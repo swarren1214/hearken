@@ -62,7 +62,8 @@ struct ReaderView: View {
             startsAtEnd: startsAtEnd,
             initialVerse: targetVerse,
             probe: probe,
-            onOpenBookmark: openBookmark(atVerse:)
+            onOpenBookmark: openBookmark(atVerse:),
+            onOpenPassage: go(to:)
         ) { id, atEnd in
             startsAtEnd = atEnd
             targetVerse = nil
@@ -260,6 +261,8 @@ struct ReaderPage: View {
     let probe: ReaderProbe?
     /// The bookmark ribbon before a verse was tapped.
     let onOpenBookmark: (Int) -> Void
+    /// Open another passage (a related verse from Explain).
+    let onOpenPassage: (BookmarkTarget) -> Void
     /// Page Turn only: called after a page turn crosses into the previous or next chapter.
     let onTurnChapter: (_ chapterID: String, _ atEnd: Bool) -> Void
 
@@ -291,6 +294,7 @@ struct ReaderPage: View {
     @State private var recentStroke: RecentStroke?
     @State private var pendingStyle: HighlightStyle?
     @State private var noteTarget: NoteTarget?
+    @State private var explainRequest: ExplainRequest?
     @State private var showSignInPrompt = false
     @State private var pageCache = PageCache()
     /// Page Turn: the verse at the top of the page on screen, so a rebuilt page view (for
@@ -310,6 +314,7 @@ struct ReaderPage: View {
         initialVerse: Int? = nil,
         probe: ReaderProbe? = nil,
         onOpenBookmark: @escaping (Int) -> Void = { _ in },
+        onOpenPassage: @escaping (BookmarkTarget) -> Void = { _ in },
         onTurnChapter: @escaping (_ chapterID: String, _ atEnd: Bool) -> Void = { _, _ in }
     ) {
         self.chapterID = chapterID
@@ -318,6 +323,7 @@ struct ReaderPage: View {
         self.initialVerse = initialVerse
         self.probe = probe
         self.onOpenBookmark = onOpenBookmark
+        self.onOpenPassage = onOpenPassage
         self.onTurnChapter = onTurnChapter
         let id = chapterID
         _highlights = Query(filter: #Predicate<Highlight> { $0.chapterID == id })
@@ -382,6 +388,15 @@ struct ReaderPage: View {
             guard let start, let progress else { return }
             progress.lastVerse = start.verse
             progress.updatedAt = .now
+        }
+        .sheet(item: $explainRequest) { request in
+            ExplainSheet(request: request, onOpenPassage: onOpenPassage, onSaveNote: saveExplanation)
+                .presentationDetents(UIDevice.isPad ? [.large] : [.medium, .large])
+                .presentationSizing(.form)
+        }
+        .onChange(of: selection != nil) { _, selected in
+            // Load the on-device model while the reader decides, so Explain answers quickly.
+            if selected { ExplainEngine.shared.prewarm() }
         }
         .sheet(item: $noteTarget) { target in
             NoteEditorView(
@@ -553,7 +568,8 @@ struct ReaderPage: View {
                 removeHighlights(in: selection)
                 closeSelection()
             },
-            onClose: closeSelection
+            onClose: closeSelection,
+            onExplain: ExplainEngine.shared.isOffered ? { explain(selection) } : nil
         )
     }
 
@@ -674,7 +690,8 @@ struct ReaderPage: View {
             onNote: { openNote(verse: selection.start.verse) },
             onCopy: { copy(selection) },
             onRemove: { removeHighlights(in: selection) },
-            onClose: closeSelection
+            onClose: closeSelection,
+            onExplain: ExplainEngine.shared.isOffered ? { explain(selection) } : nil
         )
     }
 
@@ -742,6 +759,47 @@ struct ReaderPage: View {
     private func openExistingNote(_ number: Int) {
         guard let verse = chapter?.verses.first(where: { $0.number == number }) else { return }
         noteTarget = NoteTarget(verse: verse)
+    }
+
+    /// Opens Explain for the selection, with the nearby verses the model needs for context.
+    private func explain(_ selection: VerseSelection) {
+        guard let chapter else { return }
+        let verses = chapter.verses
+        let start = selection.start.verse, end = selection.end.verse
+        func joined(_ slice: [Verse], keepEnd: Bool) -> String {
+            let text = slice.map { "\($0.number) \($0.text)" }.joined(separator: " ")
+            guard text.count > ExplainRequest.maxContext else { return text }
+            return keepEnd ? "…" + String(text.suffix(ExplainRequest.maxContext)) : String(text.prefix(ExplainRequest.maxContext)) + "…"
+        }
+        let before = verses.filter { $0.number < start && $0.number >= start - 3 }
+        let after = verses.filter { $0.number > end && $0.number <= end + 3 }
+        var text = selection.text.trimmingCharacters(in: .whitespacesAndNewlines)
+        if text.count > ExplainRequest.maxSelection { text = String(text.prefix(ExplainRequest.maxSelection)) + "…" }
+        let request = ExplainRequest(
+            chapterID: chapterID,
+            chapterTitle: content.title(forChapter: chapterID),
+            reference: reference(for: selection),
+            selectedText: text,
+            heading: chapter.heading,
+            before: joined(before, keepEnd: true),
+            after: joined(after, keepEnd: false),
+            startVerse: start,
+            endVerse: end
+        )
+        closeSelection()
+        explainRequest = request
+    }
+
+    /// Save as Note from Explain: added to the note on the first selected verse.
+    private func saveExplanation(_ text: String) -> Bool {
+        guard requireSignIn(), let request = explainRequest else { return false }
+        if let note = notes.first(where: { $0.verse == request.startVerse }) {
+            note.body = note.body.isEmpty ? text : note.body + "\n\n" + text
+            note.updatedAt = .now
+        } else {
+            modelContext.insert(Note(chapterID: chapterID, verse: request.startVerse, body: text))
+        }
+        return true
     }
 
     private func copy(_ selection: VerseSelection) {

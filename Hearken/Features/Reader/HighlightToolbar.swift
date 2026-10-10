@@ -16,6 +16,8 @@ struct HighlightToolbar: View {
     var onCopy: () -> Void
     var onRemove: () -> Void
     var onClose: () -> Void
+    /// Explain with Apple Intelligence; nil hides the button (device can't run it).
+    var onExplain: (() -> Void)? = nil
 
     @State private var copied = false
 
@@ -100,6 +102,9 @@ struct HighlightToolbar: View {
             .background(.quaternary.opacity(0.6), in: Capsule())
             .padding(.trailing, 4)
 
+            if let onExplain {
+                iconButton("sparkles", label: "Explain", action: onExplain)
+            }
             iconButton("square.and.pencil", label: "Add note", action: onNote)
             iconButton(copied ? "checkmark" : "doc.on.doc", label: "Copy verse") {
                 onCopy()

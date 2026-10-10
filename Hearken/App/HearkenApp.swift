@@ -1,6 +1,7 @@
 import SwiftData
 import SwiftUI
 import UIKit
+import UserNotifications
 
 @main
 struct HearkenApp: App {
@@ -14,6 +15,8 @@ struct HearkenApp: App {
         // Alerts and confirmation dialogs use the system label color (black in Light Mode,
         // white in Dark Mode) rather than the app's accent. Destructive buttons stay red.
         UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = .label
+        // Plan reminders: show while open, and open the chapter when tapped.
+        UNUserNotificationCenter.current().delegate = NotificationRouter.shared
     }
 
     var body: some Scene {
@@ -44,6 +47,7 @@ struct AppRoot: View {
                     .tint(accent.color)
             }
             .task { await account.refresh() }
+            .modifier(PlanSideEffects())
             .onChange(of: appearance, initial: true) { _, option in
                 applyAppearance(option)
             }
