@@ -255,7 +255,7 @@
 			mainGroup = 4E4B00000000000000000002;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				4E4B00000000000000000101 /* XCRemoteSwiftPackageReference "kokoro-ios" */,
+				4E4B00000000000000000101 /* XCLocalSwiftPackageReference "Packages/KokoroSwift" */,
 				4E4B00000000000000000102 /* XCRemoteSwiftPackageReference "mlx-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -670,15 +670,14 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		4E4B00000000000000000101 /* XCRemoteSwiftPackageReference "kokoro-ios" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/mlalma/kokoro-ios";
-			requirement = {
-				kind = exactVersion;
-				version = 1.0.9;
-			};
+/* Begin XCLocalSwiftPackageReference section */
+		4E4B00000000000000000101 /* XCLocalSwiftPackageReference "Packages/KokoroSwift" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/KokoroSwift;
 		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
 		4E4B00000000000000000102 /* XCRemoteSwiftPackageReference "mlx-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/ml-explore/mlx-swift";
@@ -692,7 +691,7 @@
 /* Begin XCSwiftPackageProductDependency section */
 		4E4B00000000000000000103 /* KokoroSwift */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 4E4B00000000000000000101 /* XCRemoteSwiftPackageReference "kokoro-ios" */;
+			package = 4E4B00000000000000000101 /* XCLocalSwiftPackageReference "Packages/KokoroSwift" */;
 			productName = KokoroSwift;
 		};
 		4E4B00000000000000000104 /* MLX */ = {

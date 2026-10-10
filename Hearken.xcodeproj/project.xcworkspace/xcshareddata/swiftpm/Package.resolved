@@ -1,24 +1,6 @@
 {
-  "originHash" : "070dc07fe627f1d4b0633ab8ae99eebbf34ba93a0f952561b20fd83fcf580ec7",
+  "originHash" : "e8944ecb3aea2eb14b33e9c44cea5fd1e1b4efecc283b3a4fb90d5404e297f04",
   "pins" : [
-    {
-      "identity" : "kokoro-ios",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/mlalma/kokoro-ios",
-      "state" : {
-        "revision" : "87602d0738306758921df1aeef55785b091104e7",
-        "version" : "1.0.9"
-      }
-    },
-    {
-      "identity" : "misakiswift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/mlalma/MisakiSwift",
-      "state" : {
-        "revision" : "bb5e3e3671ef550dc545a98f4a4c15f58ee649ec",
-        "version" : "1.0.5"
-      }
-    },
     {
       "identity" : "mlx-swift",
       "kind" : "remoteSourceControl",
