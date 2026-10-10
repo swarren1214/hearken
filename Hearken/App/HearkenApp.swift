@@ -19,6 +19,8 @@ struct HearkenApp: App {
         UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = .label
         // Plan reminders: show while open, and open the chapter when tapped.
         UNUserNotificationCenter.current().delegate = NotificationRouter.shared
+        // Listen mode marks chapters read when heard to the end, even when Siri started it in the background.
+        ListenEngine.shared.attach(container: container)
     }
 
     var body: some Scene {
@@ -51,6 +53,7 @@ struct AppRoot: View {
             .task { await account.refresh() }
             .modifier(PlanSideEffects())
             .modifier(GroupSideEffects())
+            .modifier(ListenSideEffects())
             .onChange(of: appearance, initial: true) { _, option in
                 applyAppearance(option)
             }

@@ -47,6 +47,8 @@ struct RootTabView: View {
             }
         }
         .tabBarMinimizeBehavior(.onScrollDown)
+        // Listen mode: the mini player above the tab bar, and the full player sheet.
+        .listenPlayer()
         // Widgets (hearken://read/<chapter>), plan reminders, Siri and Shortcuts open a chapter here.
         .onOpenURL { navigator.handle($0) }
         .onChange(of: navigator.pendingChapterID, initial: true) { _, chapterID in

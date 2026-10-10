@@ -91,6 +91,11 @@ struct SettingsView: View {
                         Text("\(legend.entries.count)").foregroundStyle(.secondary)
                     }
                 }
+                NavigationLink {
+                    ListenSettingsView()
+                } label: {
+                    LabeledContent("Listening", value: ListenEngine.shared.voiceName)
+                }
                 Toggle("Verse Numbers", isOn: $showVerseNumbers)
                 Picker("Layout", selection: $readerLayout) {
                     ForEach(ReaderLayout.allCases) { layout in
@@ -128,8 +133,8 @@ struct SettingsView: View {
                 Button("Done", systemImage: "checkmark") { dismiss() }
             }
         }
-        .confirmationDialog("Delete your Hearken account?", isPresented: $confirmDelete, titleVisibility: .visible) {
-            Button("Delete Account and Data", role: .destructive) { deleteAccount() }
+        .confirmationDialog(account.isSignedIn ? "Delete your Hearken account?" : "Delete all your Hearken data?", isPresented: $confirmDelete, titleVisibility: .visible) {
+            Button(account.isSignedIn ? "Delete Account and Data" : "Delete All Data", role: .destructive) { deleteAccount() }
         } message: {
             Text("This removes your notes, highlights, plans and progress from this device and from iCloud, deletes the study groups you created and leaves the ones you joined. It can't be undone.")
         }
@@ -186,15 +191,30 @@ struct SettingsView: View {
                         avatarItem = nil
                     }
                 }
-                HStack {
-                    Text("iCloud")
-                    Spacer()
-                    iCloudStatus
-                }
+            }
+            HStack {
+                Text("iCloud")
+                Spacer()
+                iCloudStatus
+            }
+            .fullWidthSeparator()
+            syncRow
                 .fullWidthSeparator()
-                syncRow
-                    .fullWidthSeparator()
+        } header: {
+            Text("Account")
+        } footer: {
+            if account.iCloudAvailable == false {
+                Text("Your study stays on this iPhone. Sign in to iCloud in the Settings app to sync across your devices and read with others.")
+            } else if let error = sync.lastError {
+                Text("Couldn't sync: \(error)")
+                    .foregroundStyle(.red)
             } else {
+                Text("Your notes, highlights, bookmarks, plans and progress sync through your iCloud account.")
+            }
+        }
+
+        if !account.isSignedIn {
+            Section {
                 SignInWithAppleButton(.signIn) { request in
                     request.requestedScopes = [.fullName, .email]
                 } onCompletion: { result in
@@ -210,23 +230,14 @@ struct SettingsView: View {
                 .clipShape(Capsule())
                 .listRowInsets(EdgeInsets())
                 .listRowBackground(Color.clear)
-            }
-        } header: {
-            Text("Account")
-        } footer: {
-            if !account.isSignedIn {
-                Text("Sign in to save highlights, notes and progress to your own iCloud.")
-            } else if account.iCloudAvailable == false {
-                Text("Your work stays on this iPhone until iCloud is turned on in Settings.")
-            } else if let error = sync.lastError {
-                Text("Couldn't sync: \(error)")
-                    .foregroundStyle(.red)
+            } footer: {
+                Text("Optional. Signing in adds your name and photo to your profile and study groups. Every feature works without it.")
             }
         }
 
-        if account.isSignedIn {
-            Section {
-                VStack(spacing: 10) {
+        Section {
+            VStack(spacing: 10) {
+                if account.isSignedIn {
                     // Primary: filled with the accent color, white text and icon.
                     Button {
                         account.signOut()
@@ -237,23 +248,28 @@ struct SettingsView: View {
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.glassProminent)
-
-                    // Destructive: filled red, white text and icon.
-                    Button(role: .destructive) {
-                        confirmDelete = true
-                    } label: {
-                        Label("Delete Account", systemImage: "trash")
-                            // Inside a Form the icon would pick up the accent; keep it white like the text.
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.glassProminent)
-                    .tint(.red)
                 }
-                .controlSize(.large)
-                .listRowInsets(EdgeInsets())
-                .listRowBackground(Color.clear)
+
+                // Destructive: filled red, white text and icon.
+                Button(role: .destructive) {
+                    confirmDelete = true
+                } label: {
+                    Label(account.isSignedIn ? "Delete Account" : "Delete All Data", systemImage: "trash")
+                        // Inside a Form the icon would pick up the accent; keep it white like the text.
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.glassProminent)
+                .tint(.red)
             }
+            .controlSize(.large)
+            .buttonBorderShape(.capsule)
+            // The row clips its content, and glass draws slightly past its frame (and grows
+            // when pressed), so leave a little room or the capsule's round ends get cut flat.
+            .padding(.horizontal, 6)
+            .padding(.vertical, 6)
+            .listRowInsets(EdgeInsets())
+            .listRowBackground(Color.clear)
         }
     }
 

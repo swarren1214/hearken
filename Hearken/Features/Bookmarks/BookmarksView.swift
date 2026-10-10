@@ -352,6 +352,9 @@ struct BookmarkEditor: View {
                     .buttonStyle(.glassProminent)
                     .tint(.red)
                     .controlSize(.large)
+                    .buttonBorderShape(.capsule)
+                    // Room for glass to draw past its frame, so the round ends aren't clipped flat.
+                    .padding(6)
                     .listRowInsets(EdgeInsets())
                     .listRowBackground(Color.clear)
                 }

@@ -52,12 +52,13 @@ struct ReaderView: View {
     /// could build the sheet from the values before they were set (no + or Add Bookmark Here).
     @State private var bookmarksSheet: BookmarksPresentation?
     @State private var quickAdd: QuickAdd?
-    @State private var showSignInPrompt = false
     @Query private var bookmarks: [Bookmark]
     @AppStorage(SettingsKey.readerLayout) private var layout: ReaderLayout = .scroll
     @AppStorage(SettingsKey.scriptureTextSize) private var textSize: Double = 20
     @AppStorage(SettingsKey.pencilHighlighting) private var pencilHighlighting = false
     @AppStorage(SettingsKey.onboardingDone) private var onboardingDone = false
+    @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
+    @State private var listen = ListenEngine.shared
 
     /// Opens `chapterID`, scrolled (or paged) to `verse` when given.
     init(chapterID: String, verse: Int? = nil) {
@@ -93,6 +94,28 @@ struct ReaderView: View {
                     }
                 }
                 .sharedBackgroundVisibility(.hidden)
+
+                ToolbarItem(placement: .topBarTrailing) {
+                    // Tap: listen from here (or pause and resume). Touch and hold for more.
+                    Menu {
+                        Button("Listen from Here", systemImage: "headphones") { startListening(fromStart: false) }
+                        Button("Listen from the Beginning", systemImage: "backward.end") { startListening(fromStart: true) }
+                        if listen.isActive {
+                            Button("Stop Listening", systemImage: "xmark", role: .destructive) { listen.stop() }
+                        }
+                    } label: {
+                        Label(listeningHere && listen.isPlaying ? "Pause Listening" : "Listen", systemImage: "headphones")
+                            .symbolEffect(.pulse, isActive: listeningHere && listen.isPlaying)
+                    } primaryAction: {
+                        if listeningHere {
+                            listen.toggle()
+                        } else {
+                            startListening(fromStart: false)
+                        }
+                    }
+                    .tint(listeningHere ? accent.color : Color.primary)
+                    .accessibilityHint("Reads the chapter aloud. Touch and hold for more options.")
+                }
 
                 ToolbarItem(placement: .topBarTrailing) {
                     // Tap: the bookmarks list. Touch and hold: add one here straight away.
@@ -206,12 +229,23 @@ struct ReaderView: View {
             }
             .sensoryFeedback(.selection, trigger: chapterID)
             .sensoryFeedback(.success, trigger: quickAdd?.id) { _, new in new != nil }
-            .alert("Sign in to save bookmarks", isPresented: $showSignInPrompt) {
-                Button("Sign In") { onboardingDone = false }
-                Button("Not Now", role: .cancel) {}
-            } message: {
-                Text("Your bookmarks, highlights and notes are saved to your own iCloud.")
+            // Listen mode moved on to the next chapter: turn the reader with it.
+            .onChange(of: listen.chapterID) { old, new in
+                guard let new, old == chapterID, new != chapterID else { return }
+                startsAtEnd = false
+                targetVerse = nil
+                chapterID = new
             }
+    }
+
+    // MARK: Listen
+
+    private var listeningHere: Bool { listen.chapterID == chapterID }
+
+    /// Starts reading this chapter aloud: from the selected verse, the top of the page, or verse 1.
+    private func startListening(fromStart: Bool) {
+        let verse = fromStart ? nil : (probe.selectedVerse ?? probe.topVerse())
+        listen.start(chapterID: chapterID, fromVerse: verse)
     }
 
     // MARK: Bookmarks
@@ -224,19 +258,11 @@ struct ReaderView: View {
     }
 
     private func openBookmarks(route: BookmarkRoute? = nil) {
-        guard account.isSignedIn else {
-            showSignInPrompt = true
-            return
-        }
         quickAdd = nil
         bookmarksSheet = BookmarksPresentation(here: here, route: route)
     }
 
     private func addBookmarkHere() {
-        guard account.isSignedIn else {
-            showSignInPrompt = true
-            return
-        }
         guard let here else { return }
         let bookmark = Bookmark(chapterID: here.chapterID, verse: here.verse)
         modelContext.insert(bookmark)
@@ -314,7 +340,6 @@ struct ReaderPage: View {
     /// A verse whose study-group marker was tapped.
     @State private var groupVerse: GroupVerseTarget?
     @State private var sharedToGroup = 0
-    @State private var showSignInPrompt = false
     @State private var pageCache = PageCache()
     /// Page Turn: the verse at the top of the page on screen, so a rebuilt page view (for
     /// example after rotating into or out of a two-page spread) opens where you were.
@@ -323,6 +348,10 @@ struct ReaderPage: View {
     /// reader's visible area. Used to float the toolbar above a selection near the bottom.
     @State private var textFrames: [Int: CGRect] = [:]
     @State private var visibleBottom: CGFloat = .infinity
+    /// Listen mode: the page follows the verse being read until you scroll away.
+    @State private var listen = ListenEngine.shared
+    @State private var followsListening = true
+    @State private var resumeAfterExplain = false
 
     private let mastery = MasteryService()
 
@@ -354,6 +383,8 @@ struct ReaderPage: View {
     private var chapter: Chapter? { content.chapter(chapterID) }
     private var fontSize: CGFloat { CGFloat(textSize) * bodyMetric / 17 }
     private var progress: ReadingProgress? { progressRecords.first }
+    /// The verse Listen mode is reading in this chapter.
+    private var speakingVerse: Int? { listen.chapterID == chapterID ? listen.currentVerse : nil }
 
     var body: some View {
         let _ = probe.map { $0.isPaged = layout == .pages }
@@ -374,6 +405,11 @@ struct ReaderPage: View {
                 // Scrolling away from a selection dismisses it, like Books.
                 .onScrollPhaseChange { _, phase in
                     if phase == .interacting, selection != nil { closeSelection() }
+                    if phase == .interacting, speakingVerse != nil, listen.isPlaying { followsListening = false }
+                }
+                .onChange(of: speakingVerse) { _, verse in
+                    guard followsListening, listen.isPlaying, let verse else { return }
+                    probe?.reveal(verse: verse, animated: !reduceMotion)
                 }
                 .task {
                     // Opening a bookmark: scroll to its verse once the text is laid out.
@@ -393,6 +429,8 @@ struct ReaderPage: View {
         .animation(.snappy(duration: 0.25), value: selection)
         .animation(.easeOut(duration: 0.15), value: isAdjustingSelection)
         .overlay(alignment: .bottom) { pencilOverlay }
+        .overlay(alignment: .bottom) { backToListeningPill }
+        .animation(.snappy, value: followsListening)
         .animation(.snappy, value: pencilOn)
         .animation(.snappy, value: UIDevice.isPad ? selection?.start : nil)
         .animation(.snappy, value: recentStroke?.id)
@@ -403,6 +441,22 @@ struct ReaderPage: View {
             if !Task.isCancelled { recentStroke = nil }
         }
         .sensoryFeedback(.selection, trigger: selection?.start)
+        .onChange(of: selection?.start.verse, initial: true) { _, verse in
+            probe?.selectedVerse = verse
+        }
+        .onChange(of: listen.isPlaying) { _, playing in
+            if playing { followsListening = true }
+        }
+        .onChange(of: explainRequest == nil) { _, closed in
+            // Explain pauses Listen mode while it's open, then picks back up.
+            if !closed, listen.isPlaying {
+                listen.pause()
+                resumeAfterExplain = true
+            } else if closed, resumeAfterExplain {
+                resumeAfterExplain = false
+                listen.play()
+            }
+        }
         .onChange(of: selection?.start) { _, start in
             guard let start, let progress else { return }
             progress.lastVerse = start.verse
@@ -443,13 +497,29 @@ struct ReaderPage: View {
                 existing: notes.first { $0.verse == target.verse.number }
             )
         }
-        .alert("Sign in to save highlights and notes", isPresented: $showSignInPrompt) {
-            Button("Sign In") { onboardingDone = false }
-            Button("Not Now", role: .cancel) {}
-        } message: {
-            Text("Your highlights, notes and progress are saved to your own iCloud.")
-        }
         .onAppear(perform: touchProgress)
+    }
+
+    // MARK: Listen
+
+    /// After scrolling or turning away while listening: a way back to the verse being read.
+    @ViewBuilder
+    private var backToListeningPill: some View {
+        if !followsListening, listen.isPlaying, let verse = speakingVerse, !pencilOn, selection == nil {
+            Button {
+                followsListening = true
+                probe?.reveal(verse: verse, animated: !reduceMotion)
+            } label: {
+                Label("Back to Verse \(verse)", systemImage: "waveform")
+                    .font(.subheadline.weight(.semibold))
+                    .padding(.horizontal, 16)
+                    .frame(height: 40)
+            }
+            .buttonStyle(.plain)
+            .glassEffect(.regular.interactive(), in: .capsule)
+            .padding(.bottom, 12)
+            .transition(.move(edge: .bottom).combined(with: .opacity))
+        }
     }
 
     // MARK: Text
@@ -463,7 +533,9 @@ struct ReaderPage: View {
             highlights: interactive ? highlights : [],
             noteVerses: interactive ? Set(notes.map(\.verse)) : [],
             bookmarkVerses: interactive ? Set(bookmarks.map(\.verse)) : [],
-            groupVerses: interactive ? groupVerses : []
+            groupVerses: interactive ? groupVerses : [],
+            // Not while drawing with Pencil: rebuilding the text each verse would wipe a stroke in progress.
+            speakingVerse: interactive && !pencilOn ? speakingVerse : nil
         )
     }
 
@@ -738,11 +810,10 @@ struct ReaderPage: View {
 
     // MARK: Actions
 
-    private func requireSignIn() -> Bool {
-        if account.isSignedIn { return true }
-        showSignInPrompt = true
-        return false
-    }
+    /// Everything in the reader works without Sign in with Apple; data saves locally
+    /// and syncs through the device's iCloud account. Kept as a single hook in case a
+    /// future feature needs a gate.
+    private func requireSignIn() -> Bool { true }
 
     private func pick(_ hue: HighlightHue, selection: VerseSelection, existing: Highlight?) {
         guard requireSignIn() else { return }
@@ -882,7 +953,6 @@ struct ReaderPage: View {
     }
 
     private func touchProgress() {
-        guard account.isSignedIn else { return }
         if let progress {
             progress.updatedAt = .now
         } else {
@@ -999,7 +1069,14 @@ extension ReaderPage {
                 },
                 previousChapterPages: previousID.map { neighborPages($0, last: true, size: pageSize, spread: spread) } ?? [],
                 nextChapterPages: nextID.map { neighborPages($0, last: false, size: pageSize, spread: spread) } ?? [],
-                onTurnStart: { if selection != nil { closeSelection() } },
+                followPage: followsListening && listen.isPlaying
+                    ? speakingVerse.flatMap { page(ofVerse: $0, layout: built, paged: paged) }
+                    : nil,
+                onTurnStart: {
+                    if selection != nil { closeSelection() }
+                    // Turning pages by hand while listening stops the page from following.
+                    if speakingVerse != nil, listen.isPlaying { followsListening = false }
+                },
                 onPageChange: { page in
                     probe?.currentPage = page
                     if page < paged.pageRanges.count {

@@ -50,6 +50,15 @@ struct HearkenShortcuts: AppShortcutsProvider {
             systemImageName: "book"
         )
         AppShortcut(
+            intent: ListenTodayIntent(),
+            phrases: [
+                "Read today's chapter in \(.applicationName)",
+                "Listen to my \(.applicationName) reading",
+            ],
+            shortTitle: "Listen to Today",
+            systemImageName: "headphones"
+        )
+        AppShortcut(
             intent: PlanProgressIntent(),
             phrases: [
                 "How's my \(.applicationName) plan",

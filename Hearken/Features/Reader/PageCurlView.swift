@@ -24,6 +24,8 @@ struct PageCurlView: UIViewControllerRepresentable {
     let previousChapterPages: [AnyView]
     /// What the curl reveals after the last page: the next chapter's first page (or two).
     let nextChapterPages: [AnyView]
+    /// Listen mode: the page holding the verse being read; turns there when it changes.
+    var followPage: Int? = nil
     /// A page turn has begun (used to dismiss any text selection).
     var onTurnStart: () -> Void = {}
     /// The page now on screen (the left one in a spread), after opening or a completed turn.
@@ -76,6 +78,9 @@ struct PageCurlView: UIViewControllerRepresentable {
 
         var parent: PageCurlView
         private var slotsByHost: [ObjectIdentifier: Slot] = [:]
+        private var lastFollowPage: Int?
+        /// A curl is running; starting another one now would throw.
+        private var isTransitioning = false
 
         init(parent: PageCurlView) {
             self.parent = parent
@@ -139,6 +144,24 @@ struct PageCurlView: UIViewControllerRepresentable {
         /// Re-renders visible pages after the chapter, highlights or layout change.
         func refresh(_ controller: UIPageViewController) {
             guard let visible = controller.viewControllers, let first = slot(of: visible.first) else { return }
+            if parent.followPage != lastFollowPage, !isTransitioning {
+                lastFollowPage = parent.followPage
+                if let target = parent.followPage, case .page(let index) = first {
+                    let start = clampedStart(target)
+                    if start != clampedStart(index) {
+                        isTransitioning = true
+                        controller.setViewControllers(
+                            slots(startingAt: start).map(host(for:)),
+                            direction: start > index ? .forward : .reverse,
+                            animated: parent.curl
+                        ) { [weak self] _ in
+                            self?.isTransitioning = false
+                        }
+                        parent.onPageChange(start)
+                        return
+                    }
+                }
+            }
             if case .page(let index) = first {
                 let start = clampedStart(index)
                 let expected = slots(startingAt: start)
@@ -172,6 +195,7 @@ struct PageCurlView: UIViewControllerRepresentable {
         }
 
         func pageViewController(_ controller: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
+            isTransitioning = true
             parent.onTurnStart()
         }
 
@@ -181,6 +205,7 @@ struct PageCurlView: UIViewControllerRepresentable {
             previousViewControllers: [UIViewController],
             transitionCompleted completed: Bool
         ) {
+            isTransitioning = false
             guard completed else { return }
             switch slot(of: controller.viewControllers?.first) {
             case .previousChapter: parent.onLeaveChapter(false)

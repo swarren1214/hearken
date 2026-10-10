@@ -11,6 +11,8 @@ final class ReaderProbe {
     var isPaged = false
     var pageRanges: [NSRange] = []
     var currentPage = 0
+    /// The first verse of the current selection, if any (Listen starts there).
+    var selectedVerse: Int?
 
     /// The verse at the top of the page: the first line on screen in Scroll, the first line
     /// of the current page in Page Turn.
@@ -32,7 +34,7 @@ final class ReaderProbe {
 
     /// Scrolls so `verse` sits just below the top bar. Scroll layout only; Page Turn opens
     /// on the verse's page instead.
-    func reveal(verse: Int) {
+    func reveal(verse: Int, animated: Bool = false) {
         guard !isPaged, let layout, let textView, let scrollView = Self.enclosingScrollView(of: textView),
               let range = layout.verseText(verse) else { return }
         scrollView.layoutIfNeeded()
@@ -44,7 +46,7 @@ final class ReaderProbe {
         let inset = scrollView.adjustedContentInset
         let lowest = max(-inset.top, scrollView.contentSize.height + inset.bottom - scrollView.bounds.height)
         let y = min(max(rect.minY - inset.top - 12, -inset.top), lowest)
-        scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x, y: y), animated: false)
+        scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x, y: y), animated: animated)
     }
 
     /// The reader's scroll view (the text view is itself a scroll view, so start above it).

@@ -59,8 +59,8 @@ struct GroupSideEffects: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .task(id: "\(account.isSignedIn)|\(account.iCloudAvailable == true)|\(scenePhase == .active)") {
-                guard account.isSignedIn, account.iCloudAvailable == true, scenePhase == .active else { return }
+            .task(id: "\(account.iCloudAvailable == true)|\(scenePhase == .active)") {
+                guard account.iCloudAvailable == true, scenePhase == .active else { return }
                 await GroupStore.shared.refresh()
                 await GroupStore.shared.ensureSubscriptions()
             }
@@ -76,7 +76,7 @@ struct GroupSideEffects: ViewModifier {
 
     private func publish() async {
         let store = GroupStore.shared
-        guard account.isSignedIn, !store.groups.isEmpty else { return }
+        guard account.iCloudAvailable == true, !store.groups.isEmpty else { return }
         let read = PlanReading.readSet(progress)
         let streak = MasteryMath.streak(activityDates: xpEvents.map(\.createdAt), now: .now)
         for group in store.groups {
@@ -118,7 +118,7 @@ struct GroupsSection: View {
 
     var body: some View {
         let store = GroupStore.shared
-        if account.isSignedIn, AppConfig.cloudSyncEnabled {
+        if account.iCloudAvailable == true, AppConfig.cloudSyncEnabled {
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     Text("Study Groups").font(.title2.bold())

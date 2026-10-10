@@ -103,7 +103,7 @@ struct SignInView: View {
             Button("Not now", action: onFinish)
                 .frame(minHeight: 44)
 
-            Text("Sign in to sync notes, highlights and progress. You can read and practice without an account.")
+            Text("Optional. Signing in adds your name and photo. Everything else works, and syncs with iCloud, without it.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)

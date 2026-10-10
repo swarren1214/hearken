@@ -142,11 +142,6 @@ struct GameView: View {
                 Text("\(request.title.uppercased()) · \(index + 1) OF \(questions.count)")
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(.secondary)
-                if !account.isSignedIn {
-                    Label("Practice mode: sign in to save progress", systemImage: "info.circle")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                }
                 Text(question.prompt)
                     .font(.title2.bold())
                     .fixedSize(horizontal: false, vertical: true)
@@ -182,9 +177,7 @@ struct GameView: View {
         picked = option
         let correct = option == question.answer
         if correct { xpEarned += MasteryConfig.standard.xpPerCorrect }
-        if account.isSignedIn {
-            mastery.record(questionID: question.id, correct: correct, in: modelContext)
-        }
+        mastery.record(questionID: question.id, correct: correct, in: modelContext)
     }
 
     private func feedbackCard(correct: Bool, question: Question) -> some View {
@@ -240,7 +233,6 @@ struct GameView: View {
                 showConfetti = false
             }
         }
-        guard account.isSignedIn else { return }
         var bonus = 0
         let alreadyDoneToday = request.kind == .daily && dailyAlreadyPlayed()
         if request.kind == .daily && !alreadyDoneToday {
@@ -294,9 +286,7 @@ struct GameView: View {
                 #endif
                 Text(score == questions.count ? "Flawless" : score * 2 >= questions.count ? "Nicely done" : "Good start")
                     .font(.title.bold())
-                Text(account.isSignedIn
-                     ? "Missed questions come back in Spaced Review."
-                     : "Sign in to save your progress and build mastery.")
+                Text("Missed questions come back in Spaced Review.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)

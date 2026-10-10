@@ -20,7 +20,6 @@ struct ReadingPlansView: View {
     @Query private var progress: [ReadingProgress]
     @AppStorage(SettingsKey.onboardingDone) private var onboardingDone = false
     @State private var starting: ReadingPlan?
-    @State private var showSignInPrompt = false
 
     var body: some View {
         let active = PlanReading.active(enrollments)
@@ -68,19 +67,9 @@ struct ReadingPlansView: View {
         .sheet(item: $starting) { plan in
             PlanStartSheet(plan: plan, replacing: active)
         }
-        .alert("Sign in to start a plan", isPresented: $showSignInPrompt) {
-            Button("Sign In") { onboardingDone = false }
-            Button("Not Now", role: .cancel) {}
-        } message: {
-            Text("Your plans and progress are saved to your own iCloud.")
-        }
     }
 
     private func start(_ plan: ReadingPlan) {
-        guard account.isSignedIn else {
-            showSignInPrompt = true
-            return
-        }
         starting = plan
     }
 }
@@ -748,36 +737,87 @@ struct PlanTodayCard: View {
                 .accessibilityHidden(true)
             }
 
-            HStack(spacing: 10) {
-                if let next = state.nextChapterID, !state.isFinished {
-                    NavigationLink {
-                        ReaderView(chapterID: next)
-                    } label: {
-                        Label(buttonTitle(todayDone: todayDone), systemImage: "book.fill")
-                            .font(.subheadline.weight(.semibold))
-                            .padding(.horizontal, 16)
-                            .frame(height: 40)
-                            .background(.white, in: Capsule())
-                            .foregroundStyle(accent.color)
-                    }
-                    .buttonStyle(.plain)
-                }
-                Spacer()
-                NavigationLink {
-                    PlanDetailView(enrollment: enrollment)
-                } label: {
-                    Text("View Plan")
-                        .font(.subheadline.weight(.semibold))
-                        .padding(.horizontal, 14)
-                        .frame(height: 40)
-                        .background(.white.opacity(0.2), in: Capsule())
-                }
-                .buttonStyle(.plain)
+            ViewThatFits(in: .horizontal) {
+                actionRow(todayDone: todayDone, listenTitle: true)
+                actionRow(todayDone: todayDone, listenTitle: false)
             }
         }
         .foregroundStyle(.white)
         .padding(18)
         .background(accent.color.gradient, in: .rect(cornerRadius: 26))
+    }
+
+    /// Read, Listen and View Plan. Listen drops its title when the row is tight.
+    private func actionRow(todayDone: Bool, listenTitle: Bool) -> some View {
+        HStack(spacing: 10) {
+            if let next = state.nextChapterID, !state.isFinished {
+                NavigationLink {
+                    ReaderView(chapterID: next)
+                } label: {
+                    Label(buttonTitle(todayDone: todayDone), systemImage: "book.fill")
+                        .font(.subheadline.weight(.semibold))
+                        .padding(.horizontal, 16)
+                        .frame(height: 40)
+                        .background(.white, in: Capsule())
+                        .foregroundStyle(accent.color)
+                }
+                .buttonStyle(.plain)
+                .fixedSize()
+
+                Button(action: listenToday) {
+                    Label(isListening && ListenEngine.shared.isPlaying ? "Listening" : "Listen", systemImage: "headphones")
+                        .labelStyle(ListenLabelStyle(showsTitle: listenTitle))
+                        .font(.subheadline.weight(.semibold))
+                        .symbolEffect(.pulse, isActive: isListening && ListenEngine.shared.isPlaying)
+                        .padding(.horizontal, listenTitle ? 16 : 0)
+                        .frame(minWidth: 40)
+                        .frame(height: 40)
+                        .background(.white.opacity(0.2), in: Capsule())
+                }
+                .buttonStyle(.plain)
+                .fixedSize()
+                .accessibilityLabel(isListening ? "Open the player" : "Listen to today's reading")
+            }
+            Spacer(minLength: 0)
+            NavigationLink {
+                PlanDetailView(enrollment: enrollment)
+            } label: {
+                Text("View Plan")
+                    .font(.subheadline.weight(.semibold))
+                    .padding(.horizontal, 14)
+                    .frame(height: 40)
+                    .background(.white.opacity(0.2), in: Capsule())
+            }
+            .buttonStyle(.plain)
+            .fixedSize()
+        }
+    }
+
+    // MARK: Listen
+
+    /// Today's chapters still to read (anything overdue first), in order.
+    private var listenQueue: [String] {
+        var queue: [String] = []
+        for id in state.overdueChapterIDs + (state.currentDay?.chapterIDs ?? []) where !state.read.contains(id) && !queue.contains(id) {
+            queue.append(id)
+        }
+        if queue.isEmpty, let next = state.nextChapterID { queue = [next] }
+        return queue
+    }
+
+    /// Listening to the plan (playing or paused): the button opens the player instead.
+    private var isListening: Bool {
+        let engine = ListenEngine.shared
+        return engine.isActive && engine.source == .plan
+    }
+
+    private func listenToday() {
+        let engine = ListenEngine.shared
+        if isListening {
+            engine.showsPlayer = true
+        } else {
+            engine.start(chapterIDs: listenQueue, source: .plan)
+        }
     }
 
     private func dayLine(_ day: PlanDay?) -> String {
@@ -837,4 +877,20 @@ struct StartPlanCard: View {
 #Preview("Plans") {
     NavigationStack { ReadingPlansView() }
         .previewEnvironment(signedIn: true)
+}
+
+/// An icon with or without its title (Listen on the plan card).
+private struct ListenLabelStyle: LabelStyle {
+    let showsTitle: Bool
+
+    func makeBody(configuration: Configuration) -> some View {
+        if showsTitle {
+            HStack(spacing: 6) {
+                configuration.icon
+                configuration.title
+            }
+        } else {
+            configuration.icon
+        }
+    }
 }

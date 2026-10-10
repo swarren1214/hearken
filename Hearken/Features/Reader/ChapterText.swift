@@ -59,7 +59,8 @@ struct ChapterTextLayout {
         highlights: [Highlight],
         noteVerses: Set<Int>,
         bookmarkVerses: Set<Int> = [],
-        groupVerses: Set<Int> = []
+        groupVerses: Set<Int> = [],
+        speakingVerse: Int? = nil
     ) {
         let bodyFont = Self.serifFont(size: fontSize)
         let numberFont = UIFont.systemFont(ofSize: fontSize * 0.6, weight: .semibold)
@@ -150,6 +151,11 @@ struct ChapterTextLayout {
         signature.combine(noteVerses.sorted())
         signature.combine(bookmarkVerses.sorted())
         signature.combine(groupVerses.sorted())
+        signature.combine(speakingVerse)
+        // Listen mode: a soft wash of the accent behind the verse being read aloud.
+        if let speakingVerse, let span = spans.first(where: { $0.verse == speakingVerse }) {
+            text.addAttribute(.backgroundColor, value: tint.withAlphaComponent(0.16), range: span.text)
+        }
         for highlight in highlights.sorted(by: { $0.createdAt < $1.createdAt }) {
             signature.combine(highlight.startVerse); signature.combine(highlight.startOffset)
             signature.combine(highlight.endVerse); signature.combine(highlight.endOffset)

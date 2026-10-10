@@ -21,11 +21,21 @@ final class AppNavigator {
         URL(string: "hearken://read/\(chapterID)") ?? URL(string: "hearken://read")!
     }
 
+    /// `hearken://listen/bofm.alma.5`
+    static func listenURL(_ chapterID: String) -> URL {
+        URL(string: "hearken://listen/\(chapterID)") ?? URL(string: "hearken://listen")!
+    }
+
     func handle(_ url: URL) {
-        guard url.scheme == "hearken", url.host() == "read" else { return }
+        guard url.scheme == "hearken", let host = url.host(), host == "read" || host == "listen" else { return }
         let chapterID = url.lastPathComponent
         guard !chapterID.isEmpty, chapterID != "/" else { return }
-        open(chapterID: chapterID)
+        if host == "listen" {
+            ListenEngine.shared.start(chapterID: chapterID)
+            if ListenEngine.shared.isActive { ListenEngine.shared.showsPlayer = true }
+        } else {
+            open(chapterID: chapterID)
+        }
     }
 }
 
