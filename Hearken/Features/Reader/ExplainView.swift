@@ -267,7 +267,7 @@ struct ExplainSheet: View {
                             .disabled(question.trimmingCharacters(in: .whitespaces).isEmpty || model.isAnswering)
                     }
                 } else {
-                    HStack(spacing: 10) {
+                    VStack(spacing: 10) {
                         Button {
                             if onSaveNote("\(model.plainText)\n\n— Explained with Hearken (AI)") { saved = true }
                         } label: {
@@ -280,6 +280,7 @@ struct ExplainSheet: View {
                             questionFocused = true
                         } label: {
                             Label("Ask a Follow-up", systemImage: "bubble.left")
+                                .lineLimit(1)
                                 .frame(maxWidth: .infinity)
                         }
                         .disabled(ExplainEngine.shared.availability != .available)
