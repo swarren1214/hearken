@@ -122,6 +122,10 @@ struct SettingsView: View {
                 Link("Terms of Use", destination: AppConfig.termsURL)
                 Link("Privacy Policy", destination: AppConfig.privacyURL)
                 Link("Support", destination: AppConfig.supportURL)
+                // Kokoro's model and voices are Apache 2.0, which asks for attribution.
+                Link(destination: URL(string: "https://huggingface.co/hexgrad/Kokoro-82M")!) {
+                    LabeledContent("Natural Voices", value: "Kokoro · Apache 2.0")
+                }
                 Text(AppConfig.disclaimer)
                     .font(.footnote)
                     .foregroundStyle(.secondary)

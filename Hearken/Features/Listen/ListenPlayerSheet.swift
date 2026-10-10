@@ -15,7 +15,7 @@ struct ListenPlayerSheet: View {
         NavigationStack {
             VStack(spacing: 0) {
                 header
-                if ListenVoices.onlyBasicVoices { voiceBanner }
+                if engine.naturalVoiceID == nil { voiceBanner }
                 lyrics
                 scrubber
                 transport
@@ -92,17 +92,33 @@ struct ListenPlayerSheet: View {
         engine.source == .plan ? "Today's reading" : engine.bookTitle
     }
 
+    /// While a system voice is reading: natural voices are downloading, or a way to get them.
+    @ViewBuilder
     private var voiceBanner: some View {
-        Button { showsVoiceHelp = true } label: {
-            Label("Sounds robotic? Get a better voice", systemImage: "waveform.badge.plus")
+        let model = KokoroModel.shared
+        switch model.state {
+        case .downloading(let fraction):
+            Label("Getting natural voices… \(fraction.formatted(.percent.precision(.fractionLength(0))))", systemImage: "arrow.down.circle")
                 .font(.footnote.weight(.semibold))
                 .padding(.horizontal, 14)
                 .frame(height: 32)
                 .background(.tint.opacity(0.14), in: Capsule())
+                .foregroundStyle(.tint)
+                .padding(.top, 6)
+        case .notDownloaded, .failed:
+            NavigationLink(value: ListenSettingsRoute()) {
+                Label("Sounds robotic? Get natural voices", systemImage: "waveform.badge.plus")
+                    .font(.footnote.weight(.semibold))
+                    .padding(.horizontal, 14)
+                    .frame(height: 32)
+                    .background(.tint.opacity(0.14), in: Capsule())
+            }
+            .buttonStyle(.plain)
+            .foregroundStyle(.tint)
+            .padding(.top, 6)
+        default:
+            EmptyView()
         }
-        .buttonStyle(.plain)
-        .foregroundStyle(.tint)
-        .padding(.top, 6)
     }
 
     private var lyrics: some View {

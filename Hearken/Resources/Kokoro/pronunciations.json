@@ -1,0 +1,941 @@
+{
+ "version": 1,
+ "names": {
+  "Abednego": {
+   "kokoro": "əbˈɛdniɡO",
+   "ipa": "əˈbɛdniɡoʊ"
+  },
+  "Abinadi": {
+   "kokoro": "əbˈɪnədI",
+   "ipa": "əˈbɪnədaɪ"
+  },
+  "Abinadom": {
+   "kokoro": "əbˈɪnədəm",
+   "ipa": "əˈbɪnədəm"
+  },
+  "Abish": {
+   "kokoro": "ˈAbɪʃ",
+   "ipa": "ˈeɪbɪʃ"
+  },
+  "Adam-ondi-Ahman": {
+   "kokoro": "ædəmɑndIˈAmən",
+   "ipa": "ædəmɑndaɪˈeɪmən"
+  },
+  "Ahasuerus": {
+   "kokoro": "əhæzjuˈiɹəs",
+   "ipa": "əhæzjuˈiɹəs"
+  },
+  "Ahman": {
+   "kokoro": "ˈAmən",
+   "ipa": "ˈeɪmən"
+  },
+  "Akish": {
+   "kokoro": "ˈAkɪʃ",
+   "ipa": "ˈeɪkɪʃ"
+  },
+  "Alma": {
+   "kokoro": "ˈælmə",
+   "ipa": "ˈælmə"
+  },
+  "Amaleki": {
+   "kokoro": "əmˈæləkI",
+   "ipa": "əˈmæləkaɪ"
+  },
+  "Amalickiah": {
+   "kokoro": "əmælɪkˈIə",
+   "ipa": "əmælɪˈkaɪə"
+  },
+  "Amaron": {
+   "kokoro": "əmˈæɹən",
+   "ipa": "əˈmæɹən"
+  },
+  "Aminadab": {
+   "kokoro": "əmˈɪnədæb",
+   "ipa": "əˈmɪnədæb"
+  },
+  "Aminadi": {
+   "kokoro": "əmˈɪnədI",
+   "ipa": "əˈmɪnədaɪ"
+  },
+  "Amlici": {
+   "kokoro": "ˈæmlɪsI",
+   "ipa": "ˈæmlɪsaɪ"
+  },
+  "Amlicite": {
+   "kokoro": "ˈæmlɪsIt",
+   "ipa": "ˈæmlɪsaɪt"
+  },
+  "Amlicites": {
+   "kokoro": "ˈæmlɪsIts",
+   "ipa": "ˈæmlɪsaɪts"
+  },
+  "Ammaron": {
+   "kokoro": "ˈæməɹən",
+   "ipa": "ˈæməɹən"
+  },
+  "Ammon": {
+   "kokoro": "ˈæmən",
+   "ipa": "ˈæmən"
+  },
+  "Ammonihah": {
+   "kokoro": "æmənˈIhə",
+   "ipa": "æməˈnaɪhə"
+  },
+  "Amnor": {
+   "kokoro": "ˈæmnɑɹ",
+   "ipa": "ˈæmnɑɹ"
+  },
+  "Amoron": {
+   "kokoro": "əmˈOɹən",
+   "ipa": "əˈmoʊɹən"
+  },
+  "Amulek": {
+   "kokoro": "ˈæmjulɛk",
+   "ipa": "ˈæmjulɛk"
+  },
+  "Amulon": {
+   "kokoro": "ˈæmjulən",
+   "ipa": "ˈæmjulən"
+  },
+  "Anti-Nephi-Lehi": {
+   "kokoro": "æntInifIlˈihI",
+   "ipa": "æntaɪnifaɪˈlihaɪ"
+  },
+  "Anti-Nephi-Lehies": {
+   "kokoro": "æntInifIlˈihIz",
+   "ipa": "æntaɪnifaɪˈlihaɪz"
+  },
+  "Antiomno": {
+   "kokoro": "æntiˈɑmnO",
+   "ipa": "æntiˈɑmnoʊ"
+  },
+  "Antionah": {
+   "kokoro": "æntiˈOnə",
+   "ipa": "æntiˈoʊnə"
+  },
+  "Antionum": {
+   "kokoro": "æntiˈOnəm",
+   "ipa": "æntiˈoʊnəm"
+  },
+  "Antiparah": {
+   "kokoro": "æntipˈæɹə",
+   "ipa": "æntiˈpæɹə"
+  },
+  "Antipus": {
+   "kokoro": "æntˈIpəs",
+   "ipa": "ænˈtaɪpəs"
+  },
+  "Antum": {
+   "kokoro": "ˈæntəm",
+   "ipa": "ˈæntəm"
+  },
+  "Archeantus": {
+   "kokoro": "ɑɹkiˈæntəs",
+   "ipa": "ɑɹkiˈæntəs"
+  },
+  "Barabbas": {
+   "kokoro": "bəɹˈæbəs",
+   "ipa": "bəˈɹæbəs"
+  },
+  "Bartimaeus": {
+   "kokoro": "bɑɹtɪmˈiəs",
+   "ipa": "bɑɹtɪˈmiəs"
+  },
+  "Belshazzar": {
+   "kokoro": "bɛlʃˈæzəɹ",
+   "ipa": "bɛlˈʃæzɚ"
+  },
+  "Bethesda": {
+   "kokoro": "bɛθˈɛzdə",
+   "ipa": "bɛˈθɛzdə"
+  },
+  "Caesarea": {
+   "kokoro": "sɛzəɹˈiə",
+   "ipa": "sɛzəˈɹiə"
+  },
+  "Cainan": {
+   "kokoro": "kˈAnən",
+   "ipa": "ˈkeɪnən"
+  },
+  "Capernaum": {
+   "kokoro": "kəpˈɜɹnAəm",
+   "ipa": "kəˈpɝneɪəm"
+  },
+  "Cezoram": {
+   "kokoro": "sizˈOɹəm",
+   "ipa": "siˈzoʊɹəm"
+  },
+  "Chemish": {
+   "kokoro": "kˈɛmɪʃ",
+   "ipa": "ˈkɛmɪʃ"
+  },
+  "Cohor": {
+   "kokoro": "kˈOhOɹ",
+   "ipa": "ˈkoʊhoʊɹ"
+  },
+  "Colossians": {
+   "kokoro": "kəlˈɑʃənz",
+   "ipa": "kəˈlɑʃənz"
+  },
+  "Comnor": {
+   "kokoro": "kˈɑmnɑɹ",
+   "ipa": "ˈkɑmnɑɹ"
+  },
+  "Corianton": {
+   "kokoro": "kOɹiˈæntən",
+   "ipa": "koʊɹiˈæntən"
+  },
+  "Coriantor": {
+   "kokoro": "kOɹiˈæntɑɹ",
+   "ipa": "koʊɹiˈæntɑɹ"
+  },
+  "Coriantum": {
+   "kokoro": "kOɹiˈæntəm",
+   "ipa": "koʊɹiˈæntəm"
+  },
+  "Coriantumr": {
+   "kokoro": "kOɹiˈæntəməɹ",
+   "ipa": "koʊɹiˈæntəmɚ"
+  },
+  "Corihor": {
+   "kokoro": "kˈOɹəhOɹ",
+   "ipa": "ˈkoʊɹəhoʊɹ"
+  },
+  "Corinthians": {
+   "kokoro": "kəɹˈɪnθiənz",
+   "ipa": "kəˈɹɪnθiənz"
+  },
+  "Corom": {
+   "kokoro": "kˈOɹəm",
+   "ipa": "ˈkoʊɹəm"
+  },
+  "Cumeni": {
+   "kokoro": "kjˈumɛnI",
+   "ipa": "ˈkjumɛnaɪ"
+  },
+  "Cumenihah": {
+   "kokoro": "kjumɛnˈIhə",
+   "ipa": "kjumɛˈnaɪhə"
+  },
+  "Cumom": {
+   "kokoro": "kjˈuməm",
+   "ipa": "ˈkjuməm"
+  },
+  "Cumorah": {
+   "kokoro": "kəmˈOɹə",
+   "ipa": "kəˈmoʊɹə"
+  },
+  "Curelom": {
+   "kokoro": "kjuɹˈiləm",
+   "ipa": "kjuˈɹiləm"
+  },
+  "Cyrenius": {
+   "kokoro": "sIɹˈiniəs",
+   "ipa": "saɪˈɹiniəs"
+  },
+  "Deseret": {
+   "kokoro": "dɛzəɹˈɛt",
+   "ipa": "dɛzɚˈɛt"
+  },
+  "Ecclesiastes": {
+   "kokoro": "ɪkliziˈæstiz",
+   "ipa": "ɪkliziˈæstiz"
+  },
+  "Egyptus": {
+   "kokoro": "iʤˈɪptəs",
+   "ipa": "iˈdʒɪptəs"
+  },
+  "Elohim": {
+   "kokoro": "ˈɛlOhim",
+   "ipa": "ˈɛloʊhim"
+  },
+  "Emer": {
+   "kokoro": "ˈiməɹ",
+   "ipa": "ˈimɚ"
+  },
+  "Emron": {
+   "kokoro": "ˈɛmɹən",
+   "ipa": "ˈɛmɹən"
+  },
+  "Enos": {
+   "kokoro": "ˈinəs",
+   "ipa": "ˈinəs"
+  },
+  "Ephesians": {
+   "kokoro": "ifˈiʒənz",
+   "ipa": "iˈfiʒənz"
+  },
+  "Ethem": {
+   "kokoro": "ˈiθəm",
+   "ipa": "ˈiθəm"
+  },
+  "Ezias": {
+   "kokoro": "izˈIəs",
+   "ipa": "iˈzaɪəs"
+  },
+  "Gadiandi": {
+   "kokoro": "ɡædiˈændI",
+   "ipa": "ɡædiˈændaɪ"
+  },
+  "Gadianton": {
+   "kokoro": "ɡædiˈæntən",
+   "ipa": "ɡædiˈæntən"
+  },
+  "Gadiomnah": {
+   "kokoro": "ɡædiˈɑmnə",
+   "ipa": "ɡædiˈɑmnə"
+  },
+  "Galatians": {
+   "kokoro": "ɡəlˈAʃənz",
+   "ipa": "ɡəˈleɪʃənz"
+  },
+  "Gamaliel": {
+   "kokoro": "ɡəmˈAliɛl",
+   "ipa": "ɡəˈmeɪliɛl"
+  },
+  "Gazelem": {
+   "kokoro": "ɡəzˈAlɛm",
+   "ipa": "ɡəˈzeɪlɛm"
+  },
+  "Gethsemane": {
+   "kokoro": "ɡɛθsˈɛməni",
+   "ipa": "ɡɛθˈsɛməni"
+  },
+  "Giddianhi": {
+   "kokoro": "ɡɪdiˈænhI",
+   "ipa": "ɡɪdiˈænhaɪ"
+  },
+  "Giddonah": {
+   "kokoro": "ɡɪddˈOnə",
+   "ipa": "ɡɪdˈdoʊnə"
+  },
+  "Gidgiddonah": {
+   "kokoro": "ɡɪdɡɪddˈOnə",
+   "ipa": "ɡɪdɡɪdˈdoʊnə"
+  },
+  "Gidgiddoni": {
+   "kokoro": "ɡɪdɡɪddˈOnI",
+   "ipa": "ɡɪdɡɪdˈdoʊnaɪ"
+  },
+  "Gilgah": {
+   "kokoro": "ɡˈɪlɡə",
+   "ipa": "ˈɡɪlɡə"
+  },
+  "Gimgimno": {
+   "kokoro": "ɡɪmɡˈɪmnO",
+   "ipa": "ɡɪmˈɡɪmnoʊ"
+  },
+  "Golgotha": {
+   "kokoro": "ɡˈɑlɡəθə",
+   "ipa": "ˈɡɑlɡəθə"
+  },
+  "Gomorrah": {
+   "kokoro": "ɡəmˈOɹə",
+   "ipa": "ɡəˈmoʊɹə"
+  },
+  "Habakkuk": {
+   "kokoro": "hˈæbəkək",
+   "ipa": "ˈhæbəkək"
+  },
+  "Haggai": {
+   "kokoro": "hˈæɡI",
+   "ipa": "ˈhæɡaɪ"
+  },
+  "Hagoth": {
+   "kokoro": "hˈAɡɑθ",
+   "ipa": "ˈheɪɡɑθ"
+  },
+  "Helam": {
+   "kokoro": "hˈiləm",
+   "ipa": "ˈhiləm"
+  },
+  "Helaman": {
+   "kokoro": "hˈiləmən",
+   "ipa": "ˈhiləmən"
+  },
+  "Helem": {
+   "kokoro": "hˈiləm",
+   "ipa": "ˈhiləm"
+  },
+  "Helorum": {
+   "kokoro": "hilˈOɹəm",
+   "ipa": "hiˈloʊɹəm"
+  },
+  "Hermounts": {
+   "kokoro": "hˈɜɹmWnts",
+   "ipa": "ˈhɝmaʊnts"
+  },
+  "Heshlon": {
+   "kokoro": "hˈɛʃlən",
+   "ipa": "ˈhɛʃlən"
+  },
+  "Hezekiah": {
+   "kokoro": "hɛzɛkˈIə",
+   "ipa": "hɛzɛˈkaɪə"
+  },
+  "Himni": {
+   "kokoro": "hˈɪmnI",
+   "ipa": "ˈhɪmnaɪ"
+  },
+  "Hosea": {
+   "kokoro": "hOzˈAə",
+   "ipa": "hoʊˈzeɪə"
+  },
+  "Irreantum": {
+   "kokoro": "ɪɹiˈæntəm",
+   "ipa": "ɪɹiˈæntəm"
+  },
+  "Ishmael": {
+   "kokoro": "ˈɪʃmAɛl",
+   "ipa": "ˈɪʃmeɪɛl"
+  },
+  "Ishmaelite": {
+   "kokoro": "ˈɪʃmAɛlIt",
+   "ipa": "ˈɪʃmeɪɛlaɪt"
+  },
+  "Ishmaelites": {
+   "kokoro": "ˈɪʃmAɛlIts",
+   "ipa": "ˈɪʃmeɪɛlaɪts"
+  },
+  "Jacobugath": {
+   "kokoro": "ʤAkObjˈuɡæθ",
+   "ipa": "dʒeɪkoʊˈbjuɡæθ"
+  },
+  "Jaredite": {
+   "kokoro": "ʤˈɛɹɛdIt",
+   "ipa": "ˈdʒɛɹɛdaɪt"
+  },
+  "Jaredites": {
+   "kokoro": "ʤˈɛɹɛdIts",
+   "ipa": "ˈdʒɛɹɛdaɪts"
+  },
+  "Jarom": {
+   "kokoro": "ʤˈɛɹəm",
+   "ipa": "ˈdʒɛɹəm"
+  },
+  "Jashon": {
+   "kokoro": "ʤˈæʃən",
+   "ipa": "ˈdʒæʃən"
+  },
+  "Jehoshaphat": {
+   "kokoro": "ʤihˈɑʃəfæt",
+   "ipa": "dʒiˈhɑʃəfæt"
+  },
+  "Jeneum": {
+   "kokoro": "ʤˈɛniəm",
+   "ipa": "ˈdʒɛniəm"
+  },
+  "Jeroboam": {
+   "kokoro": "ʤɛɹObˈOəm",
+   "ipa": "dʒɛɹoʊˈboʊəm"
+  },
+  "Jershon": {
+   "kokoro": "ʤˈɜɹʃən",
+   "ipa": "ˈdʒɝʃən"
+  },
+  "Josiah": {
+   "kokoro": "ʤOsˈIə",
+   "ipa": "dʒoʊˈsaɪə"
+  },
+  "Kimnor": {
+   "kokoro": "kˈɪmnɑɹ",
+   "ipa": "ˈkɪmnɑɹ"
+  },
+  "Kishkumen": {
+   "kokoro": "kɪʃkjˈumɛn",
+   "ipa": "kɪʃˈkjumɛn"
+  },
+  "Kokob": {
+   "kokoro": "kˈOkɑb",
+   "ipa": "ˈkoʊkɑb"
+  },
+  "Kolob": {
+   "kokoro": "kˈOlɑb",
+   "ipa": "ˈkoʊlɑb"
+  },
+  "Korihor": {
+   "kokoro": "kˈOɹɪhOɹ",
+   "ipa": "ˈkoʊɹɪhoʊɹ"
+  },
+  "Kumen": {
+   "kokoro": "kjˈumɛn",
+   "ipa": "ˈkjumɛn"
+  },
+  "Kumenonhi": {
+   "kokoro": "kjumˈɛnənhI",
+   "ipa": "kjuˈmɛnənhaɪ"
+  },
+  "Laban": {
+   "kokoro": "lˈAbən",
+   "ipa": "ˈleɪbən"
+  },
+  "Lachoneus": {
+   "kokoro": "ləkˈOniəs",
+   "ipa": "ləˈkoʊniəs"
+  },
+  "Lamah": {
+   "kokoro": "lˈAmə",
+   "ipa": "ˈleɪmə"
+  },
+  "Laman": {
+   "kokoro": "lˈAmən",
+   "ipa": "ˈleɪmən"
+  },
+  "Lamanite": {
+   "kokoro": "lˈAmənIt",
+   "ipa": "ˈleɪmənaɪt"
+  },
+  "Lamanites": {
+   "kokoro": "lˈAmənIts",
+   "ipa": "ˈleɪmənaɪts"
+  },
+  "Lamoni": {
+   "kokoro": "ləmˈOnI",
+   "ipa": "ləˈmoʊnaɪ"
+  },
+  "Lehi": {
+   "kokoro": "lˈihI",
+   "ipa": "ˈlihaɪ"
+  },
+  "Lehi-Nephi": {
+   "kokoro": "lihInˈifI",
+   "ipa": "lihaɪˈnifaɪ"
+  },
+  "Lehonti": {
+   "kokoro": "lihˈɑntI",
+   "ipa": "liˈhɑntaɪ"
+  },
+  "Lemuel": {
+   "kokoro": "lˈɛmjuɛl",
+   "ipa": "ˈlɛmjuɛl"
+  },
+  "Lemuelite": {
+   "kokoro": "lˈɛmjuɛlIt",
+   "ipa": "ˈlɛmjuɛlaɪt"
+  },
+  "Lemuelites": {
+   "kokoro": "lˈɛmjuɛlIts",
+   "ipa": "ˈlɛmjuɛlaɪts"
+  },
+  "Liahona": {
+   "kokoro": "liəhˈOnə",
+   "ipa": "liəˈhoʊnə"
+  },
+  "Limhah": {
+   "kokoro": "lˈɪmhə",
+   "ipa": "ˈlɪmhə"
+  },
+  "Limher": {
+   "kokoro": "lˈɪmhəɹ",
+   "ipa": "ˈlɪmhɚ"
+  },
+  "Limhi": {
+   "kokoro": "lˈɪmhI",
+   "ipa": "ˈlɪmhaɪ"
+  },
+  "Luram": {
+   "kokoro": "lˈuɹəm",
+   "ipa": "ˈluɹəm"
+  },
+  "Madmenah": {
+   "kokoro": "mædmˈɛnə",
+   "ipa": "mædˈmɛnə"
+  },
+  "Mahah": {
+   "kokoro": "mˈAhə",
+   "ipa": "ˈmeɪhə"
+  },
+  "Maher-shalal-hash-baz": {
+   "kokoro": "mAhəɹʃælælhˈæʃbæz",
+   "ipa": "meɪhɚʃælælˈhæʃbæz"
+  },
+  "Mahijah": {
+   "kokoro": "məhˈIʤə",
+   "ipa": "məˈhaɪdʒə"
+  },
+  "Mahonri": {
+   "kokoro": "məhˈɑnɹI",
+   "ipa": "məˈhɑnɹaɪ"
+  },
+  "Mahujah": {
+   "kokoro": "məhˈuʤə",
+   "ipa": "məˈhudʒə"
+  },
+  "Malachi": {
+   "kokoro": "mˈæləkI",
+   "ipa": "ˈmæləkaɪ"
+  },
+  "Manti": {
+   "kokoro": "mˈæntI",
+   "ipa": "ˈmæntaɪ"
+  },
+  "Mathoni": {
+   "kokoro": "məθˈOnI",
+   "ipa": "məˈθoʊnaɪ"
+  },
+  "Mathonihah": {
+   "kokoro": "mæθOnˈIhə",
+   "ipa": "mæθoʊˈnaɪhə"
+  },
+  "Melchizedek": {
+   "kokoro": "mɛlkˈɪzɛdɛk",
+   "ipa": "mɛlˈkɪzɛdɛk"
+  },
+  "Meshach": {
+   "kokoro": "mˈiʃæk",
+   "ipa": "ˈmiʃæk"
+  },
+  "Methuselah": {
+   "kokoro": "mɛθˈuzɛlə",
+   "ipa": "mɛˈθuzɛlə"
+  },
+  "Micah": {
+   "kokoro": "mˈIkə",
+   "ipa": "ˈmaɪkə"
+  },
+  "Middoni": {
+   "kokoro": "mɪddˈOnI",
+   "ipa": "mɪdˈdoʊnaɪ"
+  },
+  "Minon": {
+   "kokoro": "mˈInən",
+   "ipa": "ˈmaɪnən"
+  },
+  "Moriah": {
+   "kokoro": "mOɹˈIə",
+   "ipa": "moʊˈɹaɪə"
+  },
+  "Moriancumer": {
+   "kokoro": "mOɹiˈænkjuməɹ",
+   "ipa": "moʊɹiˈænkjumɚ"
+  },
+  "Morianton": {
+   "kokoro": "mOɹiˈæntən",
+   "ipa": "moʊɹiˈæntən"
+  },
+  "Moriantum": {
+   "kokoro": "mOɹiˈæntəm",
+   "ipa": "moʊɹiˈæntəm"
+  },
+  "Mormon": {
+   "kokoro": "mˈOɹmən",
+   "ipa": "ˈmoʊɹmən"
+  },
+  "Moron": {
+   "kokoro": "mˈOɹən",
+   "ipa": "ˈmoʊɹən"
+  },
+  "Moroni": {
+   "kokoro": "mOɹˈOnI",
+   "ipa": "moʊˈɹoʊnaɪ"
+  },
+  "Moronihah": {
+   "kokoro": "mOɹOnˈIhə",
+   "ipa": "moʊɹoʊˈnaɪhə"
+  },
+  "Mosiah": {
+   "kokoro": "mOsˈIə",
+   "ipa": "moʊˈsaɪə"
+  },
+  "Mulek": {
+   "kokoro": "mjˈulɛk",
+   "ipa": "ˈmjulɛk"
+  },
+  "Mulekite": {
+   "kokoro": "mjˈulɛkIt",
+   "ipa": "ˈmjulɛkaɪt"
+  },
+  "Mulekites": {
+   "kokoro": "mjˈulɛkIts",
+   "ipa": "ˈmjulɛkaɪts"
+  },
+  "Mulok": {
+   "kokoro": "mjˈulɑk",
+   "ipa": "ˈmjulɑk"
+  },
+  "Nahom": {
+   "kokoro": "nˈAhəm",
+   "ipa": "ˈneɪhəm"
+  },
+  "Nahum": {
+   "kokoro": "nˈAəm",
+   "ipa": "ˈneɪəm"
+  },
+  "Nauvoo": {
+   "kokoro": "nɔvˈu",
+   "ipa": "nɔˈvu"
+  },
+  "Nebuchadnezzar": {
+   "kokoro": "nɛbukədnˈɛzəɹ",
+   "ipa": "nɛbukədˈnɛzɚ"
+  },
+  "Nehor": {
+   "kokoro": "nˈihOɹ",
+   "ipa": "ˈnihoʊɹ"
+  },
+  "Nephi": {
+   "kokoro": "nˈifI",
+   "ipa": "ˈnifaɪ"
+  },
+  "Nephihah": {
+   "kokoro": "nifˈIhə",
+   "ipa": "niˈfaɪhə"
+  },
+  "Nephite": {
+   "kokoro": "nˈifIt",
+   "ipa": "ˈnifaɪt"
+  },
+  "Nephites": {
+   "kokoro": "nˈifIts",
+   "ipa": "ˈnifaɪts"
+  },
+  "Neum": {
+   "kokoro": "nˈiəm",
+   "ipa": "ˈniəm"
+  },
+  "Nicodemus": {
+   "kokoro": "nɪkOdˈiməs",
+   "ipa": "nɪkoʊˈdiməs"
+  },
+  "Obadiah": {
+   "kokoro": "ObədˈIə",
+   "ipa": "oʊbəˈdaɪə"
+  },
+  "Omer": {
+   "kokoro": "ˈOməɹ",
+   "ipa": "ˈoʊmɚ"
+  },
+  "Omner": {
+   "kokoro": "ˈɑmnəɹ",
+   "ipa": "ˈɑmnɚ"
+  },
+  "Omni": {
+   "kokoro": "ˈɑmnI",
+   "ipa": "ˈɑmnaɪ"
+  },
+  "Onidah": {
+   "kokoro": "OnˈIdə",
+   "ipa": "oʊˈnaɪdə"
+  },
+  "Onihah": {
+   "kokoro": "OnˈIhə",
+   "ipa": "oʊˈnaɪhə"
+  },
+  "Onitah": {
+   "kokoro": "OnˈItə",
+   "ipa": "oʊˈnaɪtə"
+  },
+  "Onti": {
+   "kokoro": "ˈɑntI",
+   "ipa": "ˈɑntaɪ"
+  },
+  "Orihah": {
+   "kokoro": "OɹˈIhə",
+   "ipa": "oʊˈɹaɪhə"
+  },
+  "Paanchi": {
+   "kokoro": "pAˈænkI",
+   "ipa": "peɪˈænkaɪ"
+  },
+  "Pachus": {
+   "kokoro": "pˈAkəs",
+   "ipa": "ˈpeɪkəs"
+  },
+  "Pacumeni": {
+   "kokoro": "pəkjˈumɛnI",
+   "ipa": "pəˈkjumɛnaɪ"
+  },
+  "Pagag": {
+   "kokoro": "pˈAɡæɡ",
+   "ipa": "ˈpeɪɡæɡ"
+  },
+  "Pahoran": {
+   "kokoro": "pəhˈOɹən",
+   "ipa": "pəˈhoʊɹən"
+  },
+  "Philemon": {
+   "kokoro": "fɪlˈimən",
+   "ipa": "fɪˈlimən"
+  },
+  "Philippians": {
+   "kokoro": "fɪlˈɪpiənz",
+   "ipa": "fɪˈlɪpiənz"
+  },
+  "Rameumptom": {
+   "kokoro": "ɹAmiˈʌmptəm",
+   "ipa": "ɹeɪmiˈʌmptəm"
+  },
+  "Rehoboam": {
+   "kokoro": "ɹihObˈOəm",
+   "ipa": "ɹihoʊˈboʊəm"
+  },
+  "Riplah": {
+   "kokoro": "ɹˈɪplə",
+   "ipa": "ˈɹɪplə"
+  },
+  "Riplakish": {
+   "kokoro": "ɹɪplˈAkɪʃ",
+   "ipa": "ɹɪpˈleɪkɪʃ"
+  },
+  "Ripliancum": {
+   "kokoro": "ɹɪpliˈænkəm",
+   "ipa": "ɹɪpliˈænkəm"
+  },
+  "Sariah": {
+   "kokoro": "səɹˈIə",
+   "ipa": "səˈɹaɪə"
+  },
+  "Seantum": {
+   "kokoro": "siˈæntəm",
+   "ipa": "siˈæntəm"
+  },
+  "Seezoram": {
+   "kokoro": "sizˈOɹəm",
+   "ipa": "siˈzoʊɹəm"
+  },
+  "Shadrach": {
+   "kokoro": "ʃˈAdɹæk",
+   "ipa": "ˈʃeɪdɹæk"
+  },
+  "Shazer": {
+   "kokoro": "ʃˈAzəɹ",
+   "ipa": "ˈʃeɪzɚ"
+  },
+  "Shelem": {
+   "kokoro": "ʃˈiləm",
+   "ipa": "ˈʃiləm"
+  },
+  "Shemlon": {
+   "kokoro": "ʃˈɛmlən",
+   "ipa": "ˈʃɛmlən"
+  },
+  "Shemnon": {
+   "kokoro": "ʃˈɛmnən",
+   "ipa": "ˈʃɛmnən"
+  },
+  "Sherem": {
+   "kokoro": "ʃˈɛɹəm",
+   "ipa": "ˈʃɛɹəm"
+  },
+  "Shiblom": {
+   "kokoro": "ʃˈɪbləm",
+   "ipa": "ˈʃɪbləm"
+  },
+  "Shiblon": {
+   "kokoro": "ʃˈɪblən",
+   "ipa": "ˈʃɪblən"
+  },
+  "Shiblum": {
+   "kokoro": "ʃˈɪbləm",
+   "ipa": "ˈʃɪbləm"
+  },
+  "Shilom": {
+   "kokoro": "ʃˈIləm",
+   "ipa": "ˈʃaɪləm"
+  },
+  "Shimnilom": {
+   "kokoro": "ʃɪmnˈIləm",
+   "ipa": "ʃɪmˈnaɪləm"
+  },
+  "Shinehah": {
+   "kokoro": "ʃInˈihə",
+   "ipa": "ʃaɪˈnihə"
+  },
+  "Sidom": {
+   "kokoro": "sˈIdəm",
+   "ipa": "ˈsaɪdəm"
+  },
+  "Sidon": {
+   "kokoro": "sˈIdən",
+   "ipa": "ˈsaɪdən"
+  },
+  "Siron": {
+   "kokoro": "sˈIɹən",
+   "ipa": "ˈsaɪɹən"
+  },
+  "Teancum": {
+   "kokoro": "tˈiænkəm",
+   "ipa": "ˈtiænkəm"
+  },
+  "Teomner": {
+   "kokoro": "tiˈɑmnəɹ",
+   "ipa": "tiˈɑmnɚ"
+  },
+  "Thessalonians": {
+   "kokoro": "θɛsəlˈOniənz",
+   "ipa": "θɛsəˈloʊniənz"
+  },
+  "Tubaloth": {
+   "kokoro": "tubˈAlɑθ",
+   "ipa": "tuˈbeɪlɑθ"
+  },
+  "Zacchaeus": {
+   "kokoro": "zəkˈiəs",
+   "ipa": "zəˈkiəs"
+  },
+  "Zarahemla": {
+   "kokoro": "zæɹəhˈɛmlə",
+   "ipa": "zæɹəˈhɛmlə"
+  },
+  "Zechariah": {
+   "kokoro": "zɛkəɹˈIə",
+   "ipa": "zɛkəˈɹaɪə"
+  },
+  "Zeezrom": {
+   "kokoro": "zˈiɛzɹəm",
+   "ipa": "ˈziɛzɹəm"
+  },
+  "Zemnarihah": {
+   "kokoro": "zɛmnəɹˈIhə",
+   "ipa": "zɛmnəˈɹaɪhə"
+  },
+  "Zenephi": {
+   "kokoro": "zinˈifI",
+   "ipa": "ziˈnifaɪ"
+  },
+  "Zeniff": {
+   "kokoro": "zˈinɪf",
+   "ipa": "ˈzinɪf"
+  },
+  "Zenock": {
+   "kokoro": "zˈinək",
+   "ipa": "ˈzinək"
+  },
+  "Zenos": {
+   "kokoro": "zˈinəs",
+   "ipa": "ˈzinəs"
+  },
+  "Zephaniah": {
+   "kokoro": "zɛfənˈIə",
+   "ipa": "zɛfəˈnaɪə"
+  },
+  "Zerahemnah": {
+   "kokoro": "zɛɹəhˈɛmnə",
+   "ipa": "zɛɹəˈhɛmnə"
+  },
+  "Zeram": {
+   "kokoro": "zˈiɹəm",
+   "ipa": "ˈziɹəm"
+  },
+  "Zerin": {
+   "kokoro": "zˈiɹɪn",
+   "ipa": "ˈziɹɪn"
+  },
+  "Zerubbabel": {
+   "kokoro": "zɛɹˈʌbəbəl",
+   "ipa": "zɛˈɹʌbəbəl"
+  },
+  "Zoram": {
+   "kokoro": "zˈOɹəm",
+   "ipa": "ˈzoʊɹəm"
+  },
+  "Zoramite": {
+   "kokoro": "zˈOɹəmIt",
+   "ipa": "ˈzoʊɹəmaɪt"
+  },
+  "Zoramites": {
+   "kokoro": "zˈOɹəmIts",
+   "ipa": "ˈzoʊɹəmaɪts"
+  }
+ }
+}

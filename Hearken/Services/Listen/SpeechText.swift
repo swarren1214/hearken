@@ -3,7 +3,7 @@ import Foundation
 
 /// Turns verses into utterances: cleans the text, adds "Verse 21." when asked, and teaches
 /// the voice how to say Book of Mormon and Bible names it would otherwise guess at.
-enum SpeechText {
+nonisolated enum SpeechText {
     /// One utterance for one verse.
     static func utterance(
         for verse: Verse,
@@ -44,60 +44,19 @@ enum SpeechText {
         return result.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
-    /// Marks each known name with its IPA pronunciation.
+    /// Marks each known name with its IPA pronunciation (from Pronunciations).
     static func pronounced(_ text: String) -> NSAttributedString {
         let attributed = NSMutableAttributedString(string: text)
         let key = NSAttributedString.Key(rawValue: AVSpeechSynthesisIPANotationAttribute)
-        let whole = NSRange(location: 0, length: (text as NSString).length)
-        for (name, ipa) in pronunciations where text.contains(name) {
-            guard let regex = try? NSRegularExpression(pattern: "\\b\(NSRegularExpression.escapedPattern(for: name))\\b") else { continue }
-            for match in regex.matches(in: text, range: whole) {
-                attributed.addAttribute(key, value: ipa, range: match.range)
-            }
+        for match in Pronunciations.matches(in: text) {
+            attributed.addAttribute(key, value: match.entry.ipa, range: match.range)
         }
         return attributed
     }
-
-    /// From the Book of Mormon pronunciation guide (NEE-fy, mo-RO-nye, and so on). Add to this
-    /// as testers report names the voices get wrong.
-    static let pronunciations: [String: String] = [
-        "Nephi": "ˈniːfaɪ",
-        "Nephites": "ˈniːfaɪts",
-        "Nephihah": "niˈfaɪə",
-        "Lehi": "ˈliːhaɪ",
-        "Laman": "ˈleɪmən",
-        "Lamanites": "ˈleɪmənaɪts",
-        "Lemuel": "ˈlɛmjuəl",
-        "Sariah": "səˈraɪə",
-        "Moroni": "mɔˈroʊnaɪ",
-        "Moronihah": "ˌmɔːroʊˈnaɪə",
-        "Mormon": "ˈmɔːrmən",
-        "Mosiah": "moʊˈsaɪə",
-        "Helaman": "ˈhiːləmən",
-        "Abinadi": "əˈbɪnədaɪ",
-        "Amulek": "ˈæmjʊlɛk",
-        "Ammonihah": "ˌæməˈnaɪə",
-        "Zeezrom": "ˈziːzrəm",
-        "Zarahemla": "ˌzærəˈhɛmlə",
-        "Liahona": "ˌliːəˈhoʊnə",
-        "Gadianton": "ˌɡædiˈæntən",
-        "Kishkumen": "kɪʃˈkjuːmən",
-        "Teancum": "ˈtiːæŋkəm",
-        "Pahoran": "pəˈhɔːrən",
-        "Lachoneus": "ləˈkoʊniəs",
-        "Gidgiddoni": "ˌɡɪdɡɪˈdoʊnaɪ",
-        "Corianton": "ˌkɔːriˈæntən",
-        "Shiblon": "ˈʃɪblən",
-        "Cumorah": "kəˈmɔːrə",
-        "Jaredites": "ˈdʒærədaɪts",
-        "Ether": "ˈiːθər",
-        "Melchizedek": "mɛlˈkɪzədɛk",
-        "Hagoth": "ˈheɪɡɑθ",
-    ]
 }
 
 /// The pause between verses (Settings › Listening).
-enum VersePause: String, CaseIterable, Identifiable {
+nonisolated enum VersePause: String, CaseIterable, Identifiable {
     case none, short, long
 
     var id: String { rawValue }

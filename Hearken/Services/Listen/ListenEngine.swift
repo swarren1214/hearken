@@ -98,9 +98,21 @@ final class ListenEngine: NSObject {
     var chapterSeconds: Double { verseSeconds.reduce(0, +) }
 
     var voiceName: String {
+        if let natural = naturalVoiceID { return KokoroVoices.voice(natural)?.name ?? "Natural" }
         guard let voice = resolvedVoice else { return "Voice" }
         return ListenVoices.tier(of: voice) == .personal ? "Personal Voice" : voice.name
     }
+
+    /// The Kokoro voice to read with, when the natural voice model is on this device. With no
+    /// choice saved yet, natural voices win over the system ones.
+    var naturalVoiceID: String? {
+        guard KokoroModel.shared.isReady, !naturalVoiceFailed else { return nil }
+        guard let voiceID else { return KokoroVoices.defaultID }
+        return voiceID.hasPrefix(Self.naturalPrefix) ? String(voiceID.dropFirst(Self.naturalPrefix.count)) : nil
+    }
+
+    /// Saved voice IDs for Kokoro voices look like "kokoro:af_heart".
+    static let naturalPrefix = "kokoro:"
 
     // MARK: Internals
 
@@ -119,6 +131,10 @@ final class ListenEngine: NSObject {
     @ObservationIgnored private var artworkWorkID: String?
     /// Plays a voice sample from Settings without touching the session.
     @ObservationIgnored private let sampler = AVSpeechSynthesizer()
+    /// Kokoro playback, used instead of the synthesizer when a natural voice is chosen.
+    @ObservationIgnored private let neural = NeuralSpeechPlayer()
+    /// Set if Kokoro fails this session (e.g. out of memory); the system voice takes over.
+    @ObservationIgnored private var naturalVoiceFailed = false
 
     private enum Keys {
         static let speed = "listen.speed"
@@ -141,6 +157,23 @@ final class ListenEngine: NSObject {
         // The app sets up and activates the audio session itself (spoken audio, background).
         synthesizer.usesApplicationAudioSession = true
         observeAudioSession()
+        neural.onStart = { [weak self] index in self?.verseStarted(index) }
+        neural.onFinish = { [weak self] index in self?.verseFinished(index) }
+        neural.onDuration = { [weak self] index, seconds in
+            guard let self, self.verseSeconds.indices.contains(index) else { return }
+            self.verseSeconds[index] = seconds / self.speed
+        }
+        neural.onError = { [weak self] index in
+            guard let self else { return }
+            self.naturalVoiceFailed = true
+            if self.isPlaying { self.speak(from: index) }
+        }
+    }
+
+    /// The natural voice model finished downloading: switch to it, from the verse being read.
+    func voiceAvailabilityChanged() {
+        naturalVoiceFailed = false
+        if isPlaying, !neural.isRunning, naturalVoiceID != nil { speak(from: index) }
     }
 
     /// The app's ContentService (one is made on demand, e.g. for a Siri request in the background).
@@ -190,6 +223,8 @@ final class ListenEngine: NSObject {
         }
         guard loaded else { return }
         play()
+        // Natural voices download on their own over Wi-Fi the first time someone listens.
+        if KokoroModel.shared.state == .notDownloaded { KokoroModel.shared.download(wifiOnly: true) }
     }
 
     /// Listen to one chapter (from the reader or the Library), continuing through the book.
@@ -237,7 +272,9 @@ final class ListenEngine: NSObject {
             index = 0
         }
         isPlaying = true
-        if synthesizer.isPaused {
+        if neural.isRunning, neural.isPaused {
+            neural.resume()
+        } else if synthesizer.isPaused {
             synthesizer.continueSpeaking()
         } else {
             speak(from: index)
@@ -248,7 +285,7 @@ final class ListenEngine: NSObject {
     func pause() {
         guard isPlaying else { return }
         isPlaying = false
-        synthesizer.pauseSpeaking(at: .word)
+        if neural.isRunning { neural.pause() } else { synthesizer.pauseSpeaking(at: .word) }
         updateNowPlaying()
         savePosition()
     }
@@ -337,6 +374,13 @@ final class ListenEngine: NSObject {
     func setSpeed(_ value: Double) {
         speed = value
         UserDefaults.standard.set(value, forKey: Keys.speed)
+        if neural.isRunning {
+            // Natural voices change speed on playback, instantly, without regenerating.
+            neural.setSpeed(value)
+            verseSeconds = verses.map { SpeechText.seconds(for: $0, speed: speed, pause: versePause) }
+            updateNowPlaying()
+            return
+        }
         settingsChanged()
     }
 
@@ -365,6 +409,12 @@ final class ListenEngine: NSObject {
 
     /// Speaks a short sample in `voiceID` (Settings › Listening).
     func playSample(voiceID: String) {
+        let sample = "And now as I said concerning faith—faith is not to have a perfect knowledge of things."
+        if voiceID.hasPrefix(Self.naturalPrefix) {
+            if !isPlaying { activateSession() }
+            neural.playSample(sample, voice: String(voiceID.dropFirst(Self.naturalPrefix.count)))
+            return
+        }
         sampler.stopSpeaking(at: .immediate)
         let utterance = AVSpeechUtterance(string: "And now as I said concerning faith—faith is not to have a perfect knowledge of things.")
         utterance.voice = AVSpeechSynthesisVoice(identifier: voiceID)
@@ -419,6 +469,15 @@ final class ListenEngine: NSObject {
     private func speak(from start: Int) {
         stopSpeech()
         guard verses.indices.contains(start) else { return }
+        if let natural = naturalVoiceID {
+            let items = (start..<verses.count).map { position in
+                let verse = verses[position]
+                let text = (readsVerseNumbers ? "Verse \(verse.number). " : "") + verse.text
+                return NeuralSpeechPlayer.Item(index: position, text: KokoroText.prepare(text))
+            }
+            neural.start(items, voice: natural, speed: speed, pause: versePause.seconds)
+            return
+        }
         let voice = resolvedVoice
         for position in start..<verses.count {
             let utterance = SpeechText.utterance(
@@ -435,6 +494,7 @@ final class ListenEngine: NSObject {
     }
 
     private func stopSpeech() {
+        neural.stop()
         queued = [:]
         if synthesizer.isSpeaking || synthesizer.isPaused {
             synthesizer.stopSpeaking(at: .immediate)
@@ -443,15 +503,23 @@ final class ListenEngine: NSObject {
 
     fileprivate func didStart(_ id: ObjectIdentifier) {
         guard let entry = queued[id] else { return }
-        index = entry.index
-        updateNowPlaying()
-        savePosition()
+        verseStarted(entry.index)
     }
 
     fileprivate func didFinish(_ id: ObjectIdentifier) {
         guard let entry = queued.removeValue(forKey: id) else { return }
-        spoken.insert(entry.index)
-        if entry.index == verses.count - 1 { chapterDidFinish() }
+        verseFinished(entry.index)
+    }
+
+    private func verseStarted(_ position: Int) {
+        index = position
+        updateNowPlaying()
+        savePosition()
+    }
+
+    private func verseFinished(_ position: Int) {
+        spoken.insert(position)
+        if position == verses.count - 1 { chapterDidFinish() }
     }
 
     private func chapterDidFinish() {
