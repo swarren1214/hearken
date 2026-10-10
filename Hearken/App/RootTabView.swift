@@ -10,6 +10,7 @@ struct RootTabView: View {
     @State private var selection: AppTab = .today
     @State private var todayPath = NavigationPath()
     @State private var navigator = AppNavigator.shared
+    @State private var groups = GroupStore.shared
 
     var body: some View {
         TabView(selection: $selection) {
@@ -18,6 +19,9 @@ struct RootTabView: View {
                     TodayView()
                         .navigationDestination(for: ReaderRoute.self) { route in
                             ReaderView(chapterID: route.chapterID)
+                        }
+                        .navigationDestination(for: GroupRoute.self) { route in
+                            GroupDetailView(groupID: route.id)
                         }
                 }
             } label: {
@@ -51,6 +55,19 @@ struct RootTabView: View {
             todayPath = NavigationPath()
             todayPath.append(ReaderRoute(chapterID: chapterID))
             navigator.pendingChapterID = nil
+        }
+        // A study-group invite link: show who's inviting and what's shared before joining.
+        .sheet(isPresented: Binding(get: { groups.pendingInvite != nil }, set: { if !$0 { groups.pendingInvite = nil } })) {
+            if let metadata = groups.pendingInvite {
+                JoinGroupSheet(metadata: metadata)
+            }
+        }
+        .onChange(of: groups.openGroupID) { _, id in
+            guard let id else { return }
+            selection = .today
+            todayPath = NavigationPath()
+            todayPath.append(GroupRoute(id: id))
+            groups.openGroupID = nil
         }
     }
 }

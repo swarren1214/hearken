@@ -131,7 +131,7 @@ struct SettingsView: View {
         .confirmationDialog("Delete your Hearken account?", isPresented: $confirmDelete, titleVisibility: .visible) {
             Button("Delete Account and Data", role: .destructive) { deleteAccount() }
         } message: {
-            Text("This removes your notes, highlights and progress from this device and from iCloud. It can't be undone.")
+            Text("This removes your notes, highlights, plans and progress from this device and from iCloud, deletes the study groups you created and leaves the ones you joined. It can't be undone.")
         }
         .alert("Something went wrong", isPresented: Binding(get: { errorMessage != nil }, set: { if !$0 { errorMessage = nil } })) {
             Button("OK", role: .cancel) {}
@@ -323,10 +323,14 @@ struct SettingsView: View {
     }
 
     private func deleteAccount() {
-        do {
-            try account.deleteAccount(context: modelContext)
-        } catch {
-            errorMessage = error.localizedDescription
+        Task {
+            // First the shared groups (they live in iCloud, not on this device), then everything else.
+            await GroupStore.shared.leaveAll()
+            do {
+                try account.deleteAccount(context: modelContext)
+            } catch {
+                errorMessage = error.localizedDescription
+            }
         }
     }
 

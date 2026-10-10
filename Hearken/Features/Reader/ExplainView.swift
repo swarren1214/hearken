@@ -272,8 +272,13 @@ struct ExplainSheet: View {
                             if onSaveNote("\(model.plainText)\n\n— Explained with Hearken (AI)") { saved = true }
                         } label: {
                             Label(saved ? "Saved" : "Save as Note", systemImage: saved ? "checkmark" : "square.and.pencil")
+                                // Inside a toolbar-style container the icon would pick up the tint; keep it white like the text.
+                                .foregroundStyle(.white)
                                 .frame(maxWidth: .infinity)
                         }
+                        // Primary action: filled with the app's accent color.
+                        .buttonStyle(.glassProminent)
+                        .tint(accent.color)
                         .disabled(saved)
                         Button {
                             asking = true

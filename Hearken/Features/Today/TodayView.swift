@@ -35,6 +35,7 @@ struct TodayView: View {
                     dailyChallenge(snapshot: snapshot)
                     StartPlanCard()
                 }
+                GroupsSection(defaultPlanID: plan?.planID, customPlan: planState.flatMap { $0.plan.isCustom ? $0.plan : nil })
                 progressCard(level: level)
                 continueReading
                 subjectsSection(snapshot: snapshot)

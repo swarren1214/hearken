@@ -58,7 +58,8 @@ struct ChapterTextLayout {
         tint: UIColor,
         highlights: [Highlight],
         noteVerses: Set<Int>,
-        bookmarkVerses: Set<Int> = []
+        bookmarkVerses: Set<Int> = [],
+        groupVerses: Set<Int> = []
     ) {
         let bodyFont = Self.serifFont(size: fontSize)
         let numberFont = UIFont.systemFont(ofSize: fontSize * 0.6, weight: .semibold)
@@ -114,6 +115,21 @@ struct ChapterTextLayout {
                     text.append(button)
                 }
             }
+            if groupVerses.contains(verse.number) {
+                // Someone in a study group shared this verse; tap to see what they shared.
+                let symbol = UIImage(
+                    systemName: "person.2.fill",
+                    withConfiguration: UIImage.SymbolConfiguration(pointSize: fontSize * 0.7, weight: .medium)
+                )?.withTintColor(tint, renderingMode: .alwaysOriginal)
+                if let symbol {
+                    let attachment = NSTextAttachment(image: symbol)
+                    attachment.bounds = CGRect(x: 0, y: -fontSize * 0.08, width: symbol.size.width, height: symbol.size.height)
+                    let button = NSMutableAttributedString(string: "\u{2009}")
+                    button.append(NSAttributedString(attachment: attachment))
+                    button.addAttribute(.link, value: URL(string: "hearken-group://\(verse.number)")!, range: NSRange(location: 0, length: button.length))
+                    text.append(button)
+                }
+            }
             if index < verses.count - 1 {
                 text.append(NSAttributedString(string: "\n", attributes: [.font: bodyFont]))
             }
@@ -133,6 +149,7 @@ struct ChapterTextLayout {
         signature.combine(tint.hashValue)
         signature.combine(noteVerses.sorted())
         signature.combine(bookmarkVerses.sorted())
+        signature.combine(groupVerses.sorted())
         for highlight in highlights.sorted(by: { $0.createdAt < $1.createdAt }) {
             signature.combine(highlight.startVerse); signature.combine(highlight.startOffset)
             signature.combine(highlight.endVerse); signature.combine(highlight.endOffset)
@@ -233,6 +250,8 @@ struct ChapterTextView: UIViewRepresentable {
     var onOpenNote: (Int) -> Void = { _ in }
     /// The bookmark ribbon before a verse was tapped.
     var onOpenBookmark: (Int) -> Void = { _ in }
+    /// The study-group marker after a verse was tapped.
+    var onOpenGroupItems: (Int) -> Void = { _ in }
     /// Scroll layout: lets the reader find the verse at the top of the screen and scroll to one.
     var probe: ReaderProbe? = nil
     /// Pencil mode: the Pencil highlights, fingers scroll and select as usual.
@@ -742,6 +761,7 @@ struct ChapterTextView: UIViewRepresentable {
             switch url.scheme {
             case "hearken-note": return UIAction { [weak self] _ in self?.parent.onOpenNote(verse) }
             case "hearken-bookmark": return UIAction { [weak self] _ in self?.parent.onOpenBookmark(verse) }
+            case "hearken-group": return UIAction { [weak self] _ in self?.parent.onOpenGroupItems(verse) }
             default: return defaultAction
             }
         }

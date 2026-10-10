@@ -5,6 +5,8 @@ import UserNotifications
 
 @main
 struct HearkenApp: App {
+    /// Study-group invites (CloudKit share links) and their silent pushes.
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @State private var content = ContentService()
     @State private var account = AccountService()
     @State private var legend = HighlightLegend()
@@ -48,6 +50,7 @@ struct AppRoot: View {
             }
             .task { await account.refresh() }
             .modifier(PlanSideEffects())
+            .modifier(GroupSideEffects())
             .onChange(of: appearance, initial: true) { _, option in
                 applyAppearance(option)
             }

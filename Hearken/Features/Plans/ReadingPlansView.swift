@@ -363,6 +363,7 @@ struct PlanDetailView: View {
     @Query private var progress: [ReadingProgress]
     @State private var month = Date.now
     @State private var confirmEnd = false
+    @State private var creatingGroup = false
 
     var body: some View {
         let read = PlanReading.readSet(progress)
@@ -389,6 +390,9 @@ struct PlanDetailView: View {
                             Button("Reschedule", systemImage: "calendar.badge.clock") { reschedule(state) }
                                 .disabled(state.daysBehind == 0)
                             Toggle("Daily Reminder", systemImage: "bell", isOn: reminderBinding)
+                            if AppConfig.cloudSyncEnabled {
+                                Button("Read with Others", systemImage: "person.3") { creatingGroup = true }
+                            }
                             Divider()
                             Button("End Plan", systemImage: "xmark.circle", role: .destructive) { confirmEnd = true }
                         } label: {
@@ -403,6 +407,9 @@ struct PlanDetailView: View {
             }
         }
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $creatingGroup) {
+            CreateGroupSheet(defaultPlanID: enrollment.planID, customPlan: ReadingPlanCatalog.plan(for: enrollment).flatMap { $0.isCustom ? $0 : nil })
+        }
         .confirmationDialog("End this plan?", isPresented: $confirmEnd, titleVisibility: .visible) {
             Button("End Plan", role: .destructive) {
                 enrollment.endedAt = .now

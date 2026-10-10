@@ -2,6 +2,20 @@ import SwiftData
 import SwiftUI
 import UIKit
 
+private struct GroupVerseTarget: Identifiable {
+    let verse: Int
+    var id: Int { verse }
+}
+
+/// A selection on its way to a study group.
+private struct GroupShareDraft: Identifiable {
+    let id = UUID()
+    let reference: String
+    let startVerse: Int
+    let endVerse: Int
+    let text: String
+}
+
 private struct NoteTarget: Identifiable {
     let verse: Verse
     var id: String { verse.id }
@@ -295,6 +309,11 @@ struct ReaderPage: View {
     @State private var pendingStyle: HighlightStyle?
     @State private var noteTarget: NoteTarget?
     @State private var explainRequest: ExplainRequest?
+    /// A selection waiting for the person to pick which study group to share it with.
+    @State private var groupShare: GroupShareDraft?
+    /// A verse whose study-group marker was tapped.
+    @State private var groupVerse: GroupVerseTarget?
+    @State private var sharedToGroup = 0
     @State private var showSignInPrompt = false
     @State private var pageCache = PageCache()
     /// Page Turn: the verse at the top of the page on screen, so a rebuilt page view (for
@@ -394,6 +413,24 @@ struct ReaderPage: View {
                 .presentationDetents(UIDevice.isPad ? [.large] : [.medium, .large])
                 .presentationSizing(.form)
         }
+        .confirmationDialog(
+            groupShare.map { "Share \($0.reference)?" } ?? "",
+            isPresented: Binding(get: { groupShare != nil }, set: { if !$0 { groupShare = nil } }),
+            titleVisibility: .visible,
+            presenting: groupShare
+        ) { draft in
+            ForEach(GroupStore.shared.groups) { group in
+                Button("Share to \(group.name)") { Task { await shareToGroup(draft, group: group) } }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: { _ in
+            Text("Members of the group will see this text and your name.")
+        }
+        .sensoryFeedback(.success, trigger: sharedToGroup)
+        .sheet(item: $groupVerse) { target in
+            GroupVerseSheet(chapterID: chapterID, verse: target.verse, reference: content.reference(chapterID: chapterID, verse: target.verse))
+                .presentationDetents([.medium, .large])
+        }
         .onChange(of: selection != nil) { _, selected in
             // Load the on-device model while the reader decides, so Explain answers quickly.
             if selected { ExplainEngine.shared.prewarm() }
@@ -425,7 +462,8 @@ struct ReaderPage: View {
             tint: UIColor(accent.color),
             highlights: interactive ? highlights : [],
             noteVerses: interactive ? Set(notes.map(\.verse)) : [],
-            bookmarkVerses: interactive ? Set(bookmarks.map(\.verse)) : []
+            bookmarkVerses: interactive ? Set(bookmarks.map(\.verse)) : [],
+            groupVerses: interactive ? groupVerses : []
         )
     }
 
@@ -447,6 +485,7 @@ struct ReaderPage: View {
             clearToken: clearToken,
             onOpenNote: openExistingNote,
             onOpenBookmark: onOpenBookmark,
+            onOpenGroupItems: { groupVerse = GroupVerseTarget(verse: $0) },
             probe: interactive && pageRange == nil ? probe : nil,
             pencil: interactive ? pencilConfig : PencilConfig(),
             onPencilStroke: pencilStroke
@@ -569,7 +608,8 @@ struct ReaderPage: View {
                 closeSelection()
             },
             onClose: closeSelection,
-            onExplain: ExplainEngine.shared.isOffered ? { explain(selection) } : nil
+            onExplain: ExplainEngine.shared.isOffered ? { explain(selection) } : nil,
+            onShareToGroup: GroupStore.shared.groups.isEmpty ? nil : { prepareGroupShare(selection) }
         )
     }
 
@@ -691,7 +731,8 @@ struct ReaderPage: View {
             onCopy: { copy(selection) },
             onRemove: { removeHighlights(in: selection) },
             onClose: closeSelection,
-            onExplain: ExplainEngine.shared.isOffered ? { explain(selection) } : nil
+            onExplain: ExplainEngine.shared.isOffered ? { explain(selection) } : nil,
+            onShareToGroup: GroupStore.shared.groups.isEmpty ? nil : { prepareGroupShare(selection) }
         )
     }
 
@@ -788,6 +829,35 @@ struct ReaderPage: View {
         )
         closeSelection()
         explainRequest = request
+    }
+
+    /// Verses in this chapter that someone shared with one of my study groups.
+    private var groupVerses: Set<Int> {
+        Set(GroupStore.shared.groups.flatMap(\.items)
+            .filter { $0.kind == .highlight && $0.chapterID == chapterID && $0.startVerse > 0 }
+            .map(\.startVerse))
+    }
+
+    private func prepareGroupShare(_ selection: VerseSelection) {
+        guard requireSignIn() else { return }
+        groupShare = GroupShareDraft(
+            reference: reference(for: selection),
+            startVerse: selection.start.verse,
+            endVerse: selection.end.verse,
+            text: selection.text.trimmingCharacters(in: .whitespacesAndNewlines)
+        )
+        closeSelection()
+    }
+
+    private func shareToGroup(_ draft: GroupShareDraft, group: GroupStore.StudyGroup) async {
+        do {
+            try await GroupStore.shared.share(kind: .highlight, chapterID: chapterID, startVerse: draft.startVerse, endVerse: draft.endVerse,
+                                              text: draft.text, note: "", to: group, authorName: account.displayName ?? "Member")
+            sharedToGroup += 1
+        } catch {
+            // Nothing to undo; the item simply isn't shared. The group page reports problems on refresh.
+        }
+        groupShare = nil
     }
 
     /// Save as Note from Explain: added to the note on the first selected verse.
@@ -1012,6 +1082,7 @@ extension ReaderPage {
             showNumbers: showVerseNumbers, dynamicType: environment.dynamicTypeSize,
             noteVerses: interactive ? notes.map(\.verse).sorted() : [],
             bookmarkVerses: interactive ? bookmarks.map(\.verse).sorted() : [],
+            groupVerses: interactive ? groupVerses.sorted() : [],
             isRead: interactive && progress?.completedAt != nil,
             interactive: interactive
         )
@@ -1046,6 +1117,7 @@ private struct PaginationKey: Hashable {
     let dynamicType: DynamicTypeSize
     let noteVerses: [Int]
     let bookmarkVerses: [Int]
+    let groupVerses: [Int]
     let isRead: Bool
     let interactive: Bool
 }

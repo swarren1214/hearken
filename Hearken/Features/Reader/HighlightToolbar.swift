@@ -18,6 +18,8 @@ struct HighlightToolbar: View {
     var onClose: () -> Void
     /// Explain with Apple Intelligence; nil hides the button (device can't run it).
     var onExplain: (() -> Void)? = nil
+    /// Share the selection with a study group; nil hides the button (no groups).
+    var onShareToGroup: (() -> Void)? = nil
 
     @State private var copied = false
 
@@ -104,6 +106,9 @@ struct HighlightToolbar: View {
 
             if let onExplain {
                 iconButton("sparkles", label: "Explain", action: onExplain)
+            }
+            if let onShareToGroup {
+                iconButton("person.2", label: "Share to Group", action: onShareToGroup)
             }
             iconButton("square.and.pencil", label: "Add note", action: onNote)
             iconButton(copied ? "checkmark" : "doc.on.doc", label: "Copy verse") {

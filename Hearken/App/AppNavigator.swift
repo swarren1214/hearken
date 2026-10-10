@@ -39,8 +39,12 @@ final class NotificationRouter: NSObject, UNUserNotificationCenterDelegate, @unc
     static let shared = NotificationRouter()
 
     nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
-        guard let chapterID = response.notification.request.content.userInfo["chapterID"] as? String else { return }
-        await MainActor.run { AppNavigator.shared.open(chapterID: chapterID) }
+        let info = response.notification.request.content.userInfo
+        if let groupID = info["groupID"] as? String {
+            await MainActor.run { GroupStore.shared.openGroupID = groupID }
+        } else if let chapterID = info["chapterID"] as? String {
+            await MainActor.run { AppNavigator.shared.open(chapterID: chapterID) }
+        }
     }
 
     nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification) async -> UNNotificationPresentationOptions {
