@@ -3,6 +3,10 @@
 // Changed for Hearken: its config is copied as "KokoroData" instead of "Resources" (see the
 // note in ../MisakiSwift/Package.swift), and it uses the vendored MisakiSwift.
 
+// Also changed for Hearken: built as a static library (no "type: .dynamic"), so it links into
+// the app itself. As a dynamic framework from a local package, Xcode didn't embed it in the
+// app, and the app crashed at launch with "Library not loaded: @rpath/KokoroSwift.framework".
+
 import PackageDescription
 
 let package = Package(
@@ -11,7 +15,7 @@ let package = Package(
     .iOS(.v18), .macOS(.v15)
   ],
   products: [
-    .library(name: "KokoroSwift", type: .dynamic, targets: ["KokoroSwift"]),
+    .library(name: "KokoroSwift", targets: ["KokoroSwift"]),
   ],
   dependencies: [
     .package(url: "https://github.com/ml-explore/mlx-swift", from: "0.29.1"),
