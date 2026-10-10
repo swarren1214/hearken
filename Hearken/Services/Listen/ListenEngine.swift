@@ -70,6 +70,8 @@ final class ListenEngine: NSObject {
     private(set) var versePause: VersePause
     private(set) var readsVerseNumbers: Bool
     private(set) var autoContinue: Bool
+    /// Pace and expressiveness for the natural voices.
+    private(set) var tuning: VoiceTuning
 
     var isActive: Bool { chapterID != nil }
     var verseCount: Int { verses.count }
@@ -142,6 +144,8 @@ final class ListenEngine: NSObject {
         static let pause = "listen.pause"
         static let numbers = "listen.readsVerseNumbers"
         static let autoContinue = "listen.autoContinue"
+        static let pace = "listen.pace"
+        static let expressiveness = "listen.expressiveness"
         static let position = "listen.position"
     }
 
@@ -152,6 +156,10 @@ final class ListenEngine: NSObject {
         versePause = VersePause(rawValue: defaults.string(forKey: Keys.pause) ?? "") ?? .short
         readsVerseNumbers = defaults.bool(forKey: Keys.numbers)
         autoContinue = defaults.object(forKey: Keys.autoContinue) as? Bool ?? true
+        tuning = VoiceTuning(
+            pace: defaults.object(forKey: Keys.pace) as? Double ?? 1,
+            expressiveness: defaults.object(forKey: Keys.expressiveness) as? Double ?? 1
+        )
         super.init()
         synthesizer.delegate = self
         // The app sets up and activates the audio session itself (spoken audio, background).
@@ -402,6 +410,19 @@ final class ListenEngine: NSObject {
         settingsChanged()
     }
 
+    /// Natural voices only: regenerates from the verse being read.
+    func setPace(_ value: Double) {
+        tuning.pace = value
+        UserDefaults.standard.set(value, forKey: Keys.pace)
+        if neural.isRunning, isPlaying { speak(from: index) } else if neural.isRunning { stopSpeech() }
+    }
+
+    func setExpressiveness(_ value: Double) {
+        tuning.expressiveness = value
+        UserDefaults.standard.set(value, forKey: Keys.expressiveness)
+        if neural.isRunning, isPlaying { speak(from: index) } else if neural.isRunning { stopSpeech() }
+    }
+
     func setAutoContinue(_ value: Bool) {
         autoContinue = value
         UserDefaults.standard.set(value, forKey: Keys.autoContinue)
@@ -412,7 +433,7 @@ final class ListenEngine: NSObject {
         let sample = "And now as I said concerning faith—faith is not to have a perfect knowledge of things."
         if voiceID.hasPrefix(Self.naturalPrefix) {
             if !isPlaying { activateSession() }
-            neural.playSample(sample, voice: String(voiceID.dropFirst(Self.naturalPrefix.count)))
+            neural.playSample(sample, voice: String(voiceID.dropFirst(Self.naturalPrefix.count)), tuning: tuning)
             return
         }
         sampler.stopSpeaking(at: .immediate)
@@ -475,7 +496,7 @@ final class ListenEngine: NSObject {
                 let text = (readsVerseNumbers ? "Verse \(verse.number). " : "") + verse.text
                 return NeuralSpeechPlayer.Item(index: position, text: KokoroText.prepare(text))
             }
-            neural.start(items, voice: natural, speed: speed, pause: versePause.seconds)
+            neural.start(items, voice: natural, tuning: tuning, speed: speed, pause: versePause.seconds)
             return
         }
         let voice = resolvedVoice

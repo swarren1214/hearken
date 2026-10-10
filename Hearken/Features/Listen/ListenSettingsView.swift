@@ -89,11 +89,37 @@ struct ListenSettingsView: View {
         switch model.state {
         case .ready:
             Section {
-                ForEach(orderedNatural) { voice in
+                Picker("Voice", selection: genderBinding) {
+                    Text("Female").tag(false)
+                    Text("Male").tag(true)
+                }
+                .pickerStyle(.segmented)
+                Picker("Accent", selection: accentBinding) {
+                    Text("American").tag(false)
+                    Text("British").tag(true)
+                }
+                .pickerStyle(.segmented)
+                ForEach(filteredNatural) { voice in
                     naturalRow(voice)
                 }
             } header: {
                 Text("Natural Voices")
+            }
+
+            Section {
+                tuningSlider(
+                    "Pace", value: engine.tuning.pace, steps: VoiceTuning.paces,
+                    low: "Slower", high: "Faster", set: engine.setPace
+                )
+                tuningSlider(
+                    "Expressiveness", value: engine.tuning.expressiveness, steps: VoiceTuning.expressions,
+                    low: "Calmer", high: "More expressive", set: engine.setExpressiveness
+                )
+                Button("Hear It", systemImage: "play.circle") {
+                    if let id = engine.naturalVoiceID { engine.playSample(voiceID: ListenEngine.naturalPrefix + id) }
+                }
+            } header: {
+                Text("Voice Style")
             } footer: {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Generated on your device by the Kokoro voice model. Nothing you read leaves your iPhone.")
@@ -142,7 +168,7 @@ struct ListenSettingsView: View {
             }
         case .unavailable:
             Section {
-                Text("Natural voices need a real iPhone or iPad; they don't run in the Simulator.")
+                Text("You're running in the Simulator. Natural voices need a real iPhone or iPad: run Hearken on your iPhone to download them.")
                     .foregroundStyle(.secondary)
             } header: {
                 Text("Natural Voices")
@@ -150,9 +176,48 @@ struct ListenSettingsView: View {
         }
     }
 
-    private var orderedNatural: [KokoroVoices.Voice] {
+    /// The chosen gender and accent's voices, featured ones first.
+    private var filteredNatural: [KokoroVoices.Voice] {
         let featured = KokoroVoices.featured.compactMap(KokoroVoices.voice)
-        return featured + KokoroVoices.all.filter { !KokoroVoices.featured.contains($0.id) }
+        let ordered = featured + KokoroVoices.all.filter { !KokoroVoices.featured.contains($0.id) }
+        return ordered.filter { $0.isMale == currentNatural.isMale && $0.isBritish == currentNatural.isBritish }
+    }
+
+    private var currentNatural: KokoroVoices.Voice {
+        engine.naturalVoiceID.flatMap(KokoroVoices.voice) ?? KokoroVoices.voice(KokoroVoices.defaultID)!
+    }
+
+    /// Switching gender picks that gender's recommended voice in the same accent.
+    private var genderBinding: Binding<Bool> {
+        Binding(get: { currentNatural.isMale }, set: { male in
+            engine.setVoice(ListenEngine.naturalPrefix + KokoroVoices.recommended(male: male, british: currentNatural.isBritish))
+        })
+    }
+
+    private var accentBinding: Binding<Bool> {
+        Binding(get: { currentNatural.isBritish }, set: { british in
+            engine.setVoice(ListenEngine.naturalPrefix + KokoroVoices.recommended(male: currentNatural.isMale, british: british))
+        })
+    }
+
+    /// A five-step slider with words at each end, like Siri's voice settings.
+    private func tuningSlider(_ title: String, value: Double, steps: [Double], low: String, high: String, set: @escaping (Double) -> Void) -> some View {
+        let position = Double(steps.firstIndex(of: value) ?? steps.count / 2)
+        return VStack(alignment: .leading, spacing: 6) {
+            Text(title)
+            Slider(
+                value: Binding(get: { position }, set: { set(steps[Int($0.rounded())]) }),
+                in: 0...Double(steps.count - 1),
+                step: 1
+            ) {
+                Text(title)
+            } minimumValueLabel: {
+                Text(low).font(.caption).foregroundStyle(.secondary)
+            } maximumValueLabel: {
+                Text(high).font(.caption).foregroundStyle(.secondary)
+            }
+        }
+        .padding(.vertical, 4)
     }
 
     private func naturalRow(_ voice: KokoroVoices.Voice) -> some View {

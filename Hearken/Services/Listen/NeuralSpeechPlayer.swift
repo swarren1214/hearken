@@ -45,7 +45,7 @@ final class NeuralSpeechPlayer {
         engine.connect(samplePlayer, to: engine.mainMixerNode, format: format)
     }
 
-    func start(_ items: [Item], voice: String, speed: Double, pause: Double) {
+    func start(_ items: [Item], voice: String, tuning: VoiceTuning, speed: Double, pause: Double) {
         stop()
         guard !items.isEmpty else { return }
         generation += 1
@@ -56,7 +56,7 @@ final class NeuralSpeechPlayer {
         startEngine()
         player.play()
         producer = Task { [weak self] in
-            await self?.produce(items, voice: voice, pause: pause, generation: current)
+            await self?.produce(items, voice: voice, tuning: tuning, pause: pause, generation: current)
         }
     }
 
@@ -89,13 +89,13 @@ final class NeuralSpeechPlayer {
     }
 
     /// A short sample in a voice (Settings › Listening).
-    func playSample(_ text: String, voice: String) {
+    func playSample(_ text: String, voice: String, tuning: VoiceTuning) {
         Task {
-            guard let samples = try? await KokoroSynth.shared.synthesize(KokoroText.prepare(text), voice: voice, gpu: isForeground),
+            guard let samples = try? await KokoroSynth.shared.synthesize(KokoroText.prepare(text), voice: voice, tuning: tuning, gpu: isForeground),
                   let buffer = makeBuffer(samples, trailingSilence: 0) else { return }
             startEngine()
             samplePlayer.stop()
-            samplePlayer.scheduleBuffer(buffer, at: nil, options: .interrupts)
+            samplePlayer.scheduleBuffer(buffer, at: nil, options: .interrupts, completionHandler: nil)
             samplePlayer.play()
         }
     }
@@ -107,7 +107,7 @@ final class NeuralSpeechPlayer {
     /// How many verses to keep ready: lots while the GPU is available, a couple in the background.
     private var lookahead: Int { isForeground ? 8 : 2 }
 
-    private func produce(_ items: [Item], voice: String, pause: Double, generation current: Int) async {
+    private func produce(_ items: [Item], voice: String, tuning: VoiceTuning, pause: Double, generation current: Int) async {
         for (position, item) in items.enumerated() {
             while scheduled.count >= lookahead {
                 try? await Task.sleep(for: .milliseconds(150))
@@ -115,7 +115,7 @@ final class NeuralSpeechPlayer {
             }
             let samples: [Float]
             do {
-                samples = try await KokoroSynth.shared.synthesize(item.text, voice: voice, gpu: isForeground)
+                samples = try await KokoroSynth.shared.synthesize(item.text, voice: voice, tuning: tuning, gpu: isForeground)
             } catch {
                 guard current == generation else { return }
                 onError(item.index)
@@ -136,7 +136,8 @@ final class NeuralSpeechPlayer {
             onStart(index)
         }
         player.scheduleBuffer(buffer, completionCallbackType: .dataPlayedBack) { [weak self] _ in
-            Task { @MainActor in self?.played(index, generation: current) }
+            guard let self else { return }
+            Task { @MainActor in self.played(index, generation: current) }
         }
         if !isPaused, !player.isPlaying {
             startEngine()

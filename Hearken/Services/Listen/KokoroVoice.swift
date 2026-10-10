@@ -21,6 +21,9 @@ nonisolated enum KokoroVoices {
         let detail: String
         /// Position in kokoro-voices.bin.
         let slot: Int
+
+        var isMale: Bool { id.dropFirst().first == "m" }
+        var isBritish: Bool { id.hasPrefix("b") }
     }
 
     /// In the order they're packed in kokoro-voices.bin (510 × 1 × 256 float32 each).
@@ -46,6 +49,16 @@ nonisolated enum KokoroVoices {
 
     /// Featured first in Settings; the rest follow.
     static let featured = ["af_heart", "af_bella", "am_michael", "am_adam", "bf_emma", "bm_george", "bm_lewis"]
+
+    /// The voice picked when someone switches gender or accent.
+    static func recommended(male: Bool, british: Bool) -> String {
+        switch (male, british) {
+        case (false, false): "af_heart"
+        case (true, false): "am_michael"
+        case (false, true): "bf_emma"
+        case (true, true): "bm_george"
+        }
+    }
 }
 
 // MARK: - Model download
@@ -84,7 +97,7 @@ final class KokoroModel: NSObject {
         return folder.appending(path: "kokoro-v1_0.safetensors")
     }
 
-    private enum Keys {
+    nonisolated private enum Keys {
         /// Set while the model loads; still set at launch means loading crashed last time.
         static let loading = "kokoro.loading"
         static let broken = "kokoro.broken"
@@ -242,6 +255,19 @@ extension KokoroModel: URLSessionDownloadDelegate {
 
 // MARK: - Synthesis
 
+/// How a natural voice delivers the text (Settings › Listening).
+nonisolated struct VoiceTuning: Hashable, Sendable {
+    /// Kokoro's own speaking pace: 1 is natural, lower is slower and more deliberate. Unlike
+    /// playback speed, the voice itself paces the words, so it stays natural.
+    var pace: Double = 1
+    /// How far the voice's intonation moves from an average reading: 1 is the voice as
+    /// recorded, lower is calmer and flatter, higher is more animated.
+    var expressiveness: Double = 1
+
+    static let paces: [Double] = [0.85, 0.92, 1, 1.08, 1.16]
+    static let expressions: [Double] = [0.6, 0.8, 1, 1.2, 1.4]
+}
+
 /// Runs Kokoro on its own queue. Loads the model on first use (a few seconds).
 nonisolated final class KokoroSynth: @unchecked Sendable {
     static let shared = KokoroSynth()
@@ -251,6 +277,14 @@ nonisolated final class KokoroSynth: @unchecked Sendable {
     private var tts: KokoroTTS?
     private var styles: [String: MLXArray] = [:]
     private var voiceData: Data?
+    /// The average prosody half of every voice style, the center expressiveness scales around.
+    private var averageProsody: [Float]?
+
+    private static let rows = 510
+    private static let width = 256
+    /// Kokoro reads the second half of each style row for duration and intonation, the first
+    /// half for the sound of the voice. Expressiveness only changes the second half.
+    private static let prosodyStart = 128
 
     /// Loads the model ahead of time, so the first verse starts quickly.
     func prewarm() {
@@ -265,16 +299,16 @@ nonisolated final class KokoroSynth: @unchecked Sendable {
     }
 
     /// Speech for `text` as 24 kHz mono samples. `gpu` is false while the app is in the background.
-    func synthesize(_ text: String, voice: String, gpu: Bool) async throws -> [Float] {
+    func synthesize(_ text: String, voice: String, tuning: VoiceTuning = VoiceTuning(), gpu: Bool) async throws -> [Float] {
         try await withCheckedThrowingContinuation { continuation in
             queue.async { [self] in
                 do {
                     let tts = try loadIfNeeded()
-                    let style = try style(for: voice)
+                    let style = try style(for: voice, expressiveness: tuning.expressiveness)
                     let language: Language = voice.hasPrefix("b") ? .enGB : .enUS
                     var samples: [Float] = []
                     for chunk in KokoroText.chunks(text) {
-                        samples += try speak(chunk, tts: tts, style: style, language: language, gpu: gpu)
+                        samples += try speak(chunk, tts: tts, style: style, language: language, pace: Float(tuning.pace), gpu: gpu)
                     }
                     continuation.resume(returning: samples)
                 } catch {
@@ -285,15 +319,15 @@ nonisolated final class KokoroSynth: @unchecked Sendable {
     }
 
     /// One chunk; splits it further if Kokoro says it's too long.
-    private func speak(_ chunk: String, tts: KokoroTTS, style: MLXArray, language: Language, gpu: Bool) throws -> [Float] {
+    private func speak(_ chunk: String, tts: KokoroTTS, style: MLXArray, language: Language, pace: Float, gpu: Bool) throws -> [Float] {
         do {
-            let run = { try tts.generateAudio(voice: style, language: language, text: chunk).0 }
+            let run = { try tts.generateAudio(voice: style, language: language, text: chunk, speed: pace).0 }
             return gpu ? try run() : try Device.withDefaultDevice(.cpu, run)
         } catch KokoroTTS.KokoroTTSError.tooManyTokens {
             let halves = KokoroText.halves(chunk)
             guard halves.count == 2 else { throw KokoroTTS.KokoroTTSError.tooManyTokens }
-            return try speak(halves[0], tts: tts, style: style, language: language, gpu: gpu)
-                + speak(halves[1], tts: tts, style: style, language: language, gpu: gpu)
+            return try speak(halves[0], tts: tts, style: style, language: language, pace: pace, gpu: gpu)
+                + speak(halves[1], tts: tts, style: style, language: language, pace: pace, gpu: gpu)
         }
     }
 
@@ -309,9 +343,31 @@ nonisolated final class KokoroSynth: @unchecked Sendable {
         return loaded
     }
 
-    private func style(for id: String) throws -> MLXArray {
-        if let style = styles[id] { return style }
+    private func style(for id: String, expressiveness: Double) throws -> MLXArray {
+        let key = "\(id)|\(expressiveness)"
+        if let style = styles[key] { return style }
         guard let voice = KokoroVoices.voice(id) else { throw CocoaError(.fileNoSuchFile) }
+        var floats = try rawStyle(slot: voice.slot)
+        if expressiveness != 1 {
+            // Push the intonation away from (or toward) the average of all the voices.
+            let average = try averageProsodyHalf()
+            let k = Float(expressiveness)
+            for row in 0..<Self.rows {
+                for column in Self.prosodyStart..<Self.width {
+                    let i = row * Self.width + column
+                    let mean = average[row * (Self.width - Self.prosodyStart) + column - Self.prosodyStart]
+                    floats[i] = mean + k * (floats[i] - mean)
+                }
+            }
+        }
+        let style = MLXArray(floats, [Self.rows, 1, Self.width])
+        if styles.count > 12 { styles.removeAll() }
+        styles[key] = style
+        return style
+    }
+
+    /// One voice's style, 510 × 256 floats, from Resources/Kokoro/kokoro-voices.bin.
+    private func rawStyle(slot: Int) throws -> [Float] {
         if voiceData == nil {
             let url = Bundle.main.url(forResource: "kokoro-voices", withExtension: "bin")
                 ?? Bundle.main.url(forResource: "kokoro-voices", withExtension: "bin", subdirectory: "Kokoro")
@@ -319,16 +375,30 @@ nonisolated final class KokoroSynth: @unchecked Sendable {
             voiceData = try Data(contentsOf: url, options: .mappedIfSafe)
         }
         guard let voiceData else { throw CocoaError(.fileReadCorruptFile) }
-        let count = 510 * 256
-        let bytes = count * MemoryLayout<Float>.size
-        let start = voice.slot * bytes
+        let bytes = Self.rows * Self.width * MemoryLayout<Float>.size
+        let start = slot * bytes
         guard voiceData.count >= start + bytes else { throw CocoaError(.fileReadCorruptFile) }
-        let floats: [Float] = voiceData.subdata(in: start..<(start + bytes)).withUnsafeBytes { raw in
+        return voiceData.subdata(in: start..<(start + bytes)).withUnsafeBytes { raw in
             Array(raw.bindMemory(to: Float.self))
         }
-        let style = MLXArray(floats, [510, 1, 256])
-        styles[id] = style
-        return style
+    }
+
+    private func averageProsodyHalf() throws -> [Float] {
+        if let averageProsody { return averageProsody }
+        let half = Self.width - Self.prosodyStart
+        var sum = [Float](repeating: 0, count: Self.rows * half)
+        let voices = KokoroVoices.all
+        for voice in voices {
+            let floats = try rawStyle(slot: voice.slot)
+            for row in 0..<Self.rows {
+                for column in 0..<half {
+                    sum[row * half + column] += floats[row * Self.width + Self.prosodyStart + column]
+                }
+            }
+        }
+        let average = sum.map { $0 / Float(voices.count) }
+        averageProsody = average
+        return average
     }
 }
 
