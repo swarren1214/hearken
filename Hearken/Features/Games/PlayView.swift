@@ -212,7 +212,7 @@ struct PlayView: View {
             HStack(alignment: .firstTextBaseline) {
                 Text("Your subjects").font(.title2.bold())
                 Spacer()
-                NavigationLink("Badges", value: BadgesRoute())
+                NavigationLink("Badges") { BadgesView() }
                     .font(.body)
             }
             ForEach(subjects) { subject in

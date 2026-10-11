@@ -111,6 +111,15 @@ final class GroupStore {
     /// A group to open (after joining, or from a notification).
     var openGroupID: String?
 
+    /// The reload in flight. Callers that ask for another while it runs wait for it, and it
+    /// loads once more before finishing, so nobody's request is dropped.
+    @ObservationIgnored private var refreshing: Task<Void, Never>?
+    @ObservationIgnored private var wantsAnotherPass = false
+    @ObservationIgnored private var notifyPending = false
+    /// Groups created on this device that a reload hasn't found yet (CloudKit can take a
+    /// moment). Kept in the list so a new group never disappears.
+    @ObservationIgnored private var justCreated: [StudyGroup] = []
+
     private let container = CKContainer(identifier: AppConfig.cloudKitContainerID)
     private let log = Logger(subsystem: "com.stephenwarren.hearken", category: "groups")
     private static let zonePrefix = "group-"
@@ -132,9 +141,29 @@ final class GroupStore {
     /// Reloads every group. `notify` (from a silent push) posts activity notifications for
     /// anything new from other members.
     func refresh(notify: Bool = false) async {
-        guard AppConfig.cloudSyncEnabled, !isRefreshing else { return }
+        guard AppConfig.cloudSyncEnabled else { return }
+        if notify { notifyPending = true }
+        if let refreshing {
+            wantsAnotherPass = true
+            await refreshing.value
+            return
+        }
+        let task = Task {
+            repeat {
+                wantsAnotherPass = false
+                let shouldNotify = notifyPending
+                notifyPending = false
+                await loadAll(notify: shouldNotify)
+            } while wantsAnotherPass
+        }
+        refreshing = task
         isRefreshing = true
-        defer { isRefreshing = false }
+        await task.value
+        refreshing = nil
+        isRefreshing = false
+    }
+
+    private func loadAll(notify: Bool) async {
         do {
             if myUserID == nil { myUserID = try await container.userRecordID().recordName }
             let owned = try await container.privateCloudDatabase.allRecordZones()
@@ -143,10 +172,25 @@ final class GroupStore {
 
             var loaded: [StudyGroup] = []
             for zone in owned {
-                if let group = try? await load(zone.zoneID, from: container.privateCloudDatabase, isOwner: true) { loaded.append(group) }
+                do {
+                    if let group = try await load(zone.zoneID, from: container.privateCloudDatabase, isOwner: true) { loaded.append(group) }
+                } catch {
+                    log.error("load owned group failed: \(error.localizedDescription, privacy: .public)")
+                }
             }
             for zone in joined {
-                if let group = try? await load(zone.zoneID, from: container.sharedCloudDatabase, isOwner: false) { loaded.append(group) }
+                do {
+                    if let group = try await load(zone.zoneID, from: container.sharedCloudDatabase, isOwner: false) { loaded.append(group) }
+                } catch {
+                    log.error("load joined group failed: \(error.localizedDescription, privacy: .public)")
+                }
+            }
+            // Keep groups just created here until CloudKit returns them.
+            justCreated.removeAll { created in loaded.contains { $0.zoneID == created.zoneID } }
+            // (A brand-new zone can take a moment to show up in the zone list too.)
+            loaded.append(contentsOf: justCreated)
+            for index in loaded.indices where loaded[index].shareURL == nil {
+                loaded[index].shareURL = groups.first { $0.zoneID == loaded[index].zoneID }?.shareURL
             }
             groups = loaded.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
             lastError = nil
@@ -235,12 +279,15 @@ final class GroupStore {
 
     // MARK: Creating and joining
 
-    /// Creates a group and its share. Returns the new group's ID.
+    /// Creates a group and its share. Returns the new group's ID. The group is in `groups` when
+    /// this returns; a reload then fills in anything CloudKit adds.
     func create(name: String, symbol: String, plan: ReadingPlan, startDate: Date, ownerName: String) async throws -> String {
         let database = container.privateCloudDatabase
+        if myUserID == nil { myUserID = try await container.userRecordID().recordName }
         let zone = CKRecordZone(zoneName: Self.zonePrefix + UUID().uuidString)
         _ = try await database.save(zone)
 
+        let start = Calendar.current.startOfDay(for: startDate)
         let root = CKRecord(recordType: RecordType.group, recordID: CKRecord.ID(recordName: "group", zoneID: zone.zoneID))
         root["name"] = name
         root["symbol"] = symbol
@@ -250,7 +297,7 @@ final class GroupStore {
             root["chapterIDs"] = plan.chapterIDs
             root["days"] = plan.days
         }
-        root["startDate"] = Calendar.current.startOfDay(for: startDate)
+        root["startDate"] = start
         root["ownerName"] = ownerName
 
         let share = CKShare(recordZoneID: zone.zoneID)
@@ -258,14 +305,49 @@ final class GroupStore {
         // Anyone with the invite link can join; the owner can remove people.
         share.publicPermission = .readWrite
 
-        let saved = try await database.modifyRecords(saving: [root, share], deleting: [])
+        // modifyRecords reports a failed record in its results rather than throwing, so check
+        // each one. Atomic: the group and its share save together or not at all.
+        let saved: (saveResults: [CKRecord.ID: Result<CKRecord, Error>], deleteResults: [CKRecord.ID: Result<Void, Error>])
+        do {
+            saved = try await database.modifyRecords(saving: [root, share], deleting: [], savePolicy: .allKeys, atomically: true)
+        } catch {
+            await discard(zone.zoneID)
+            throw error
+        }
+        for id in [root.recordID, share.recordID] {
+            if case .failure(let error)? = saved.saveResults[id] {
+                log.error("create failed for \(id.recordName, privacy: .public): \(String(describing: error), privacy: .public)")
+                await discard(zone.zoneID)
+                throw error
+            }
+        }
+
         var shareURL: URL?
         if case .success(let record)? = saved.saveResults[share.recordID] { shareURL = (record as? CKShare)?.url }
-        await refresh()
-        if let index = groups.firstIndex(where: { $0.zoneID == zone.zoneID }), groups[index].shareURL == nil {
-            groups[index].shareURL = shareURL
+        if shareURL == nil {
+            shareURL = (try? await database.record(for: share.recordID) as? CKShare)?.url
         }
-        return groups.first { $0.zoneID == zone.zoneID }?.id ?? ""
+
+        var group = StudyGroup(zoneID: zone.zoneID, isOwner: true, name: name, symbol: symbol, planID: plan.id, startDate: start, ownerName: ownerName)
+        if plan.isCustom {
+            group.customTitle = plan.title
+            group.customChapterIDs = plan.chapterIDs
+            group.customDays = plan.days
+        }
+        group.shareURL = shareURL
+        justCreated.append(group)
+        groups.removeAll { $0.zoneID == zone.zoneID }
+        groups.append(group)
+        groups.sort { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+        hasLoaded = true
+
+        Task { await refresh() }
+        return group.id
+    }
+
+    /// Removes a zone left half-made by a failed create.
+    private func discard(_ zoneID: CKRecordZone.ID) async {
+        _ = try? await container.privateCloudDatabase.deleteRecordZone(withID: zoneID)
     }
 
     /// Joins from an invite the person tapped (after they chose Join).
@@ -297,6 +379,7 @@ final class GroupStore {
     func leave(_ group: StudyGroup) async throws {
         _ = try await database(for: group).deleteRecordZone(withID: group.zoneID)
         groups.removeAll { $0.id == group.id }
+        justCreated.removeAll { $0.id == group.id }
     }
 
     // MARK: Members
@@ -455,16 +538,23 @@ final class GroupStore {
         change(&groups[index])
     }
 
-    static func describe(_ error: Error) -> String {
+    static func describe(_ error: Error, action: String = "load") -> String {
         if let error = error as? CKError {
             switch error.code {
             case .notAuthenticated: return "Sign in to iCloud in Settings to use study groups."
-            case .networkUnavailable, .networkFailure: return "You're offline. Groups will update when you're back online."
+            case .networkUnavailable, .networkFailure: return "You're offline. Try again when you're back online."
             case .quotaExceeded: return "The group owner's iCloud storage is full."
-            default: break
+            case .serviceUnavailable, .requestRateLimited, .zoneBusy:
+                return "iCloud is busy right now. Try again in a moment."
+            case .permissionFailure: return "iCloud didn't allow that. Check that iCloud Drive is on for Hearken in Settings."
+            case .serverRejectedRequest, .invalidArguments, .badContainer:
+                // Typically: the record types aren't deployed to the production schema yet.
+                return "Study groups aren't set up on iCloud for this build yet. (CloudKit said: \(error.localizedDescription))"
+            default:
+                return "Study groups couldn't \(action) right now. (CloudKit error \(error.code.rawValue): \(error.localizedDescription))"
             }
         }
-        return "Study groups couldn't load right now."
+        return "Study groups couldn't \(action) right now. (\(error.localizedDescription))"
     }
 }
 

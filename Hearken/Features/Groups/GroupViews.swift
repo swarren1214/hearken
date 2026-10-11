@@ -329,17 +329,25 @@ struct CreateGroupSheet: View {
         errorMessage = nil
         defer { working = false }
         do {
-            guard let plan = planID == ReadingPlan.customID ? customPlan : ReadingPlanCatalog.plans.first(where: { $0.id == planID }) else { return }
-            createdID = try await GroupStore.shared.create(
+            guard let plan = planID == ReadingPlan.customID ? customPlan : ReadingPlanCatalog.plans.first(where: { $0.id == planID }) else {
+                errorMessage = "Choose a reading plan for the group."
+                return
+            }
+            let id = try await GroupStore.shared.create(
                 name: name.trimmingCharacters(in: .whitespacesAndNewlines),
                 symbol: symbol,
                 plan: plan,
                 startDate: startDate,
                 ownerName: account.displayName ?? ""
             )
+            guard GroupStore.shared.group(id) != nil else {
+                errorMessage = "The group was created, but it couldn't be opened. It will appear on Today shortly."
+                return
+            }
+            withAnimation(.snappy) { createdID = id }
             _ = await PlanReminders.requestPermission()
         } catch {
-            errorMessage = GroupStore.describe(error)
+            errorMessage = GroupStore.describe(error, action: "create the group")
         }
     }
 }

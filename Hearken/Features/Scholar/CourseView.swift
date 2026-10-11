@@ -29,24 +29,6 @@ private struct CourseContent: View {
 
         List {
             Section {
-                VStack(alignment: .leading, spacing: 6) {
-                    if let stage {
-                        Text("STAGE \(stage.number) · COURSE \(course.number)")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(.tint)
-                    }
-                    Text(course.title).font(.title2.bold())
-                    Text(course.summary).font(.subheadline).foregroundStyle(.secondary)
-                    HStack(spacing: 8) {
-                        chip("About \(hours(course.minutes))")
-                        chip("Up to \(course.requiredXP) XP")
-                        chip("\(course.requiredItems.count) required")
-                    }
-                    .padding(.top, 4)
-                }
-                .listRowBackground(Color.clear)
-                .listRowInsets(EdgeInsets(top: 4, leading: 4, bottom: 8, trailing: 4))
-
                 HStack(spacing: 14) {
                     RequirementRing(progress: status.fraction, label: "\(status.requiredDone)/\(status.requiredTotal)", color: status.isComplete ? Feedback.correct : .accentColor, size: 64, lineWidth: 7)
                     VStack(alignment: .leading, spacing: 2) {
@@ -62,6 +44,26 @@ private struct CourseContent: View {
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
+            } header: {
+                // The title block lives in the header so it sits above the card, unclipped by
+                // the section's rounded corners and with no separator under it.
+                VStack(alignment: .leading, spacing: 6) {
+                    if let stage {
+                        Text("STAGE \(stage.number) · COURSE \(course.number)")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(.tint)
+                    }
+                    Text(course.title).font(.title2.bold()).foregroundStyle(.primary)
+                    Text(course.summary).font(.subheadline).foregroundStyle(.secondary)
+                    HStack(spacing: 8) {
+                        chip("About \(hours(course.minutes))")
+                        chip("Up to \(course.requiredXP) XP")
+                        chip("\(course.requiredItems.count) required")
+                    }
+                    .padding(.top, 4)
+                }
+                .textCase(nil)
+                .padding(.bottom, 10)
             }
 
             ForEach(course.modules) { module in
@@ -142,7 +144,9 @@ private struct CourseContent: View {
     private func itemRow(_ item: PathItem, unlocked: Bool) -> some View {
         let done = progress.isDone(item)
         let paid = progress.isAwarded(item)
-        return NavigationLink(value: ItemRoute(subjectID: path.subjectID, itemID: item.id)) {
+        return NavigationLink {
+            LearningItemView(path: path, item: item)
+        } label: {
             HStack(spacing: 12) {
                 Image(systemName: item.symbol)
                     .font(.subheadline)

@@ -151,13 +151,19 @@ struct ScholarProgress {
         return next
     }
 
-    /// Progress toward the next rank's XP, 0…1.
+    /// Progress toward the next rank's XP, 0…1. Novice has no XP bar (it's earned by finishing
+    /// any item), so before that it reads 0; at the top of the path it reads 1.
     var xpFraction: Double {
-        guard let next = nextRank, next.xpThreshold > 0 else { return 1 }
+        guard let next = nextRank else { return 1 }
+        guard next.xpThreshold > 0 else { return 0 }
         return min(Double(xp) / Double(next.xpThreshold), 1)
     }
 
-    var xpReached: Bool { (nextRank?.xpThreshold ?? 0) <= xp }
+    /// Whether the next rank's XP requirement is met. Never true for Novice, which has none.
+    var xpReached: Bool {
+        guard let next = nextRank, next.xpThreshold > 0 else { return false }
+        return xp >= next.xpThreshold
+    }
 
     /// The stage the next rank needs.
     var nextStage: PathStage? {

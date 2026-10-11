@@ -204,7 +204,9 @@ private struct LearningItemContent: View {
                             .buttonStyle(.glass)
                     }
                     if let alternativeID = item.alternativeItemID, let alternative = path.item(alternativeID) {
-                        NavigationLink(value: ItemRoute(subjectID: path.subjectID, itemID: alternative.id)) {
+                        NavigationLink {
+                            LearningItemView(path: path, item: alternative)
+                        } label: {
                             Label("Read Instead", systemImage: "doc.text")
                         }
                         .buttonStyle(.glass)
