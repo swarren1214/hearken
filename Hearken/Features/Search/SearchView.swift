@@ -48,7 +48,8 @@ struct SearchTab: View {
             placement: .navigationBarDrawer(displayMode: .always),
             prompt: "Verses, references, subjects"
         )
-        .onAppear { activateSearch() }
+        // Not during the tour: the keyboard would cover its card.
+        .onAppear { if !TourController.shared.isActive { activateSearch() } }
         .searchScopes($scope, activation: .onSearchPresentation) {
             ForEach(SearchScope.allCases) { Text($0.title).tag($0) }
         }

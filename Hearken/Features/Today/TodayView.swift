@@ -26,51 +26,67 @@ struct TodayView: View {
         let plan = PlanReading.active(enrollments)
         let planState = plan.flatMap { PlanEngine.shared.state(for: $0, content: content, read: PlanReading.readSet(progress)) }
 
-        ScrollView {
-            VStack(alignment: .leading, spacing: 22) {
-                if let plan, let planState {
-                    // A running plan leads; the Daily Challenge steps down to a row.
-                    PlanTodayCard(state: planState, enrollment: plan)
-                    compactDailyChallenge(snapshot: snapshot)
-                } else {
-                    dailyChallenge(snapshot: snapshot)
-                    StartPlanCard()
+        ScrollViewReader { proxy in
+            ScrollView {
+                VStack(alignment: .leading, spacing: 22) {
+                    if let plan, let planState {
+                        // A running plan leads; the Daily Challenge steps down to a row.
+                        PlanTodayCard(state: planState, enrollment: plan)
+                        compactDailyChallenge(snapshot: snapshot)
+                    } else {
+                        dailyChallenge(snapshot: snapshot)
+                        StartPlanCard()
+                    }
+                    GroupsSection(defaultPlanID: plan?.planID, customPlan: planState.flatMap { $0.plan.isCustom ? $0.plan : nil })
+                    progressCard(totalXP: totalXP)
+                    continueReading
+                        .id(TourController.Step.today)
+                        .tourTarget(.today)
+                    subjectsSection(snapshot: snapshot)
                 }
-                GroupsSection(defaultPlanID: plan?.planID, customPlan: planState.flatMap { $0.plan.isCustom ? $0.plan : nil })
-                progressCard(totalXP: totalXP)
-                continueReading
-                subjectsSection(snapshot: snapshot)
+                .padding(.horizontal, 16)
+                .padding(.bottom, 24)
             }
-            .padding(.horizontal, 16)
-            .padding(.bottom, 24)
-        }
-        .background(Color(.systemGroupedBackground))
-        .navigationTitle("Today")
-        .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                HStack(spacing: 4) {
-                    Image(systemName: "flame.fill")
-                    Text("\(streak)")
-                        .monospacedDigit()
-                        .contentTransition(.numericText())
+            .background(Color(.systemGroupedBackground))
+            .navigationTitle("Today")
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "flame.fill")
+                        Text("\(streak)")
+                            .monospacedDigit()
+                            .contentTransition(.numericText())
+                    }
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.primary)
+                    .padding(.horizontal, 8)
+                    .fixedSize()
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel("\(streak) day streak")
                 }
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.primary)
-                .padding(.horizontal, 8)
-                .fixedSize()
-                .accessibilityElement(children: .ignore)
-                .accessibilityLabel("\(streak) day streak")
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Profile and settings", systemImage: "person.crop.circle") { showSettings = true }
+                        .tint(Color.primary)
+                }
             }
-            ToolbarItem(placement: .topBarTrailing) {
-                Button("Profile and settings", systemImage: "person.crop.circle") { showSettings = true }
-                    .tint(Color.primary)
+            .sheet(isPresented: $showSettings) {
+                NavigationStack { SettingsView() }
             }
-        }
-        .sheet(isPresented: $showSettings) {
-            NavigationStack { SettingsView() }
-        }
-        .fullScreenCover(item: $activeGame) { request in
-            GameView(request: request)
+            .fullScreenCover(item: $activeGame) { request in
+                GameView(request: request)
+            }
+            // The tour's first step points at Continue Reading; bring it on screen first.
+            .onChange(of: TourController.shared.step) { _, step in
+                guard step == .today else { return }
+                withAnimation { proxy.scrollTo(TourController.Step.today, anchor: .center) }
+            }
+            // The tour ended with Start Reading: open where they left off.
+            .onChange(of: TourController.shared.startReadingRequested) { _, requested in
+                guard requested else { return }
+                TourController.shared.startReadingRequested = false
+                let last = progress.max(by: { $0.updatedAt < $1.updatedAt })
+                AppNavigator.shared.open(chapterID: last?.chapterID ?? content.defaultChapterID)
+            }
         }
     }
 

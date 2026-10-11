@@ -17,6 +17,7 @@ struct RootTabView: View {
     @State private var playPath = NavigationPath()
     @State private var navigator = AppNavigator.shared
     @State private var groups = GroupStore.shared
+    @State private var tour = TourController.shared
     @Environment(ContentService.self) private var content
 
     var body: some View {
@@ -97,5 +98,19 @@ struct RootTabView: View {
             todayPath.append(GroupRoute(id: id))
             groups.openGroupID = nil
         }
+        // The first-run tour: the Welcome sheet, then each step shows its tab at its top level.
+        .sheet(isPresented: $tour.showsWelcome) {
+            WelcomeView()
+        }
+        .onChange(of: tour.step) { _, step in
+            guard let step else { return }
+            selection = step.tab
+            switch step.tab {
+            case .today: todayPath = NavigationPath()
+            case .play: playPath = NavigationPath()
+            default: break
+            }
+        }
+        .overlay { TourOverlay() }
     }
 }

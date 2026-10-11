@@ -1,5 +1,6 @@
 import SwiftData
 import SwiftUI
+import TipKit
 import UIKit
 
 private struct GroupVerseTarget: Identifiable {
@@ -87,11 +88,14 @@ struct ReaderView: View {
             .id("\(chapterID)#\(jumpToken)")
             .navigationTitle(content.title(forChapter: chapterID))
             .navigationBarTitleDisplayMode(.inline)
+            .task(id: chapterID) { ReaderTips.chapterOpened() }
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     ReaderLocationPill(title: content.title(forChapter: chapterID), expanded: showsLocation) {
                         withAnimation(.snappy) { showsLocation.toggle() }
                     }
+                    // First chapter opened: how to highlight.
+                    .popoverTip(HighlightTip(), arrowEdge: .top)
                 }
                 .sharedBackgroundVisibility(.hidden)
 
@@ -115,6 +119,10 @@ struct ReaderView: View {
                     }
                     .tint(listeningHere ? accent.color : Color.primary)
                     .accessibilityHint("Reads the chapter aloud. Touch and hold for more options.")
+                    // From the second chapter opened: Listen, with Try It.
+                    .popoverTip(ListenTip(), arrowEdge: .top) { action in
+                        if action.id == ListenTip.tryIt { startListening(fromStart: true) }
+                    }
                 }
 
                 ToolbarItem(placement: .topBarTrailing) {
@@ -238,6 +246,7 @@ struct ReaderView: View {
 
     /// Starts reading this chapter aloud: from the selected verse, the top of the page, or verse 1.
     private func startListening(fromStart: Bool) {
+        ListenTip().invalidate(reason: .actionPerformed)
         let verse = fromStart ? nil : (probe.selectedVerse ?? probe.topVerse())
         listen.start(chapterID: chapterID, fromVerse: verse)
     }
@@ -679,6 +688,7 @@ struct ReaderPage: View {
         carve(from: start, to: end)
         let highlight = Highlight(chapterID: chapterID, start: start, end: end, hue: pencilHue, style: pencilStyle)
         modelContext.insert(highlight)
+        ReaderTips.highlighted()
         // The text view selects the new highlight once it's drawn, which opens the highlight
         // menu; it stays until closed.
     }
@@ -811,6 +821,7 @@ struct ReaderPage: View {
                 hue: hue,
                 style: pendingStyle ?? legend.defaultStyle
             ))
+            ReaderTips.highlighted()
         }
     }
 

@@ -14,6 +14,10 @@ enum SettingsKey {
     static let dailyGoalMinutes = "settings.dailyGoalMinutes"
     static let studyReminder = "settings.studyReminder"
     static let onboardingDone = "onboarding.done"
+    /// The first-run tour has been finished or skipped.
+    static let tourDone = "tour.done"
+    /// Settings › Show All Tips Again: TipKit's records are cleared at the next launch.
+    static let tipsResetPending = "tips.resetPending"
 }
 
 /// How the reader presents a chapter: one long scroll, or pages that turn with a page curl.

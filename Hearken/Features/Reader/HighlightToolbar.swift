@@ -1,4 +1,5 @@
 import SwiftUI
+import TipKit
 
 /// The iPhone highlight bar: one floating Liquid Glass capsule at the bottom of the reader, like
 /// the iPad bar folded to phone width. Highlight or underline, the legend colors (scroll for
@@ -140,6 +141,11 @@ struct HighlightToolbar: View {
                 .contentShape(Circle())
         }
         .menuOrder(.fixed)
+        // After the first highlight: what's behind ···. Gone once the menu is used.
+        .popoverTip(HighlightMenuTip(), arrowEdge: .bottom)
+        .simultaneousGesture(TapGesture().onEnded {
+            HighlightMenuTip().invalidate(reason: .actionPerformed)
+        })
         // Menu icons match their text (the app's accent would turn them blue).
         .tint(.primary)
         .accessibilityLabel("More actions")

@@ -1,5 +1,6 @@
 import SwiftData
 import SwiftUI
+import TipKit
 import UIKit
 import UserNotifications
 
@@ -21,6 +22,8 @@ struct HearkenApp: App {
         UNUserNotificationCenter.current().delegate = NotificationRouter.shared
         // Listen mode marks chapters read when heard to the end, even when Siri started it in the background.
         ListenEngine.shared.attach(container: container)
+        // The reader's one-time tips.
+        ReaderTips.configure()
     }
 
     var body: some Scene {
@@ -49,8 +52,12 @@ struct AppRoot: View {
         RootTabView()
             .tint(accent.color)
             .fullScreenCover(isPresented: showOnboarding) {
-                SignInView { onboardingDone = true }
-                    .tint(accent.color)
+                SignInView {
+                    onboardingDone = true
+                    // A new install: show them around once the sign-in screen is gone.
+                    TourController.shared.startAfterSignIn()
+                }
+                .tint(accent.color)
             }
             .task {
                 await account.refresh()

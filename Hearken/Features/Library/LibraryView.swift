@@ -15,6 +15,7 @@ struct LibraryView: View {
             VStack(alignment: .leading, spacing: 32) {
                 ForEach(LibraryCatalog.shelves) { shelf in
                     shelfRow(shelf, progress: progress)
+                        .tourTarget(.library, isEnabled: shelf.id == LibraryCatalog.shelves.first?.id)
                 }
             }
             .padding(.top, 8)

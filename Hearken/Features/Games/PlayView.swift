@@ -31,6 +31,7 @@ struct PlayView: View {
                     reviewCard(snapshot: snapshot)
                 }
                 .fixedSize(horizontal: false, vertical: true)
+                .tourTarget(.play)
 
                 quickPlay
                 subjectsGrid(snapshot: snapshot)

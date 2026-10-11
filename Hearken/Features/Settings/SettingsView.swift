@@ -23,6 +23,7 @@ struct SettingsView: View {
     @State private var confirmDelete = false
     @State private var avatarItem: PhotosPickerItem?
     @State private var errorMessage: String?
+    @State private var tipsReset = false
 
     var body: some View {
         Form {
@@ -125,6 +126,25 @@ struct SettingsView: View {
                 Text("Debug builds only. Opens every Scholar Path course and check so a path can be reviewed end to end. XP and rank rules are unchanged.")
             }
             #endif
+
+            Section {
+                Button("Take the Tour Again", systemImage: "hand.point.up.left") {
+                    dismiss()
+                    // Starts once the Settings sheet has finished closing.
+                    TourController.shared.start(skippingWelcome: true, after: .milliseconds(600))
+                }
+                Button(tipsReset ? "Tips Will Show Again" : "Show All Tips Again", systemImage: tipsReset ? "checkmark" : "lightbulb") {
+                    UserDefaults.standard.set(true, forKey: SettingsKey.tipsResetPending)
+                    withAnimation { tipsReset = true }
+                }
+                .disabled(tipsReset)
+            } header: {
+                Text("Help")
+            } footer: {
+                Text(tipsReset
+                     ? "Reader tips reappear after you next open Hearken, the next time you reach each feature."
+                     : "Reader tips reappear the next time you reach each feature.")
+            }
 
             Section("About") {
                 LabeledContent("Version", value: Bundle.main.appVersion)
