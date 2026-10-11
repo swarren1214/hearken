@@ -676,7 +676,15 @@ struct ChapterTextView: UIViewRepresentable {
             switch pan.state {
             case .began:
                 parent.onPencilNear()
-                anchor = index
+                // A pan is recognized only after the tip has moved a few points, so anchor the
+                // stroke where the tip first touched, not where it is now; otherwise a stroke
+                // started just before a word skips its first letter.
+                let location = pan.location(in: textView)
+                let moved = pan.translation(in: textView)
+                let touchDown = CGPoint(x: location.x - moved.x, y: location.y - moved.y)
+                anchor = textView.closestPosition(to: touchDown).map {
+                    textView.offset(from: textView.beginningOfDocument, to: $0)
+                } ?? index
                 hideCaret()
                 updatePreview(in: textView, to: index)
             case .changed:
@@ -830,11 +838,11 @@ struct ChapterTextView: UIViewRepresentable {
             let baseline = rect.minY + font.ascender
             if pencil.style == .underline && !pencil.erasing {
                 // Where the thick underline is drawn: just under the baseline.
-                let thickness = max(2, (size * 0.13).rounded())
+                let thickness = max(3, (size * 0.2).rounded())
                 caret.frame = CGRect(x: rect.minX, y: baseline + size * 0.07, width: size * 1.15, height: thickness)
                 caret.layer.cornerRadius = thickness / 2
             } else {
-                let width = max(3, (size * 0.16).rounded())
+                let width = max(4, (size * 0.2).rounded())
                 caret.frame = CGRect(x: rect.minX - width / 2, y: rect.minY, width: width, height: textHeight)
                 caret.layer.cornerRadius = width / 2
             }
