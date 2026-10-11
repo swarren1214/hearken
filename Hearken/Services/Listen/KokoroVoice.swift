@@ -106,6 +106,11 @@ final class KokoroModel: NSObject {
     @ObservationIgnored private var session: URLSession?
     @ObservationIgnored private var task: URLSessionDownloadTask?
     @ObservationIgnored private var sourceIndex = 0
+    /// The last whole percent reported. URLSession reports every few KB (thousands of times for
+    /// this file); passing each one to the main thread re-rendered the progress bar faster than
+    /// it could draw, so the backlog froze the app for a while after the download finished.
+    /// Only touched on the session's serial delegate queue (and reset before a task starts).
+    @ObservationIgnored nonisolated(unsafe) private var lastReportedPercent = -1
 
     override init() {
         super.init()
@@ -149,6 +154,7 @@ final class KokoroModel: NSObject {
     private func startTask() {
         guard let session, Self.remoteURLs.indices.contains(sourceIndex) else { return }
         let task = session.downloadTask(with: Self.remoteURLs[sourceIndex])
+        lastReportedPercent = -1
         self.task = task
         task.resume()
     }
@@ -206,6 +212,9 @@ extension KokoroModel: URLSessionDownloadDelegate {
     nonisolated func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
         guard totalBytesExpectedToWrite > 0 else { return }
         let fraction = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite)
+        let percent = Int(fraction * 100)
+        guard percent != lastReportedPercent else { return }
+        lastReportedPercent = percent
         Task { @MainActor in KokoroModel.shared.progressed(fraction) }
     }
 
@@ -286,6 +295,11 @@ nonisolated final class KokoroSynth: @unchecked Sendable {
     /// half for the sound of the voice. Expressiveness only changes the second half.
     private static let prosodyStart = 128
 
+    /// How much freed GPU memory MLX may keep around for reuse. Left unlimited, MLX keeps every
+    /// buffer it has ever used, and generating verse after verse grows the app's memory until
+    /// iOS kills it, which shows up as a crash a moment after speech starts.
+    private static let gpuCacheLimit = 32 * 1024 * 1024
+
     /// Unloads the model after this long without speech, freeing several hundred MB.
     private static let idleUnloadDelay: TimeInterval = 180
     private var idleUnload: DispatchWorkItem?
@@ -312,6 +326,7 @@ nonisolated final class KokoroSynth: @unchecked Sendable {
             idleUnload = nil
             tts = nil
             styles = [:]
+            MLX.GPU.clearCache()
         }
     }
 
@@ -321,6 +336,7 @@ nonisolated final class KokoroSynth: @unchecked Sendable {
         let item = DispatchWorkItem { [weak self] in
             self?.tts = nil
             self?.styles = [:]
+            MLX.GPU.clearCache()
         }
         idleUnload = item
         queue.asyncAfter(deadline: .now() + Self.idleUnloadDelay, execute: item)
@@ -345,6 +361,8 @@ nonisolated final class KokoroSynth: @unchecked Sendable {
                             try cancelled.check()
                             samples += try speak(chunk, tts: tts, style: style, language: language, pace: Float(tuning.pace), gpu: gpu)
                         }
+                        // Hand back what this verse used beyond the small reuse cache.
+                        MLX.GPU.clearCache()
                         continuation.resume(returning: samples)
                     } catch {
                         continuation.resume(throwing: error)
@@ -373,6 +391,7 @@ nonisolated final class KokoroSynth: @unchecked Sendable {
         if let tts { return tts }
         let url = KokoroModel.localURL
         guard FileManager.default.fileExists(atPath: url.path(percentEncoded: false)) else { throw CocoaError(.fileNoSuchFile) }
+        MLX.GPU.set(cacheLimit: Self.gpuCacheLimit)
         // If loading crashes the app, the flag is still set next launch and natural voices turn off.
         KokoroModel.markLoading(true)
         let loaded = KokoroTTS(modelPath: url, g2p: .misaki)

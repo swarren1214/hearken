@@ -132,8 +132,10 @@ final class NeuralSpeechPlayer {
 
     private var isForeground: Bool { UIApplication.shared.applicationState != .background }
 
-    /// How many verses to keep ready: lots while the GPU is available, a couple in the background.
-    private var lookahead: Int { isForeground ? 8 : 2 }
+    /// How many verses to keep ready: a few while the GPU is available, a couple in the
+    /// background. Generating far ahead only holds more memory; one verse takes well under
+    /// its own playing time to generate.
+    private var lookahead: Int { isForeground ? 4 : 2 }
 
     private func produce(_ items: [Item], voice: String, tuning: VoiceTuning, pause: Double, generation current: Int) async {
         for (position, item) in items.enumerated() {
