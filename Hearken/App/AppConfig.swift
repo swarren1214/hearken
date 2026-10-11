@@ -8,10 +8,9 @@ enum AppConfig {
     static let cloudSyncEnabled = true
     static let cloudKitContainerID = "iCloud.com.stephenwarren.hearken"
 
-    // Placeholders until the site is live.
-    static let termsURL = URL(string: "https://example.com/hearken/terms")!
-    static let privacyURL = URL(string: "https://example.com/hearken/privacy")!
-    static let supportURL = URL(string: "https://example.com/hearken/support")!
+    static let termsURL = URL(string: "https://hearkenstudy.com/terms.html")!
+    static let privacyURL = URL(string: "https://hearkenstudy.com/privacy.html")!
+    static let supportURL = URL(string: "https://hearkenstudy.com/support.html")!
 
     static let disclaimer = "Hearken is an independent study app. It is not made, sponsored or endorsed by The Church of Jesus Christ of Latter-day Saints."
 }

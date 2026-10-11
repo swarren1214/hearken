@@ -175,7 +175,7 @@ struct ChapterTextLayout {
         signature.combine(speakingVerse)
         // Listen mode: a soft wash of the accent behind the verse being read aloud.
         if let speakingVerse, let span = spans.first(where: { $0.verse == speakingVerse }) {
-            text.addAttribute(.backgroundColor, value: tint.withAlphaComponent(0.16), range: span.text)
+            text.addAttribute(.hearkenFill, value: tint.withAlphaComponent(0.16), range: span.text)
         }
         for highlight in highlights.sorted(by: { $0.createdAt < $1.createdAt }) {
             signature.combine(highlight.startVerse); signature.combine(highlight.startOffset)
@@ -196,7 +196,7 @@ struct ChapterTextLayout {
                 let range = NSRange(location: span.text.location + lower, length: upper - lower)
                 switch highlight.style {
                 case .fill:
-                    text.addAttribute(.backgroundColor, value: color.withAlphaComponent(0.32), range: range)
+                    text.addAttribute(.hearkenFill, value: color.withAlphaComponent(0.32), range: range)
                 case .underline:
                     text.addAttributes([.underlineStyle: NSUnderlineStyle.thick.rawValue, .underlineColor: color], range: range)
                 }
@@ -396,7 +396,7 @@ struct ChapterTextView: UIViewRepresentable {
         return CGSize(width: width, height: ceil(size.height))
     }
 
-    final class Coordinator: NSObject, UITextViewDelegate, UIGestureRecognizerDelegate {
+    final class Coordinator: NSObject, UITextViewDelegate, UIGestureRecognizerDelegate, UIScribbleInteractionDelegate {
         var parent: ChapterTextView
         var signature = 0
         var clearToken = 0
@@ -606,9 +606,9 @@ struct ChapterTextView: UIViewRepresentable {
                 guard part.length > 0 else { continue }
                 storage.enumerateAttributes(in: part) { attributes, subrange, _ in
                     if (attributes[.underlineStyle] as? Int ?? 0) != 0, let color = attributes[.underlineColor] as? UIColor {
-                        storage.addAttribute(.backgroundColor, value: color.withAlphaComponent(0.22), range: subrange)
-                    } else if let color = attributes[.backgroundColor] as? UIColor {
-                        storage.addAttribute(.backgroundColor, value: color.withAlphaComponent(0.55), range: subrange)
+                        storage.addAttribute(.hearkenFill, value: color.withAlphaComponent(0.22), range: subrange)
+                    } else if let color = attributes[.hearkenFill] as? UIColor {
+                        storage.addAttribute(.hearkenFill, value: color.withAlphaComponent(0.55), range: subrange)
                     }
                 }
             }
@@ -639,6 +639,13 @@ struct ChapterTextView: UIViewRepresentable {
             hover.isEnabled = false
             textView.addGestureRecognizer(hover)
             pencilHover = hover
+
+            // No Scribble on scripture: its hover caret and handwriting-select would fight the
+            // Pencil highlighter, which is what the Pencil is for here.
+            if UIDevice.isPad {
+                let scribble = UIScribbleInteraction(delegate: self)
+                textView.addInteraction(scribble)
+            }
         }
 
         /// Turns Pencil mode on or off. While on, every other gesture on the way up to the window
@@ -669,22 +676,30 @@ struct ChapterTextView: UIViewRepresentable {
             }
         }
 
+        /// The character under a point, like a highlighter: touching any part of a letter counts
+        /// as touching that letter. Off the end of a line, the line's last character; before its
+        /// start, its first.
+        private func character(at point: CGPoint, in textView: UITextView) -> Int? {
+            if let range = textView.characterRange(at: point) {
+                return textView.offset(from: textView.beginningOfDocument, to: range.start)
+            }
+            guard let position = textView.closestPosition(to: point) else { return nil }
+            let index = textView.offset(from: textView.beginningOfDocument, to: position)
+            return point.x >= textView.caretRect(for: position).midX ? max(index - 1, 0) : index
+        }
+
         @objc func pencilDrag(_ pan: UIPanGestureRecognizer) {
             guard let textView = pan.view as? UITextView,
-                  let position = textView.closestPosition(to: pan.location(in: textView)) else { return }
-            let index = textView.offset(from: textView.beginningOfDocument, to: position)
+                  let index = character(at: pan.location(in: textView), in: textView) else { return }
             switch pan.state {
             case .began:
                 parent.onPencilNear()
                 // A pan is recognized only after the tip has moved a few points, so anchor the
-                // stroke where the tip first touched, not where it is now; otherwise a stroke
-                // started just before a word skips its first letter.
+                // stroke on the letter the tip first touched, not where it is now.
                 let location = pan.location(in: textView)
                 let moved = pan.translation(in: textView)
                 let touchDown = CGPoint(x: location.x - moved.x, y: location.y - moved.y)
-                anchor = textView.closestPosition(to: touchDown).map {
-                    textView.offset(from: textView.beginningOfDocument, to: $0)
-                } ?? index
+                anchor = character(at: touchDown, in: textView) ?? index
                 hideCaret()
                 updatePreview(in: textView, to: index)
             case .changed:
@@ -697,11 +712,12 @@ struct ChapterTextView: UIViewRepresentable {
             }
         }
 
-        /// The text from where the stroke started to where the tip is now, character by character.
+        /// The text from the letter the stroke started on to the letter under the tip now, both
+        /// included, in either direction.
         private func strokeRange(to index: Int, in text: NSString) -> NSRange? {
             guard let anchor else { return nil }
             var lower = max(0, min(anchor, index))
-            var upper = min(text.length, max(anchor, index))
+            var upper = min(text.length, max(anchor, index) + 1)
             // Don't start or end on spaces or line breaks.
             while lower < upper, Self.isSpace(text.character(at: lower)) { lower += 1 }
             while upper > lower, Self.isSpace(text.character(at: upper - 1)) { upper -= 1 }
@@ -728,11 +744,11 @@ struct ChapterTextView: UIViewRepresentable {
                     let part = NSIntersectionRange(range, local)
                     guard part.length > 0, NSMaxRange(part) <= storage.length else { continue }
                     if pencil.erasing {
-                        storage.addAttribute(.backgroundColor, value: UIColor.systemGray.withAlphaComponent(0.25), range: part)
+                        storage.addAttribute(.hearkenFill, value: UIColor.systemGray.withAlphaComponent(0.25), range: part)
                     } else if pencil.style == .underline {
                         storage.addAttributes([.underlineStyle: NSUnderlineStyle.thick.rawValue, .underlineColor: pencil.color], range: part)
                     } else {
-                        storage.addAttribute(.backgroundColor, value: pencil.color.withAlphaComponent(0.32), range: part)
+                        storage.addAttribute(.hearkenFill, value: pencil.color.withAlphaComponent(0.32), range: part)
                     }
                 }
             }
@@ -797,14 +813,27 @@ struct ChapterTextView: UIViewRepresentable {
                     return
                 }
                 parent.onPencilNear()
+                setSystemHoverCaret(hidden: true, in: textView)
                 let storage = textView.textStorage
-                let index = textView.offset(from: textView.beginningOfDocument, to: position)
-                // The font of the character the caret sits before (or after, at the end of a line).
+                // Before the letter a stroke would start on (the same rule as drawing).
+                let index = character(at: hover.location(in: textView), in: textView)
+                    ?? textView.offset(from: textView.beginningOfDocument, to: position)
+                let start = textView.position(from: textView.beginningOfDocument, offset: index) ?? position
                 let fontIndex = min(max(index, 0), storage.length - 1)
                 let font = fontIndex >= 0 ? storage.attribute(.font, at: fontIndex, effectiveRange: nil) as? UIFont : nil
-                showCaret(at: textView.caretRect(for: position), font: font ?? ChapterTextLayout.serifFont(size: 19), in: textView)
+                showCaret(at: textView.caretRect(for: start), font: font ?? ChapterTextLayout.serifFont(size: 19), in: textView)
             default:
                 hideCaret()
+                setSystemHoverCaret(hidden: false, in: textView)
+            }
+        }
+
+        /// iPadOS draws its own caret under a hovering Pencil, snapped to the nearest gap between
+        /// letters, which can sit a letter away from where our stroke starts. Ours is the accurate
+        /// one, so the system's pointer effect is off while the Pencil hovers (a trackpad keeps it).
+        private func setSystemHoverCaret(hidden: Bool, in textView: UITextView) {
+            for case let interaction as UIPointerInteraction in textView.interactions {
+                interaction.isEnabled = !hidden
             }
         }
 
@@ -857,6 +886,10 @@ struct ChapterTextView: UIViewRepresentable {
         private func hideCaret() {
             caret?.alpha = 0
             halo?.alpha = 0
+        }
+
+        func scribbleInteraction(_ interaction: UIScribbleInteraction, shouldBeginAt location: CGPoint) -> Bool {
+            false
         }
 
         // No system edit menu: the Hearken toolbar replaces it.
@@ -962,20 +995,128 @@ enum PencilTouchRouting {
 
 // MARK: - Selection clipped to the text column
 
-/// The chapter's text view. iOS draws a selection's wrapped lines from the left edge of the
-/// text box, which would paint over the verse-number margin; this clips every selection line
-/// to where verse text starts.
+extension NSAttributedString.Key {
+    /// A highlight, Listen wash or Pencil preview fill. Drawn by `ChapterUITextView` instead of
+    /// `.backgroundColor`, which iOS paints from the very start of each wrapped line, over the
+    /// verse-number margin.
+    static let hearkenFill = NSAttributedString.Key("HearkenFill")
+}
+
+/// The chapter's text view. iOS draws a selection's wrapped lines (and background colors) from
+/// the left edge of the text box, which would paint over the verse-number margin. This clips
+/// every selection line to where verse text starts, and draws highlight fills itself, behind
+/// the text, clipped the same way.
 final class ChapterUITextView: UITextView {
-    var textIndent: CGFloat = 0
+    var textIndent: CGFloat = 0 {
+        didSet { if textIndent != oldValue { fills.setNeedsDisplay() } }
+    }
+
+    private lazy var fills = HighlightFillView(textView: self)
+
+    /// Where verse text starts; nothing is filled or selected left of this.
+    var verseTextLeft: CGFloat {
+        textContainerInset.left + textContainer.lineFragmentPadding + textIndent
+    }
 
     override func selectionRects(for range: UITextRange) -> [UITextSelectionRect] {
         let rects = super.selectionRects(for: range)
         guard textIndent > 0 else { return rects }
-        let left = textContainerInset.left + textContainer.lineFragmentPadding + textIndent
+        let left = verseTextLeft
         return rects.map { selection in
             let rect = selection.rect
             guard rect.width > 0, rect.minX < left - 0.5, rect.maxX > left else { return selection }
             return ClippedSelectionRect(selection, rect: CGRect(x: left, y: rect.minY, width: rect.maxX - left, height: rect.height))
+        }
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        if fills.superview !== self {
+            insertSubview(fills, at: 0)
+            // Highlights change by editing the text's attributes (selection emphasis, Pencil
+            // previews), so redraw whenever the text storage is edited.
+            NotificationCenter.default.addObserver(
+                self, selector: #selector(textStorageEdited),
+                name: NSTextStorage.didProcessEditingNotification, object: textStorage
+            )
+        }
+        let frame = CGRect(origin: .zero, size: bounds.size)
+        if fills.frame != frame {
+            fills.frame = frame
+            fills.setNeedsDisplay()
+        }
+    }
+
+    /// The fills stay behind everything iOS adds (the text itself, selection views).
+    override func didAddSubview(_ subview: UIView) {
+        super.didAddSubview(subview)
+        if subview !== fills, fills.superview === self { sendSubviewToBack(fills) }
+    }
+
+    @objc private func textStorageEdited() {
+        fills.setNeedsDisplay()
+    }
+
+    /// The line-by-line boxes a character range covers, in this view's coordinates.
+    func fillRects(for range: NSRange) -> [CGRect] {
+        var rects: [CGRect] = []
+        let dx = textContainerInset.left, dy = textContainerInset.top
+        if let manager = textLayoutManager, let content = manager.textContentManager {
+            guard let start = content.location(content.documentRange.location, offsetBy: range.location),
+                  let end = content.location(start, offsetBy: range.length),
+                  let textRange = NSTextRange(location: start, end: end) else { return [] }
+            manager.ensureLayout(for: textRange)
+            manager.enumerateTextSegments(in: textRange, type: .highlight, options: [.rangeNotRequired]) { _, frame, _, _ in
+                rects.append(frame.offsetBy(dx: dx, dy: dy))
+                return true
+            }
+        } else {
+            // Page Turn uses TextKit 1.
+            let manager = layoutManager
+            let glyphs = manager.glyphRange(forCharacterRange: range, actualCharacterRange: nil)
+            manager.enumerateEnclosingRects(
+                forGlyphRange: glyphs,
+                withinSelectedGlyphRange: NSRange(location: NSNotFound, length: 0),
+                in: textContainer
+            ) { rect, _ in
+                rects.append(rect.offsetBy(dx: dx, dy: dy))
+            }
+        }
+        return rects
+    }
+}
+
+/// Paints the text's `.hearkenFill` runs behind the text, never left of where verse text starts.
+private final class HighlightFillView: UIView {
+    private weak var textView: ChapterUITextView?
+
+    init(textView: ChapterUITextView) {
+        self.textView = textView
+        super.init(frame: .zero)
+        isOpaque = false
+        backgroundColor = .clear
+        isUserInteractionEnabled = false
+        contentMode = .redraw
+        registerForTraitChanges([UITraitUserInterfaceStyle.self]) { (view: HighlightFillView, _: UITraitCollection) in
+            view.setNeedsDisplay()
+        }
+    }
+
+    required init?(coder: NSCoder) { fatalError("init(coder:) is not supported") }
+
+    override func draw(_ rect: CGRect) {
+        guard let textView, let context = UIGraphicsGetCurrentContext() else { return }
+        let storage = textView.textStorage
+        guard storage.length > 0 else { return }
+        let left = textView.textIndent > 0 ? textView.verseTextLeft : -.greatestFiniteMagnitude
+        storage.enumerateAttribute(.hearkenFill, in: NSRange(location: 0, length: storage.length)) { value, range, _ in
+            guard let color = value as? UIColor else { return }
+            context.setFillColor(color.resolvedColor(with: traitCollection).cgColor)
+            for var box in textView.fillRects(for: range) {
+                if box.minX < left { box = CGRect(x: left, y: box.minY, width: box.maxX - left, height: box.height) }
+                guard box.width > 0, box.height > 0, box.intersects(rect) else { continue }
+                context.fill(box)
+            }
         }
     }
 }

@@ -340,8 +340,6 @@ struct ReaderPage: View {
     @State private var pageMemory = PageMemory()
     /// Where each text view sits on screen (keyed by its first verse), and the bottom of the
     /// reader's visible area. Used to float the toolbar above a selection near the bottom.
-    @State private var textFrames: [Int: CGRect] = [:]
-    @State private var visibleBottom: CGFloat = .infinity
     /// Listen mode: the page follows the verse being read until you scroll away.
     @State private var listen = ListenEngine.shared
     @State private var followsListening = true
@@ -419,7 +417,6 @@ struct ReaderPage: View {
                 )
             }
         }
-        .onGeometryChange(for: CGFloat.self) { $0.frame(in: .global).maxY } action: { visibleBottom = $0 }
         .animation(.snappy(duration: 0.25), value: selection)
         .animation(.easeOut(duration: 0.15), value: isAdjustingSelection)
         .overlay(alignment: .bottom) { pencilOverlay }
@@ -576,44 +573,7 @@ struct ReaderPage: View {
             onPencilStroke: pencilStroke,
             onPencilNear: showPencilPalette
         )
-        .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { frame in
-            if interactive { textFrames[owner] = frame }
-        }
-        .overlay(alignment: .topLeading) {
-            // Hidden while a handle is being dragged, so the text stays visible; back on release.
-            // iPhone: the toolbar floats by the selection. iPad uses the bar at the bottom instead.
-            if !UIDevice.isPad, interactive, !isAdjustingSelection, let selection, selection.owner == owner {
-                floatingToolbar(for: selection)
-            }
-        }
         .accessibilityHint(interactive ? "Touch and hold a verse to select it for highlighting." : "")
-    }
-
-    /// About how tall the toolbar is, plus a margin, for deciding which side of the selection it fits.
-    private static let toolbarClearance: CGFloat = 230
-    /// Gap between the selection and the toolbar, enough to keep the selection handles' grab
-    /// knobs (which sit just past the first and last lines) uncovered and easy to drag.
-    private static let handleClearance: CGFloat = 24
-
-    /// Below the selection when there's room before the bottom of the reader (above the tab bar),
-    /// otherwise above it.
-    private func placesToolbarBelow(_ selection: VerseSelection) -> Bool {
-        guard let frame = textFrames[selection.owner] else { return selection.placeBelow }
-        return frame.minY + selection.rect.maxY + Self.toolbarClearance <= visibleBottom
-    }
-
-    /// The highlight toolbar, just below the selection, or just above it near the bottom of the screen.
-    @ViewBuilder
-    private func floatingToolbar(for selection: VerseSelection) -> some View {
-        let below = placesToolbarBelow(selection)
-        toolbar(for: selection)
-            .padding(.horizontal, -20)
-            .alignmentGuide(VerticalAlignment.top) { dimensions in
-                below ? dimensions[.top] : dimensions[.bottom]
-            }
-            .offset(y: below ? selection.rect.maxY + Self.handleClearance : selection.rect.minY - Self.handleClearance)
-            .transition(.scale(scale: 0.94, anchor: below ? .top : .bottom).combined(with: .opacity))
-            .zIndex(1)
     }
 
     // MARK: Apple Pencil (iPad)
@@ -672,6 +632,11 @@ struct ReaderPage: View {
             .animation(.spring(duration: 0.42, bounce: 0.14), value: bar)
             .padding(.bottom, 12)
             .transition(.move(edge: .bottom).combined(with: .opacity))
+        } else if !UIDevice.isPad, let selection, !isAdjustingSelection {
+            // iPhone: the highlight bar sits at the bottom. Hidden while a selection handle is
+            // dragged, so the text stays visible; back on release.
+            toolbar(for: selection)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
         }
     }
 
