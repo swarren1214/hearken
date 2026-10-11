@@ -71,7 +71,15 @@ private struct CourseContent: View {
                     if !module.objectives.isEmpty {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("You'll be able to").font(.footnote.weight(.semibold)).foregroundStyle(.secondary)
-                            ForEach(module.objectives, id: \.self) { Text("· \($0)").font(.subheadline) }
+                            ForEach(module.objectives, id: \.self) { objective in
+                                HStack(alignment: .firstTextBaseline, spacing: 8) {
+                                    Image(systemName: "checkmark")
+                                        .font(.footnote.weight(.bold))
+                                        .foregroundStyle(.tint)
+                                        .accessibilityHidden(true)
+                                    Text(objective).font(.subheadline)
+                                }
+                            }
                         }
                         .padding(.vertical, 2)
                     }
