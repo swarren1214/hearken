@@ -2,6 +2,14 @@
   "contentVersion": 2,
   "subjects": [
     {
+      "id": "lds-doctrine",
+      "name": "Latter-day Saint Doctrine",
+      "symbol": "text.book.closed",
+      "summary": "Sources, the Godhead, the plan of salvation, covenants, and doctrine in conversation, from Novice to Sage. Describes the doctrine of The Church of Jesus Christ of Latter-day Saints; confessional claims and comparison sources are labeled.",
+      "units": [],
+      "resources": []
+    },
+    {
       "id": "doctrinal-mastery",
       "name": "Doctrinal Mastery",
       "symbol": "text.book.closed",

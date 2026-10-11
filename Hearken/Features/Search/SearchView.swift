@@ -44,6 +44,7 @@ struct SearchTab: View {
     var body: some View {
         NavigationStack {
             SearchView(query: query, scope: scope) { recent in query = recent }
+                .scholarDestinations()
         }
         // Always show the field (never tucked under the title) and focus it, with the
         // keyboard up, whenever the Search tab opens.

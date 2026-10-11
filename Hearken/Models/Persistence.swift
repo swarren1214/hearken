@@ -28,6 +28,11 @@ enum Persistence {
         XPEvent.self,
         Bookmark.self,
         PlanEnrollment.self,
+        SubjectAward.self,
+        ItemCompletion.self,
+        AssessmentAttempt.self,
+        SubjectEnrollment.self,
+        RankGrant.self,
     ])
 
     private static let log = Logger(subsystem: "com.stephenwarren.hearken", category: "persistence")
@@ -53,7 +58,7 @@ enum Persistence {
 
     #if DEBUG
     /// Bump when a model changes, so the next debug run pushes the new schema.
-    private static let schemaVersion = 3
+    private static let schemaVersion = 4
 
     /// Creates every record type and field in the CloudKit development environment, once per
     /// schema version, on debug builds. CloudKit otherwise only learns about a type when a
@@ -67,6 +72,7 @@ enum Persistence {
         guard UserDefaults.standard.integer(forKey: key) < schemaVersion else { return }
         guard let model = NSManagedObjectModel.makeManagedObjectModel(for: [
             Highlight.self, Note.self, ReadingProgress.self, ItemReview.self, GameSession.self, XPEvent.self, Bookmark.self, PlanEnrollment.self,
+            SubjectAward.self, ItemCompletion.self, AssessmentAttempt.self, SubjectEnrollment.self, RankGrant.self,
         ]) else { return }
 
         let description = NSPersistentStoreDescription(url: storeURL)
@@ -108,6 +114,11 @@ enum Persistence {
         try context.delete(model: XPEvent.self)
         try context.delete(model: Bookmark.self)
         try context.delete(model: PlanEnrollment.self)
+        try context.delete(model: SubjectAward.self)
+        try context.delete(model: ItemCompletion.self)
+        try context.delete(model: AssessmentAttempt.self)
+        try context.delete(model: SubjectEnrollment.self)
+        try context.delete(model: RankGrant.self)
         try context.save()
     }
 }

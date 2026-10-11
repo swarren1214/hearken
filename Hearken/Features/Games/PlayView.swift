@@ -10,6 +10,8 @@ struct PlayView: View {
     @Query private var progress: [ReadingProgress]
     @Query private var xpEvents: [XPEvent]
     @Query(sort: \GameSession.playedAt, order: .reverse) private var sessions: [GameSession]
+    @Query private var awards: [SubjectAward]
+    @Query private var grants: [RankGrant]
     @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
     @State private var activeGame: GameRequest?
 
@@ -18,7 +20,8 @@ struct PlayView: View {
 
     var body: some View {
         let snapshot = MasterySnapshot(reviews: reviews, progress: progress)
-        let level = MasteryMath.level(forXP: xpEvents.reduce(0) { $0 + $1.amount })
+        let accountXP = AccountXP.total(events: xpEvents, awards: awards)
+        let badges = Set(grants.map { "\($0.subjectID)|\($0.rankRaw)" }).count
         let streak = MasteryMath.streak(activityDates: xpEvents.map(\.createdAt), now: .now)
 
         ScrollView {
@@ -37,7 +40,7 @@ struct PlayView: View {
         }
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Play")
-        .navigationSubtitle("Level \(level.level)")
+        .navigationSubtitle("\(accountXP.formatted()) XP · \(badges) badge\(badges == 1 ? "" : "s")")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 HStack(spacing: 4) {
@@ -199,69 +202,125 @@ struct PlayView: View {
 
     // MARK: Subjects
 
+    /// Subjects with a Scholar Path first, each with its medal in a ring toward the next badge.
     private func subjectsGrid(snapshot: MasterySnapshot) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Subjects").font(.title2.bold())
-            LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
-                ForEach(content.subjects) { subject in
-                    subjectCard(subject, mastery: mastery.subjectMastery(subject, content: content, snapshot: snapshot))
+        let subjects = content.subjects.sorted { lhs, rhs in
+            let l = PathCatalog.shared.path(for: lhs.id) != nil, r = PathCatalog.shared.path(for: rhs.id) != nil
+            return l && !r
+        }
+        return VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .firstTextBaseline) {
+                Text("Your subjects").font(.title2.bold())
+                Spacer()
+                NavigationLink("Badges", value: BadgesRoute())
+                    .font(.body)
+            }
+            ForEach(subjects) { subject in
+                NavigationLink {
+                    SubjectDetailView(subject: subject)
+                } label: {
+                    if let path = PathCatalog.shared.path(for: subject.id) {
+                        ScholarProgressReader(path: path) { progress in
+                            PathSubjectCard(subject: subject, progress: progress)
+                        }
+                    } else {
+                        LegacySubjectCard(subject: subject, mastery: mastery.subjectMastery(subject, content: content, snapshot: snapshot))
+                    }
                 }
+                .buttonStyle(.plain)
             }
         }
     }
+}
 
-    private func subjectCard(_ subject: Subject, mastery value: Double) -> some View {
-        let questions = content.questions(forSubject: subject.id)
-        let percent = Int((value * 100).rounded())
-        let tier = Tier(mastery: value)
+/// A subject with a Scholar Path: its medal in a ring toward the next badge, the rank, and
+/// one line of status. When XP is reached the ring turns green and the line names what's left.
+private struct PathSubjectCard: View {
+    let subject: Subject
+    let progress: ScholarProgress
 
-        return NavigationLink {
-            SubjectDetailView(subject: subject)
-        } label: {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack(alignment: .top) {
-                    SymbolTile(systemName: subject.symbol, size: 38)
-                    Spacer()
-                    ProgressRing(progress: value, lineWidth: 4) {
-                        Text("\(percent)").font(.caption2.weight(.bold).monospacedDigit())
-                    }
-                    .frame(width: 40, height: 40)
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        let rank = progress.rank
+        let next = progress.nextRank
+        HStack(spacing: 12) {
+            ScholarBadge(rank: rank ?? .novice, size: 72, status: rank == nil ? .locked : .earned,
+                         progress: rank == nil || next == nil ? nil : progress.xpFraction,
+                         tint: progress.xpReached ? Optional(Feedback.correct) : next?.palette.mid)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(subject.name).font(.headline).multilineTextAlignment(.leading)
+                if let rank {
+                    (Text(rank.name).fontWeight(.semibold).foregroundStyle(rank.ink(dark: colorScheme == .dark))
+                     + Text(next.map { " · next \($0.name)" } ?? "").foregroundStyle(.secondary))
+                        .font(.footnote)
+                    Text(statusLine)
+                        .font(.caption.weight(.semibold))
+                        .monospacedDigit()
+                        .foregroundStyle(progress.xpReached && next != nil ? Feedback.correct : .secondary)
+                } else {
+                    Text("Not started · \(progress.path.publishedStages.count) stage\(progress.path.publishedStages.count == 1 ? "" : "s") published")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
                 }
-                Text(subject.name)
-                    .font(.headline)
-                    .multilineTextAlignment(.leading)
-                    .lineLimit(2)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                Spacer(minLength: 0)
-                Text(tier.name)
-                    .font(.footnote.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                    .frame(height: 34)
             }
-            .padding(14)
-            .frame(maxWidth: .infinity, minHeight: 156, alignment: .topLeading)
-            .background(Color(.secondarySystemGroupedBackground), in: .rect(cornerRadius: 22))
-            .contentShape(.rect(cornerRadius: 22))
-        }
-        .buttonStyle(.plain)
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(subject.name), \(percent) percent, \(tier.name)")
-        .accessibilityHint("Opens the subject")
-        .overlay(alignment: .bottomTrailing) {
-            Button {
-                activeGame = GameRequest(title: "Chronology Challenge", kind: .chronology, subjectID: subject.id, questions: questions.shuffled())
-            } label: {
-                Image(systemName: "play.fill")
-                    .font(.footnote.weight(.bold))
+            Spacer(minLength: 4)
+            if rank == nil {
+                Text("Start")
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.white)
-                    .frame(width: 34, height: 34)
-                    .background(questions.isEmpty ? AnyShapeStyle(Color.secondary) : AnyShapeStyle(.tint), in: Circle())
+                    .padding(.horizontal, 14)
+                    .frame(height: 32)
+                    .background(.tint, in: Capsule())
             }
-            .buttonStyle(.plain)
-            .disabled(questions.isEmpty)
-            .padding(14)
-            .accessibilityLabel("Play \(subject.name)")
         }
+        .padding(.vertical, 12)
+        .padding(.leading, 10)
+        .padding(.trailing, 14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(.secondarySystemGroupedBackground), in: .rect(cornerRadius: 22))
+        .contentShape(.rect(cornerRadius: 22))
+        .accessibilityElement(children: .combine)
+        .accessibilityHint("Opens the subject's Scholar Path")
+    }
+
+    private var statusLine: String {
+        guard let next = progress.nextRank else { return "\(progress.xp.formatted()) XP · every rank so far earned" }
+        if next == .novice { return "Finish any learning item" }
+        let stage = progress.nextStage
+        let done = stage.map { progress.coursesComplete(in: $0) } ?? 0
+        let total = stage?.courses.count ?? 0
+        let stageText = stage.map { progress.isComplete($0) ? "Stage \($0.number) done" : done == total ? "Stage \($0.number): check left" : "Stage \($0.number): \(done) of \(total)" } ?? ""
+        if progress.xpReached { return "\(progress.xp.formatted()) / \(next.xpThreshold.formatted()) XP · \(stageText.isEmpty ? "XP reached" : stageText)" }
+        return "\(progress.xp.formatted()) / \(next.xpThreshold.formatted()) XP · \(stageText)"
+    }
+}
+
+/// A subject without a Scholar Path yet: its units and games are still here.
+private struct LegacySubjectCard: View {
+    let subject: Subject
+    let mastery: Double
+
+    var body: some View {
+        HStack(spacing: 12) {
+            SymbolTile(systemName: subject.symbol, size: 52)
+                .frame(width: 72, height: 72)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(subject.name).font(.headline).multilineTextAlignment(.leading)
+                Text("Scholar Path coming soon").font(.footnote).foregroundStyle(.secondary)
+                Text("\(subject.units.count) units · \(Int((mastery * 100).rounded()))% recall")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(.vertical, 12)
+        .padding(.leading, 10)
+        .padding(.trailing, 14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(.secondarySystemGroupedBackground), in: .rect(cornerRadius: 22))
+        .contentShape(.rect(cornerRadius: 22))
+        .accessibilityElement(children: .combine)
     }
 }
 

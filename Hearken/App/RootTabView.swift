@@ -1,5 +1,10 @@
 import SwiftUI
 
+/// A subject pushed onto a tab's stack (after earning a badge, See Your Path).
+struct SubjectRoute: Hashable {
+    let subjectID: String
+}
+
 enum AppTab: Hashable {
     case today, play, scriptures, search
 }
@@ -9,8 +14,10 @@ enum AppTab: Hashable {
 struct RootTabView: View {
     @State private var selection: AppTab = .today
     @State private var todayPath = NavigationPath()
+    @State private var playPath = NavigationPath()
     @State private var navigator = AppNavigator.shared
     @State private var groups = GroupStore.shared
+    @Environment(ContentService.self) private var content
 
     var body: some View {
         TabView(selection: $selection) {
@@ -23,15 +30,25 @@ struct RootTabView: View {
                         .navigationDestination(for: GroupRoute.self) { route in
                             GroupDetailView(groupID: route.id)
                         }
+                        .navigationDestination(for: SubjectRoute.self) { route in
+                            if let subject = content.subject(route.subjectID) { SubjectDetailView(subject: subject) }
+                        }
+                        .scholarDestinations()
                 }
             } label: {
                 Image(systemName: "house.fill").accessibilityLabel("Today")
             }
 
             Tab(value: AppTab.play) {
-                NavigationStack { PlayView() }
+                NavigationStack(path: $playPath) {
+                    PlayView()
+                        .navigationDestination(for: SubjectRoute.self) { route in
+                            if let subject = content.subject(route.subjectID) { SubjectDetailView(subject: subject) }
+                        }
+                        .scholarDestinations()
+                }
             } label: {
-                Image(systemName: "play.fill").accessibilityLabel("Play")
+                Image(systemName: "gamecontroller.fill").accessibilityLabel("Play")
             }
 
             Tab(value: AppTab.scriptures) {
@@ -47,6 +64,15 @@ struct RootTabView: View {
             }
         }
         .tabBarMinimizeBehavior(.onScrollDown)
+        // Scholar Path: the unlock celebration for each newly earned rank.
+        .scholarCelebrations()
+        .onChange(of: navigator.pendingSubjectID) { _, subjectID in
+            guard let subjectID else { return }
+            selection = .play
+            playPath = NavigationPath()
+            playPath.append(SubjectRoute(subjectID: subjectID))
+            navigator.pendingSubjectID = nil
+        }
         // Listen mode: the mini player above the tab bar, and the full player sheet.
         .listenPlayer()
         // Widgets (hearken://read/<chapter>), plan reminders, Siri and Shortcuts open a chapter here.

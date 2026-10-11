@@ -10,6 +10,8 @@ struct TodayView: View {
     @Query private var notes: [Note]
     @Query(sort: \GameSession.playedAt, order: .reverse) private var sessions: [GameSession]
     @Query(sort: \PlanEnrollment.createdAt, order: .reverse) private var enrollments: [PlanEnrollment]
+    @Query private var awards: [SubjectAward]
+    @Query private var grants: [RankGrant]
     @State private var showSettings = false
     @State private var activeGame: GameRequest?
     @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
@@ -18,8 +20,7 @@ struct TodayView: View {
 
     var body: some View {
         let snapshot = MasterySnapshot(reviews: reviews, progress: progress)
-        let totalXP = xpEvents.reduce(0) { $0 + $1.amount }
-        let level = MasteryMath.level(forXP: totalXP)
+        let totalXP = AccountXP.total(events: xpEvents, awards: awards)
         let streak = MasteryMath.streak(activityDates: xpEvents.map(\.createdAt), now: .now)
 
         let plan = PlanReading.active(enrollments)
@@ -36,7 +37,7 @@ struct TodayView: View {
                     StartPlanCard()
                 }
                 GroupsSection(defaultPlanID: plan?.planID, customPlan: planState.flatMap { $0.plan.isCustom ? $0.plan : nil })
-                progressCard(level: level)
+                progressCard(totalXP: totalXP)
                 continueReading
                 subjectsSection(snapshot: snapshot)
             }
@@ -153,25 +154,27 @@ struct TodayView: View {
         .disabled(questions.isEmpty)
     }
 
-    private func progressCard(level: LevelProgress) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+    /// Account XP and the best badge earned so far. (Subject ranks live on each subject.)
+    private func progressCard(totalXP: Int) -> some View {
+        let best = grants.max { $0.rankRaw < $1.rankRaw }?.rank
+        let badges = Set(grants.map { "\($0.subjectID)|\($0.rankRaw)" }).count
+        return VStack(alignment: .leading, spacing: 8) {
             Text("Progress").font(.title2.bold())
             Card {
                 HStack(spacing: 18) {
-                    ProgressRing(progress: level.fraction, lineWidth: 12) {
-                        VStack(spacing: 0) {
-                            Text("\(level.level)").font(.title2.bold().monospacedDigit())
-                            Text("LEVEL").font(.caption2.weight(.semibold)).foregroundStyle(.secondary)
-                        }
+                    if let best {
+                        ScholarBadge(rank: best, size: 88)
+                    } else {
+                        ScholarBadge(rank: .novice, size: 88, status: .locked)
                     }
-                    .frame(width: 88, height: 88)
-                    .accessibilityLabel("Level \(level.level)")
 
                     VStack(alignment: .leading, spacing: 10) {
-                        Text("\(level.xpToNext.formatted()) XP to Level \(level.level + 1)")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                            .monospacedDigit()
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("\(totalXP.formatted()) XP").font(.title3.bold()).monospacedDigit()
+                            Text(badges == 0 ? "Earn badges on the Scholar Path" : "\(badges) badge\(badges == 1 ? "" : "s") earned")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
                         HStack(spacing: 16) {
                             Stat(value: highlights.count, label: "Marked")
                             Stat(value: notes.count, label: "Notes")
@@ -266,9 +269,6 @@ struct SubjectRow: View {
                         .foregroundStyle(.secondary)
                 }
                 MasteryBar(value: mastery)
-                Text(Tier(mastery: mastery).name)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
             }
             if showsChevron {
                 Image(systemName: "chevron.right").font(.footnote.weight(.semibold)).foregroundStyle(.tertiary)

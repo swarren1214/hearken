@@ -1,0 +1,21 @@
+{
+  "status": "pass",
+  "requiredXP": 5000,
+  "requiredActivityCounts": {
+    "lesson": 32,
+    "reading": 92,
+    "practice": 60,
+    "course_checkpoint": 8,
+    "capstone": 1
+  },
+  "courses": 8,
+  "modules": 32,
+  "assessmentQuestions": 100,
+  "optionalReadingPlacements": 12,
+  "videos": 8,
+  "books": 4,
+  "scriptureLocatorsChecked": 89,
+  "networkPlaybackTested": false,
+  "editorialReviewCompleted": false,
+  "errors": []
+}

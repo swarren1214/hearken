@@ -18,10 +18,19 @@ struct SubjectDetailView: View {
     private let mastery = MasteryService()
 
     var body: some View {
+        if let path = PathCatalog.shared.path(for: subject.id) {
+            SubjectPathView(subject: subject, path: path)
+        } else {
+            legacy
+        }
+    }
+
+    /// Subjects without a Scholar Path yet: units, games and the library.
+    private var legacy: some View {
         let snapshot = MasterySnapshot(reviews: reviews, progress: progress)
         let subjectMastery = mastery.subjectMastery(subject, content: content, snapshot: snapshot)
 
-        ScrollView {
+        return ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 Text(subject.summary)
                     .font(.subheadline)
@@ -48,27 +57,23 @@ struct SubjectDetailView: View {
         .fullScreenCover(item: $activeGame) { GameView(request: $0) }
     }
 
+    /// Recall across the subject's questions, from Spaced Review. (Ranks come from the Scholar
+    /// Path; subjects without one show recall only.)
     private func masteryCard(_ value: Double) -> some View {
-        let tier = Tier(mastery: value)
-        let next = Tier.allCases.first { $0 > tier }
-        return Card {
-            VStack(alignment: .leading, spacing: 16) {
-                HStack(spacing: 16) {
-                    ProgressRing(progress: value, lineWidth: 10) {
-                        Text(value.formatted(.percent.precision(.fractionLength(0))))
-                            .font(.headline.monospacedDigit())
-                    }
-                    .frame(width: 76, height: 76)
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text("Mastery").font(.footnote).foregroundStyle(.secondary)
-                        Text(tier.name).font(.title2.bold())
-                        if let next {
-                            let points = Int(((next.lowerBound - value) * 100).rounded(.up))
-                            Text("\(points) points to \(next.name)").font(.footnote).foregroundStyle(.secondary)
-                        }
-                    }
+        Card {
+            HStack(spacing: 16) {
+                ProgressRing(progress: value, lineWidth: 10) {
+                    Text(value.formatted(.percent.precision(.fractionLength(0))))
+                        .font(.headline.monospacedDigit())
                 }
-                TierBar(mastery: value)
+                .frame(width: 76, height: 76)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("Recall").font(.footnote).foregroundStyle(.secondary)
+                    Text("Scholar Path coming soon").font(.headline)
+                    Text("Units and games are below. Badges arrive with this subject's path.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
             }
         }
     }

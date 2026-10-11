@@ -11,6 +11,7 @@ struct SettingsView: View {
     @Environment(HighlightLegend.self) private var legend
     @Environment(SyncService.self) private var sync
 
+    @AppStorage(ScholarDebug.unlockAllKey) private var unlockAllCourses = false
     @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
     @AppStorage(SettingsKey.appearance) private var appearance: AppearanceOption = .system
     @AppStorage(SettingsKey.scriptureTextSize) private var textSize: Double = 20
@@ -111,11 +112,26 @@ struct SettingsView: View {
             }
 
             Section("Study") {
+                NavigationLink {
+                    BadgesView()
+                } label: {
+                    Label("Badges", systemImage: "medal")
+                }
                 Stepper(value: $dailyGoal, in: 5...60, step: 5) {
                     LabeledContent("Daily Goal", value: "\(dailyGoal) min")
                 }
                 Toggle("Study Reminder", isOn: reminderBinding)
             }
+
+            #if DEBUG
+            Section {
+                Toggle("Unlock All Courses", isOn: $unlockAllCourses)
+            } header: {
+                Text("Developer")
+            } footer: {
+                Text("Debug builds only. Opens every Scholar Path course and check so a path can be reviewed end to end. XP and rank rules are unchanged.")
+            }
+            #endif
 
             Section("About") {
                 LabeledContent("Version", value: Bundle.main.appVersion)

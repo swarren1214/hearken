@@ -11,6 +11,8 @@ final class AppNavigator {
 
     /// A chapter waiting to be opened; RootTabView pushes it and clears it.
     var pendingChapterID: String?
+    /// A subject's Scholar Path to open on the Play tab (after earning a badge).
+    var pendingSubjectID: String?
 
     func open(chapterID: String) {
         pendingChapterID = chapterID
