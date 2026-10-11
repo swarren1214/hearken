@@ -170,7 +170,7 @@ struct BookmarksSheet: View {
     private func row(_ bookmark: Bookmark) -> some View {
         let reference = content.reference(chapterID: bookmark.chapterID, verse: bookmark.verse)
         let here = bookmark.chapterID == current?.chapterID
-        let detail = bookmark.hasName ? "\(reference) · \(Self.date(bookmark.updatedAt))" : Self.date(bookmark.updatedAt)
+        let detail = bookmark.hasName ? "\(reference) · \(DateLabel.short(bookmark.updatedAt))" : DateLabel.short(bookmark.updatedAt)
 
         return Button { onGo(bookmark.target) } label: {
             HStack(spacing: 12) {
@@ -231,15 +231,6 @@ struct BookmarksSheet: View {
         .tint(Color.primary)
     }
 
-    static func date(_ date: Date) -> String {
-        let calendar = Calendar.current
-        if calendar.isDateInToday(date) { return "Today" }
-        if calendar.isDateInYesterday(date) { return "Yesterday" }
-        if calendar.isDate(date, equalTo: .now, toGranularity: .year) {
-            return date.formatted(.dateTime.month(.abbreviated).day())
-        }
-        return date.formatted(date: .abbreviated, time: .omitted)
-    }
 }
 
 /// New or Edit: the name, where it points (with Move Here) and Delete.

@@ -496,7 +496,7 @@ struct NotebookCard: View {
                 }
             }
             Spacer(minLength: 4)
-            Text(BookmarksSheet.date(entry.date))
+            Text(DateLabel.short(entry.date))
                 .font(.caption)
                 .foregroundStyle(.tertiary)
         }
@@ -564,7 +564,7 @@ struct NotebookCard: View {
         if let note = entry.note, !note.body.isEmpty {
             parts.append("Note: \(note.body)")
         }
-        parts.append(BookmarksSheet.date(entry.date))
+        parts.append(DateLabel.short(entry.date))
         return parts.joined(separator: ". ")
     }
 }

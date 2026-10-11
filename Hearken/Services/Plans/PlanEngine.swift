@@ -8,10 +8,20 @@ final class PlanEngine {
 
     private var wordCounts: [String: Int] = [:]
     private var schedules: [String: [PlanDay]] = [:]
+    /// Every chapter's word count, precomputed (Resources/Content/chapter-words.json, from
+    /// scripts/chapter_word_counts.py), so a plan never loads scripture text to schedule itself.
+    private lazy var bundledCounts: [String: Int] = {
+        struct File: Decodable { let words: [String: Int] }
+        guard let url = Bundle.main.url(forResource: "chapter-words", withExtension: "json"),
+              let data = try? Data(contentsOf: url),
+              let file = try? JSONDecoder().decode(File.self, from: data) else { return [:] }
+        return file.words
+    }()
 
     /// A chapter's word count; an average guess for chapters whose text isn't imported.
     func words(in chapterID: String, content: ContentService) -> Int {
         if let count = wordCounts[chapterID] { return count }
+        if let count = bundledCounts[chapterID] { return count }
         let count = content.chapter(chapterID).map { chapter in
             chapter.verses.reduce(0) { $0 + $1.text.split(whereSeparator: \.isWhitespace).count }
         } ?? 700

@@ -3,8 +3,9 @@ import Observation
 
 /// Loads the bundled content and answers lookups.
 ///
-/// Scripture ships as one JSON file per volume and each volume loads the first time
-/// something inside it is asked for. The plan is to compile this into a SQLite store
+/// Scripture ships as one JSON file per volume (8 MB in all). `preloadVolumes()` decodes them
+/// off the main thread soon after launch; anything asked for before that loads on demand.
+/// Search always runs off the main thread. The plan is to compile this into a SQLite store
 /// with full-text search at build time; keep callers on this API so that swap stays
 /// invisible to views.
 @Observable
@@ -21,6 +22,7 @@ final class ContentService {
     @ObservationIgnored private var loadedVolumes: [String: Volume] = [:]
     @ObservationIgnored private var chapters: [String: Chapter] = [:]
     @ObservationIgnored private var bookTitles: [String: String] = [:]
+    @ObservationIgnored private var preloading: Task<Void, Never>?
 
     init(bundle: Bundle = .main) {
         let catalog = Self.load(SubjectCatalog.self, named: "subjects", in: bundle)
@@ -37,16 +39,45 @@ final class ContentService {
 
     func volume(_ id: String) -> Volume? {
         if let volume = loadedVolumes[id] { return volume }
-        guard let file = Self.load(ScriptureVolumeFile.self, named: "scripture-\(id)", in: bundle) else { return nil }
-        let volume = file.volume
+        // Not preloaded yet: decode now (on the main thread, the one time).
+        guard let volume = Self.decodeVolume(id, in: bundle) else { return nil }
+        install(volume)
+        return volume
+    }
+
+    /// Decodes every volume that isn't loaded yet, off the main thread. Safe to call more than
+    /// once; later calls wait for the first.
+    func preloadVolumes() async {
+        if let preloading {
+            await preloading.value
+            return
+        }
+        let task = Task {
+            for id in Self.volumeIDs where loadedVolumes[id] == nil {
+                let bundle = self.bundle
+                let decoded = await Task.detached(priority: .utility) { Self.decodeVolume(id, in: bundle) }.value
+                // Something may have loaded it on demand meanwhile.
+                if loadedVolumes[id] == nil, let decoded { install(decoded) }
+            }
+        }
+        preloading = task
+        await task.value
+    }
+
+    private func install(_ volume: Volume) {
         for book in volume.books {
             for chapter in book.chapters {
                 chapters[chapter.id] = chapter
                 bookTitles[chapter.id] = book.title
             }
         }
-        loadedVolumes[id] = volume
-        return volume
+        loadedVolumes[volume.id] = volume
+    }
+
+    nonisolated private static func decodeVolume(_ id: String, in bundle: Bundle) -> Volume? {
+        guard let url = bundle.url(forResource: "scripture-\(id)", withExtension: "json"),
+              let data = try? Data(contentsOf: url) else { return nil }
+        return try? JSONDecoder().decode(ScriptureVolumeFile.self, from: data).volume
     }
 
     // MARK: Scripture
@@ -78,11 +109,19 @@ final class ContentService {
         "\(title(forChapter: chapterID)):\(verse)"
     }
 
-    func search(_ text: String, limit: Int = 50) -> [VerseHit] {
+    /// Verses containing `text`, scanning every volume off the main thread.
+    func search(_ text: String, limit: Int = 50) async -> [VerseHit] {
         let query = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard query.count >= 2 else { return [] }
+        await preloadVolumes()
+        let volumes = Self.volumeIDs.compactMap { loadedVolumes[$0] }
+        return await Task.detached(priority: .userInitiated) { Self.scan(volumes, for: query, limit: limit) }.value
+    }
+
+    nonisolated private static func scan(_ volumes: [Volume], for query: String, limit: Int) -> [VerseHit] {
         var hits: [VerseHit] = []
         for volume in volumes {
+            if Task.isCancelled { return hits }
             for book in volume.books {
                 for chapter in book.chapters {
                     for verse in chapter.verses where verse.text.localizedCaseInsensitiveContains(query) {

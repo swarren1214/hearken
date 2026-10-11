@@ -285,10 +285,10 @@ struct NotebookEntrySheet: View {
 
     private var datesLine: String? {
         var parts: [String] = []
-        if let highlight { parts.append("Highlighted \(BookmarksSheet.date(highlight.createdAt))") }
+        if let highlight { parts.append("Highlighted \(DateLabel.short(highlight.createdAt))") }
         if let note {
             let edited = note.updatedAt.timeIntervalSince(note.createdAt) > 60
-            parts.append("Note \(edited ? "edited" : "added") \(BookmarksSheet.date(note.updatedAt))")
+            parts.append("Note \(edited ? "edited" : "added") \(DateLabel.short(note.updatedAt))")
         }
         return parts.isEmpty ? nil : parts.joined(separator: " · ")
     }

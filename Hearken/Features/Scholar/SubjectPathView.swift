@@ -106,8 +106,8 @@ private struct SubjectPathContent: View {
         let subtitle: String
         if state == .earned, let grant = progress.grant(rank) {
             subtitle = rank == .novice
-                ? "Earned \(BookmarksSheet.date(grant.earnedAt)) · first learning item"
-                : "Earned \(BookmarksSheet.date(grant.earnedAt)) · \(grant.xpAtAward.formatted()) XP"
+                ? "Earned \(DateLabel.short(grant.earnedAt)) · first learning item"
+                : "Earned \(DateLabel.short(grant.earnedAt)) · \(grant.xpAtAward.formatted()) XP"
         } else if state == .earned {
             subtitle = "Earned"
         } else {

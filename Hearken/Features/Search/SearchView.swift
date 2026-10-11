@@ -28,12 +28,6 @@ enum SearchHistory {
     }
 }
 
-private struct UnitHit: Identifiable {
-    let subject: Subject
-    let unit: StudyUnit
-    var id: String { unit.id }
-}
-
 /// The search tab. Owns the query so `.searchable` sits on the tab's NavigationStack,
 /// which is where iOS 26 expects it for the search tab's field.
 struct SearchTab: View {
@@ -70,7 +64,7 @@ struct SearchTab: View {
     }
 }
 
-/// Results for a query: a jump-to reference ("Alma 32:27"), matching subjects and units,
+/// Results for a query: a jump-to reference ("Alma 32:27"), matching subjects,
 /// and verses with the match emphasized. Empty query shows recent searches.
 struct SearchView: View {
     let query: String
@@ -190,7 +184,6 @@ struct SearchView: View {
     private var results: some View {
         let reference = scope == .subjects ? nil : LibraryCatalog.parseReference(trimmed)
         let subjects: [Subject] = scope == .scriptures ? [] : subjectHits
-        let units: [UnitHit] = scope == .scriptures ? [] : unitHits
 
         if let reference {
             Section("Go To") {
@@ -228,21 +221,6 @@ struct SearchView: View {
             }
         }
 
-        if !units.isEmpty {
-            Section("Units") {
-                ForEach(units) { item in
-                    NavigationLink {
-                        UnitView(subject: item.subject, unit: item.unit)
-                    } label: {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(item.unit.title)
-                            Text(item.subject.name).font(.footnote).foregroundStyle(.secondary)
-                        }
-                    }
-                }
-            }
-        }
-
         if scope != .subjects && !verseHits.isEmpty && searchedQuery == trimmed {
             Section {
                 ForEach(verseHits) { hit in
@@ -266,7 +244,7 @@ struct SearchView: View {
             }
         }
 
-        if !isSearching && reference == nil && subjects.isEmpty && units.isEmpty
+        if !isSearching && reference == nil && subjects.isEmpty
             && (verseHits.isEmpty || scope == .subjects) && searchedQuery == trimmed {
             ContentUnavailableView.search(text: trimmed)
                 .listRowBackground(Color.clear)
@@ -277,16 +255,6 @@ struct SearchView: View {
         guard trimmed.count >= 2 else { return [] }
         return content.subjects.filter {
             $0.name.localizedCaseInsensitiveContains(trimmed) || $0.summary.localizedCaseInsensitiveContains(trimmed)
-        }
-    }
-
-    private var unitHits: [UnitHit] {
-        guard trimmed.count >= 2 else { return [] }
-        // Units are the old outline of subjects that aren't built yet, so they stay out of results.
-        return content.subjects.filter { $0.isAvailable }.flatMap { subject in
-            subject.units
-                .filter { $0.title.localizedCaseInsensitiveContains(trimmed) }
-                .map { UnitHit(subject: subject, unit: $0) }
         }
     }
 
@@ -334,7 +302,9 @@ struct SearchView: View {
         // Wait for typing to pause before scanning every verse.
         try? await Task.sleep(for: .milliseconds(250))
         guard !Task.isCancelled else { return }
-        verseHits = content.search(text, limit: Self.verseLimit)
+        let hits = await content.search(text, limit: Self.verseLimit)
+        guard !Task.isCancelled else { return }
+        verseHits = hits
         searchedQuery = text
         isSearching = false
     }

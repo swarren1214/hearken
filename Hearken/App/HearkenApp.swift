@@ -30,6 +30,8 @@ struct HearkenApp: App {
                 .environment(account)
                 .environment(legend)
                 .environment(sync)
+                // Decode scripture in the background, so search and long plans never stall.
+                .task { await content.preloadVolumes() }
         }
         .modelContainer(container)
     }
@@ -50,7 +52,13 @@ struct AppRoot: View {
                 SignInView { onboardingDone = true }
                     .tint(accent.color)
             }
-            .task { await account.refresh() }
+            .task {
+                await account.refresh()
+                #if DEBUG
+                // Ready the study-group record types in the CloudKit development database.
+                if AppConfig.cloudSyncEnabled { await GroupStore.shared.initializeSchemaIfNeeded() }
+                #endif
+            }
             .modifier(PlanSideEffects())
             .modifier(GroupSideEffects())
             .modifier(ListenSideEffects())

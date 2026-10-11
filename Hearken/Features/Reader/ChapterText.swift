@@ -48,6 +48,9 @@ struct ChapterTextLayout {
     /// anywhere on it can select the whole thing. Later highlights come last.
     let highlightRuns: [NSRange]
     let firstVerse: Int
+    /// Where verse text starts on every line: the width of the verse-number margin (0 without
+    /// numbers). Selections are clipped to it, so they never spill into the margin.
+    let textIndent: CGFloat
     /// Changes whenever anything drawn changes; used to skip redundant updates.
     let signature: Int
 
@@ -67,11 +70,26 @@ struct ChapterTextLayout {
         let paragraph = NSMutableParagraphStyle()
         paragraph.lineSpacing = fontSize * 0.35
         paragraph.paragraphSpacing = fontSize * 0.6
+        // Verse numbers hang in a margin of their own: a right-aligned tab sets the number (and
+        // any bookmark ribbon) against the margin's edge, then a second tab starts the verse at
+        // the margin, and every wrapped line lines up with it.
+        let margin = (fontSize * 2.1).rounded()
+        if showNumbers {
+            paragraph.tabStops = [
+                NSTextTab(textAlignment: .right, location: margin - (fontSize * 0.45).rounded()),
+                NSTextTab(textAlignment: .left, location: margin),
+            ]
+            paragraph.firstLineHeadIndent = 0
+            paragraph.headIndent = margin
+        }
 
         let text = NSMutableAttributedString()
         var spans: [Span] = []
         for (index, verse) in verses.enumerated() {
             let paragraphStart = text.length
+            if showNumbers {
+                text.append(NSAttributedString(string: "\t", attributes: [.font: bodyFont]))
+            }
             if bookmarkVerses.contains(verse.number) {
                 // A tappable bookmark ribbon before the verse; tap it to edit the bookmark.
                 let symbol = UIImage(
@@ -88,11 +106,13 @@ struct ChapterTextLayout {
                 }
             }
             if showNumbers {
-                text.append(NSAttributedString(string: "\(verse.number)\u{2009}", attributes: [
+                // In the margin, on the first line's baseline. Never part of the verse's text, so
+                // it can't be selected into a highlight.
+                text.append(NSAttributedString(string: "\(verse.number)", attributes: [
                     .font: numberFont,
                     .foregroundColor: tint,
-                    .baselineOffset: fontSize * 0.3,
                 ]))
+                text.append(NSAttributedString(string: "\t", attributes: [.font: bodyFont]))
             }
             let textStart = text.length
             text.append(NSAttributedString(string: verse.text, attributes: [
@@ -140,6 +160,7 @@ struct ChapterTextLayout {
 
         self.spans = spans
         self.firstVerse = verses.first?.number ?? 0
+        self.textIndent = showNumbers ? margin : 0
 
         // Highlights, applied to verse text only (never to verse numbers).
         var runs: [NSRange] = []
@@ -228,7 +249,8 @@ struct ChapterTextLayout {
     }
 }
 
-/// Apple Pencil highlighting settings for a chapter text view (iPad).
+/// Apple Pencil highlighting settings for a chapter text view (iPad). On iPad the Pencil always
+/// highlights; fingers scroll and select.
 struct PencilConfig: Equatable {
     var enabled = false
     var color: UIColor = .systemYellow
@@ -264,13 +286,16 @@ struct ChapterTextView: UIViewRepresentable {
     var pencil = PencilConfig()
     /// A finished Pencil stroke, in whole-chapter terms.
     var onPencilStroke: (_ start: VersePosition, _ end: VersePosition) -> Void = { _, _ in }
+    /// The Pencil is hovering over the text or has touched it: time to show the palette.
+    var onPencilNear: () -> Void = {}
 
     func makeCoordinator() -> Coordinator { Coordinator(parent: self) }
 
     func makeUIView(context: Context) -> UITextView {
         // Pages use TextKit 1, the same engine that measured where the pages break,
         // so each page's lines match exactly.
-        let textView = UITextView(usingTextLayoutManager: pageRange == nil)
+        let textView = ChapterUITextView(usingTextLayoutManager: pageRange == nil)
+        textView.textIndent = layout.textIndent
         textView.isEditable = false
         textView.isSelectable = interactive
         textView.isScrollEnabled = false
@@ -312,6 +337,7 @@ struct ChapterTextView: UIViewRepresentable {
 
     func updateUIView(_ textView: UITextView, context: Context) {
         let coordinator = context.coordinator
+        (textView as? ChapterUITextView)?.textIndent = layout.textIndent
         coordinator.parent = self
         if let probe {
             probe.textView = textView
@@ -331,6 +357,7 @@ struct ChapterTextView: UIViewRepresentable {
                 textView.selectedRange = selected
             }
             coordinator.signature = layout.signature
+            coordinator.emphasizeSelectedHighlight(in: textView)
         }
         if interactive {
             let enabled = pencil.enabled
@@ -349,6 +376,7 @@ struct ChapterTextView: UIViewRepresentable {
             if textView.selectedRange.length > 0 {
                 textView.selectedRange = NSRange(location: 0, length: 0)
             }
+            coordinator.emphasizeSelectedHighlight(in: textView)
         }
     }
 
@@ -400,20 +428,30 @@ struct ChapterTextView: UIViewRepresentable {
         private func highlightRun(at point: CGPoint, in textView: UITextView) -> NSRange? {
             guard let position = textView.closestPosition(to: point) else { return nil }
             let index = textView.offset(from: textView.beginningOfDocument, to: position) + base
-            return parent.layout.highlightRuns.last { index >= $0.location && index < NSMaxRange($0) }
+            // The caret position nearest a tap can fall just past a highlight's last letter.
+            for candidate in [index, index - 1] {
+                if let run = parent.layout.highlightRuns.last(where: { candidate >= $0.location && candidate < NSMaxRange($0) }) {
+                    return run
+                }
+            }
+            return nil
         }
 
-        @objc func tappedHighlight(_ tap: UITapGestureRecognizer) {
-            guard let textView = tap.view as? UITextView,
-                  let run = highlightRun(at: tap.location(in: textView), in: textView) else { return }
-            // On a page, select the part of the highlight that's on this page.
+        /// Selects a highlight (the part on this page), which opens the highlight menu.
+        private func select(_ run: NSRange, in textView: UITextView) {
             let visible = NSRange(location: base, length: textView.attributedText.length)
             let range = NSIntersectionRange(run, visible)
             guard range.length > 0 else { return }
             textView.becomeFirstResponder()
             textView.selectedRange = NSRange(location: range.location - base, length: range.length)
-            UISelectionFeedbackGenerator().selectionChanged()
             report(textView)
+        }
+
+        @objc func tappedHighlight(_ tap: UITapGestureRecognizer) {
+            guard let textView = tap.view as? UITextView,
+                  let run = highlightRun(at: tap.location(in: textView), in: textView) else { return }
+            UISelectionFeedbackGenerator().selectionChanged()
+            select(run, in: textView)
         }
 
         // Dragging a selection handle: the handles' drag gesture doesn't tell the delegate anything
@@ -506,6 +544,7 @@ struct ChapterTextView: UIViewRepresentable {
         }
 
         private func report(_ textView: UITextView) {
+            emphasizeSelectedHighlight(in: textView)
             let range = textView.selectedRange
             let layout = parent.layout
             let next: VerseSelection?
@@ -536,6 +575,45 @@ struct ChapterTextView: UIViewRepresentable {
                 if next == nil, self.parent.selection?.owner != self.parent.owner { return }
                 self.parent.selection = next
             }
+        }
+
+        // MARK: Selected highlight
+
+        /// The part of the text currently drawn stronger, to put back when the selection changes.
+        private var emphasized: NSRange?
+
+        /// A selected highlight (tapped, or just drawn) is drawn stronger while selected: a fill
+        /// gets deeper, and an underline gets a soft wash of its color behind the words. Only
+        /// the text's own attributes change; nothing is added to the view.
+        func emphasizeSelectedHighlight(in textView: UITextView) {
+            let storage = textView.textStorage
+            if let old = emphasized {
+                storage.beginEditing()
+                restore(old, in: storage)
+                storage.endEditing()
+                emphasized = nil
+            }
+            let selected = textView.selectedRange
+            guard selected.length > 0, NSMaxRange(selected) <= storage.length else { return }
+            let visible = NSRange(location: base, length: storage.length)
+            let chapterRange = NSRange(location: selected.location + base, length: selected.length)
+            guard parent.layout.highlightRuns.contains(where: { NSIntersectionRange($0, visible) == chapterRange }) else { return }
+
+            storage.beginEditing()
+            for span in parent.layout.spans {
+                let local = NSRange(location: span.text.location - base, length: span.text.length)
+                let part = NSIntersectionRange(selected, local)
+                guard part.length > 0 else { continue }
+                storage.enumerateAttributes(in: part) { attributes, subrange, _ in
+                    if (attributes[.underlineStyle] as? Int ?? 0) != 0, let color = attributes[.underlineColor] as? UIColor {
+                        storage.addAttribute(.backgroundColor, value: color.withAlphaComponent(0.22), range: subrange)
+                    } else if let color = attributes[.backgroundColor] as? UIColor {
+                        storage.addAttribute(.backgroundColor, value: color.withAlphaComponent(0.55), range: subrange)
+                    }
+                }
+            }
+            storage.endEditing()
+            emphasized = selected
         }
 
         // MARK: Apple Pencil
@@ -597,6 +675,7 @@ struct ChapterTextView: UIViewRepresentable {
             let index = textView.offset(from: textView.beginningOfDocument, to: position)
             switch pan.state {
             case .began:
+                parent.onPencilNear()
                 anchor = index
                 hideCaret()
                 updatePreview(in: textView, to: index)
@@ -610,22 +689,15 @@ struct ChapterTextView: UIViewRepresentable {
             }
         }
 
-        /// The words from where the stroke started to where the tip is now, whole words only.
+        /// The text from where the stroke started to where the tip is now, character by character.
         private func strokeRange(to index: Int, in text: NSString) -> NSRange? {
             guard let anchor else { return nil }
             var lower = max(0, min(anchor, index))
             var upper = min(text.length, max(anchor, index))
-            while lower > 0, Self.isWordCharacter(text.character(at: lower - 1)) { lower -= 1 }
-            while upper < text.length, Self.isWordCharacter(text.character(at: upper)) { upper += 1 }
             // Don't start or end on spaces or line breaks.
             while lower < upper, Self.isSpace(text.character(at: lower)) { lower += 1 }
             while upper > lower, Self.isSpace(text.character(at: upper - 1)) { upper -= 1 }
             return upper > lower ? NSRange(location: lower, length: upper - lower) : nil
-        }
-
-        private static func isWordCharacter(_ character: unichar) -> Bool {
-            guard let scalar = Unicode.Scalar(character) else { return false }
-            return CharacterSet.alphanumerics.contains(scalar) || character == 0x27 || character == 0x2019
         }
 
         private static func isSpace(_ character: unichar) -> Bool {
@@ -641,12 +713,19 @@ struct ChapterTextView: UIViewRepresentable {
             if let old = preview { restore(old, in: storage) }
             if let range {
                 let pencil = parent.pencil
-                if pencil.erasing {
-                    storage.addAttribute(.backgroundColor, value: UIColor.systemGray.withAlphaComponent(0.25), range: range)
-                } else if pencil.style == .underline {
-                    storage.addAttributes([.underlineStyle: NSUnderlineStyle.thick.rawValue, .underlineColor: pencil.color], range: range)
-                } else {
-                    storage.addAttribute(.backgroundColor, value: pencil.color.withAlphaComponent(0.32), range: range)
+                // Only the verses' own text, never verse numbers, ribbons or margins: the same
+                // parts a saved highlight covers.
+                for span in parent.layout.spans {
+                    let local = NSRange(location: span.text.location - base, length: span.text.length)
+                    let part = NSIntersectionRange(range, local)
+                    guard part.length > 0, NSMaxRange(part) <= storage.length else { continue }
+                    if pencil.erasing {
+                        storage.addAttribute(.backgroundColor, value: UIColor.systemGray.withAlphaComponent(0.25), range: part)
+                    } else if pencil.style == .underline {
+                        storage.addAttributes([.underlineStyle: NSUnderlineStyle.thick.rawValue, .underlineColor: pencil.color], range: part)
+                    } else {
+                        storage.addAttribute(.backgroundColor, value: pencil.color.withAlphaComponent(0.32), range: part)
+                    }
                 }
             }
             storage.endEditing()
@@ -689,11 +768,15 @@ struct ChapterTextView: UIViewRepresentable {
                     self.clearPreview(in: textView)
                 } else {
                     self.preview = nil
+                    // Select the new highlight (the newest run), which opens the highlight menu.
+                    if !self.parent.pencil.erasing, let run = self.parent.layout.highlightRuns.last {
+                        self.select(run, in: textView)
+                    }
                 }
             }
         }
 
-        // Hover: a caret in the current color where the highlight would start.
+        // Hover: a caret in the current color exactly where the highlight would start, sized to the text.
 
         @objc func pencilHovered(_ hover: UIHoverGestureRecognizer) {
             guard let textView = hover.view as? UITextView else { return }
@@ -705,23 +788,24 @@ struct ChapterTextView: UIViewRepresentable {
                     hideCaret()
                     return
                 }
-                let text = textView.textStorage.string as NSString
-                var index = textView.offset(from: textView.beginningOfDocument, to: position)
-                while index > 0, index <= text.length, Self.isWordCharacter(text.character(at: index - 1)) { index -= 1 }
-                guard let snapped = textView.position(from: textView.beginningOfDocument, offset: index) else { return }
-                showCaret(at: textView.caretRect(for: snapped), in: textView)
+                parent.onPencilNear()
+                let storage = textView.textStorage
+                let index = textView.offset(from: textView.beginningOfDocument, to: position)
+                // The font of the character the caret sits before (or after, at the end of a line).
+                let fontIndex = min(max(index, 0), storage.length - 1)
+                let font = fontIndex >= 0 ? storage.attribute(.font, at: fontIndex, effectiveRange: nil) as? UIFont : nil
+                showCaret(at: textView.caretRect(for: position), font: font ?? ChapterTextLayout.serifFont(size: 19), in: textView)
             default:
                 hideCaret()
             }
         }
 
-        private func showCaret(at rect: CGRect, in textView: UITextView) {
+        private func showCaret(at rect: CGRect, font: UIFont, in textView: UITextView) {
             let pencil = parent.pencil
             let color = pencil.erasing ? UIColor.systemGray : pencil.color
             let caret = self.caret ?? {
                 let view = UIView()
                 view.isUserInteractionEnabled = false
-                view.layer.cornerRadius = 2
                 view.layer.borderColor = UIColor.systemBackground.cgColor
                 view.layer.borderWidth = 1
                 return view
@@ -729,8 +813,6 @@ struct ChapterTextView: UIViewRepresentable {
             let halo = self.halo ?? {
                 let view = UIView()
                 view.isUserInteractionEnabled = false
-                view.frame.size = CGSize(width: 30, height: 30)
-                view.layer.cornerRadius = 15
                 return view
             }()
             if caret.superview !== textView {
@@ -741,12 +823,25 @@ struct ChapterTextView: UIViewRepresentable {
             self.halo = halo
             caret.backgroundColor = color
             halo.backgroundColor = color.withAlphaComponent(0.22)
+            // Measure from the font, not the caret rect: the rect also covers the line spacing below
+            // the text, which put the underline preview too low. Everything scales with text size.
+            let size = font.pointSize
+            let textHeight = font.ascender - font.descender
+            let baseline = rect.minY + font.ascender
             if pencil.style == .underline && !pencil.erasing {
-                caret.frame = CGRect(x: rect.minX, y: rect.maxY + 1, width: 22, height: 4)
+                // Where the thick underline is drawn: just under the baseline.
+                let thickness = max(2, (size * 0.13).rounded())
+                caret.frame = CGRect(x: rect.minX, y: baseline + size * 0.07, width: size * 1.15, height: thickness)
+                caret.layer.cornerRadius = thickness / 2
             } else {
-                caret.frame = CGRect(x: rect.minX - 3, y: rect.minY - 1, width: 4, height: rect.height + 2)
+                let width = max(3, (size * 0.16).rounded())
+                caret.frame = CGRect(x: rect.minX - width / 2, y: rect.minY, width: width, height: textHeight)
+                caret.layer.cornerRadius = width / 2
             }
-            halo.center = CGPoint(x: rect.minX, y: rect.midY)
+            let haloSize = size * 1.5
+            halo.frame.size = CGSize(width: haloSize, height: haloSize)
+            halo.layer.cornerRadius = haloSize / 2
+            halo.center = CGPoint(x: rect.minX, y: rect.minY + textHeight / 2)
             caret.alpha = 1
             halo.alpha = 1
         }
@@ -855,4 +950,42 @@ enum PencilTouchRouting {
             claims[id] = claim
         }
     }
+}
+
+// MARK: - Selection clipped to the text column
+
+/// The chapter's text view. iOS draws a selection's wrapped lines from the left edge of the
+/// text box, which would paint over the verse-number margin; this clips every selection line
+/// to where verse text starts.
+final class ChapterUITextView: UITextView {
+    var textIndent: CGFloat = 0
+
+    override func selectionRects(for range: UITextRange) -> [UITextSelectionRect] {
+        let rects = super.selectionRects(for: range)
+        guard textIndent > 0 else { return rects }
+        let left = textContainerInset.left + textContainer.lineFragmentPadding + textIndent
+        return rects.map { selection in
+            let rect = selection.rect
+            guard rect.width > 0, rect.minX < left - 0.5, rect.maxX > left else { return selection }
+            return ClippedSelectionRect(selection, rect: CGRect(x: left, y: rect.minY, width: rect.maxX - left, height: rect.height))
+        }
+    }
+}
+
+/// A selection rect with a new frame and everything else from the original.
+private final class ClippedSelectionRect: UITextSelectionRect {
+    private let base: UITextSelectionRect
+    private let frame: CGRect
+
+    init(_ base: UITextSelectionRect, rect: CGRect) {
+        self.base = base
+        self.frame = rect
+        super.init()
+    }
+
+    override var rect: CGRect { frame }
+    override var writingDirection: NSWritingDirection { base.writingDirection }
+    override var containsStart: Bool { base.containsStart }
+    override var containsEnd: Bool { base.containsEnd }
+    override var isVertical: Bool { base.isVertical }
 }

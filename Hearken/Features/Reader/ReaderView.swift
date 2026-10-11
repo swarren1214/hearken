@@ -55,7 +55,7 @@ struct ReaderView: View {
     @Query private var bookmarks: [Bookmark]
     @AppStorage(SettingsKey.readerLayout) private var layout: ReaderLayout = .scroll
     @AppStorage(SettingsKey.scriptureTextSize) private var textSize: Double = 20
-    @AppStorage(SettingsKey.pencilHighlighting) private var pencilHighlighting = false
+    @State private var pencilPalette = PencilPalettePresence.shared
     @AppStorage(SettingsKey.onboardingDone) private var onboardingDone = false
     @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
     @State private var listen = ListenEngine.shared
@@ -165,12 +165,6 @@ struct ReaderView: View {
                                 Label(option.title, systemImage: option.symbol).tag(option)
                             }
                         }
-                        if UIDevice.isPad {
-                            Section {
-                                // Menus show toggles as a checkmark item.
-                                Toggle("Pencil Mode", systemImage: "applepencil", isOn: $pencilHighlighting)
-                            }
-                        }
                     } label: {
                         Label("Reader Options", systemImage: "ellipsis")
                     }
@@ -209,7 +203,7 @@ struct ReaderView: View {
                     }
                     .padding(.horizontal, 16)
                     // Clear of the Pencil palette on iPad.
-                    .padding(.bottom, UIDevice.isPad && pencilHighlighting ? 96 : 16)
+                    .padding(.bottom, UIDevice.isPad && pencilPalette.isShown ? 96 : 16)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
@@ -322,7 +316,7 @@ struct ReaderPage: View {
     @AppStorage(SettingsKey.showVerseNumbers) private var showVerseNumbers = true
     @AppStorage(SettingsKey.onboardingDone) private var onboardingDone = false
     @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
-    @AppStorage(SettingsKey.pencilHighlighting) private var pencilHighlighting = false
+    @State private var pencilPalette = PencilPalettePresence.shared
     @AppStorage(SettingsKey.pencilHue) private var pencilHue: HighlightHue = .yellow
     @AppStorage(SettingsKey.pencilStyle) private var pencilStyle: HighlightStyle = .fill
     @ScaledMetric(relativeTo: .body) private var bodyMetric: CGFloat = 17
@@ -331,7 +325,6 @@ struct ReaderPage: View {
     @State private var clearToken = 0
     @State private var isAdjustingSelection = false
     @State private var pencilErasing = false
-    @State private var recentStroke: RecentStroke?
     @State private var pendingStyle: HighlightStyle?
     @State private var noteTarget: NoteTarget?
     @State private var explainRequest: ExplainRequest?
@@ -341,6 +334,7 @@ struct ReaderPage: View {
     @State private var groupVerse: GroupVerseTarget?
     @State private var sharedToGroup = 0
     @State private var pageCache = PageCache()
+    @State private var layoutCache = LayoutCache()
     /// Page Turn: the verse at the top of the page on screen, so a rebuilt page view (for
     /// example after rotating into or out of a two-page spread) opens where you were.
     @State private var pageMemory = PageMemory()
@@ -433,13 +427,6 @@ struct ReaderPage: View {
         .animation(.snappy, value: followsListening)
         .animation(.snappy, value: pencilOn)
         .animation(.snappy, value: UIDevice.isPad ? selection?.start : nil)
-        .animation(.snappy, value: recentStroke?.id)
-        .task(id: recentStroke?.id) {
-            // The after-stroke pill steps aside on its own.
-            guard recentStroke != nil else { return }
-            try? await Task.sleep(for: .seconds(5))
-            if !Task.isCancelled { recentStroke = nil }
-        }
         .sensoryFeedback(.selection, trigger: selection?.start)
         .onChange(of: selection?.start.verse, initial: true) { _, verse in
             probe?.selectedVerse = verse
@@ -524,7 +511,33 @@ struct ReaderPage: View {
 
     // MARK: Text
 
+    /// The chapter's laid-out text. Building it is the reader's most expensive step (the whole
+    /// chapter as attributed text, with symbols), and the body re-runs on every selection
+    /// change, Pencil stroke and listening verse, so it's built only when an input changes.
     fileprivate func textLayout(_ verses: [Verse], interactive: Bool) -> ChapterTextLayout {
+        var key = Hasher()
+        key.combine(verses.first?.id)
+        key.combine(verses.count)
+        key.combine(interactive)
+        key.combine(fontSize)
+        key.combine(showVerseNumbers)
+        key.combine(accent)
+        if interactive {
+            for highlight in highlights {
+                key.combine(highlight.startVerse); key.combine(highlight.startOffset)
+                key.combine(highlight.endVerse); key.combine(highlight.endOffset)
+                key.combine(highlight.hueRaw); key.combine(highlight.styleRaw)
+                key.combine(highlight.createdAt)
+            }
+            key.combine(notes.map(\.verse).sorted())
+            key.combine(bookmarks.map(\.verse).sorted())
+            key.combine(groupVerses.sorted())
+            key.combine(pencilOn ? nil : speakingVerse)
+        }
+        return layoutCache.layout(for: key.finalize()) { buildTextLayout(verses, interactive: interactive) }
+    }
+
+    private func buildTextLayout(_ verses: [Verse], interactive: Bool) -> ChapterTextLayout {
         ChapterTextLayout(
             verses: verses,
             fontSize: fontSize,
@@ -560,7 +573,8 @@ struct ReaderPage: View {
             onOpenGroupItems: { groupVerse = GroupVerseTarget(verse: $0) },
             probe: interactive && pageRange == nil ? probe : nil,
             pencil: interactive ? pencilConfig : PencilConfig(),
-            onPencilStroke: pencilStroke
+            onPencilStroke: pencilStroke,
+            onPencilNear: showPencilPalette
         )
         .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { frame in
             if interactive { textFrames[owner] = frame }
@@ -604,60 +618,58 @@ struct ReaderPage: View {
 
     // MARK: Apple Pencil (iPad)
 
-    private struct RecentStroke: Identifiable {
-        let id = UUID()
-        let highlight: Highlight
-    }
-
-    private var pencilOn: Bool { UIDevice.isPad && pencilHighlighting }
+    /// iPad: the Pencil always highlights. The palette shows once the Pencil hovers over or
+    /// touches the text, and stays until its checkmark.
+    private var pencilOn: Bool { UIDevice.isPad && pencilPalette.isShown }
 
     private var pencilConfig: PencilConfig {
-        PencilConfig(enabled: pencilOn, color: UIColor(pencilHue.color), style: pencilStyle, erasing: pencilErasing)
+        PencilConfig(enabled: UIDevice.isPad, color: UIColor(pencilHue.color), style: pencilStyle, erasing: pencilErasing)
     }
 
+    private func showPencilPalette() {
+        guard UIDevice.isPad, !pencilPalette.isShown else { return }
+        withAnimation(.snappy) { pencilPalette.isShown = true }
+    }
+
+    /// Which iPad bar is showing. The bar morphs between them rather than swapping.
+    private enum IPadBar: Equatable { case selection, palette }
+
+    private var iPadBar: IPadBar? {
+        guard UIDevice.isPad else { return nil }
+        if selection != nil && !isAdjustingSelection { return .selection }
+        return pencilOn ? .palette : nil
+    }
+
+    /// iPad: one frosted glass bar at the bottom. Selecting text (or tapping a highlight)
+    /// morphs it from the Pencil palette into the highlight menu and back: the glass resizes
+    /// while the controls cross-fade.
     @ViewBuilder
     private var pencilOverlay: some View {
-        if UIDevice.isPad, let selection, !isAdjustingSelection {
-            iPadSelectionBar(for: selection)
-                .padding(.bottom, 12)
-                .transition(.move(edge: .bottom).combined(with: .opacity))
-        } else if pencilOn {
-            VStack(spacing: 12) {
-                if let stroke = recentStroke {
-                    PencilStrokePill(
-                        hue: stroke.highlight.hue,
-                        name: legend.name(for: stroke.highlight.hue),
-                        reference: reference(from: stroke.highlight.start, to: stroke.highlight.end),
-                        onNote: {
-                            recentStroke = nil
-                            openNote(verse: stroke.highlight.startVerse)
+        if let bar = iPadBar {
+            ZStack {
+                if bar == .selection, let selection {
+                    iPadSelectionBar(for: selection)
+                        .transition(.blurReplace)
+                } else {
+                    PencilPalette(
+                        entries: legend.entries,
+                        name: legend.name(for:),
+                        hue: $pencilHue,
+                        style: $pencilStyle,
+                        erasing: $pencilErasing,
+                        onDone: {
+                            withAnimation(.snappy) { pencilPalette.isShown = false }
+                            pencilErasing = false
                         },
-                        onRemove: {
-                            // Clears all highlighting under the stroke, including older highlights there.
-                            let start = stroke.highlight.start, end = stroke.highlight.end
-                            recentStroke = nil
-                            carve(from: start, to: end)
-                        },
-                        onUndo: {
-                            modelContext.delete(stroke.highlight)
-                            recentStroke = nil
-                        }
+                        showsChrome: false
                     )
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .transition(.blurReplace)
                 }
-                PencilPalette(
-                    entries: legend.entries,
-                    name: legend.name(for:),
-                    hue: $pencilHue,
-                    style: $pencilStyle,
-                    erasing: $pencilErasing,
-                    onDone: {
-                        pencilHighlighting = false
-                        pencilErasing = false
-                        recentStroke = nil
-                    }
-                )
             }
+            .clipShape(Capsule())
+            .frostedGlass()
+            .shadow(color: .black.opacity(0.12), radius: 14, y: 6)
+            .animation(.spring(duration: 0.42, bounce: 0.14), value: bar)
             .padding(.bottom, 12)
             .transition(.move(edge: .bottom).combined(with: .opacity))
         }
@@ -681,7 +693,8 @@ struct ReaderPage: View {
             },
             onClose: closeSelection,
             onExplain: ExplainEngine.shared.isOffered ? { explain(selection) } : nil,
-            onShareToGroup: GroupStore.shared.groups.isEmpty ? nil : { prepareGroupShare(selection) }
+            onShareToGroup: GroupStore.shared.groups.isEmpty ? nil : { prepareGroupShare(selection) },
+            showsChrome: false
         )
     }
 
@@ -694,8 +707,6 @@ struct ReaderPage: View {
     private func pencilStroke(start: VersePosition, end: VersePosition) {
         let start = normalized(start), end = normalized(end)
         if pencilErasing {
-            // Drop the after-stroke pill first, so it never reads a deleted highlight.
-            recentStroke = nil
             carve(from: start, to: end)
             return
         }
@@ -703,33 +714,38 @@ struct ReaderPage: View {
         carve(from: start, to: end)
         let highlight = Highlight(chapterID: chapterID, start: start, end: end, hue: pencilHue, style: pencilStyle)
         modelContext.insert(highlight)
-        recentStroke = RecentStroke(highlight: highlight)
+        // The text view selects the new highlight once it's drawn, which opens the highlight
+        // menu; it stays until closed.
     }
 
     // MARK: Pieces
 
+    /// The chapter's title page, centered. A book's first chapter
+    /// opens with the book's name large; later chapters lead with the chapter number.
     fileprivate func header(_ chapter: Chapter) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(content.bookTitle(forChapter: chapter.id).uppercased())
+        let book = content.bookTitle(forChapter: chapter.id)
+        let opensBook = chapter.number == 1
+        return VStack(spacing: 6) {
+            Text(opensBook ? "CHAPTER 1" : book.uppercased())
                 .font(.footnote.weight(.semibold))
+                .tracking(2)
                 .foregroundStyle(.secondary)
-            Text("Chapter \(chapter.number)")
-                .font(.scripture(size: 34, weight: .bold))
+            Text(opensBook ? book : "Chapter \(chapter.number)")
+                .font(.scripture(size: opensBook ? 36 : 34, weight: .bold))
             if let heading = chapter.heading {
                 Text(heading)
                     .font(.scripture(size: 16).italic())
                     .foregroundStyle(.secondary)
-            }
-            if chapter.isExcerpt == true {
-                Label("Sample excerpt. The full chapter arrives with the content import.", systemImage: "info.circle")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .padding(.top, 4)
+                    .padding(.horizontal, 12)
             }
         }
-        .padding(.top, 8)
-        .padding(.bottom, 12)
+        .multilineTextAlignment(.center)
+        .frame(maxWidth: .infinity)
+        .padding(.top, 12)
+        .padding(.bottom, 16)
+        .accessibilityElement(children: .combine)
     }
+
 
     fileprivate var footer: some View {
         footerView(isRead: Binding(
@@ -857,7 +873,6 @@ struct ReaderPage: View {
                     modelContext.insert(Highlight(chapterID: chapterID, start: resume, end: highlight.end, hue: highlight.hue, style: highlight.style))
                 }
             }
-            if recentStroke?.highlight === highlight { recentStroke = nil }
             modelContext.delete(highlight)
         }
     }
@@ -1015,6 +1030,22 @@ final class PageMemory {
 }
 
 /// Remembers paginations so pages aren't re-laid out on every render.
+/// Recent chapter layouts by their inputs (see ReaderView.textLayout). A few entries cover the
+/// chapter on screen and its neighbors in Page Turn.
+final class LayoutCache {
+    private var entries: [Int: ChapterTextLayout] = [:]
+    private var order: [Int] = []
+
+    func layout(for key: Int, build: () -> ChapterTextLayout) -> ChapterTextLayout {
+        if let layout = entries[key] { return layout }
+        let layout = build()
+        entries[key] = layout
+        order.append(key)
+        if order.count > 6 { entries[order.removeFirst()] = nil }
+        return layout
+    }
+}
+
 final class PageCache {
     private var entries: [AnyHashable: PagedChapterText] = [:]
     private lazy var sizer = UIHostingController(rootView: AnyView(EmptyView()))
@@ -1241,4 +1272,12 @@ struct VerseRow: View {
 #Preview {
     NavigationStack { ReaderView(chapterID: "bofm.alma.32") }
         .previewEnvironment(signedIn: true)
+}
+
+/// Whether the Apple Pencil palette is showing (iPad). Shared by the reader and its overlays,
+/// so the bookmark pill can clear it. Not saved: it opens again when the Pencil comes near.
+@Observable
+final class PencilPalettePresence {
+    static let shared = PencilPalettePresence()
+    var isShown = false
 }

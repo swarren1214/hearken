@@ -34,7 +34,7 @@ struct HighlightToolbar: View {
         .padding(14)
         // Regular (frosted) glass keeps the text behind it from competing with the controls;
         // interactive makes it respond to touch. A soft shadow lifts it off the page.
-        .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 30))
+        .frostedGlass(in: .rect(cornerRadius: 30))
         .shadow(color: .black.opacity(0.12), radius: 18, y: 8)
         .padding(.horizontal, 16)
         .padding(.bottom, 8)

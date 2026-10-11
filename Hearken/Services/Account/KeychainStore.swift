@@ -1,4 +1,5 @@
 import Foundation
+import OSLog
 import Security
 
 /// Minimal Keychain wrapper for small strings such as the Apple user ID.
@@ -16,7 +17,7 @@ enum KeychainStore {
         attributes[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
         let result = SecItemAdd(attributes as CFDictionary, nil)
         if result != errSecSuccess {
-            print("KeychainStore: save failed with OSStatus \(result)")
+            Logger(subsystem: "com.stephenwarren.hearken", category: "keychain").error("save failed with OSStatus \(result)")
         }
         return result == errSecSuccess
     }

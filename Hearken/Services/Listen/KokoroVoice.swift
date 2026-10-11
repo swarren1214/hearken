@@ -286,35 +286,73 @@ nonisolated final class KokoroSynth: @unchecked Sendable {
     /// half for the sound of the voice. Expressiveness only changes the second half.
     private static let prosodyStart = 128
 
+    /// Unloads the model after this long without speech, freeing several hundred MB.
+    private static let idleUnloadDelay: TimeInterval = 180
+    private var idleUnload: DispatchWorkItem?
+
+    private init() {
+        // Give the memory back when iOS asks for it; the next verse reloads the model.
+        NotificationCenter.default.addObserver(
+            // UIApplication.didReceiveMemoryWarningNotification, by name: this class isn't on the main actor.
+            forName: Notification.Name("UIApplicationDidReceiveMemoryWarningNotification"), object: nil, queue: nil
+        ) { [weak self] _ in self?.unload() }
+    }
+
     /// Loads the model ahead of time, so the first verse starts quickly.
     func prewarm() {
-        queue.async { [self] in _ = try? loadIfNeeded() }
+        queue.async { [self] in
+            _ = try? loadIfNeeded()
+            scheduleIdleUnload()
+        }
     }
 
     func unload() {
         queue.async { [self] in
+            idleUnload?.cancel()
+            idleUnload = nil
             tts = nil
             styles = [:]
         }
     }
 
+    /// On `queue`: restarts the countdown to unloading the model.
+    private func scheduleIdleUnload() {
+        idleUnload?.cancel()
+        let item = DispatchWorkItem { [weak self] in
+            self?.tts = nil
+            self?.styles = [:]
+        }
+        idleUnload = item
+        queue.asyncAfter(deadline: .now() + Self.idleUnloadDelay, execute: item)
+    }
+
     /// Speech for `text` as 24 kHz mono samples. `gpu` is false while the app is in the background.
+    /// Cancelling the calling task (skipping ahead, stopping) drops the request before it
+    /// starts, or between sentences, so stale verses don't hold up the one wanted next.
     func synthesize(_ text: String, voice: String, tuning: VoiceTuning = VoiceTuning(), gpu: Bool) async throws -> [Float] {
-        try await withCheckedThrowingContinuation { continuation in
-            queue.async { [self] in
-                do {
-                    let tts = try loadIfNeeded()
-                    let style = try style(for: voice, expressiveness: tuning.expressiveness)
-                    let language: Language = voice.hasPrefix("b") ? .enGB : .enUS
-                    var samples: [Float] = []
-                    for chunk in KokoroText.chunks(text) {
-                        samples += try speak(chunk, tts: tts, style: style, language: language, pace: Float(tuning.pace), gpu: gpu)
+        let cancelled = CancelFlag()
+        return try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation { continuation in
+                queue.async { [self] in
+                    defer { scheduleIdleUnload() }
+                    do {
+                        try cancelled.check()
+                        let tts = try loadIfNeeded()
+                        let style = try style(for: voice, expressiveness: tuning.expressiveness)
+                        let language: Language = voice.hasPrefix("b") ? .enGB : .enUS
+                        var samples: [Float] = []
+                        for chunk in KokoroText.chunks(text) {
+                            try cancelled.check()
+                            samples += try speak(chunk, tts: tts, style: style, language: language, pace: Float(tuning.pace), gpu: gpu)
+                        }
+                        continuation.resume(returning: samples)
+                    } catch {
+                        continuation.resume(throwing: error)
                     }
-                    continuation.resume(returning: samples)
-                } catch {
-                    continuation.resume(throwing: error)
                 }
             }
+        } onCancel: {
+            cancelled.set()
         }
     }
 
@@ -399,6 +437,18 @@ nonisolated final class KokoroSynth: @unchecked Sendable {
         let average = sum.map { $0 / Float(voices.count) }
         averageProsody = average
         return average
+    }
+}
+
+/// A thread-safe "this request was cancelled" mark, set from any thread.
+nonisolated final class CancelFlag: @unchecked Sendable {
+    private let lock = NSLock()
+    private var value = false
+
+    func set() { lock.withLock { value = true } }
+
+    func check() throws {
+        if lock.withLock({ value }) { throw CancellationError() }
     }
 }
 

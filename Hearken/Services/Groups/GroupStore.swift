@@ -176,6 +176,8 @@ final class GroupStore {
                     if let group = try await load(zone.zoneID, from: container.privateCloudDatabase, isOwner: true) { loaded.append(group) }
                 } catch {
                     log.error("load owned group failed: \(error.localizedDescription, privacy: .public)")
+                    // A brief failure shouldn't make the group vanish: keep the last copy.
+                    if let previous = groups.first(where: { $0.zoneID == zone.zoneID }) { loaded.append(previous) }
                 }
             }
             for zone in joined {
@@ -183,6 +185,7 @@ final class GroupStore {
                     if let group = try await load(zone.zoneID, from: container.sharedCloudDatabase, isOwner: false) { loaded.append(group) }
                 } catch {
                     log.error("load joined group failed: \(error.localizedDescription, privacy: .public)")
+                    if let previous = groups.first(where: { $0.zoneID == zone.zoneID }) { loaded.append(previous) }
                 }
             }
             // Keep groups just created here until CloudKit returns them.
@@ -507,6 +510,70 @@ final class GroupStore {
         }
     }
 
+    // MARK: Development schema
+
+    #if DEBUG
+    /// Bump when a group record gains a field, so the next debug run pushes it.
+    private static let schemaVersion = 1
+
+    /// Debug builds only. Saves one record of each group type, every field filled in, to a
+    /// throwaway zone in the development database, then deletes the zone. CloudKit only learns
+    /// a record type or field when a record first uses it, and production refuses new ones, so
+    /// this readies the whole group schema for Deploy Schema Changes without making a real group.
+    func initializeSchemaIfNeeded() async {
+        let key = "cloudkit.groupSchemaInitialized"
+        guard UserDefaults.standard.integer(forKey: key) < Self.schemaVersion else { return }
+        let database = container.privateCloudDatabase
+        let zone = CKRecordZone(zoneName: "schema-setup-\(UUID().uuidString)")
+        func record(_ type: String) -> CKRecord {
+            CKRecord(recordType: type, recordID: CKRecord.ID(recordName: type, zoneID: zone.zoneID))
+        }
+        let group = record(RecordType.group)
+        group["name"] = "Schema setup"
+        group["symbol"] = "person.3"
+        group["planID"] = "schema"
+        group["planTitle"] = "Schema setup"
+        group["chapterIDs"] = ["schema"]
+        group["days"] = 1
+        group["startDate"] = Date.now
+        group["ownerName"] = "Schema"
+        let member = record(RecordType.member)
+        member["userID"] = "schema"
+        member["name"] = "Schema"
+        member["initials"] = "S"
+        member["weekStart"] = Date.now
+        member["weekRead"] = 0
+        member["weekTotal"] = 0
+        member["chaptersRead"] = 0
+        member["streak"] = 0
+        member["lastDoneDay"] = Date.now
+        let item = record(RecordType.item)
+        item["kind"] = "highlight"
+        item["chapterID"] = "schema"
+        item["startVerse"] = 1
+        item["endVerse"] = 1
+        item["text"] = "Schema"
+        item["note"] = "Schema"
+        item["authorID"] = "schema"
+        item["authorName"] = "Schema"
+        item["createdAt"] = Date.now
+        let reaction = record(RecordType.reaction)
+        reaction["itemID"] = "schema"
+        reaction["kind"] = "heart"
+        reaction["authorID"] = "schema"
+        do {
+            _ = try await database.modifyRecordZones(saving: [zone], deleting: [])
+            _ = try await database.modifyRecords(saving: [group, member, item, reaction], deleting: [], savePolicy: .allKeys)
+            UserDefaults.standard.set(Self.schemaVersion, forKey: key)
+            log.info("Group schema initialized (version \(Self.schemaVersion))")
+        } catch {
+            // Usually: not signed in to iCloud on this device. It tries again next launch.
+            log.error("Group schema: \(error.localizedDescription, privacy: .public)")
+        }
+        _ = try? await database.deleteRecordZone(withID: zone.zoneID)
+    }
+    #endif
+
     // MARK: Live updates
 
     /// Silent pushes when anything in the private or shared database changes.
@@ -538,7 +605,10 @@ final class GroupStore {
         change(&groups[index])
     }
 
+    /// A plain message for people; the CloudKit detail goes to the log.
     static func describe(_ error: Error, action: String = "load") -> String {
+        Logger(subsystem: "com.stephenwarren.hearken", category: "groups")
+            .error("\(action, privacy: .public) failed: \(String(describing: error), privacy: .public)")
         if let error = error as? CKError {
             switch error.code {
             case .notAuthenticated: return "Sign in to iCloud in Settings to use study groups."
@@ -549,12 +619,12 @@ final class GroupStore {
             case .permissionFailure: return "iCloud didn't allow that. Check that iCloud Drive is on for Hearken in Settings."
             case .serverRejectedRequest, .invalidArguments, .badContainer:
                 // Typically: the record types aren't deployed to the production schema yet.
-                return "Study groups aren't set up on iCloud for this build yet. (CloudKit said: \(error.localizedDescription))"
+                return "Study groups aren't available in this version yet. Try again after the next update."
             default:
-                return "Study groups couldn't \(action) right now. (CloudKit error \(error.code.rawValue): \(error.localizedDescription))"
+                return "Study groups couldn't \(action) right now. Try again in a moment."
             }
         }
-        return "Study groups couldn't \(action) right now. (\(error.localizedDescription))"
+        return "Study groups couldn't \(action) right now. Try again in a moment."
     }
 }
 

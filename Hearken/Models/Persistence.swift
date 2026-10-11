@@ -3,21 +3,6 @@ import Foundation
 import OSLog
 import SwiftData
 
-enum AppConfig {
-    /// Highlights, notes, progress and XP sync through the person's private CloudKit database.
-    /// Needs the iCloud (CloudKit), Push Notifications and Background Modes › Remote
-    /// notifications capabilities. When false, user data stays on this device.
-    static let cloudSyncEnabled = true
-    static let cloudKitContainerID = "iCloud.com.stephenwarren.hearken"
-
-    // Placeholders until the site is live.
-    static let termsURL = URL(string: "https://example.com/hearken/terms")!
-    static let privacyURL = URL(string: "https://example.com/hearken/privacy")!
-    static let supportURL = URL(string: "https://example.com/hearken/support")!
-
-    static let disclaimer = "Hearken is an independent study app. It is not made, sponsored or endorsed by The Church of Jesus Christ of Latter-day Saints."
-}
-
 enum Persistence {
     static let schema = Schema([
         Highlight.self,
@@ -52,13 +37,47 @@ enum Persistence {
         do {
             return try ModelContainer(for: schema, configurations: [configuration])
         } catch {
-            fatalError("Could not create the Hearken data store: \(error)")
+            // Never crash on launch over the store. Set the unreadable one aside (kept, not
+            // deleted, for recovery) and start a fresh one; with sync on, iCloud fills it back in.
+            log.fault("Couldn't open the data store, starting a fresh one: \(error.localizedDescription, privacy: .public)")
+            setAside(configuration.url)
+            if let container = try? ModelContainer(for: schema, configurations: [configuration]) {
+                UserDefaults.standard.set(Date.now, forKey: recoveredKey)
+                return container
+            }
+            // Last resort: an in-memory store, so the app still opens.
+            log.fault("The fresh store failed too; running in memory this launch")
+            let memory = ModelConfiguration("Hearken", schema: schema, isStoredInMemoryOnly: true, cloudKitDatabase: .none)
+            do {
+                return try ModelContainer(for: schema, configurations: [memory])
+            } catch {
+                fatalError("Could not create even an in-memory Hearken store: \(error)")
+            }
+        }
+    }
+
+    /// When the store last had to be rebuilt (see makeContainer), for support questions.
+    static let recoveredKey = "persistence.recoveredAt"
+
+    /// Renames the store and its journal files with a timestamp, so a fresh store can be made.
+    private static func setAside(_ url: URL) {
+        let stamp = Int(Date.now.timeIntervalSince1970)
+        let manager = FileManager.default
+        for suffix in ["", "-wal", "-shm"] {
+            let file = URL(fileURLWithPath: url.path + suffix)
+            guard manager.fileExists(atPath: file.path) else { continue }
+            let aside = URL(fileURLWithPath: url.path + ".unreadable-\(stamp)" + suffix)
+            do {
+                try manager.moveItem(at: file, to: aside)
+            } catch {
+                log.error("Couldn't set aside \(file.lastPathComponent, privacy: .public): \(error.localizedDescription, privacy: .public)")
+            }
         }
     }
 
     #if DEBUG
     /// Bump when a model changes, so the next debug run pushes the new schema.
-    private static let schemaVersion = 4
+    private static let schemaVersion = 5
 
     /// Creates every record type and field in the CloudKit development environment, once per
     /// schema version, on debug builds. CloudKit otherwise only learns about a type when a

@@ -1,37 +1,36 @@
 import Foundation
 
 // Read-only study content that ships in the app bundle (Resources/Content).
+// The scripture types are nonisolated and Sendable so volumes decode and search off the main thread.
 // Every item has a stable string ID. Never renumber an ID once it ships:
 // user highlights, notes and reviews point at these IDs.
 
 /// One bundled volume file, e.g. scripture-bofm.json (built by scripts/import_standard_works.py).
-struct ScriptureVolumeFile: Decodable {
+nonisolated struct ScriptureVolumeFile: Decodable, Sendable {
     let contentVersion: Int
     let volume: Volume
 }
 
-struct Volume: Decodable, Identifiable, Hashable {
+nonisolated struct Volume: Decodable, Identifiable, Hashable, Sendable {
     let id: String
     let title: String
     let books: [Book]
 }
 
-struct Book: Decodable, Identifiable, Hashable {
+nonisolated struct Book: Decodable, Identifiable, Hashable, Sendable {
     let id: String
     let title: String
     let chapters: [Chapter]
 }
 
-struct Chapter: Decodable, Identifiable, Hashable {
+nonisolated struct Chapter: Decodable, Identifiable, Hashable, Sendable {
     let id: String
     let number: Int
     let heading: String?
-    /// True while only part of the chapter has been imported.
-    let isExcerpt: Bool?
     let verses: [Verse]
 }
 
-struct Verse: Decodable, Identifiable, Hashable {
+nonisolated struct Verse: Decodable, Identifiable, Hashable, Sendable {
     let id: String
     let number: Int
     let text: String
@@ -112,7 +111,7 @@ struct Question: Decodable, Identifiable, Hashable {
     let chapterID: String?
 }
 
-struct VerseHit: Identifiable, Hashable {
+nonisolated struct VerseHit: Identifiable, Hashable, Sendable {
     let chapterID: String
     let reference: String
     let verse: Verse

@@ -1,27 +1,8 @@
 import SwiftUI
 
-extension Color {
-    /// The selected segment in the Highlight / Underline switch: white in Light Mode, a lighter
-    /// gray in Dark Mode so it stands out from the track.
-    static let segmentSelected = Color(UIColor { traits in
-        traits.userInterfaceStyle == .dark ? UIColor(white: 0.42, alpha: 1) : .white
-    })
-}
-
-extension View {
-    /// Liquid Glass with extra frost, for bars that sit over scripture text: the glass is tinted
-    /// toward the background so the text behind it doesn't compete with the controls.
-    func frostedGlass<S: Shape>(in shape: S) -> some View {
-        glassEffect(.regular.tint(Color(.systemBackground).opacity(0.6)).interactive(), in: shape)
-    }
-
-    func frostedGlass() -> some View {
-        frostedGlass(in: Capsule())
-    }
-}
-
 /// The Apple Pencil palette at the bottom of the reader (iPad): Highlight / Underline,
-/// the legend colors, the eraser, and Done (turns Pencil mode off).
+/// the legend colors, the eraser, and a checkmark that puts the palette away until the Pencil
+/// comes near the text again.
 struct PencilPalette: View {
     let entries: [HighlightLegend.Entry]
     let name: (HighlightHue) -> String
@@ -29,6 +10,9 @@ struct PencilPalette: View {
     @Binding var style: HighlightStyle
     @Binding var erasing: Bool
     var onDone: () -> Void
+    /// Off when the reader draws one shared glass bar that morphs between this and the
+    /// selection bar.
+    var showsChrome = true
 
     var body: some View {
         HStack(spacing: 14) {
@@ -88,16 +72,26 @@ struct PencilPalette: View {
             .accessibilityHint("Draw over a highlight to remove it.")
             .accessibilityAddTraits(erasing ? .isSelected : [])
 
-            Button("Done", action: onDone)
-                .buttonStyle(.glassProminent)
+            doneButton("Done", action: onDone)
         }
         .padding(.leading, 10)
         .padding(.trailing, 8)
         .padding(.vertical, 8)
-        .frostedGlass()
-        .shadow(color: .black.opacity(0.1), radius: 14, y: 6)
+        .barChrome(showsChrome)
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Pencil highlighter")
+    }
+
+    /// The round checkmark that closes a bar.
+    private func doneButton(_ title: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: "checkmark")
+                .font(.headline)
+                .frame(width: 22, height: 22)
+        }
+        .buttonStyle(.glassProminent)
+        .buttonBorderShape(.circle)
+        .accessibilityLabel(title)
     }
 
     private func styleButton(_ option: HighlightStyle) -> some View {
@@ -122,47 +116,8 @@ struct PencilPalette: View {
     }
 }
 
-/// Shown for a few seconds after a Pencil stroke: the color's legend name and the reference,
-/// with Note, Remove and Undo.
-struct PencilStrokePill: View {
-    let hue: HighlightHue
-    let name: String
-    let reference: String
-    var onNote: () -> Void
-    var onRemove: () -> Void
-    var onUndo: () -> Void
-
-    var body: some View {
-        HStack(spacing: 10) {
-            Circle().fill(hue.color).frame(width: 12, height: 12)
-            Text(name).font(.subheadline.weight(.semibold))
-            Text(reference).font(.footnote).foregroundStyle(.secondary)
-            Divider().frame(height: 22)
-            Button("Note", systemImage: "square.and.pencil", action: onNote)
-                .frame(width: 36, height: 36)
-                .contentShape(Rectangle())
-            Button("Remove", systemImage: "trash", role: .destructive, action: onRemove)
-                .foregroundStyle(.red)
-                .frame(width: 36, height: 36)
-                .contentShape(Rectangle())
-            Button("Undo", systemImage: "arrow.uturn.backward", action: onUndo)
-                .frame(width: 36, height: 36)
-                .contentShape(Rectangle())
-        }
-        .labelStyle(.iconOnly)
-        .buttonStyle(.plain)
-        .font(.body)
-        .padding(.leading, 16)
-        .padding(.trailing, 8)
-        .frame(minHeight: 48)
-        .frostedGlass()
-        .shadow(color: .black.opacity(0.1), radius: 12, y: 5)
-        .accessibilityElement(children: .contain)
-    }
-}
-
-/// iPad's highlight bar for a text selection (finger or Pencil): it takes the Pencil palette's
-/// place at the bottom of the reader instead of the iPhone's floating toolbar.
+/// The iPad highlight menu at the bottom of the reader, for a selection or a tapped highlight:
+/// highlight or underline, the legend colors, and Explain, Share, Note, Copy, Remove and Close.
 struct IPadSelectionBar: View {
     let reference: String
     let entries: [HighlightLegend.Entry]
@@ -179,6 +134,8 @@ struct IPadSelectionBar: View {
     var onExplain: (() -> Void)? = nil
     /// Share the selection with a study group; nil hides the button (no groups).
     var onShareToGroup: (() -> Void)? = nil
+    /// Off when the reader draws one shared glass bar (see PencilPalette.showsChrome).
+    var showsChrome = true
 
     @State private var copied = false
 
@@ -243,17 +200,29 @@ struct IPadSelectionBar: View {
                     copied = true
                 }
                 iconButton("Remove Highlight", "trash", tint: .red, action: onRemove)
-                iconButton("Close", "xmark", action: onClose)
+                doneButton("Done", action: onClose)
+                    .padding(.leading, 4)
             }
         }
         .padding(.leading, 18)
         .padding(.trailing, 8)
         .padding(.vertical, 8)
-        .frostedGlass()
-        .shadow(color: .black.opacity(0.12), radius: 14, y: 6)
+        .barChrome(showsChrome)
         .sensoryFeedback(.success, trigger: copied) { _, new in new }
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Highlight options for \(reference)")
+    }
+
+    /// The round checkmark that closes a bar.
+    private func doneButton(_ title: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: "checkmark")
+                .font(.headline)
+                .frame(width: 22, height: 22)
+        }
+        .buttonStyle(.glassProminent)
+        .buttonBorderShape(.circle)
+        .accessibilityLabel(title)
     }
 
     private func styleButton(_ option: HighlightStyle) -> some View {

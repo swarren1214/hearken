@@ -17,7 +17,6 @@ struct SettingsView: View {
     @AppStorage(SettingsKey.scriptureTextSize) private var textSize: Double = 20
     @AppStorage(SettingsKey.showVerseNumbers) private var showVerseNumbers = true
     @AppStorage(SettingsKey.readerLayout) private var readerLayout: ReaderLayout = .scroll
-    @AppStorage(SettingsKey.pencilHighlighting) private var pencilHighlighting = false
     @AppStorage(SettingsKey.dailyGoalMinutes) private var dailyGoal = 15
     @AppStorage(SettingsKey.studyReminder) private var studyReminder = false
 
@@ -101,12 +100,6 @@ struct SettingsView: View {
                 Picker("Layout", selection: $readerLayout) {
                     ForEach(ReaderLayout.allCases) { layout in
                         Label(layout.title, systemImage: layout.symbol).tag(layout)
-                    }
-                }
-                if UIDevice.isPad {
-                    Toggle(isOn: $pencilHighlighting) {
-                        Text("Pencil Mode")
-                        Text("Draw over text with Apple Pencil to highlight it.")
                     }
                 }
             }
