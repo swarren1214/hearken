@@ -83,7 +83,7 @@ struct ScholarProgress {
         return CourseStatus(
             requiredDone: required.filter { isDone($0) }.count,
             requiredTotal: required.count,
-            xpEarned: earned + (checkpointPassed && course.checkpoint != nil ? ScholarRules.checkpointXP : 0),
+            xpEarned: earned + (checkpointPassed ? course.checkpoint?.xp ?? 0 : 0),
             xpAvailable: course.requiredXP,
             checkpointPassed: checkpointPassed
         )
@@ -101,6 +101,19 @@ struct ScholarProgress {
             if !hasPassed(stage.advancementCheck) { return false }
         }
         return false
+    }
+
+    /// An item can be completed: its course is unlocked and, in a v2 module (completed by
+    /// checks, step by step), every required step before it in the module is done.
+    func isUnlocked(_ item: PathItem, in course: PathCourse) -> Bool {
+        guard isUnlocked(course) else { return false }
+        if ScholarDebug.unlockAll || !item.isCheckCompleted { return true }
+        guard let module = course.modules.first(where: { $0.items.contains { $0.id == item.id } }) else { return true }
+        for other in module.items {
+            if other.id == item.id { return true }
+            if other.required && other.isCheckCompleted && !isDone(other) { return false }
+        }
+        return true
     }
 
     // MARK: Stages
@@ -140,8 +153,12 @@ struct ScholarProgress {
 
     /// The rank the evidence supports (never lower than one already granted).
     var rank: ScholarRank? {
-        ScholarRules.rank(xp: xp, completedStages: completedStages, hasCompletedAnItem: hasCompletedAnItem, stored: storedRank, ceiling: path.highestAttainableRank)
+        let path = path
+        return ScholarRules.rank(xp: xp, completedStages: completedStages, hasCompletedAnItem: hasCompletedAnItem, stored: storedRank, ceiling: path.highestAttainableRank, threshold: { path.xpThreshold(for: $0) })
     }
+
+    /// A rank's XP threshold on this path.
+    func threshold(_ rank: ScholarRank) -> Int { path.xpThreshold(for: rank) }
 
     /// The next rank this path can award as published, or nil at the top.
     var nextRank: ScholarRank? {
@@ -155,14 +172,15 @@ struct ScholarProgress {
     /// any item), so before that it reads 0; at the top of the path it reads 1.
     var xpFraction: Double {
         guard let next = nextRank else { return 1 }
-        guard next.xpThreshold > 0 else { return 0 }
-        return min(Double(xp) / Double(next.xpThreshold), 1)
+        let needed = threshold(next)
+        guard needed > 0 else { return 0 }
+        return min(Double(xp) / Double(needed), 1)
     }
 
     /// Whether the next rank's XP requirement is met. Never true for Novice, which has none.
     var xpReached: Bool {
-        guard let next = nextRank, next.xpThreshold > 0 else { return false }
-        return xp >= next.xpThreshold
+        guard let next = nextRank, threshold(next) > 0 else { return false }
+        return xp >= threshold(next)
     }
 
     /// The stage the next rank needs.
@@ -213,7 +231,7 @@ struct ScholarLedger {
         ensureEnrolled(path.subjectID)
         if attempt.passed {
             switch attempt.kindRaw {
-            case "checkpoint": award(subjectID: path.subjectID, activityID: attempt.assessmentID, type: .checkpoint, amount: ScholarRules.checkpointXP)
+            case "checkpoint": award(subjectID: path.subjectID, activityID: attempt.assessmentID, type: .checkpoint, amount: path.assessment(attempt.assessmentID)?.xp ?? ScholarRules.checkpointXP)
             case "capstone": award(subjectID: path.subjectID, activityID: attempt.assessmentID, type: .capstone, amount: ScholarRules.capstoneXP)
             default: break
             }

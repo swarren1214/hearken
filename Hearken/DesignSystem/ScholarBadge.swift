@@ -241,7 +241,17 @@ private enum SageGeometry {
 
 /// A minimal SVG path parser: absolute M, L, H, V, C and Z, which is all the emblems use.
 enum SVGPath {
+    /// Parsed paths by source string. Emblems are redrawn every frame by the 3D coin.
+    private static var cache: [String: Path] = [:]
+
     static func parse(_ d: String) -> Path {
+        if let cached = cache[d] { return cached }
+        let path = build(d)
+        cache[d] = path
+        return path
+    }
+
+    private static func build(_ d: String) -> Path {
         var path = Path()
         var tokens: [String] = []
         var number = ""

@@ -1,0 +1,1490 @@
+{
+  "schemaVersion": "1.1",
+  "contentVersion": 1,
+  "status": "draft_pending_review",
+  "subjectID": "lds-doctrine",
+  "courseID": "lds-doctrine-c01",
+  "moduleID": "lds-doctrine-c01-m01",
+  "title": "Sources and authority",
+  "objectives": [
+    {
+      "id": "lds-doctrine-c01-m01-objective-01",
+      "text": "Distinguish canon, institutional teaching, commentary, and historical evidence."
+    }
+  ],
+  "sources": [
+    {
+      "id": "authority",
+      "title": "Approaching Latter-day Saint Doctrine",
+      "url": "https://newsroom.churchofjesuschrist.org/article/approaching-mormon-doctrine",
+      "perspective": "Latter-day Saint institutional",
+      "rights": "link_only",
+      "editorialNote": "Church Newsroom guide (May 2007) on identifying doctrine.",
+      "verifiedDate": "2026-10-10",
+      "verificationMethod": "web_fetch_read"
+    },
+    {
+      "id": "scripture-pgp.a-of-f.1-1-13",
+      "title": "Articles of Faith 1:1–13",
+      "passage": {
+        "chapterID": "pgp.a-of-f.1",
+        "from": 1,
+        "to": 13
+      },
+      "perspective": "Latter-day Saint canonical text",
+      "rights": "existing_app_text",
+      "verifiedDate": "2026-10-10",
+      "verificationMethod": "local_scripture_text_check"
+    },
+    {
+      "id": "scripture-dc.1-37-39",
+      "title": "Doctrine and Covenants 1:37–39",
+      "passage": {
+        "chapterID": "dc-testament.dc.1",
+        "from": 37,
+        "to": 39
+      },
+      "perspective": "Latter-day Saint canonical text",
+      "rights": "existing_app_text",
+      "verifiedDate": "2026-10-10",
+      "verificationMethod": "local_scripture_text_check"
+    },
+    {
+      "id": "scripture-dc.68-1-4",
+      "title": "Doctrine and Covenants 68:1–4",
+      "passage": {
+        "chapterID": "dc-testament.dc.68",
+        "from": 1,
+        "to": 4
+      },
+      "perspective": "Latter-day Saint canonical text",
+      "rights": "existing_app_text",
+      "verifiedDate": "2026-10-10",
+      "verificationMethod": "local_scripture_text_check"
+    },
+    {
+      "id": "lds-doctrine-c01-m01-article-v2",
+      "title": "Sources and authority (Hearken article)",
+      "perspective": "Original Hearken teaching method",
+      "rights": "original_content",
+      "verifiedDate": "2026-10-10",
+      "verificationMethod": "authored"
+    }
+  ],
+  "questions": [
+    {
+      "id": "lds-doctrine-c01-m01-bank-q101",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:aof-continuing-revelation",
+      "difficulty": "introductory",
+      "prompt": "Which Article of Faith states that God “will yet reveal many great and important things pertaining to the Kingdom of God”?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "Article of Faith 7"
+        },
+        {
+          "id": "o2",
+          "text": "Article of Faith 8"
+        },
+        {
+          "id": "o3",
+          "text": "Article of Faith 9"
+        },
+        {
+          "id": "o4",
+          "text": "Article of Faith 10"
+        }
+      ],
+      "correctOptionID": "o3",
+      "explanation": "Article 9 affirms past, present and future revelation. Article 7 lists spiritual gifts such as revelation and prophecy, Article 8 concerns the Bible and Book of Mormon, and Article 10 concerns gathering, Zion and Christ's reign.",
+      "sourceIDs": [
+        "scripture-pgp.a-of-f.1-1-13"
+      ],
+      "perspective": "Latter-day Saint canonical text",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "scripture-pgp.a-of-f.1-1-13",
+          "locator": "Articles of Faith 1:7–10"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q102",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:aof-bible-qualification",
+      "difficulty": "introductory",
+      "prompt": "Article of Faith 8 accepts the Bible as the word of God with which qualification?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "As far as it is translated correctly"
+        },
+        {
+          "id": "o2",
+          "text": "As far as it agrees with the Book of Mormon"
+        },
+        {
+          "id": "o3",
+          "text": "As far as it is interpreted by Church leaders"
+        },
+        {
+          "id": "o4",
+          "text": "As far as the New Testament is concerned"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "The article's qualifier concerns translation. It does not make the Bible's authority depend on agreement with another book, on an interpreter, or on one testament.",
+      "sourceIDs": [
+        "scripture-pgp.a-of-f.1-1-13"
+      ],
+      "perspective": "Latter-day Saint canonical text",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "scripture-pgp.a-of-f.1-1-13",
+          "locator": "Articles of Faith 1:8"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q103",
+      "revision": 1,
+      "type": "true_false",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:aof-conscience",
+      "difficulty": "introductory",
+      "prompt": "Article of Faith 11 claims the privilege of worshiping according to one's own conscience and allows all others the same privilege.",
+      "options": [
+        {
+          "id": "o1",
+          "text": "True"
+        },
+        {
+          "id": "o2",
+          "text": "False"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "Article 11 claims this privilege and extends it to all people, “let them worship how, where, or what they may.”",
+      "sourceIDs": [
+        "scripture-pgp.a-of-f.1-1-13"
+      ],
+      "perspective": "Latter-day Saint canonical text",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "scripture-pgp.a-of-f.1-1-13",
+          "locator": "Articles of Faith 1:11"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q104",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:aof-called-of-god",
+      "difficulty": "introductory",
+      "prompt": "According to Article of Faith 5, how must a man be called to preach the gospel and administer its ordinances?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "By a vote of the local congregation"
+        },
+        {
+          "id": "o2",
+          "text": "By prophecy and the laying on of hands by those in authority"
+        },
+        {
+          "id": "o3",
+          "text": "By completing a course of religious study"
+        },
+        {
+          "id": "o4",
+          "text": "By a personal experience of conversion"
+        }
+      ],
+      "correctOptionID": "o2",
+      "explanation": "Article 5 names being called of God by prophecy and by the laying on of hands by those who are in authority. The article mentions none of the other options.",
+      "sourceIDs": [
+        "scripture-pgp.a-of-f.1-1-13"
+      ],
+      "perspective": "Latter-day Saint canonical text",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "scripture-pgp.a-of-f.1-1-13",
+          "locator": "Articles of Faith 1:5"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q105",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:aof-scope",
+      "difficulty": "application",
+      "prompt": "A friend says the Articles of Faith are a complete summary of Latter-day Saint doctrine. Which response best fits the text?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "Yes; Article 13 states that the list is complete"
+        },
+        {
+          "id": "o2",
+          "text": "No; they are commentary rather than scripture"
+        },
+        {
+          "id": "o3",
+          "text": "They state core beliefs briefly, and Article 9 itself expects further revelation"
+        },
+        {
+          "id": "o4",
+          "text": "They summarize the Book of Mormon only"
+        }
+      ],
+      "correctOptionID": "o3",
+      "explanation": "The thirteen articles are short canonical statements of belief, and Article 9 anticipates more revelation, so they are not presented as exhaustive. Article 13 concerns conduct and virtue; the articles are canonical, in the Pearl of Great Price; and they are not a Book of Mormon summary.",
+      "sourceIDs": [
+        "scripture-pgp.a-of-f.1-1-13",
+        "lds-doctrine-c01-m01-article-v2"
+      ],
+      "perspective": "Latter-day Saint canonical text",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "scripture-pgp.a-of-f.1-1-13",
+          "locator": "Articles of Faith 1:9, 1:13"
+        },
+        {
+          "sourceID": "lds-doctrine-c01-m01-article-v2",
+          "locator": "The standard works: an open canon"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q106",
+      "revision": 1,
+      "type": "true_false",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:aof-location",
+      "difficulty": "introductory",
+      "prompt": "The Articles of Faith are part of the Pearl of Great Price, one of the standard works.",
+      "options": [
+        {
+          "id": "o1",
+          "text": "True"
+        },
+        {
+          "id": "o2",
+          "text": "False"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "The thirteen Articles of Faith are printed in the Pearl of Great Price. The Church's guide also names them separately among the sources of doctrine.",
+      "sourceIDs": [
+        "scripture-pgp.a-of-f.1-1-13",
+        "authority"
+      ],
+      "perspective": "Latter-day Saint canonical text",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "scripture-pgp.a-of-f.1-1-13",
+          "locator": "Articles of Faith 1"
+        },
+        {
+          "sourceID": "authority",
+          "locator": "Sources of doctrine"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q107",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:dc68-condition",
+      "difficulty": "introductory",
+      "prompt": "In Doctrine and Covenants 68:4, what is said to “be scripture”?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "Every word spoken by an ordained elder"
+        },
+        {
+          "id": "o2",
+          "text": "Whatever they speak when moved upon by the Holy Ghost"
+        },
+        {
+          "id": "o3",
+          "text": "Anything printed in a Church publication"
+        },
+        {
+          "id": "o4",
+          "text": "Every sermon that is recorded in writing"
+        }
+      ],
+      "correctOptionID": "o2",
+      "explanation": "Verse 4 ties this broad sense of scripture to being moved upon by the Holy Ghost. It does not make ordination, publication or a written record the condition.",
+      "sourceIDs": [
+        "scripture-dc.68-1-4"
+      ],
+      "perspective": "Latter-day Saint canonical text",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "scripture-dc.68-1-4",
+          "locator": "D&C 68:4"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q108",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:dc1-voice",
+      "difficulty": "introductory",
+      "prompt": "Doctrine and Covenants 1:38 says, “whether by mine own voice or by the voice of my servants, it is the same.” What does the verse claim?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "That the Lord's word, given by his own voice or through his servants, will be fulfilled"
+        },
+        {
+          "id": "o2",
+          "text": "That anyone who speaks about God speaks for him"
+        },
+        {
+          "id": "o3",
+          "text": "That servants' words replace earlier scripture"
+        },
+        {
+          "id": "o4",
+          "text": "That only words spoken aloud count as revelation"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "The verse affirms that the Lord's word shall all be fulfilled, whether given by his own voice or his servants'. It does not extend this to anyone who speaks about God, say later words replace scripture, or limit revelation to speech.",
+      "sourceIDs": [
+        "scripture-dc.1-37-39"
+      ],
+      "perspective": "Latter-day Saint canonical text",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "scripture-dc.1-37-39",
+          "locator": "D&C 1:38"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q109",
+      "revision": 1,
+      "type": "true_false",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:dc68-audience",
+      "difficulty": "introductory",
+      "prompt": "Doctrine and Covenants 68:1–3 first addresses Orson Hyde and presents his calling as an “ensample” for others ordained to the priesthood.",
+      "options": [
+        {
+          "id": "o1",
+          "text": "True"
+        },
+        {
+          "id": "o2",
+          "text": "False"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "Verse 1 names Orson Hyde; verses 2–3 call this an ensample to those ordained to this priesthood, who are to speak as moved upon by the Holy Ghost.",
+      "sourceIDs": [
+        "scripture-dc.68-1-4"
+      ],
+      "perspective": "Latter-day Saint canonical text",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "scripture-dc.68-1-4",
+          "locator": "D&C 68:1–3"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q110",
+      "revision": 1,
+      "type": "true_false",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:dc68-canon",
+      "difficulty": "introductory",
+      "prompt": "Doctrine and Covenants 68:4 says that inspired words spoken by Church leaders are added to the standard works.",
+      "options": [
+        {
+          "id": "o1",
+          "text": "True"
+        },
+        {
+          "id": "o2",
+          "text": "False"
+        }
+      ],
+      "correctOptionID": "o2",
+      "explanation": "The verse calls such inspired speech scripture in a broad sense, the will, mind, word and voice of the Lord, but says nothing about the standard works. Additions to the canon happen by a separate, formal process presented to the Church.",
+      "sourceIDs": [
+        "scripture-dc.68-1-4",
+        "lds-doctrine-c01-m01-article-v2"
+      ],
+      "perspective": "Latter-day Saint canonical text",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "scripture-dc.68-1-4",
+          "locator": "D&C 68:4"
+        },
+        {
+          "sourceID": "lds-doctrine-c01-m01-article-v2",
+          "locator": "Institutional teaching: how the Church speaks today"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q111",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:dc68-with-guide",
+      "difficulty": "application",
+      "prompt": "Read alongside D&C 68:4, what does the Church's guide add about statements by Church leaders?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "That every leader's sermon becomes doctrine once it is published"
+        },
+        {
+          "id": "o2",
+          "text": "That a single statement by one leader on one occasion is often a personal view, not binding on the Church"
+        },
+        {
+          "id": "o3",
+          "text": "That members should disregard what leaders say outside general conference"
+        },
+        {
+          "id": "o4",
+          "text": "That only the Bible should be treated as scripture"
+        }
+      ],
+      "correctOptionID": "o2",
+      "explanation": "The guide says not every statement by a leader is doctrine and that a single statement on one occasion often represents a personal, considered opinion. It does not say publication makes a sermon doctrine, tell members to disregard leaders, or limit scripture to the Bible.",
+      "sourceIDs": [
+        "authority",
+        "scripture-dc.68-1-4"
+      ],
+      "perspective": "Latter-day Saint institutional",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "authority",
+          "locator": "Statements by individual leaders"
+        },
+        {
+          "sourceID": "scripture-dc.68-1-4",
+          "locator": "D&C 68:4"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q112",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:dc1-record",
+      "difficulty": "introductory",
+      "prompt": "In Doctrine and Covenants 1:39, what does the Spirit do?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "It beareth record, and the record is true"
+        },
+        {
+          "id": "o2",
+          "text": "It replaces the need for scripture"
+        },
+        {
+          "id": "o3",
+          "text": "It speaks only to the President of the Church"
+        },
+        {
+          "id": "o4",
+          "text": "It confirms every statement made in the Church"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "Verse 39 says the Spirit beareth record and the record is true, and the truth abides forever. It does not say the Spirit replaces scripture, speaks to one person only, or confirms every statement.",
+      "sourceIDs": [
+        "scripture-dc.1-37-39"
+      ],
+      "perspective": "Latter-day Saint canonical text",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "scripture-dc.1-37-39",
+          "locator": "D&C 1:39"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q113",
+      "revision": 1,
+      "type": "true_false",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:dc1-search",
+      "difficulty": "introductory",
+      "prompt": "Doctrine and Covenants 1:37 invites readers to search “these commandments.”",
+      "options": [
+        {
+          "id": "o1",
+          "text": "True"
+        },
+        {
+          "id": "o2",
+          "text": "False"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "Verse 37 opens, “Search these commandments, for they are true and faithful.”",
+      "sourceIDs": [
+        "scripture-dc.1-37-39"
+      ],
+      "perspective": "Latter-day Saint canonical text",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "scripture-dc.1-37-39",
+          "locator": "D&C 1:37"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q114",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:guide-who-establishes",
+      "difficulty": "introductory",
+      "prompt": "According to the Church's guide, who establishes the Church's doctrine?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "Any General Authority speaking in general conference"
+        },
+        {
+          "id": "o2",
+          "text": "The First Presidency and the Quorum of the Twelve Apostles, counseling together"
+        },
+        {
+          "id": "o3",
+          "text": "Faculty in Church-sponsored universities"
+        },
+        {
+          "id": "o4",
+          "text": "Each local bishop for his own ward"
+        }
+      ],
+      "correctOptionID": "o2",
+      "explanation": "The guide names the First Presidency and the Quorum of the Twelve, counseling together. A conference speaker, scholars and local leaders teach, but the guide does not give them this role.",
+      "sourceIDs": [
+        "authority"
+      ],
+      "perspective": "Latter-day Saint institutional",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "authority",
+          "locator": "Who establishes doctrine"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q115",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:guide-where-doctrine",
+      "difficulty": "introductory",
+      "prompt": "Which list matches the guide's description of where the Church's doctrine resides?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "The standard works, official declarations and proclamations, and the Articles of Faith"
+        },
+        {
+          "id": "o2",
+          "text": "General conference talks, Church magazines and devotional books"
+        },
+        {
+          "id": "o3",
+          "text": "Seminary manuals and Church history volumes"
+        },
+        {
+          "id": "o4",
+          "text": "Popular books by Church leaders"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "The guide names the four standard works, official declarations and proclamations, and the Articles of Faith. It adds that doctrine is consistently proclaimed in official publications, but it does not list magazines, manuals or books as the place doctrine resides.",
+      "sourceIDs": [
+        "authority"
+      ],
+      "perspective": "Latter-day Saint institutional",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "authority",
+          "locator": "Sources of doctrine"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q116",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:guide-peripheral",
+      "difficulty": "introductory",
+      "prompt": "Which example does the guide give of a peripheral teaching that should not be treated as central?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "The Atonement of Jesus Christ"
+        },
+        {
+          "id": "o2",
+          "text": "The Resurrection of Jesus Christ"
+        },
+        {
+          "id": "o3",
+          "text": "The location of the Garden of Eden"
+        },
+        {
+          "id": "o4",
+          "text": "Faith in Jesus Christ"
+        }
+      ],
+      "correctOptionID": "o3",
+      "explanation": "The guide contrasts core doctrines, such as the Atonement, with peripheral ones, using the location of the Garden of Eden as its example. The Resurrection and faith in Christ belong to the core it describes.",
+      "sourceIDs": [
+        "authority"
+      ],
+      "perspective": "Latter-day Saint institutional",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "authority",
+          "locator": "Central and peripheral doctrines"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q117",
+      "revision": 1,
+      "type": "true_false",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:guide-publications",
+      "difficulty": "introductory",
+      "prompt": "The Church's guide says its doctrine is consistently proclaimed in official Church publications.",
+      "options": [
+        {
+          "id": "o1",
+          "text": "True"
+        },
+        {
+          "id": "o2",
+          "text": "False"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "The guide states that doctrine established by the First Presidency and the Twelve is consistently proclaimed in official Church publications.",
+      "sourceIDs": [
+        "authority"
+      ],
+      "perspective": "Latter-day Saint institutional",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "authority",
+          "locator": "Who establishes doctrine"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q118",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:guide-test-a-claim",
+      "difficulty": "application",
+      "prompt": "A blog post quotes a nineteenth-century sermon to prove a “Mormon doctrine.” Following the guide, which question should you ask first?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "How many times has the quote been shared online?"
+        },
+        {
+          "id": "o2",
+          "text": "Did the speaker hold a high office in the Church?"
+        },
+        {
+          "id": "o3",
+          "text": "Is the teaching found in the standard works, official declarations, or current official publications?"
+        },
+        {
+          "id": "o4",
+          "text": "Does the sermon sound inspired to me?"
+        }
+      ],
+      "correctOptionID": "o3",
+      "explanation": "The guide points to the standard works, official declarations and proclamations, and consistent official publications. Popularity proves nothing; a speaker's office alone does not make a single statement doctrine; and a personal impression does not settle the source's standing.",
+      "sourceIDs": [
+        "authority",
+        "lds-doctrine-c01-m01-article-v2"
+      ],
+      "perspective": "Latter-day Saint institutional",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "authority",
+          "locator": "Statements by individual leaders; sources of doctrine"
+        },
+        {
+          "sourceID": "lds-doctrine-c01-m01-article-v2",
+          "locator": "Institutional teaching"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q119",
+      "revision": 1,
+      "type": "true_false",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:guide-core",
+      "difficulty": "introductory",
+      "prompt": "The Church's guide says some doctrines are more central than others.",
+      "options": [
+        {
+          "id": "o1",
+          "text": "True"
+        },
+        {
+          "id": "o2",
+          "text": "False"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "The guide distinguishes core doctrines, such as the Atonement of Jesus Christ, from peripheral ones.",
+      "sourceIDs": [
+        "authority"
+      ],
+      "perspective": "Latter-day Saint institutional",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "authority",
+          "locator": "Central and peripheral doctrines"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q120",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:guide-terms",
+      "difficulty": "introductory",
+      "prompt": "Why does the guide say some disagreements about Latter-day Saint belief arise?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "Members are not allowed to explain their beliefs"
+        },
+        {
+          "id": "o2",
+          "text": "Some terms carry different meanings in Latter-day Saint usage than in other traditions"
+        },
+        {
+          "id": "o3",
+          "text": "The standard works contradict each other"
+        },
+        {
+          "id": "o4",
+          "text": "Doctrine changes every year"
+        }
+      ],
+      "correctOptionID": "o2",
+      "explanation": "The guide notes that terms can carry different meanings, giving being “born again” as an example. It does not claim the other reasons.",
+      "sourceIDs": [
+        "authority"
+      ],
+      "perspective": "Latter-day Saint institutional",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "authority",
+          "locator": "Terminology"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q121",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:classify-gospel-topics",
+      "difficulty": "introductory",
+      "prompt": "Which category best fits a current Gospel Topics page on the Church's website?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "Canonical scripture"
+        },
+        {
+          "id": "o2",
+          "text": "Institutional explanation"
+        },
+        {
+          "id": "o3",
+          "text": "Individual commentary"
+        },
+        {
+          "id": "o4",
+          "text": "Historical record"
+        }
+      ],
+      "correctOptionID": "o2",
+      "explanation": "A Church-published explanation shows how the Church teaches a subject today. It is not part of the standard works, it is not one author's private interpretation, and it is not a record of a past event.",
+      "sourceIDs": [
+        "lds-doctrine-c01-m01-article-v2"
+      ],
+      "perspective": "Original Hearken reading method grounded in the cited sources",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "lds-doctrine-c01-m01-article-v2",
+          "locator": "Institutional teaching"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q122",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:classify-conference",
+      "difficulty": "application",
+      "prompt": "How does this course classify a general conference address published by the Church?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "Canonical scripture, once it is printed"
+        },
+        {
+          "id": "o2",
+          "text": "Institutional teaching, but not part of the standard works"
+        },
+        {
+          "id": "o3",
+          "text": "Personal commentary with no institutional standing"
+        },
+        {
+          "id": "o4",
+          "text": "A historical record only"
+        }
+      ],
+      "correctOptionID": "o2",
+      "explanation": "Conference addresses are delivered and published by the Church and show how it teaches. They are not added to the standard works by being printed, and treating them as mere private commentary or only as history would understate their role.",
+      "sourceIDs": [
+        "lds-doctrine-c01-m01-article-v2",
+        "authority"
+      ],
+      "perspective": "Original Hearken reading method grounded in the cited sources",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "lds-doctrine-c01-m01-article-v2",
+          "locator": "Institutional teaching"
+        },
+        {
+          "sourceID": "authority",
+          "locator": "Official publications"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q123",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:classify-talmage",
+      "difficulty": "application",
+      "prompt": "James E. Talmage published The Articles of Faith in 1899 and later served as an apostle. How should a careful student cite the book?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "As canonical scripture"
+        },
+        {
+          "id": "o2",
+          "text": "As an official declaration"
+        },
+        {
+          "id": "o3",
+          "text": "As historical commentary, useful for context, that does not settle current teaching"
+        },
+        {
+          "id": "o4",
+          "text": "As the Church's current explanation of every article"
+        }
+      ],
+      "correctOptionID": "o3",
+      "explanation": "The book is one learned author's explanation in his era. Its author's later office does not make it canon or an official declaration, and an 1899 commentary cannot stand in for current institutional teaching.",
+      "sourceIDs": [
+        "lds-doctrine-c01-m01-article-v2"
+      ],
+      "perspective": "Original Hearken reading method grounded in the cited sources",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "lds-doctrine-c01-m01-article-v2",
+          "locator": "Commentary: useful, but someone's reading"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q124",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:ledger-setting",
+      "difficulty": "introductory",
+      "prompt": "Why does the source ledger record a source's setting?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "Because a source's meaning and reach depend on who said it, when, to whom and why"
+        },
+        {
+          "id": "o2",
+          "text": "Because older sources always outrank newer ones"
+        },
+        {
+          "id": "o3",
+          "text": "Because the setting decides whether a source is true"
+        },
+        {
+          "id": "o4",
+          "text": "Because only sources with a known setting may be quoted"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "Setting tells you what a source can show: a revelation addressed to one person, a conference address and a private letter carry different reach. Age does not determine rank, setting does not decide truth, and sources without full settings can still be used with care.",
+      "sourceIDs": [
+        "lds-doctrine-c01-m01-article-v2"
+      ],
+      "perspective": "Original Hearken reading method grounded in the cited sources",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "lds-doctrine-c01-m01-article-v2",
+          "locator": "The source ledger"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q125",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:historical-record-reach",
+      "difficulty": "introductory",
+      "prompt": "A dated diary entry reports what its writer heard at an 1880 meeting. What does it most directly establish?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "What the Church teaches today"
+        },
+        {
+          "id": "o2",
+          "text": "What the writer reported hearing at that meeting"
+        },
+        {
+          "id": "o3",
+          "text": "That the idea was official doctrine in 1880"
+        },
+        {
+          "id": "o4",
+          "text": "That every member present agreed"
+        }
+      ],
+      "correctOptionID": "o2",
+      "explanation": "A diary is a historical record of what its writer reported. By itself it does not show doctrinal status then or now, or the views of others present.",
+      "sourceIDs": [
+        "lds-doctrine-c01-m01-article-v2"
+      ],
+      "perspective": "Original Hearken reading method grounded in the cited sources",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "lds-doctrine-c01-m01-article-v2",
+          "locator": "Historical records: what someone said, when"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q126",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:open-canon-example",
+      "difficulty": "introductory",
+      "prompt": "Which event shows that the Latter-day Saint canon is open?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "Two revelations were accepted into scripture by a general conference in 1976 and became D&C 137 and 138"
+        },
+        {
+          "id": "o2",
+          "text": "A popular book was quoted in many sacrament meetings"
+        },
+        {
+          "id": "o3",
+          "text": "A Church magazine printed a new article"
+        },
+        {
+          "id": "o4",
+          "text": "A historian discovered an early diary"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "The 1976 additions were presented to a general conference and accepted, and in 1981 became sections 137 and 138. Quotation, magazine publication and historical discovery do not change the canon.",
+      "sourceIDs": [
+        "lds-doctrine-c01-m01-article-v2"
+      ],
+      "perspective": "Original Hearken reading method grounded in the cited sources",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "lds-doctrine-c01-m01-article-v2",
+          "locator": "The standard works: an open canon"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-match-q003",
+      "revision": 1,
+      "type": "matching",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "title": "Where doctrine comes from",
+      "prompt": "Match each item from the Church's guide to its description.",
+      "instructions": "Match each item on the left to exactly one description on the right. Use every description once.",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:guide-matching",
+      "difficulty": "introductory",
+      "leftItems": [
+        {
+          "id": "l1",
+          "text": "The standard works"
+        },
+        {
+          "id": "l2",
+          "text": "The First Presidency and the Quorum of the Twelve"
+        },
+        {
+          "id": "l3",
+          "text": "A single statement by one leader on one occasion"
+        },
+        {
+          "id": "l4",
+          "text": "The location of the Garden of Eden"
+        }
+      ],
+      "rightItems": [
+        {
+          "id": "r3",
+          "text": "Often a personal view, not binding on the Church"
+        },
+        {
+          "id": "r1",
+          "text": "The Bible, Book of Mormon, Doctrine and Covenants and Pearl of Great Price"
+        },
+        {
+          "id": "r4",
+          "text": "The guide's example of a peripheral teaching"
+        },
+        {
+          "id": "r2",
+          "text": "The councils that establish doctrine together"
+        }
+      ],
+      "correctPairs": [
+        {
+          "leftID": "l1",
+          "rightID": "r1"
+        },
+        {
+          "leftID": "l2",
+          "rightID": "r2"
+        },
+        {
+          "leftID": "l3",
+          "rightID": "r3"
+        },
+        {
+          "leftID": "l4",
+          "rightID": "r4"
+        }
+      ],
+      "sourceIDs": [
+        "authority"
+      ],
+      "explanation": "Each description follows the guide: the four standard works, the councils that establish doctrine, the caution about single statements, and its example of a peripheral subject.",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ],
+      "scoring": {
+        "maxPoints": 1,
+        "method": "all_pairs_correct",
+        "partialFeedback": true,
+        "awardAdditionalXP": false
+      },
+      "perspective": "Latter-day Saint institutional",
+      "sourceLocators": [
+        {
+          "sourceID": "authority",
+          "locator": "Sources of doctrine; individual statements; central and peripheral doctrines"
+        }
+      ],
+      "presentation": {
+        "shuffleLeftItems": true,
+        "shuffleRightItems": true,
+        "requireIndependentOrder": true,
+        "interactionModes": [
+          "tap_to_pair",
+          "drag_to_pair"
+        ],
+        "accessibility": "Every pair must be makeable by tapping a left item, then a right item; dragging is optional."
+      },
+      "overlapsWithQuestionIDs": [
+        "lds-doctrine-c01-m01-bank-q114",
+        "lds-doctrine-c01-m01-bank-q115",
+        "lds-doctrine-c01-m01-bank-q116",
+        "lds-doctrine-c01-m01-bank-q111",
+        "lds-doctrine-c01-m01-bank-q001",
+        "lds-doctrine-c01-m01-bank-q004"
+      ]
+    }
+  ],
+  "review": {
+    "note": "Authored by Claude for Hearken's v2 course; scripture wording checked against the app's text and the guide read in full. Needs Steve's review before shipping."
+  }
+}

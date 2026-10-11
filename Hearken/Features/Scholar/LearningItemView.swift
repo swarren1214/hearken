@@ -14,7 +14,11 @@ struct LearningItemView: View {
 
     var body: some View {
         ScholarProgressReader(path: path) { progress in
-            LearningItemContent(path: path, item: item, progress: progress)
+            if item.isCheckCompleted {
+                StudyItemView(path: path, item: item, progress: progress)
+            } else {
+                LearningItemContent(path: path, item: item, progress: progress)
+            }
         }
     }
 }
@@ -123,6 +127,8 @@ private struct LearningItemContent: View {
             }
         case .video:
             videoCard
+        case .article, .quiz, .essay:
+            EmptyView()
         case .practice:
             if let criteria = item.successCriteria {
                 VStack(alignment: .leading, spacing: 6) {

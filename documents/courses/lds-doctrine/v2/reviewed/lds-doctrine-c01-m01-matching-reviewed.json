@@ -1,0 +1,281 @@
+{
+  "schemaVersion": "1.1",
+  "contentVersion": 1,
+  "status": "reviewed_draft_not_integrated",
+  "subjectID": "lds-doctrine",
+  "courseID": "lds-doctrine-c01",
+  "moduleID": "lds-doctrine-c01-m01",
+  "objectives": [
+    {
+      "id": "lds-doctrine-c01-m01-objective-01",
+      "text": "Distinguish canon, institutional teaching, commentary, and historical evidence."
+    },
+    {
+      "id": "lds-doctrine-c01-m01-objective-02",
+      "text": "State a doctrinal claim with a source and a limit."
+    }
+  ],
+  "questions": [
+    {
+      "id": "lds-doctrine-c01-m01-match-q001",
+      "revision": 1,
+      "type": "matching",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "title": "What kind of source is this?",
+      "prompt": "Classify the evidence in each example. Classify the named source itself, rather than every statement it might quote.",
+      "instructions": "Match each statement on the left to exactly one answer on the right. Use every answer once.",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:source-classification",
+      "difficulty": "introductory",
+      "leftItems": [
+        {
+          "id": "l1",
+          "text": "The text of Article of Faith 4 in the Pearl of Great Price"
+        },
+        {
+          "id": "l2",
+          "text": "A current Church-published explanation of a gospel topic"
+        },
+        {
+          "id": "l3",
+          "text": "A dated personal diary reporting what its writer heard in 1880"
+        },
+        {
+          "id": "l4",
+          "text": "An author’s interpretation in a devotional book, with no identified institutional endorsement"
+        }
+      ],
+      "rightItems": [
+        {
+          "id": "r2",
+          "text": "Institutional explanation"
+        },
+        {
+          "id": "r3",
+          "text": "Historical personal record"
+        },
+        {
+          "id": "r4",
+          "text": "Individual commentary"
+        },
+        {
+          "id": "r1",
+          "text": "Canonical scripture"
+        }
+      ],
+      "correctPairs": [
+        {
+          "leftID": "l1",
+          "rightID": "r1"
+        },
+        {
+          "leftID": "l2",
+          "rightID": "r2"
+        },
+        {
+          "leftID": "l3",
+          "rightID": "r3"
+        },
+        {
+          "leftID": "l4",
+          "rightID": "r4"
+        }
+      ],
+      "sourceIDs": [
+        "authority",
+        "lds-doctrine-c01-m01-original-lesson"
+      ],
+      "explanation": "These categories describe evidentiary roles rather than a universal ranking. Scripture, institutional explanation, historical reporting, and individual interpretation are different source types; an excerpt quoted inside a source should be evaluated separately.",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "practice",
+        "course_checkpoint"
+      ],
+      "scoring": {
+        "maxPoints": 1,
+        "method": "all_pairs_correct",
+        "partialFeedback": true,
+        "awardAdditionalXP": false
+      },
+      "perspective": "Latter-day Saint institutional / Original Hearken teaching method",
+      "sourceLocators": [
+        {
+          "sourceID": "authority",
+          "locator": "Source and context principles"
+        },
+        {
+          "sourceID": "lds-doctrine-c01-m01-original-lesson",
+          "locator": "Included original module lesson"
+        }
+      ],
+      "presentation": {
+        "shuffleLeftItems": true,
+        "shuffleRightItems": true,
+        "requireIndependentOrder": true,
+        "interactionModes": [
+          "tap_to_pair",
+          "drag_to_pair"
+        ],
+        "accessibility": "Every pair must be selectable, announceable, changeable, and clearable without dragging."
+      },
+      "overlapsWithQuestionIDs": [
+        "lds-doctrine-c01-m01-bank-q001",
+        "lds-doctrine-c01-m01-bank-q002",
+        "lds-doctrine-c01-m01-bank-q003",
+        "lds-doctrine-c01-m01-bank-q004",
+        "lds-doctrine-c01-m01-bank-q006",
+        "lds-doctrine-c01-m01-bank-q010"
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-match-q002",
+      "revision": 1,
+      "type": "matching",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "title": "Find the Article of Faith",
+      "prompt": "Match each summary to the article that explicitly addresses it.",
+      "instructions": "Match each statement on the left to exactly one answer on the right. Use every answer once.",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-02"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:articles-claims",
+      "difficulty": "introductory",
+      "leftItems": [
+        {
+          "id": "l1",
+          "text": "Belief in the Father, Son, and Holy Ghost"
+        },
+        {
+          "id": "l2",
+          "text": "Punishment for personal sins rather than Adam’s transgression"
+        },
+        {
+          "id": "l3",
+          "text": "Salvation through Christ’s Atonement and obedience to gospel laws and ordinances"
+        },
+        {
+          "id": "l4",
+          "text": "Faith in Jesus Christ, repentance, baptism by immersion for remission of sins, and laying on of hands for the gift of the Holy Ghost"
+        }
+      ],
+      "rightItems": [
+        {
+          "id": "r2",
+          "text": "Article of Faith 2"
+        },
+        {
+          "id": "r3",
+          "text": "Article of Faith 3"
+        },
+        {
+          "id": "r4",
+          "text": "Article of Faith 4"
+        },
+        {
+          "id": "r1",
+          "text": "Article of Faith 1"
+        }
+      ],
+      "correctPairs": [
+        {
+          "leftID": "l1",
+          "rightID": "r1"
+        },
+        {
+          "leftID": "l2",
+          "rightID": "r2"
+        },
+        {
+          "leftID": "l3",
+          "rightID": "r3"
+        },
+        {
+          "leftID": "l4",
+          "rightID": "r4"
+        }
+      ],
+      "sourceIDs": [
+        "scripture-pgp.a-of-f.1-1-4"
+      ],
+      "explanation": "Each summary follows the corresponding article. Knowing which text supports a claim helps learners attribute it accurately without treating these four summaries as an exhaustive theology.",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "practice",
+        "course_checkpoint"
+      ],
+      "scoring": {
+        "maxPoints": 1,
+        "method": "all_pairs_correct",
+        "partialFeedback": true,
+        "awardAdditionalXP": false
+      },
+      "perspective": "Latter-day Saint canonical text",
+      "sourceLocators": [
+        {
+          "sourceID": "scripture-pgp.a-of-f.1-1-4",
+          "locator": "Articles of Faith 1–4"
+        }
+      ],
+      "presentation": {
+        "shuffleLeftItems": true,
+        "shuffleRightItems": true,
+        "requireIndependentOrder": true,
+        "interactionModes": [
+          "tap_to_pair",
+          "drag_to_pair"
+        ],
+        "accessibility": "Every pair must be selectable, announceable, changeable, and clearable without dragging."
+      },
+      "overlapsWithQuestionIDs": [
+        "lds-doctrine-c01-m01-bank-q008"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "authority",
+      "title": "Approaching Latter-day Saint Doctrine",
+      "url": "https://newsroom.churchofjesuschrist.org/article/approaching-mormon-doctrine",
+      "perspective": "Latter-day Saint institutional",
+      "rights": "link_only",
+      "editorialNote": "Institutional guidance on identifying doctrine; an interpretive guide, not a complete hierarchy of every statement.",
+      "verifiedDate": "2026-10-10",
+      "verificationMethod": "web_source_identity"
+    },
+    {
+      "id": "scripture-pgp.a-of-f.1-1-4",
+      "title": "Articles of Faith 1:1–4",
+      "url": "https://www.churchofjesuschrist.org/study/scriptures/pgp/a-of-f/1?lang=eng&id=p1-p4#p1",
+      "perspective": "Latter-day Saint canonical text",
+      "rights": "existing_app_text",
+      "editorialNote": "Use the app’s licensed/approved scripture edition. This curriculum does not independently clear the rights to that edition.",
+      "verifiedDate": "2026-10-10",
+      "verificationMethod": "local_scripture_locator_check"
+    },
+    {
+      "id": "lds-doctrine-c01-m01-original-lesson",
+      "title": "Sources, authority, and careful claims",
+      "perspective": "Original Hearken teaching method",
+      "rights": "original_content",
+      "body": "Studying doctrine begins with identifying the kind of claim being made. A passage can be canonical, a statement can represent current institutional teaching, and a book can offer useful commentary without all three having the same function. A historical record may tell us what someone taught at a particular time without settling what the Church teaches today. Keep four fields beside every note: claim, source, setting, and confidence. Ask whether your wording is broader than the evidence. “This passage teaches…” is often more defensible than “Every Latter-day Saint believes…”. This course assesses your ability to understand and explain teachings; it does not assess personal belief or religious worthiness. Start a source ledger now. You will revise it as new evidence changes how precisely you can express a claim.",
+      "verificationMethod": "included_original_lesson"
+    }
+  ],
+  "review": {
+    "reviewerModels": [
+      "gpt-6-astra",
+      "gpt-6-sol"
+    ],
+    "reviewPaths": [
+      "reviews/matching-01-astra.md",
+      "reviews/matching-01-sol.md"
+    ],
+    "candidateSHA256": "82eb5feb6d736ef96e8c909a0e5808ad256524a9c9dbb91c43da7783ff18318d"
+  }
+}

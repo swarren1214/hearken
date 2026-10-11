@@ -1,0 +1,1252 @@
+{
+ "moduleID": "lds-doctrine-c02-m02",
+ "questions": [
+  {
+   "id": "lds-doctrine-c02-m02-bank-q101",
+   "type": "multiple_choice",
+   "prompt": "What does Lehi say “must needs be” in 2 Nephi 2:11?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "That there is an opposition in all things"
+    },
+    {
+     "id": "o2",
+     "text": "That all people are saved"
+    },
+    {
+     "id": "o3",
+     "text": "That there is no law"
+    },
+    {
+     "id": "o4",
+     "text": "That Adam remains in the garden"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 11: “it must needs be, that there is an opposition in all things.”",
+   "sourceIDs": [
+    "2ne-2"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne-2",
+     "locator": "2 Nephi 2:11"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m02:2ne2-11",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m02-bank-q102",
+   "type": "multiple_choice",
+   "prompt": "According to 2 Nephi 2:16, what did the Lord God give to man?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "That he should act for himself"
+    },
+    {
+     "id": "o2",
+     "text": "That he should never be tempted"
+    },
+    {
+     "id": "o3",
+     "text": "That he should be acted upon"
+    },
+    {
+     "id": "o4",
+     "text": "That he should know all things"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 16: “the Lord God gave unto man that he should act for himself.”",
+   "sourceIDs": [
+    "2ne-2"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne-2",
+     "locator": "2 Nephi 2:16"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m02:2ne2-16-gift",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m02-bank-q103",
+   "type": "multiple_choice",
+   "prompt": "What condition does 2 Nephi 2:16 attach to acting for oneself?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "Man could not act for himself unless he was enticed by the one or the other"
+    },
+    {
+     "id": "o2",
+     "text": "Man must first receive the priesthood"
+    },
+    {
+     "id": "o3",
+     "text": "Man must live in the garden"
+    },
+    {
+     "id": "o4",
+     "text": "There is no condition"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 16: “man could not act for himself save it should be that he was enticed by the one or the other.” Real choice needs real alternatives.",
+   "sourceIDs": [
+    "2ne-2"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne-2",
+     "locator": "2 Nephi 2:16"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m02:2ne2-16-enticed",
+   "difficulty": "application",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m02-bank-q104",
+   "type": "multiple_choice",
+   "prompt": "Which sentence comes from 2 Nephi 2:25?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "“Adam fell that men might be; and men are, that they might have joy.”"
+    },
+    {
+     "id": "o2",
+     "text": "“Men will be punished for their own sins.”"
+    },
+    {
+     "id": "o3",
+     "text": "“This is my work and my glory.”"
+    },
+    {
+     "id": "o4",
+     "text": "“Thy will be done, and the glory be thine forever.”"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "That is verse 25. The others come from Article of Faith 2, Moses 1:39 and Moses 4:2.",
+   "sourceIDs": [
+    "2ne-2"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne-2",
+     "locator": "2 Nephi 2:25"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m02:2ne2-25",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m02-bank-q105",
+   "type": "multiple_choice",
+   "prompt": "According to 2 Nephi 2:22–23, what would have happened if Adam had not transgressed?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "He and Eve would have remained in Eden and had no children"
+    },
+    {
+     "id": "o2",
+     "text": "They would have had more children"
+    },
+    {
+     "id": "o3",
+     "text": "They would have been redeemed sooner"
+    },
+    {
+     "id": "o4",
+     "text": "The earth would have been destroyed"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verses 22–23 say they would have remained in the garden, “they would have had no children,” and remained in innocence.",
+   "sourceIDs": [
+    "2ne-2"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne-2",
+     "locator": "2 Nephi 2:22–23"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m02:2ne2-22-23",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m02-bank-q106",
+   "type": "multiple_choice",
+   "prompt": "According to 2 Nephi 2:26, what are people free to do because they are redeemed from the Fall?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "To act for themselves and not to be acted upon"
+    },
+    {
+     "id": "o2",
+     "text": "To avoid the final judgment"
+    },
+    {
+     "id": "o3",
+     "text": "To return to the garden"
+    },
+    {
+     "id": "o4",
+     "text": "To live without law"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 26: redeemed from the fall, they have become “free forever, knowing good from evil; to act for themselves and not to be acted upon.”",
+   "sourceIDs": [
+    "2ne-2"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne-2",
+     "locator": "2 Nephi 2:26"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m02:2ne2-26",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m02-bank-q107",
+   "type": "true_false",
+   "prompt": "2 Nephi 2:27 says people are free to choose liberty and eternal life through the great Mediator, or captivity and death.",
+   "options": [
+    {
+     "id": "o1",
+     "text": "True"
+    },
+    {
+     "id": "o2",
+     "text": "False"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 27 sets out that choice in those words.",
+   "sourceIDs": [
+    "2ne-2"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne-2",
+     "locator": "2 Nephi 2:27"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m02:2ne2-27",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m02-bank-q108",
+   "type": "multiple_choice",
+   "prompt": "According to 2 Nephi 2:8, how can anyone dwell in the presence of God?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "Only through the merits, and mercy, and grace of the Holy Messiah"
+    },
+    {
+     "id": "o2",
+     "text": "By keeping the law perfectly on their own"
+    },
+    {
+     "id": "o3",
+     "text": "By being born in the garden"
+    },
+    {
+     "id": "o4",
+     "text": "By avoiding all opposition"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 8 says no flesh can dwell in God's presence “save it be through the merits, and mercy, and grace of the Holy Messiah.” Verse 5 says by the law no flesh is justified.",
+   "sourceIDs": [
+    "2ne-2"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne-2",
+     "locator": "2 Nephi 2:5, 8"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m02:2ne2-8",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m02-bank-q109",
+   "type": "multiple_choice",
+   "prompt": "Lehi's chain of reasoning in 2 Nephi 2:13 begins “if ye shall say there is no law.” How does it end?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "“If these things are not there is no God.”"
+    },
+    {
+     "id": "o2",
+     "text": "“There is no opposition in heaven.”"
+    },
+    {
+     "id": "o3",
+     "text": "“Men are that they might have joy.”"
+    },
+    {
+     "id": "o4",
+     "text": "“The law is given unto men.”"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "The chain runs from law to sin, righteousness, happiness and punishment, ending: “if these things are not there is no God.”",
+   "sourceIDs": [
+    "2ne-2"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne-2",
+     "locator": "2 Nephi 2:13"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m02:2ne2-13",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m02-bank-q110",
+   "type": "multiple_choice",
+   "prompt": "What does Lehi say about the devil in 2 Nephi 2:17–18?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "An angel of God had fallen from heaven and sought the misery of all mankind"
+    },
+    {
+     "id": "o2",
+     "text": "He was never in heaven"
+    },
+    {
+     "id": "o3",
+     "text": "He offered to help Adam and Eve"
+    },
+    {
+     "id": "o4",
+     "text": "He is not mentioned in the chapter"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 17 says Lehi supposes “an angel of God … had fallen from heaven,” and verse 18 that he “sought also the misery of all mankind.” Notice Lehi presents verse 17 as his supposition from what he has read.",
+   "sourceIDs": [
+    "2ne-2"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne-2",
+     "locator": "2 Nephi 2:17–18"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m02:2ne2-devil",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m02-bank-q111",
+   "type": "multiple_choice",
+   "prompt": "According to Moses 4:3, what did Satan seek to destroy?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "The agency of man"
+    },
+    {
+     "id": "o2",
+     "text": "The earth"
+    },
+    {
+     "id": "o3",
+     "text": "The Book of Moses"
+    },
+    {
+     "id": "o4",
+     "text": "The garden of Eden"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 3: Satan “sought to destroy the agency of man, which I, the Lord God, had given him.”",
+   "sourceIDs": [
+    "moses-4-5"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "moses-4-5",
+     "locator": "Moses 4:3"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m02:moses4-3",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m02-bank-q112",
+   "type": "multiple_choice",
+   "prompt": "What did Satan propose in Moses 4:1?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "To redeem all mankind so that not one soul would be lost, in exchange for God's honor"
+    },
+    {
+     "id": "o2",
+     "text": "To follow the Father's will"
+    },
+    {
+     "id": "o3",
+     "text": "To leave the council"
+    },
+    {
+     "id": "o4",
+     "text": "To create a new earth"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 1: “I will redeem all mankind, that one soul shall not be lost … wherefore give me thine honor.”",
+   "sourceIDs": [
+    "moses-4-5"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "moses-4-5",
+     "locator": "Moses 4:1"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m02:moses4-1",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m02-bank-q113",
+   "type": "multiple_choice",
+   "prompt": "How did the Beloved Son answer in Moses 4:2?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "“Father, thy will be done, and the glory be thine forever.”"
+    },
+    {
+     "id": "o2",
+     "text": "“Here am I, send me, and give me thine honor.”"
+    },
+    {
+     "id": "o3",
+     "text": "“I will redeem all mankind.”"
+    },
+    {
+     "id": "o4",
+     "text": "“Let another be sent.”"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 2 records the Son's answer. The demand for honor was Satan's (verse 1).",
+   "sourceIDs": [
+    "moses-4-5"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "moses-4-5",
+     "locator": "Moses 4:2"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m02:moses4-2",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m02-bank-q114",
+   "type": "multiple_choice",
+   "prompt": "What does Adam say in Moses 5:10?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "“Because of my transgression my eyes are opened, and in this life I shall have joy”"
+    },
+    {
+     "id": "o2",
+     "text": "“I wish I had never left the garden”"
+    },
+    {
+     "id": "o3",
+     "text": "“My transgression has no consequences”"
+    },
+    {
+     "id": "o4",
+     "text": "“I shall never see God again”"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 10: “because of my transgression my eyes are opened, and in this life I shall have joy, and again in the flesh I shall see God.”",
+   "sourceIDs": [
+    "moses-4-5"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "moses-4-5",
+     "locator": "Moses 5:10"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m02:moses5-10",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m02-bank-q115",
+   "type": "multiple_choice",
+   "prompt": "What does Eve say in Moses 5:11?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "Were it not for their transgression they would never have had seed or known good and evil"
+    },
+    {
+     "id": "o2",
+     "text": "That Adam alone was responsible"
+    },
+    {
+     "id": "o3",
+     "text": "That they should return to the garden"
+    },
+    {
+     "id": "o4",
+     "text": "That redemption is impossible"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 11 lists seed, knowledge of good and evil, the joy of redemption and eternal life as coming because of their transgression.",
+   "sourceIDs": [
+    "moses-4-5"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "moses-4-5",
+     "locator": "Moses 5:11"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m02:moses5-11",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m02-bank-q116",
+   "type": "true_false",
+   "prompt": "In Moses 5:9, the Holy Ghost bears record to Adam that as he has fallen he may be redeemed.",
+   "options": [
+    {
+     "id": "o1",
+     "text": "True"
+    },
+    {
+     "id": "o2",
+     "text": "False"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 9: “that as thou hast fallen thou mayest be redeemed, and all mankind, even as many as will.”",
+   "sourceIDs": [
+    "moses-4-5"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "moses-4-5",
+     "locator": "Moses 5:9"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m02:moses5-9",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m02-bank-q117",
+   "type": "multiple_choice",
+   "prompt": "Why would a plan guaranteeing that no one could be lost conflict with Lehi's teaching in 2 Nephi 2?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "It would remove the real choice and opposition Lehi says are necessary"
+    },
+    {
+     "id": "o2",
+     "text": "Because Lehi teaches that most people are lost"
+    },
+    {
+     "id": "o3",
+     "text": "Because 2 Nephi 2 says agency is unimportant"
+    },
+    {
+     "id": "o4",
+     "text": "It wouldn't; the two are the same idea"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Lehi says acting for oneself requires enticement by “the one or the other” and opposition in all things; a guaranteed outcome removes that choice, which is the issue Moses 4:3 names.",
+   "sourceIDs": [
+    "2ne-2",
+    "moses-4-5",
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne-2",
+     "locator": "2 Nephi 2:11, 16"
+    },
+    {
+     "sourceID": "moses-4-5",
+     "locator": "Moses 4:1–3"
+    },
+    {
+     "sourceID": "article",
+     "locator": "Agency in the premortal council"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m02:guarantee",
+   "difficulty": "application",
+   "perspective": "Original Hearken reading method grounded in the cited sources",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m02-bank-q118",
+   "type": "multiple_choice",
+   "prompt": "Which statement does Article of Faith 2 support?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "People are accountable for their own sins and are not punished for Adam's transgression"
+    },
+    {
+     "id": "o2",
+     "text": "The Fall had no effects on anyone"
+    },
+    {
+     "id": "o3",
+     "text": "Every Christian tradition rejects original sin"
+    },
+    {
+     "id": "o4",
+     "text": "Adam's transgression was not real"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "The article denies punishment for Adam's transgression and affirms accountability for one's own sins. It does not deny the Fall's effects, which 2 Nephi 2 and Alma 42 describe, or speak for other traditions.",
+   "sourceIDs": [
+    "aof-2",
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "aof-2",
+     "locator": "Article of Faith 2"
+    },
+    {
+     "sourceID": "article",
+     "locator": "Responsibility: Article of Faith 2"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m02:aof2-scope",
+   "difficulty": "application",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m02-bank-q119",
+   "type": "true_false",
+   "prompt": "Article of Faith 2 says the Fall had no effects.",
+   "options": [
+    {
+     "id": "o1",
+     "text": "True"
+    },
+    {
+     "id": "o2",
+     "text": "False"
+    }
+   ],
+   "correctOptionID": "o2",
+   "explanation": "It says people are not punished for Adam's transgression. Other passages describe real effects of the Fall: mortality and separation from God's presence.",
+   "sourceIDs": [
+    "aof-2",
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "aof-2",
+     "locator": "Article of Faith 2"
+    },
+    {
+     "sourceID": "article",
+     "locator": "Responsibility: Article of Faith 2"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m02:aof2-effects",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m02-bank-q120",
+   "type": "multiple_choice",
+   "prompt": "Which word do Moses 5:10–11 use for what Adam and Eve did?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "Transgression"
+    },
+    {
+     "id": "o2",
+     "text": "Crime"
+    },
+    {
+     "id": "o3",
+     "text": "Mistake"
+    },
+    {
+     "id": "o4",
+     "text": "Rebellion"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Both Adam and Eve speak of “our transgression.” Latter-day Saint teaching often uses this word for the Fall; quote the passages' own words.",
+   "sourceIDs": [
+    "moses-4-5",
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "moses-4-5",
+     "locator": "Moses 5:10–11"
+    },
+    {
+     "sourceID": "article",
+     "locator": "The Fall as a step forward"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m02:transgression-word",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m02-bank-q121",
+   "type": "multiple_choice",
+   "prompt": "According to 2 Nephi 2:26–27, how is human freedom connected to Christ?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "People become free to choose because the Messiah redeems them from the Fall"
+    },
+    {
+     "id": "o2",
+     "text": "Freedom has nothing to do with Christ"
+    },
+    {
+     "id": "o3",
+     "text": "Christ removes the need to choose"
+    },
+    {
+     "id": "o4",
+     "text": "Only those who choose captivity are free"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 26 says the Messiah redeems people from the Fall, and because of that they are free; verse 27 calls him “the great Mediator of all men.”",
+   "sourceIDs": [
+    "2ne-2",
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne-2",
+     "locator": "2 Nephi 2:26–27"
+    },
+    {
+     "sourceID": "article",
+     "locator": "To act and not to be acted upon"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m02:agency-redeemer",
+   "difficulty": "application",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m02-bank-q122",
+   "type": "multiple_choice",
+   "prompt": "How does 2 Nephi 2 present the Fall?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "Together with redemption through the Holy Messiah"
+    },
+    {
+     "id": "o2",
+     "text": "As the end of God's plan"
+    },
+    {
+     "id": "o3",
+     "text": "As a story with no connection to Christ"
+    },
+    {
+     "id": "o4",
+     "text": "As something people are punished for"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Lehi's chapter centers on the Redeemer (verses 6–10, 26–28); describing the Fall without redemption describes half the teaching.",
+   "sourceIDs": [
+    "2ne-2",
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne-2",
+     "locator": "2 Nephi 2:6–10, 26"
+    },
+    {
+     "sourceID": "article",
+     "locator": "Redemption from the Fall"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m02:fall-and-redemption",
+   "difficulty": "introductory",
+   "perspective": "Original Hearken reading method grounded in the cited sources",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m02-match-q101",
+   "type": "matching",
+   "title": "Where does it say that?",
+   "prompt": "Match each teaching to the verse that states it.",
+   "instructions": "Match each item on the left to exactly one answer on the right. Use every answer once.",
+   "leftItems": [
+    {
+     "id": "l1",
+     "text": "There is an opposition in all things"
+    },
+    {
+     "id": "l2",
+     "text": "Adam fell that men might be"
+    },
+    {
+     "id": "l3",
+     "text": "To act for themselves and not to be acted upon"
+    },
+    {
+     "id": "l4",
+     "text": "Satan sought to destroy the agency of man"
+    }
+   ],
+   "rightItems": [
+    {
+     "id": "r2",
+     "text": "2 Nephi 2:25"
+    },
+    {
+     "id": "r3",
+     "text": "2 Nephi 2:26"
+    },
+    {
+     "id": "r4",
+     "text": "Moses 4:3"
+    },
+    {
+     "id": "r1",
+     "text": "2 Nephi 2:11"
+    }
+   ],
+   "correctPairs": [
+    {
+     "leftID": "l1",
+     "rightID": "r1"
+    },
+    {
+     "leftID": "l2",
+     "rightID": "r2"
+    },
+    {
+     "leftID": "l3",
+     "rightID": "r3"
+    },
+    {
+     "leftID": "l4",
+     "rightID": "r4"
+    }
+   ],
+   "explanation": "Knowing which verse states which teaching lets you cite each claim precisely.",
+   "sourceIDs": [
+    "2ne-2",
+    "moses-4-5"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne-2",
+     "locator": "2 Nephi 2:11, 25, 26"
+    },
+    {
+     "sourceID": "moses-4-5",
+     "locator": "Moses 4:3"
+    }
+   ],
+   "scoring": {
+    "maxPoints": 1,
+    "method": "all_pairs_correct",
+    "partialFeedback": true,
+    "awardAdditionalXP": false
+   },
+   "presentation": {
+    "shuffleLeftItems": true,
+    "shuffleRightItems": true,
+    "requireIndependentOrder": true,
+    "interactionModes": [
+     "tap_to_pair",
+     "drag_to_pair"
+    ],
+    "accessibility": "Every pair must be makeable by tapping a left item, then a right item; dragging is optional."
+   },
+   "overlapsWithQuestionIDs": [
+    "lds-doctrine-c02-m02-bank-q101",
+    "lds-doctrine-c02-m02-bank-q104",
+    "lds-doctrine-c02-m02-bank-q106",
+    "lds-doctrine-c02-m02-bank-q111"
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m02:agency-verses",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  }
+ ]
+}

@@ -44,6 +44,14 @@ struct AssessmentView: View {
     private var toPass: Int { ScholarRules.pointsToPass(maxPoints: maxPoints, passPercent: request.assessment.passPercent) }
 
     var body: some View {
+        if request.assessment.isV2 {
+            CheckpointView(request: request)
+        } else {
+            legacyBody
+        }
+    }
+
+    private var legacyBody: some View {
         NavigationStack {
             Group {
                 switch phase {
@@ -270,7 +278,7 @@ struct AssessmentView: View {
             answersJSON: json
         )
         ScholarLedger(context: modelContext).record(attempt, in: request.path)
-        earnedXP = passed && !wasPassed && request.kind == "checkpoint" ? ScholarRules.checkpointXP : 0
+        earnedXP = passed && !wasPassed && request.kind == "checkpoint" ? request.assessment.xp : 0
         passedNow = passed
         withAnimation(.snappy) { phase = .results }
     }

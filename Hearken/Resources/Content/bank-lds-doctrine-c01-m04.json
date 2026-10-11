@@ -1,0 +1,1388 @@
+{
+ "moduleID": "lds-doctrine-c01-m04",
+ "questions": [
+  {
+   "id": "lds-doctrine-c01-m02-bank-q004",
+   "revision": 1,
+   "type": "multiple_choice",
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-02"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m02:nicene-persons",
+   "difficulty": "application",
+   "prompt": "According to the Catholic Catechism’s account of the Trinity, which summary is most accurate?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "One divine person changing between three roles"
+    },
+    {
+     "id": "o2",
+     "text": "Three independent gods cooperating"
+    },
+    {
+     "id": "o3",
+     "text": "Three distinct persons in one divine substance"
+    },
+    {
+     "id": "o4",
+     "text": "The Father alone is divine; Son and Spirit are creatures"
+    }
+   ],
+   "correctOptionID": "o3",
+   "explanation": "The Catechism distinguishes the persons while affirming one divine substance. The alternatives describe different positions, not its account of the Trinity.",
+   "sourceIDs": [
+    "catholic-trinity"
+   ],
+   "perspective": "Roman Catholic institutional",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "practice",
+    "course_checkpoint"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "catholic-trinity",
+     "locator": "Catechism §§252–254"
+    }
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m02-bank-q006",
+   "revision": 1,
+   "type": "multiple_choice",
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-02"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m02:concept-6",
+   "difficulty": "application",
+   "prompt": "You are comparing LDS and Catholic descriptions of God. Which glossary method is most responsible?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "Use the LDS meaning of “being” for both traditions"
+    },
+    {
+     "id": "o2",
+     "text": "Replace both traditions’ language with one analogy"
+    },
+    {
+     "id": "o3",
+     "text": "Treat “person” and “substance” as interchangeable words"
+    },
+    {
+     "id": "o4",
+     "text": "Record how each source defines its terms before comparing them"
+    }
+   ],
+   "correctOptionID": "o4",
+   "explanation": "A comparison must preserve each tradition’s terminology. Importing one definition, relying on an analogy, or equating distinct terms can misrepresent either position.",
+   "sourceIDs": [
+    "godhead",
+    "catholic-trinity",
+    "lds-doctrine-c01-m02-original-lesson"
+   ],
+   "perspective": "Original Hearken reading method grounded in the cited sources",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "practice",
+    "course_checkpoint"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "godhead",
+     "locator": "Overview: distinct beings, roles, purpose and doctrine"
+    },
+    {
+     "sourceID": "catholic-trinity",
+     "locator": "Catechism §§252–254"
+    },
+    {
+     "sourceID": "lds-doctrine-c01-m02-original-lesson",
+     "locator": "Included module lesson"
+    }
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m02-bank-q008",
+   "revision": 1,
+   "type": "multiple_choice",
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-02"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m02:comparison-vocabulary",
+   "difficulty": "introductory",
+   "prompt": "Which comparison accurately represents both assigned institutional sources?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "Both sources teach that the Father, Son, and Spirit are three names for one person"
+    },
+    {
+     "id": "o2",
+     "text": "The Catholic source teaches three independent gods; the LDS source teaches one person"
+    },
+    {
+     "id": "o3",
+     "text": "Both sources use “person” and “substance” as interchangeable words"
+    },
+    {
+     "id": "o4",
+     "text": "The LDS source describes separate beings; the Catholic source describes distinct persons in one divine substance"
+    }
+   ],
+   "correctOptionID": "o4",
+   "explanation": "The comparison preserves each source’s vocabulary. Neither source teaches interchangeable names for one person; the Catholic source rejects three gods and distinguishes person from substance.",
+   "sourceIDs": [
+    "godhead",
+    "catholic-trinity"
+   ],
+   "perspective": "Comparative Latter-day Saint and Roman Catholic institutional sources",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "practice",
+    "course_checkpoint"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "godhead",
+     "locator": "Overview: distinct beings, roles, purpose and doctrine"
+    },
+    {
+     "sourceID": "catholic-trinity",
+     "locator": "Catechism §§252–254"
+    }
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m02-bank-q010",
+   "revision": 1,
+   "type": "true_false",
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-02"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m02:catholic-terminology",
+   "difficulty": "application",
+   "prompt": "The Catholic Catechism uses “person” to designate the divine being in its unity rather than the distinction of Father, Son, and Spirit.",
+   "options": [
+    {
+     "id": "o1",
+     "text": "True"
+    },
+    {
+     "id": "o2",
+     "text": "False"
+    }
+   ],
+   "correctOptionID": "o2",
+   "explanation": "Catechism §252 uses substance for divine being in unity and person for the real distinction of Father, Son, and Holy Spirit.",
+   "sourceIDs": [
+    "catholic-trinity"
+   ],
+   "perspective": "Roman Catholic institutional",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "practice",
+    "course_checkpoint"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "catholic-trinity",
+     "locator": "Catechism §§252–254"
+    }
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m02-match-q002",
+   "revision": 1,
+   "type": "matching",
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m02",
+   "title": "Catholic theological vocabulary",
+   "prompt": "Use Catechism §252 to match each explanation with its technical term.",
+   "instructions": "Match each statement on the left to exactly one answer on the right. Use every answer once.",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-02"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m02:catholic-terminology",
+   "difficulty": "introductory",
+   "leftItems": [
+    {
+     "id": "l1",
+     "text": "The divine being considered in its unity"
+    },
+    {
+     "id": "l2",
+     "text": "The Father, Son, and Holy Spirit considered in their real distinction"
+    },
+    {
+     "id": "l3",
+     "text": "The relationships in which the persons’ distinction lies"
+    }
+   ],
+   "rightItems": [
+    {
+     "id": "r2",
+     "text": "Person (hypostasis)"
+    },
+    {
+     "id": "r3",
+     "text": "Relation"
+    },
+    {
+     "id": "r1",
+     "text": "Substance (essence or nature)"
+    }
+   ],
+   "correctPairs": [
+    {
+     "leftID": "l1",
+     "rightID": "r1"
+    },
+    {
+     "leftID": "l2",
+     "rightID": "r2"
+    },
+    {
+     "leftID": "l3",
+     "rightID": "r3"
+    }
+   ],
+   "sourceIDs": [
+    "catholic-trinity"
+   ],
+   "explanation": "These are the Catechism’s technical meanings. Person is not an interchangeable word for substance, and real distinction of persons does not mean three independent gods.",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "practice",
+    "course_checkpoint"
+   ],
+   "scoring": {
+    "maxPoints": 1,
+    "method": "all_pairs_correct",
+    "partialFeedback": true,
+    "awardAdditionalXP": false
+   },
+   "perspective": "Roman Catholic institutional",
+   "sourceLocators": [
+    {
+     "sourceID": "catholic-trinity",
+     "locator": "Catechism §§252–255 (technical terms in §252)"
+    }
+   ],
+   "presentation": {
+    "shuffleLeftItems": true,
+    "shuffleRightItems": true,
+    "requireIndependentOrder": true,
+    "interactionModes": [
+     "tap_to_pair",
+     "drag_to_pair"
+    ],
+    "accessibility": "Every pair must be selectable, announceable, changeable, and clearable without dragging."
+   },
+   "overlapsWithQuestionIDs": [
+    "lds-doctrine-c01-m02-bank-q004",
+    "lds-doctrine-c01-m02-bank-q006",
+    "lds-doctrine-c01-m02-bank-q008",
+    "lds-doctrine-c01-m02-bank-q010"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m04-bank-q101",
+   "type": "multiple_choice",
+   "prompt": "In 3 Nephi 11:7, what does the voice from heaven say?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "“Behold my Beloved Son, in whom I am well pleased … hear ye him.”"
+    },
+    {
+     "id": "o2",
+     "text": "“Behold, I am Jesus Christ.”"
+    },
+    {
+     "id": "o3",
+     "text": "“Arise and come forth unto me.”"
+    },
+    {
+     "id": "o4",
+     "text": "“On this wise shall ye baptize.”"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 7 records the Father's voice introducing the Son. Christ himself speaks the other words, in verses 10, 14 and 22.",
+   "sourceIDs": [
+    "3ne-11"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "3ne-11",
+     "locator": "3 Nephi 11:7"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-02"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m04:3ne11-voice",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m04-bank-q102",
+   "type": "multiple_choice",
+   "prompt": "According to 3 Nephi 11:27, what does Christ say about the Father, the Son and the Holy Ghost?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "That they are one, and that he is in the Father and the Father in him"
+    },
+    {
+     "id": "o2",
+     "text": "That they are three gods"
+    },
+    {
+     "id": "o3",
+     "text": "That only the Father is God"
+    },
+    {
+     "id": "o4",
+     "text": "That the Holy Ghost is the Father"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 27: “the Father, and the Son, and the Holy Ghost are one; and I am in the Father, and the Father in me.”",
+   "sourceIDs": [
+    "3ne-11"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "3ne-11",
+     "locator": "3 Nephi 11:27"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-02"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m04:3ne11-one",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m04-bank-q103",
+   "type": "multiple_choice",
+   "prompt": "Which words does 3 Nephi 11:25 give for baptism?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "“Having authority given me of Jesus Christ, I baptize you in the name of the Father, and of the Son, and of the Holy Ghost. Amen.”"
+    },
+    {
+     "id": "o2",
+     "text": "“I baptize you in the name of Jesus Christ only.”"
+    },
+    {
+     "id": "o3",
+     "text": "“By the power of the Holy Ghost, I baptize you.”"
+    },
+    {
+     "id": "o4",
+     "text": "“In the name of the Godhead, I baptize you.”"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 25 gives the prayer exactly, beginning with authority from Jesus Christ and naming all three.",
+   "sourceIDs": [
+    "3ne-11"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "3ne-11",
+     "locator": "3 Nephi 11:25"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-02"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m04:3ne11-words",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m04-bank-q104",
+   "type": "multiple_choice",
+   "prompt": "How do Latter-day Saint readers usually take the oneness language in 3 Nephi 11?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "As unity of purpose and witness among distinct beings, since the chapter also speaks of them distinctly"
+    },
+    {
+     "id": "o2",
+     "text": "As teaching one divine substance shared by three persons"
+    },
+    {
+     "id": "o3",
+     "text": "As teaching that Christ and the Father are one person"
+    },
+    {
+     "id": "o4",
+     "text": "As a passage that contradicts the rest of their scripture"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Latter-day Saints read verses 27 and 36 alongside verses 7, 11 and 32, where the Father's voice, the Son and the Holy Ghost act distinctly. That is the tradition's reading of its own scripture.",
+   "sourceIDs": [
+    "3ne-11",
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "3ne-11",
+     "locator": "3 Nephi 11:7, 11, 27, 32, 36"
+    },
+    {
+     "sourceID": "article",
+     "locator": "\"One\" in 3 Nephi 11"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-02"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m04:3ne11-reading",
+   "difficulty": "application",
+   "perspective": "Original Hearken reading method grounded in the cited sources",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m04-bank-q105",
+   "type": "multiple_choice",
+   "prompt": "What does Christ say about disputes in 3 Nephi 11:28–29?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "There should be no disputations about his doctrine, and the spirit of contention is not of him"
+    },
+    {
+     "id": "o2",
+     "text": "Disputes are the best way to find the truth"
+    },
+    {
+     "id": "o3",
+     "text": "Only leaders may discuss doctrine"
+    },
+    {
+     "id": "o4",
+     "text": "Contention is acceptable about baptism"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 28 says there shall be no disputations about baptism or “the points of my doctrine,” and verse 29 says “he that hath the spirit of contention is not of me.”",
+   "sourceIDs": [
+    "3ne-11"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "3ne-11",
+     "locator": "3 Nephi 11:28–29"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-02"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m04:3ne11-contention",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m04-bank-q106",
+   "type": "true_false",
+   "prompt": "In 3 Nephi 11:32, Christ says the Holy Ghost bears record of the Father and of him.",
+   "options": [
+    {
+     "id": "o1",
+     "text": "True"
+    },
+    {
+     "id": "o2",
+     "text": "False"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 32: “the Holy Ghost beareth record of the Father and me.”",
+   "sourceIDs": [
+    "3ne-11"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "3ne-11",
+     "locator": "3 Nephi 11:32"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-02"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m04:3ne11-record",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m04-bank-q107",
+   "type": "multiple_choice",
+   "prompt": "Which verse shows the chapter speaking of the Father and the Son distinctly?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "Verse 11, where Christ says he has suffered “the will of the Father in all things”"
+    },
+    {
+     "id": "o2",
+     "text": "Verse 1, where a multitude gathers at the temple"
+    },
+    {
+     "id": "o3",
+     "text": "Verse 19, where Nephi bows at the Lord's feet"
+    },
+    {
+     "id": "o4",
+     "text": "Verse 41, where Christ sends them to declare his words"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "In verse 11 the Son speaks of doing the Father's will. The other verses describe the people or a commission, not the relation of Father and Son.",
+   "sourceIDs": [
+    "3ne-11"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "3ne-11",
+     "locator": "3 Nephi 11:11"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-02"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m04:3ne11-distinct",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m04-bank-q108",
+   "type": "multiple_choice",
+   "prompt": "According to the Catechism (paragraph 253), what does the Catholic Church confess?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "One God in three persons, not three Gods"
+    },
+    {
+     "id": "o2",
+     "text": "Three Gods united in purpose"
+    },
+    {
+     "id": "o3",
+     "text": "One person who appears in three roles"
+    },
+    {
+     "id": "o4",
+     "text": "A Father who alone is God"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Paragraph 253 says the Church does not confess three Gods but one God in three persons. The other options describe views the Catechism rejects.",
+   "sourceIDs": [
+    "catholic-trinity"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "catholic-trinity",
+     "locator": "CCC 253"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-02"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m04:ccc-253",
+   "difficulty": "introductory",
+   "perspective": "Roman Catholic institutional",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m04-bank-q109",
+   "type": "multiple_choice",
+   "prompt": "In the Catechism's vocabulary (paragraph 252), what does “substance” name?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "The divine being in its unity"
+    },
+    {
+     "id": "o2",
+     "text": "Each person in their distinction"
+    },
+    {
+     "id": "o3",
+     "text": "The relationships among the persons"
+    },
+    {
+     "id": "o4",
+     "text": "The Son's human body"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Paragraph 252 uses substance (essence, nature) for the divine being in its unity, person for the real distinction, and relation for how that distinction consists.",
+   "sourceIDs": [
+    "catholic-trinity"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "catholic-trinity",
+     "locator": "CCC 252"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-02"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m04:ccc-252-substance",
+   "difficulty": "introductory",
+   "perspective": "Roman Catholic institutional",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m04-bank-q110",
+   "type": "multiple_choice",
+   "prompt": "What does the Catechism (paragraph 254) say about the divine persons?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "They are really distinct, not mere modes of the divine being, and differ by their relations of origin"
+    },
+    {
+     "id": "o2",
+     "text": "They are three modes in which one person appears"
+    },
+    {
+     "id": "o3",
+     "text": "They are separate beings with separate substances"
+    },
+    {
+     "id": "o4",
+     "text": "They differ only in their names"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Paragraph 254 says the persons are really distinct and not modes, distinguished by relations of origin: the Father begets, the Son is begotten, the Spirit proceeds.",
+   "sourceIDs": [
+    "catholic-trinity"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "catholic-trinity",
+     "locator": "CCC 254"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-02"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m04:ccc-254",
+   "difficulty": "application",
+   "perspective": "Roman Catholic institutional",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m04-bank-q111",
+   "type": "multiple_choice",
+   "prompt": "According to the Catechism (paragraph 242), what did the Council of Nicaea in 325 confess about the Son?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "That he is consubstantial with the Father"
+    },
+    {
+     "id": "o2",
+     "text": "That he was created before all ages"
+    },
+    {
+     "id": "o3",
+     "text": "That he is a separate embodied being"
+    },
+    {
+     "id": "o4",
+     "text": "That he is an angel"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Paragraph 242 says Nicaea confessed the Son consubstantial with the Father, one God with him.",
+   "sourceIDs": [
+    "catholic-trinity"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "catholic-trinity",
+     "locator": "CCC 242"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-02"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m04:ccc-nicaea",
+   "difficulty": "introductory",
+   "perspective": "Roman Catholic institutional",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m04-bank-q112",
+   "type": "true_false",
+   "prompt": "The Catechism (paragraph 237) calls the Trinity a mystery that could not be known unless God revealed it.",
+   "options": [
+    {
+     "id": "o1",
+     "text": "True"
+    },
+    {
+     "id": "o2",
+     "text": "False"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Paragraph 237 describes the Trinity as a mystery in the strict sense, known only through revelation.",
+   "sourceIDs": [
+    "catholic-trinity"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "catholic-trinity",
+     "locator": "CCC 237"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-02"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m04:ccc-mystery",
+   "difficulty": "introductory",
+   "perspective": "Roman Catholic institutional",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m04-bank-q113",
+   "type": "multiple_choice",
+   "prompt": "According to the Catechism (paragraph 245), how did the Council of Constantinople in 381 confess the Holy Spirit?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "As “the Lord and giver of life”"
+    },
+    {
+     "id": "o2",
+     "text": "As a creature made by the Son"
+    },
+    {
+     "id": "o3",
+     "text": "As another name for the Father"
+    },
+    {
+     "id": "o4",
+     "text": "As a force rather than a person"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Paragraph 245 cites Constantinople's confession of the Spirit as “the Lord and giver of life,” worshipped and glorified with the Father and the Son.",
+   "sourceIDs": [
+    "catholic-trinity"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "catholic-trinity",
+     "locator": "CCC 245"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-02"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m04:ccc-381",
+   "difficulty": "introductory",
+   "perspective": "Roman Catholic institutional",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m04-bank-q114",
+   "type": "multiple_choice",
+   "prompt": "How does the Catechism (paragraph 234) describe the mystery of the Trinity?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "As the central mystery of Christian faith and life"
+    },
+    {
+     "id": "o2",
+     "text": "As an optional teaching"
+    },
+    {
+     "id": "o3",
+     "text": "As a later Latin invention"
+    },
+    {
+     "id": "o4",
+     "text": "As a philosophical theory to be proven"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Paragraph 234 calls it the central mystery of Christian faith and life, the source of the other mysteries.",
+   "sourceIDs": [
+    "catholic-trinity"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "catholic-trinity",
+     "locator": "CCC 234"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-02"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m04:ccc-234",
+   "difficulty": "introductory",
+   "perspective": "Roman Catholic institutional",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m04-bank-q115",
+   "type": "multiple_choice",
+   "prompt": "What is the view called that the Father, Son and Spirit are three modes or appearances of one person?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "Modalism"
+    },
+    {
+     "id": "o2",
+     "text": "Tritheism"
+    },
+    {
+     "id": "o3",
+     "text": "Arianism"
+    },
+    {
+     "id": "o4",
+     "text": "Nicene orthodoxy"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "That view is modalism, which the Catechism rejects in paragraph 254. Tritheism means three gods; Arianism held that the Son was created.",
+   "sourceIDs": [
+    "catholic-trinity",
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "catholic-trinity",
+     "locator": "CCC 254"
+    },
+    {
+     "sourceID": "article",
+     "locator": "Three caricatures to avoid"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-02"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m04:modalism",
+   "difficulty": "introductory",
+   "perspective": "Comparative reading of Latter-day Saint and Roman Catholic institutional sources",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m04-bank-q116",
+   "type": "multiple_choice",
+   "prompt": "Where do Catholic and Latter-day Saint teaching really differ?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "In the kind of oneness: one divine substance, or unity of purpose among separate beings"
+    },
+    {
+     "id": "o2",
+     "text": "In whether the Father, Son and Spirit are distinct"
+    },
+    {
+     "id": "o3",
+     "text": "In whether the three are one in any sense"
+    },
+    {
+     "id": "o4",
+     "text": "In whether Jesus Christ is named in their creeds or articles"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Both affirm that the three are distinct and in some sense one. The difference is what the oneness is: the Catechism's one substance, or Latter-day Saint unity of purpose among separate beings.",
+   "sourceIDs": [
+    "catholic-trinity",
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "catholic-trinity",
+     "locator": "CCC 252–254"
+    },
+    {
+     "sourceID": "article",
+     "locator": "Where the traditions really differ"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-02"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m04:real-difference",
+   "difficulty": "application",
+   "perspective": "Comparative reading of Latter-day Saint and Roman Catholic institutional sources",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m04-bank-q117",
+   "type": "true_false",
+   "prompt": "Both Catholic and Latter-day Saint teaching affirm that the Father, the Son and the Holy Spirit are distinct and that they are one.",
+   "options": [
+    {
+     "id": "o1",
+     "text": "True"
+    },
+    {
+     "id": "o2",
+     "text": "False"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Both affirm distinctness and oneness; they differ on what kind of oneness it is.",
+   "sourceIDs": [
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "article",
+     "locator": "Where the traditions really differ"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-02"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m04:both-affirm",
+   "difficulty": "introductory",
+   "perspective": "Comparative reading of Latter-day Saint and Roman Catholic institutional sources",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m04-bank-q118",
+   "type": "multiple_choice",
+   "prompt": "What is the first step in a fair comparison of two traditions?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "Describe each from its own authoritative sources"
+    },
+    {
+     "id": "o2",
+     "text": "Translate both into one tradition's vocabulary"
+    },
+    {
+     "id": "o3",
+     "text": "Start with the strongest objection to each"
+    },
+    {
+     "id": "o4",
+     "text": "Find an analogy that fits both"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Describing each tradition from its own sources comes first; the other approaches tend to import one side's meanings into the other.",
+   "sourceIDs": [
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "article",
+     "locator": "Writing a fair comparison"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-02"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m04:fair-first-step",
+   "difficulty": "introductory",
+   "perspective": "Original Hearken reading method grounded in the cited sources",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m04-bank-q119",
+   "type": "multiple_choice",
+   "prompt": "Which statement about “person” and “personage” is accurate?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "In the Catechism, “person” names Father, Son and Spirit in their real distinction; in D&C 130:22, “personage” refers to an individual being"
+    },
+    {
+     "id": "o2",
+     "text": "Both sources use the word to mean the divine substance"
+    },
+    {
+     "id": "o3",
+     "text": "Neither source uses either word"
+    },
+    {
+     "id": "o4",
+     "text": "The Catechism uses “person” to mean a body of flesh and bones"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "The traditions use related words differently: the Catechism's technical term defined by relation, and the canonical “personage” for an individual being, embodied or a spirit.",
+   "sourceIDs": [
+    "catholic-trinity",
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "catholic-trinity",
+     "locator": "CCC 252"
+    },
+    {
+     "sourceID": "article",
+     "locator": "Same words, different meanings"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-02"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m04:person-personage",
+   "difficulty": "application",
+   "perspective": "Comparative reading of Latter-day Saint and Roman Catholic institutional sources",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m04-match-q101",
+   "type": "matching",
+   "title": "Correct the caricature",
+   "prompt": "Match each caricature to the source that corrects it.",
+   "instructions": "Match each item on the left to exactly one answer on the right. Use every answer once.",
+   "leftItems": [
+    {
+     "id": "l1",
+     "text": "“One God wearing three masks”"
+    },
+    {
+     "id": "l2",
+     "text": "“Three gods with one label”"
+    },
+    {
+     "id": "l3",
+     "text": "“The Son is a created, lesser being”"
+    },
+    {
+     "id": "l4",
+     "text": "“Latter-day Saints don't believe in Jesus Christ”"
+    }
+   ],
+   "rightItems": [
+    {
+     "id": "r2",
+     "text": "Catechism 253: one God in three persons, not three Gods"
+    },
+    {
+     "id": "r3",
+     "text": "Nicaea (325), in Catechism 242: the Son is consubstantial with the Father"
+    },
+    {
+     "id": "r4",
+     "text": "Article of Faith 1 and 3 Nephi 11 center on him"
+    },
+    {
+     "id": "r1",
+     "text": "Catechism 254: the persons are really distinct, not modes"
+    }
+   ],
+   "correctPairs": [
+    {
+     "leftID": "l1",
+     "rightID": "r1"
+    },
+    {
+     "leftID": "l2",
+     "rightID": "r2"
+    },
+    {
+     "leftID": "l3",
+     "rightID": "r3"
+    },
+    {
+     "leftID": "l4",
+     "rightID": "r4"
+    }
+   ],
+   "explanation": "Each caricature is answered by the tradition's own sources, which is the standard this module sets for comparison.",
+   "sourceIDs": [
+    "catholic-trinity",
+    "3ne-11",
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "catholic-trinity",
+     "locator": "CCC 242, 253–254"
+    },
+    {
+     "sourceID": "3ne-11",
+     "locator": "3 Nephi 11"
+    },
+    {
+     "sourceID": "article",
+     "locator": "Three caricatures to avoid"
+    }
+   ],
+   "scoring": {
+    "maxPoints": 1,
+    "method": "all_pairs_correct",
+    "partialFeedback": true,
+    "awardAdditionalXP": false
+   },
+   "presentation": {
+    "shuffleLeftItems": true,
+    "shuffleRightItems": true,
+    "requireIndependentOrder": true,
+    "interactionModes": [
+     "tap_to_pair",
+     "drag_to_pair"
+    ],
+    "accessibility": "Every pair must be makeable by tapping a left item, then a right item; dragging is optional."
+   },
+   "overlapsWithQuestionIDs": [
+    "lds-doctrine-c01-m04-bank-q108",
+    "lds-doctrine-c01-m04-bank-q110",
+    "lds-doctrine-c01-m04-bank-q111",
+    "lds-doctrine-c01-m04-bank-q115"
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-02"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m04:caricatures",
+   "difficulty": "application",
+   "perspective": "Comparative reading of Latter-day Saint and Roman Catholic institutional sources",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  }
+ ]
+}

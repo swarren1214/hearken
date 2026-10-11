@@ -74,7 +74,15 @@ struct BadgesView: View {
         let grant = progress.grant(rank)
         let attainable = rank <= progress.path.highestAttainableRank
         return HStack(alignment: .top, spacing: 14) {
-            ScholarBadge(rank: rank, size: 96, status: state)
+            Group {
+                if state == .earned {
+                    // Earned medals are coins: they spin in when picked and can be spun by hand.
+                    ScholarCoin(rank: rank, size: 96, introSpin: true)
+                        .id("\(selection.subjectID)|\(rank.rawValue)")
+                } else {
+                    ScholarBadge(rank: rank, size: 96, status: state)
+                }
+            }
             VStack(alignment: .leading, spacing: 4) {
                 Text(rank.name).font(.title2.bold())
                 Text(name(of: selection.subjectID)).font(.subheadline).foregroundStyle(.secondary)
@@ -86,7 +94,7 @@ struct BadgesView: View {
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 } else {
-                    Text(attainable ? "\(state == .next ? "Next" : "Locked") · needs \(rank.requirement)" : "Not offered yet · this path's later stages are coming")
+                    Text(attainable ? "\(state == .next ? "Next" : "Locked") · needs \(rank.requirement(xp: progress.threshold(rank)))" : "Not offered yet · this path's later stages are coming")
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(state == .next ? Color.accentColor : .secondary)
                     if attainable {

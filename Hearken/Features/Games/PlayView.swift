@@ -291,8 +291,8 @@ private struct PathSubjectCard: View {
         let done = stage.map { progress.coursesComplete(in: $0) } ?? 0
         let total = stage?.courses.count ?? 0
         let stageText = stage.map { progress.isComplete($0) ? "Stage \($0.number) done" : done == total ? "Stage \($0.number): check left" : "Stage \($0.number): \(done) of \(total)" } ?? ""
-        if progress.xpReached { return "\(progress.xp.formatted()) / \(next.xpThreshold.formatted()) XP · \(stageText.isEmpty ? "XP reached" : stageText)" }
-        return "\(progress.xp.formatted()) / \(next.xpThreshold.formatted()) XP · \(stageText)"
+        if progress.xpReached { return "\(progress.xp.formatted()) / \(progress.threshold(next).formatted()) XP · \(stageText.isEmpty ? "XP reached" : stageText)" }
+        return "\(progress.xp.formatted()) / \(progress.threshold(next).formatted()) XP · \(stageText)"
     }
 }
 

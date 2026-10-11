@@ -1,0 +1,174 @@
+{
+  "stage": 1,
+  "banks": [
+    "c0*/question-banks/*.json",
+    "reviewed/*.json"
+  ],
+  "courses": [
+    {
+      "id": "lds-doctrine-c01",
+      "modules": [
+        "c01-m01",
+        "c01-m02",
+        "c01-m03",
+        "c01-m04"
+      ],
+      "summary": "Tell sources apart, make careful claims, and explain the Godhead and its comparison with the Trinity.",
+      "checkpoint": {
+        "id": "lds-doctrine-c01-checkpoint-v2",
+        "questionCount": 20,
+        "passCount": 16,
+        "maxTrueFalse": 4,
+        "maxMatching": 2,
+        "essay": {
+          "minWords": 250,
+          "maxWords": 400,
+          "revisionsBeforeCompletion": 3,
+          "rubric": [
+            {
+              "id": "accuracy",
+              "title": "Accuracy",
+              "full": "States each teaching as its sources do",
+              "partial": "Mostly accurate, with a loose or blurred point",
+              "none": "Misstates the teaching, or answers a different question"
+            },
+            {
+              "id": "evidence",
+              "title": "Evidence",
+              "full": "Cites an assigned source with chapter and verse, or title and section",
+              "partial": "Names a source without a precise reference",
+              "none": "No source, or a source that doesn't support the claim"
+            },
+            {
+              "id": "precision",
+              "title": "Precision and fairness",
+              "full": "Scopes each claim to what its source shows and describes other views as their own sources would",
+              "partial": "One claim is broader than its source",
+              "none": "Sweeping claims, or a caricature of another tradition"
+            }
+          ],
+          "prompts": [
+            {
+              "id": "lds-doctrine-c01-checkpoint-v2-essay-p1",
+              "prompt": "A friend reads online that “Mormons believe God has a body” and asks you what that means. Using at least three sources from this course, explain what Latter-day Saint sources teach about the Godhead, say what kind of source each one is, and note where the teaching's limits are.",
+              "guide": "Article of Faith 1 (canonical) names the three; D&C 130:22 (canonical) on the Father and Son's bodies and the Holy Ghost as a personage of Spirit, cited by verse with its Ramus 1843 setting; the Godhead page (institutional) on distinct beings one in purpose and their roles; scenes like Matthew 3:16–17 as cited evidence. Limits: the sources don't describe divine nature in detail. Strong answers classify each source and attribute each claim."
+            },
+            {
+              "id": "lds-doctrine-c01-checkpoint-v2-essay-p2",
+              "prompt": "Choose a claim about Latter-day Saint belief you have heard or read. Show step by step how you would test it: classify the sources behind it, check them against the standard works and current institutional teaching, and rewrite the claim so it names its source and its limit.",
+              "guide": "Classifies sources (canon, institutional, commentary, historical); applies the Church's guide (First Presidency and Twelve; standard works, official declarations and proclamations, Articles of Faith; single statements may be personal views); checks setting and date; rewrites with an accurate verb and scope (e.g., “In his 1838 account…”, “A current Church page says…”)."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "lds-doctrine-c02",
+      "modules": [
+        "c02-m01",
+        "c02-m02",
+        "c02-m03",
+        "c02-m04"
+      ],
+      "summary": "Trace the plan of salvation, agency and the Fall, and the doctrine of Christ from faith to enduring to the end.",
+      "checkpoint": {
+        "id": "lds-doctrine-c02-checkpoint-v2",
+        "questionCount": 20,
+        "passCount": 16,
+        "maxTrueFalse": 4,
+        "maxMatching": 2,
+        "essay": {
+          "minWords": 250,
+          "maxWords": 400,
+          "revisionsBeforeCompletion": 3,
+          "rubric": [
+            {
+              "id": "accuracy",
+              "title": "Accuracy",
+              "full": "States each teaching as its sources do",
+              "partial": "Mostly accurate, with a loose or blurred point",
+              "none": "Misstates the teaching, or answers a different question"
+            },
+            {
+              "id": "evidence",
+              "title": "Evidence",
+              "full": "Cites an assigned source with chapter and verse, or title and section",
+              "partial": "Names a source without a precise reference",
+              "none": "No source, or a source that doesn't support the claim"
+            },
+            {
+              "id": "precision",
+              "title": "Precision and fairness",
+              "full": "Scopes each claim to what its source shows and describes other views as their own sources would",
+              "partial": "One claim is broader than its source",
+              "none": "Sweeping claims, or a caricature of another tradition"
+            }
+          ],
+          "prompts": [
+            {
+              "id": "lds-doctrine-c02-checkpoint-v2-essay-p1",
+              "prompt": "Explain how the plan of salvation, agency and the Fall fit together in Latter-day Saint scripture. Cite at least three passages from this course.",
+              "guide": "Moses 1:39 (purpose); Abraham 3:22–28 and Moses 4:1–3 (council; agency the issue); 2 Nephi 2:11, 16, 25–27 (opposition, acting for oneself, the Fall as necessary, freedom through the Mediator); Alma 42 (probation, justice and mercy, the Atonement); Article of Faith 2. Attributes each claim."
+            },
+            {
+              "id": "lds-doctrine-c02-checkpoint-v2-essay-p2",
+              "prompt": "Explain the doctrine of Christ from faith to enduring to the end. Cite 2 Nephi 31–32 and at least one other passage, and describe the baptismal covenant.",
+              "guide": "Faith with real intent (2 Ne 31:13, 19); repentance and baptism as the gate (31:17); Christ's example (31:5–10); the Holy Ghost (31:13, 32:5); enduring with hope and love (31:20); covenant terms from Mosiah 18:8–10; may use Acts 2:38, 3 Nephi 11, Articles of Faith 4–5 or Moroni 10:3–5."
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "advancement": {
+    "id": "lds-doctrine-stage-1-exam",
+    "questionCount": 30,
+    "passCount": 24,
+    "maxTrueFalse": 6,
+    "maxMatching": 2,
+    "essay": {
+      "minWords": 350,
+      "maxWords": 500,
+      "revisionsBeforeCompletion": 3,
+      "rubric": [
+        {
+          "id": "accuracy",
+          "title": "Accuracy",
+          "full": "States each teaching as its sources do",
+          "partial": "Mostly accurate, with a loose or blurred point",
+          "none": "Misstates the teaching, or answers a different question"
+        },
+        {
+          "id": "evidence",
+          "title": "Evidence",
+          "full": "Cites an assigned source with chapter and verse, or title and section",
+          "partial": "Names a source without a precise reference",
+          "none": "No source, or a source that doesn't support the claim"
+        },
+        {
+          "id": "precision",
+          "title": "Precision and fairness",
+          "full": "Scopes each claim to what its source shows and describes other views as their own sources would",
+          "partial": "One claim is broader than its source",
+          "none": "Sweeping claims, or a caricature of another tradition"
+        }
+      ],
+      "prompts": [
+        {
+          "id": "lds-doctrine-stage-1-exam-essay-p1",
+          "prompt": "Explain Latter-day Saint teaching about God and his plan for his children to someone from another Christian tradition. Use sources from both courses, describe their tradition fairly where you mention it, and attribute every claim.",
+          "guide": "The Godhead (Article of Faith 1; D&C 130:22; Godhead page) compared fairly with the Trinity (Catechism 252–254) without caricature; the plan of salvation (Moses 1:39; Abraham 3; Alma 42); agency and the Fall (2 Nephi 2; Article of Faith 2); the doctrine of Christ (2 Nephi 31). Every claim attributed; the real difference stated in terms each side accepts."
+        },
+        {
+          "id": "lds-doctrine-stage-1-exam-essay-p2",
+          "prompt": "Choose one teaching from Stage 1. Write a short sourced explanation of it, then explain what its sources leave open and how a careful student should handle those gaps.",
+          "guide": "A clear, attributed explanation with precise citations; identifies what the sources don't say (e.g., details of divine embodiment, first/second estate as interpretation, other worlds in Moses 1); labels commentary and speculation as such; uses the source ledger habits (claim, source, setting, confidence)."
+        }
+      ]
+    }
+  },
+  "videoAlternatives": {
+    "lds-doctrine-c02-m01-lesson": "lds-doctrine-c02-m01-article",
+    "lds-doctrine-c02-m02-lesson": "lds-doctrine-c02-m03-article"
+  }
+}

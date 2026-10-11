@@ -111,7 +111,7 @@ private struct SubjectPathContent: View {
         } else if state == .earned {
             subtitle = "Earned"
         } else {
-            subtitle = rank.requirement + (state == .next ? " · next" : "")
+            subtitle = rank.requirement(xp: progress.threshold(rank)) + (state == .next ? " · next" : "")
         }
         return HStack(spacing: 12) {
             ScholarBadge(rank: rank, size: 56, status: state)
@@ -253,7 +253,7 @@ private struct SubjectPathContent: View {
     }
 
     private func advancementDetail(_ check: PathAssessment, stage: PathStage, open: Bool, passed: Bool) -> String {
-        let shape = "\(check.questionCount) questions, \(check.passPercent)% to pass"
+        let shape = check.quiz.map { "\($0.questionCount) questions and an essay, \($0.passCount) to pass" } ?? "\(check.questionCount) questions, \(check.passPercent)% to pass"
         if passed { return "Passed · " + shape }
         if !check.isReady { return "Questions coming soon · " + shape }
         if !open { return "Opens when both courses are done · " + shape }
@@ -277,7 +277,7 @@ private struct RankHeader: View {
             HStack(spacing: 14) {
                 // The ring is XP toward the next badge, so it only appears once you hold a rank
                 // and there's a next one with an XP requirement.
-                let showsRing = rank != nil && (next?.xpThreshold ?? 0) > 0
+                let showsRing = rank != nil && (next.map { progress.threshold($0) } ?? 0) > 0
                 ScholarBadge(rank: rank ?? .novice, size: 112, status: rank == nil ? .next : .earned,
                              progress: showsRing ? progress.xpFraction : nil,
                              tint: showsRing ? (progress.xpReached ? Optional(Feedback.correct) : next?.palette.light) : nil)
@@ -375,7 +375,7 @@ private struct RankHeader: View {
                         .font(.caption2.weight(isCurrent || isNext ? .bold : .regular))
                         .lineLimit(1)
                         .minimumScaleFactor(0.7)
-                    Text(rank.xpThreshold == 0 ? "Start" : "\(rank.xpThreshold.formatted()) XP")
+                    Text(progress.threshold(rank) == 0 ? "Start" : "\(progress.threshold(rank).formatted()) XP")
                         .font(.caption2)
                         .monospacedDigit()
                         .foregroundStyle(.white.opacity(0.65))
@@ -409,8 +409,8 @@ private struct RankHeader: View {
             }
             return "Finish any learning item"
         }
-        if next == .sage { return "\(next.xpThreshold.formatted()) XP, Stage \(next.requiredStages) and the capstone" }
-        return "\(next.xpThreshold.formatted()) XP and Stage \(next.requiredStages) complete"
+        if next == .sage { return "\(progress.threshold(next).formatted()) XP, Stage \(next.requiredStages) and the capstone" }
+        return "\(progress.threshold(next).formatted()) XP and Stage \(next.requiredStages) complete"
     }
 
     // MARK: Tiles
@@ -432,11 +432,11 @@ private struct RankHeader: View {
 
     private func xpTile(_ next: ScholarRank) -> some View {
         let reached = progress.xpReached
-        let remaining = max(next.xpThreshold - progress.xp, 0)
+        let remaining = max(progress.threshold(next) - progress.xp, 0)
         return tile(
             ring: { RequirementRing(progress: progress.xpFraction, label: "\(Int((progress.xpFraction * 100).rounded()))%", color: reached ? Feedback.correct : next.palette.light, track: .white.opacity(0.14)) },
             title: "\(progress.xp.formatted()) XP",
-            detail: reached ? "XP reached" : "of \(next.xpThreshold.formatted()) · \(remaining.formatted()) to go"
+            detail: reached ? "XP reached" : "of \(progress.threshold(next).formatted()) · \(remaining.formatted()) to go"
         )
     }
 
@@ -502,7 +502,7 @@ struct CourseCard: View {
         if status.checkpointPassed, let best = progress.best(checkpoint) { return "Checkpoint passed · \(best.points)/\(best.maxPoints)" }
         if !checkpoint.isReady { return "Checkpoint questions coming soon" }
         if !status.requiredComplete { return "Checkpoint opens after \(status.requiredTotal - status.requiredDone) more items" }
-        return "Checkpoint ready · +\(ScholarRules.checkpointXP) XP"
+        return "Checkpoint ready · +\(checkpoint.xp) XP"
     }
 }
 

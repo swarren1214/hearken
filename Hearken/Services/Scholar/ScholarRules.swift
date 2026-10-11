@@ -3,7 +3,8 @@ import Foundation
 /// The Scholar Path's rules as pure functions, so they're easy to test.
 enum ScholarRules {
     /// Bump when the rules change; stored on every award and grant.
-    static let ruleVersion = 1
+    /// 2: thresholds from each path's required work; v2 checkpoints pay ten XP a question.
+    static let ruleVersion = 2
 
     static let checkpointXP = 100
     static let capstoneXP = 200
@@ -17,16 +18,30 @@ enum ScholarRules {
         case .reading: 30
         case .video: 20
         case .practice: 10
+        case .article: 50
+        case .quiz: 80
+        case .essay: 60
+        }
+    }
+
+    /// XP for an item: v2 readings and practice, completed by passing a check rather than by a
+    /// written response, pay more than their v1 counterparts.
+    static func xp(for item: PathItem) -> Int {
+        switch item.kind {
+        case .reading where item.quiz != nil: 40
+        case .practice where item.questionID != nil: 30
+        default: xp(for: item.kind)
         }
     }
 
     /// The highest rank earned: its XP threshold met and stages 1…n complete in order.
     /// `completedStages` counts contiguous complete stages from Stage 1. Nil until the first
     /// learning item is done. Never lower than `stored`, and never past `ceiling`.
-    static func rank(xp: Int, completedStages: Int, hasCompletedAnItem: Bool, stored: ScholarRank?, ceiling: ScholarRank = .sage) -> ScholarRank? {
+    /// `threshold` gives each rank's XP threshold (the path's, in rules version 2).
+    static func rank(xp: Int, completedStages: Int, hasCompletedAnItem: Bool, stored: ScholarRank?, ceiling: ScholarRank = .sage, threshold: (ScholarRank) -> Int = { $0.xpThreshold }) -> ScholarRank? {
         var best: ScholarRank? = hasCompletedAnItem ? .novice : nil
         for rank in ScholarRank.allCases where rank > .novice && rank <= ceiling {
-            if xp >= rank.xpThreshold && completedStages >= rank.requiredStages {
+            if xp >= threshold(rank) && completedStages >= rank.requiredStages {
                 best = rank
             } else {
                 break

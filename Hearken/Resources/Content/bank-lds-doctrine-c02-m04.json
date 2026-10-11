@@ -1,0 +1,1230 @@
+{
+ "moduleID": "lds-doctrine-c02-m04",
+ "questions": [
+  {
+   "id": "lds-doctrine-c02-m04-bank-q101",
+   "type": "multiple_choice",
+   "prompt": "According to 2 Nephi 32:3, how do angels speak?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "By the power of the Holy Ghost, so they speak the words of Christ"
+    },
+    {
+     "id": "o2",
+     "text": "Only in dreams"
+    },
+    {
+     "id": "o3",
+     "text": "In a language no one understands"
+    },
+    {
+     "id": "o4",
+     "text": "Only to prophets"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 3: “Angels speak by the power of the Holy Ghost; wherefore, they speak the words of Christ.”",
+   "sourceIDs": [
+    "2ne32-moro10"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne32-moro10",
+     "locator": "2 Nephi 32:3"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m04-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m04:2ne32-angels",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m04-bank-q102",
+   "type": "multiple_choice",
+   "prompt": "What does Nephi tell his readers to feast upon in 2 Nephi 32:3?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "The words of Christ"
+    },
+    {
+     "id": "o2",
+     "text": "The law of Moses"
+    },
+    {
+     "id": "o3",
+     "text": "The records of their fathers"
+    },
+    {
+     "id": "o4",
+     "text": "The fruit of the tree of life"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 3: “feast upon the words of Christ; for behold, the words of Christ will tell you all things what ye should do.”",
+   "sourceIDs": [
+    "2ne32-moro10"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne32-moro10",
+     "locator": "2 Nephi 32:3"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m04-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m04:2ne32-feast",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m04-bank-q103",
+   "type": "multiple_choice",
+   "prompt": "According to 2 Nephi 32:5, what will the Holy Ghost do for those who enter in by the way?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "Show them all things what they should do"
+    },
+    {
+     "id": "o2",
+     "text": "Remove all their trials"
+    },
+    {
+     "id": "o3",
+     "text": "Make prayer unnecessary"
+    },
+    {
+     "id": "o4",
+     "text": "Give them a new body"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 5: “if ye will enter in by the way, and receive the Holy Ghost, it will show unto you all things what ye should do.”",
+   "sourceIDs": [
+    "2ne32-moro10"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne32-moro10",
+     "locator": "2 Nephi 32:5"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m04-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m04:2ne32-5",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m04-bank-q104",
+   "type": "multiple_choice",
+   "prompt": "According to 2 Nephi 32:8, what does the evil spirit teach?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "That a man must not pray"
+    },
+    {
+     "id": "o2",
+     "text": "That a man must pray always"
+    },
+    {
+     "id": "o3",
+     "text": "That a man should feast on the words of Christ"
+    },
+    {
+     "id": "o4",
+     "text": "That a man should be baptized"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 8: “the evil spirit teacheth not a man to pray, but teacheth him that he must not pray.”",
+   "sourceIDs": [
+    "2ne32-moro10"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne32-moro10",
+     "locator": "2 Nephi 32:8"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m04-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m04:2ne32-8",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m04-bank-q105",
+   "type": "multiple_choice",
+   "prompt": "According to 2 Nephi 32:9, to whom and in whose name should people pray?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "To the Father, in the name of Christ"
+    },
+    {
+     "id": "o2",
+     "text": "To Christ, in the name of the Father"
+    },
+    {
+     "id": "o3",
+     "text": "To the Holy Ghost, in the name of Christ"
+    },
+    {
+     "id": "o4",
+     "text": "To angels, in the name of God"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 9: “ye shall pray unto the Father in the name of Christ, that he will consecrate thy performance unto thee.”",
+   "sourceIDs": [
+    "2ne32-moro10"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne32-moro10",
+     "locator": "2 Nephi 32:9"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m04-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m04:2ne32-9",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m04-bank-q106",
+   "type": "multiple_choice",
+   "prompt": "Which conditions does Moroni 10:4 attach to asking God?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "A sincere heart, real intent, and faith in Christ"
+    },
+    {
+     "id": "o2",
+     "text": "Reading the book twice"
+    },
+    {
+     "id": "o3",
+     "text": "Asking in a temple"
+    },
+    {
+     "id": "o4",
+     "text": "No conditions"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 4: “if ye shall ask with a sincere heart, with real intent, having faith in Christ.” Verse 3 also asks readers to remember and ponder.",
+   "sourceIDs": [
+    "2ne32-moro10"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne32-moro10",
+     "locator": "Moroni 10:3–4"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m04-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m04:moro10-conditions",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m04-bank-q107",
+   "type": "multiple_choice",
+   "prompt": "Whom does Moroni 10:4 tell readers to ask?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "God, the Eternal Father, in the name of Christ"
+    },
+    {
+     "id": "o2",
+     "text": "Their bishop"
+    },
+    {
+     "id": "o3",
+     "text": "Moroni himself"
+    },
+    {
+     "id": "o4",
+     "text": "The Holy Ghost, in the name of the Father"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 4: “ask God, the Eternal Father, in the name of Christ, if these things are not true.”",
+   "sourceIDs": [
+    "2ne32-moro10"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne32-moro10",
+     "locator": "Moroni 10:4"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m04-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m04:moro10-whom",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m04-bank-q108",
+   "type": "true_false",
+   "prompt": "Moroni 10:5 says that by the power of the Holy Ghost people may know the truth of all things.",
+   "options": [
+    {
+     "id": "o1",
+     "text": "True"
+    },
+    {
+     "id": "o2",
+     "text": "False"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 5: “by the power of the Holy Ghost ye may know the truth of all things.”",
+   "sourceIDs": [
+    "2ne32-moro10"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne32-moro10",
+     "locator": "Moroni 10:5"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m04-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m04:moro10-5",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m04-bank-q109",
+   "type": "multiple_choice",
+   "prompt": "According to John 14:26, what will the Comforter, the Holy Ghost, do?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "Teach all things and bring to remembrance what Jesus said"
+    },
+    {
+     "id": "o2",
+     "text": "Replace the apostles"
+    },
+    {
+     "id": "o3",
+     "text": "Write a new gospel"
+    },
+    {
+     "id": "o4",
+     "text": "Judge the world"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 26: “he shall teach you all things, and bring all things to your remembrance, whatsoever I have said unto you.”",
+   "sourceIDs": [
+    "2ne32-moro10"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne32-moro10",
+     "locator": "John 14:26"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m04-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m04:john14-26",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m04-bank-q110",
+   "type": "multiple_choice",
+   "prompt": "Which summary of Moroni 10:3–5 is most accurate?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "Moroni promises that those who ask God sincerely, with real intent and faith in Christ, will be shown the truth by the power of the Holy Ghost"
+    },
+    {
+     "id": "o2",
+     "text": "Moroni promises that every reader will believe the Book of Mormon"
+    },
+    {
+     "id": "o3",
+     "text": "Moroni says the book's truth cannot be known"
+    },
+    {
+     "id": "o4",
+     "text": "Moroni says reading is enough without asking"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "The accurate summary keeps the conditions. The others drop them, overstate the promise, or contradict it.",
+   "sourceIDs": [
+    "2ne32-moro10",
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne32-moro10",
+     "locator": "Moroni 10:3–5"
+    },
+    {
+     "sourceID": "article",
+     "locator": "Moroni's promise"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m04-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m04:moro10-summary",
+   "difficulty": "application",
+   "perspective": "Original Hearken reading method grounded in the cited sources",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m04-bank-q111",
+   "type": "multiple_choice",
+   "prompt": "According to Alma 36:16, how long was Alma racked with torment?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "Three days and three nights"
+    },
+    {
+     "id": "o2",
+     "text": "Forty days"
+    },
+    {
+     "id": "o3",
+     "text": "Seven years"
+    },
+    {
+     "id": "o4",
+     "text": "One night"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 16: “for three days and for three nights was I racked.”",
+   "sourceIDs": [
+    "alma-36"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "alma-36",
+     "locator": "Alma 36:16"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m04-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m04:alma36-16",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m04-bank-q112",
+   "type": "multiple_choice",
+   "prompt": "What did Alma remember in Alma 36:17?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "His father's prophecy of Jesus Christ, who would atone for the sins of the world"
+    },
+    {
+     "id": "o2",
+     "text": "A verse from Isaiah"
+    },
+    {
+     "id": "o3",
+     "text": "The words of an angel to Nephi"
+    },
+    {
+     "id": "o4",
+     "text": "The law of Moses"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 17: he remembered his father prophesying “concerning the coming of one Jesus Christ, a Son of God, to atone for the sins of the world.”",
+   "sourceIDs": [
+    "alma-36"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "alma-36",
+     "locator": "Alma 36:17"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m04-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m04:alma36-17",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m04-bank-q113",
+   "type": "multiple_choice",
+   "prompt": "What does Alma cry within his heart in Alma 36:18?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "“O Jesus, thou Son of God, have mercy on me”"
+    },
+    {
+     "id": "o2",
+     "text": "“Why hast thou forsaken me?”"
+    },
+    {
+     "id": "o3",
+     "text": "“I will never sin again”"
+    },
+    {
+     "id": "o4",
+     "text": "“Let me be banished”"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 18 gives his cry. Verse 15 records his earlier wish to be banished, before he remembered Christ.",
+   "sourceIDs": [
+    "alma-36"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "alma-36",
+     "locator": "Alma 36:15–18"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m04-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m04:alma36-18",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m04-bank-q114",
+   "type": "multiple_choice",
+   "prompt": "How does Alma describe what followed in Alma 36:20?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "Joy and marvelous light"
+    },
+    {
+     "id": "o2",
+     "text": "Silence and darkness"
+    },
+    {
+     "id": "o3",
+     "text": "Continued torment"
+    },
+    {
+     "id": "o4",
+     "text": "A long journey"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 20: “oh, what joy, and what marvelous light I did behold.”",
+   "sourceIDs": [
+    "alma-36"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "alma-36",
+     "locator": "Alma 36:20"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m04-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m04:alma36-20",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m04-bank-q115",
+   "type": "true_false",
+   "prompt": "In Alma 36:24, Alma says he has labored so that others might be born of God and filled with the Holy Ghost.",
+   "options": [
+    {
+     "id": "o1",
+     "text": "True"
+    },
+    {
+     "id": "o2",
+     "text": "False"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 24 says he labored “that they might also be born of God, and be filled with the Holy Ghost.”",
+   "sourceIDs": [
+    "alma-36"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "alma-36",
+     "locator": "Alma 36:24"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m04-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m04:alma36-24",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m04-bank-q116",
+   "type": "multiple_choice",
+   "prompt": "How should a careful student describe Alma 36?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "As Alma's account, told to his son, of his own repentance, which Latter-day Saints use to teach about repentance"
+    },
+    {
+     "id": "o2",
+     "text": "As a historian's report of a public event"
+    },
+    {
+     "id": "o3",
+     "text": "As a list of commandments"
+    },
+    {
+     "id": "o4",
+     "text": "As an account of Nephi's conversion"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "It is a first-person narrative of experience addressed to Helaman. Both that and its use in teaching are accurate, and they should be kept distinct.",
+   "sourceIDs": [
+    "alma-36",
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "alma-36",
+     "locator": "Alma 36"
+    },
+    {
+     "sourceID": "article",
+     "locator": "Repentance and joy: Alma 36"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m04-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m04:alma36-kind",
+   "difficulty": "application",
+   "perspective": "Original Hearken reading method grounded in the cited sources",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m04-bank-q117",
+   "type": "multiple_choice",
+   "prompt": "What does Alma say he thought he saw in Alma 36:22?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "God sitting upon his throne, surrounded by concourses of angels"
+    },
+    {
+     "id": "o2",
+     "text": "His father in a dream"
+    },
+    {
+     "id": "o3",
+     "text": "The tree of life"
+    },
+    {
+     "id": "o4",
+     "text": "The plates of brass"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 22: “methought I saw, even as our father Lehi saw, God sitting upon his throne, surrounded with numberless concourses of angels.”",
+   "sourceIDs": [
+    "alma-36"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "alma-36",
+     "locator": "Alma 36:22"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m04-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m04:alma36-22",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m04-bank-q118",
+   "type": "multiple_choice",
+   "prompt": "What caution does Doctrine and Covenants 130:23 give about receiving the Holy Ghost?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "The Holy Ghost may descend upon a person and not tarry with them"
+    },
+    {
+     "id": "o2",
+     "text": "The Holy Ghost can never be received"
+    },
+    {
+     "id": "o3",
+     "text": "The Holy Ghost only comes once"
+    },
+    {
+     "id": "o4",
+     "text": "The Holy Ghost has a body"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 23: “A man may receive the Holy Ghost, and it may descend upon him and not tarry with him.” Verse 22 says the Holy Ghost is a personage of Spirit.",
+   "sourceIDs": [
+    "dc-130-23",
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "dc-130-23",
+     "locator": "D&C 130:22–23"
+    },
+    {
+     "sourceID": "article",
+     "locator": "The gift of the Holy Ghost"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m04-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m04:dc130-23-caution",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m04-bank-q119",
+   "type": "multiple_choice",
+   "prompt": "How does Latter-day Saint teaching distinguish the gift of the Holy Ghost?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "It is given after baptism by the laying on of hands, distinct from the influence anyone may feel"
+    },
+    {
+     "id": "o2",
+     "text": "It is given at birth to everyone"
+    },
+    {
+     "id": "o3",
+     "text": "It is the same as reading scripture"
+    },
+    {
+     "id": "o4",
+     "text": "It is given only to apostles"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Latter-day Saint teaching describes the gift as conferred after baptism (Article of Faith 4), distinct from the Holy Ghost's influence, which anyone may feel.",
+   "sourceIDs": [
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "article",
+     "locator": "The gift of the Holy Ghost"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m04-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m04:influence-gift",
+   "difficulty": "introductory",
+   "perspective": "Original Hearken reading method grounded in the cited sources",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m04-bank-q120",
+   "type": "multiple_choice",
+   "prompt": "According to 2 Nephi 31:20, what does enduring to the end involve?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "Pressing forward with steadfastness in Christ, hope, love of God and all men, and feasting on the word"
+    },
+    {
+     "id": "o2",
+     "text": "Only avoiding sin"
+    },
+    {
+     "id": "o3",
+     "text": "Waiting without effort"
+    },
+    {
+     "id": "o4",
+     "text": "Being baptized again each year"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 20 gives enduring that content; it continues the same pattern as the rest of the doctrine of Christ.",
+   "sourceIDs": [
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "article",
+     "locator": "Enduring to the end"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m04-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m04:endure-content",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m04-bank-q121",
+   "type": "multiple_choice",
+   "prompt": "Moroni 7:16 says everything that invites to do good and persuades to believe in Christ is sent by the power and gift of Christ. What is that verse about?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "The Spirit of Christ given to every person, a principle for judging good from evil"
+    },
+    {
+     "id": "o2",
+     "text": "The gift of the Holy Ghost after baptism"
+    },
+    {
+     "id": "o3",
+     "text": "Angels appearing to prophets"
+    },
+    {
+     "id": "o4",
+     "text": "The priesthood"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 16 begins, “the Spirit of Christ is given to every man, that he may know good from evil.” Cite it as a related source, not as a description of the gift of the Holy Ghost.",
+   "sourceIDs": [
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "article",
+     "locator": "Moroni's promise"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m04-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m04:moroni7-16",
+   "difficulty": "application",
+   "perspective": "Original Hearken reading method grounded in the cited sources",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m04-bank-q122",
+   "type": "true_false",
+   "prompt": "This course assesses whether a learner has had a spiritual experience.",
+   "options": [
+    {
+     "id": "o1",
+     "text": "True"
+    },
+    {
+     "id": "o2",
+     "text": "False"
+    }
+   ],
+   "correctOptionID": "o2",
+   "explanation": "The course assesses whether you can describe what the sources teach about the Holy Ghost accurately; it never assesses personal experience or belief.",
+   "sourceIDs": [
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "article",
+     "locator": "After the gate"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m04-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m04:not-assessed",
+   "difficulty": "introductory",
+   "perspective": "Original Hearken reading method grounded in the cited sources",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m04-match-q101",
+   "type": "matching",
+   "title": "What the Holy Ghost does",
+   "prompt": "Match each description to the passage that gives it.",
+   "instructions": "Match each item on the left to exactly one answer on the right. Use every answer once.",
+   "leftItems": [
+    {
+     "id": "l1",
+     "text": "Teach you all things, and bring all things to your remembrance"
+    },
+    {
+     "id": "l2",
+     "text": "Show unto you all things what ye should do"
+    },
+    {
+     "id": "l3",
+     "text": "Manifest the truth of it unto you"
+    },
+    {
+     "id": "l4",
+     "text": "Beareth record of the Father and me"
+    }
+   ],
+   "rightItems": [
+    {
+     "id": "r2",
+     "text": "2 Nephi 32:5"
+    },
+    {
+     "id": "r3",
+     "text": "Moroni 10:4"
+    },
+    {
+     "id": "r4",
+     "text": "3 Nephi 11:32"
+    },
+    {
+     "id": "r1",
+     "text": "John 14:26"
+    }
+   ],
+   "correctPairs": [
+    {
+     "leftID": "l1",
+     "rightID": "r1"
+    },
+    {
+     "leftID": "l2",
+     "rightID": "r2"
+    },
+    {
+     "leftID": "l3",
+     "rightID": "r3"
+    },
+    {
+     "leftID": "l4",
+     "rightID": "r4"
+    }
+   ],
+   "explanation": "Each passage describes a different aspect of the Holy Ghost's work; citing the right one keeps a claim precise.",
+   "sourceIDs": [
+    "2ne32-moro10",
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne32-moro10",
+     "locator": "John 14:26; 2 Nephi 32:5; Moroni 10:4"
+    },
+    {
+     "sourceID": "article",
+     "locator": "Who the Holy Ghost is"
+    }
+   ],
+   "scoring": {
+    "maxPoints": 1,
+    "method": "all_pairs_correct",
+    "partialFeedback": true,
+    "awardAdditionalXP": false
+   },
+   "presentation": {
+    "shuffleLeftItems": true,
+    "shuffleRightItems": true,
+    "requireIndependentOrder": true,
+    "interactionModes": [
+     "tap_to_pair",
+     "drag_to_pair"
+    ],
+    "accessibility": "Every pair must be makeable by tapping a left item, then a right item; dragging is optional."
+   },
+   "overlapsWithQuestionIDs": [
+    "lds-doctrine-c02-m04-bank-q103",
+    "lds-doctrine-c02-m04-bank-q109"
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m04",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m04-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m04:hg-promises",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  }
+ ]
+}

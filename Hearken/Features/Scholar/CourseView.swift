@@ -73,8 +73,8 @@ private struct CourseContent: View {
                             Text("You'll be able to").font(.footnote.weight(.semibold)).foregroundStyle(.secondary)
                             ForEach(module.objectives, id: \.self) { objective in
                                 HStack(alignment: .firstTextBaseline, spacing: 8) {
-                                    Image(systemName: "checkmark")
-                                        .font(.footnote.weight(.bold))
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .font(.subheadline)
                                         .foregroundStyle(.tint)
                                         .accessibilityHidden(true)
                                     Text(objective).font(.subheadline)
@@ -111,7 +111,7 @@ private struct CourseContent: View {
                                     .foregroundStyle(.secondary)
                             }
                             Spacer()
-                            Text(status.checkpointPassed ? "Passed" : "+\(ScholarRules.checkpointXP) XP")
+                            Text(status.checkpointPassed ? "Passed" : "+\(checkpoint.xp) XP")
                                 .font(.footnote.weight(.semibold))
                                 .foregroundStyle(status.checkpointPassed ? Feedback.correct : .secondary)
                         }
@@ -170,6 +170,10 @@ private struct CourseContent: View {
                 Spacer(minLength: 4)
                 if done {
                     Image(systemName: "checkmark.circle.fill").foregroundStyle(Feedback.correct).font(.title3)
+                } else if unlocked && !progress.isUnlocked(item, in: course) {
+                    // A v2 module's steps open in order.
+                    Image(systemName: "lock.fill").font(.footnote).foregroundStyle(.tertiary)
+                        .accessibilityLabel("Opens after the step before it")
                 } else {
                     Text(paid ? "Earned" : "+\(item.xp)")
                         .font(.footnote.weight(.semibold))
@@ -202,7 +206,7 @@ private struct CourseContent: View {
     }
 
     private func checkpointDetail(_ checkpoint: PathAssessment, status: ScholarProgress.CourseStatus) -> String {
-        let shape = "\(checkpoint.questionCount) questions · \(checkpoint.passPercent)% to pass"
+        let shape = checkpoint.quiz.map { "\($0.questionCount) questions and an essay · \($0.passCount) to pass" } ?? "\(checkpoint.questionCount) questions · \(checkpoint.passPercent)% to pass"
         if status.checkpointPassed, let best = progress.best(checkpoint) { return "\(best.points)/\(best.maxPoints) · retake any time" }
         if !checkpoint.isReady { return "Questions coming soon · " + shape }
         if !status.requiredComplete { return shape + " · opens after \(status.requiredTotal - status.requiredDone) more required items" }

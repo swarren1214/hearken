@@ -1,0 +1,1462 @@
+{
+ "moduleID": "lds-doctrine-c01-m03",
+ "questions": [
+  {
+   "id": "lds-doctrine-c01-m02-bank-q001",
+   "revision": 1,
+   "type": "multiple_choice",
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m02:holy-ghost-spirit",
+   "difficulty": "introductory",
+   "prompt": "According to D&C 130:22, which description distinguishes the Holy Ghost from the Father and Son?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "The Holy Ghost is a personage of spirit"
+    },
+    {
+     "id": "o2",
+     "text": "The Holy Ghost has a body of flesh and bones"
+    },
+    {
+     "id": "o3",
+     "text": "The Holy Ghost is another name for the Father"
+    },
+    {
+     "id": "o4",
+     "text": "The Holy Ghost is not a member of the Godhead"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "The verse identifies the Holy Ghost as a personage of spirit and describes the Father and Son as embodied. The other descriptions contradict that distinction.",
+   "sourceIDs": [
+    "scripture-dc-testament.dc.130-22-23"
+   ],
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "practice",
+    "course_checkpoint"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "scripture-dc-testament.dc.130-22-23",
+     "locator": "D&C 130:22"
+    }
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m02-bank-q002",
+   "revision": 1,
+   "type": "multiple_choice",
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m02:unity-purpose",
+   "difficulty": "introductory",
+   "prompt": "How does the Church’s Godhead explanation describe the unity of Father, Son, and Holy Ghost?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "One person appearing in three roles"
+    },
+    {
+     "id": "o2",
+     "text": "United in purpose while distinct beings"
+    },
+    {
+     "id": "o3",
+     "text": "Three unrelated beings with separate purposes"
+    },
+    {
+     "id": "o4",
+     "text": "Three names for the same embodied individual"
+    }
+   ],
+   "correctOptionID": "o2",
+   "explanation": "The institutional explanation combines distinct beings with unity of purpose. It does not describe interchangeable roles or unrelated purposes.",
+   "sourceIDs": [
+    "godhead"
+   ],
+   "perspective": "Latter-day Saint institutional",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "practice",
+    "course_checkpoint"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "godhead",
+     "locator": "Overview: distinct beings, roles, purpose and doctrine"
+    }
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m02-bank-q003",
+   "revision": 1,
+   "type": "multiple_choice",
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m02:unity-purpose",
+   "difficulty": "application",
+   "prompt": "A reader says the LDS source’s phrase “one in purpose” means one person. Which evidence most directly tests that interpretation?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "The same source also calls the members distinct beings"
+    },
+    {
+     "id": "o2",
+     "text": "The source discusses all three members in one article"
+    },
+    {
+     "id": "o3",
+     "text": "The source refers to one plan of salvation"
+    },
+    {
+     "id": "o4",
+     "text": "The source uses the collective word Godhead"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "The explicit description of distinct beings tests the proposed identity of person. One article, one plan, and a collective label do not override that distinction.",
+   "sourceIDs": [
+    "godhead",
+    "lds-doctrine-c01-m02-original-lesson"
+   ],
+   "perspective": "Original Hearken reading method grounded in the cited sources",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "practice",
+    "course_checkpoint"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "godhead",
+     "locator": "Overview: distinct beings, roles, purpose and doctrine"
+    },
+    {
+     "sourceID": "lds-doctrine-c01-m02-original-lesson",
+     "locator": "Included module lesson"
+    }
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m02-bank-q005",
+   "revision": 1,
+   "type": "multiple_choice",
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m02:concept-5",
+   "difficulty": "introductory",
+   "prompt": "Which claim stays within what D&C 130:22 explicitly says about the Father and Son?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "Father and Son share one body of flesh and bones"
+    },
+    {
+     "id": "o2",
+     "text": "Father and Son each have a body of flesh and bones"
+    },
+    {
+     "id": "o3",
+     "text": "Father has a body of flesh and bones but Son is a personage of spirit"
+    },
+    {
+     "id": "o4",
+     "text": "Son has a body of flesh and bones but Father is a personage of spirit"
+    }
+   ],
+   "correctOptionID": "o2",
+   "explanation": "D&C 130:22 describes both Father and Son as embodied. It assigns the spirit-personage description to the Holy Ghost, rather than either Father or Son, and does not say they share one body.",
+   "sourceIDs": [
+    "scripture-dc-testament.dc.130-22-23"
+   ],
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "practice",
+    "course_checkpoint"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "scripture-dc-testament.dc.130-22-23",
+     "locator": "D&C 130:22"
+    }
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m02-bank-q007",
+   "revision": 1,
+   "type": "multiple_choice",
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m02:holy-spirit-role",
+   "difficulty": "introductory",
+   "prompt": "According to the LDS Godhead overview, which role is assigned to the Holy Spirit?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "The ultimate object of worship"
+    },
+    {
+     "id": "o2",
+     "text": "The Lord and Redeemer"
+    },
+    {
+     "id": "o3",
+     "text": "The messenger and revealer of the Father and Son"
+    },
+    {
+     "id": "o4",
+     "text": "The embodied Father of Jesus Christ"
+    }
+   ],
+   "correctOptionID": "o3",
+   "explanation": "The overview identifies the Holy Spirit as messenger and revealer. It describes the Father as the ultimate object of worship and the Son as Lord and Redeemer.",
+   "sourceIDs": [
+    "godhead"
+   ],
+   "perspective": "Latter-day Saint institutional",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "practice",
+    "course_checkpoint"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "godhead",
+     "locator": "Overview: distinct beings, roles, purpose and doctrine"
+    }
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m02-bank-q009",
+   "revision": 1,
+   "type": "true_false",
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m02",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m02:son-role",
+   "difficulty": "introductory",
+   "prompt": "The LDS Godhead overview describes the Son as Lord and Redeemer.",
+   "options": [
+    {
+     "id": "o1",
+     "text": "True"
+    },
+    {
+     "id": "o2",
+     "text": "False"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "The overview assigns this role to the Son while also distinguishing the roles of Father and Holy Spirit.",
+   "sourceIDs": [
+    "godhead"
+   ],
+   "perspective": "Latter-day Saint institutional",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "practice",
+    "course_checkpoint"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "godhead",
+     "locator": "Overview: distinct beings, roles, purpose and doctrine"
+    }
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m02-match-q001",
+   "revision": 1,
+   "type": "matching",
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m02",
+   "title": "Roles in the LDS Godhead overview",
+   "prompt": "Match the role descriptions to the member named in the Church’s Godhead overview. These are the source’s descriptions, not claims that other divine persons have no part in those activities.",
+   "instructions": "Match each statement on the left to exactly one answer on the right. Use every answer once.",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m02:godhead-roles",
+   "difficulty": "introductory",
+   "leftItems": [
+    {
+     "id": "l1",
+     "text": "The ultimate object of worship in the overview’s description"
+    },
+    {
+     "id": "l2",
+     "text": "Lord and Redeemer in the overview’s description"
+    },
+    {
+     "id": "l3",
+     "text": "Messenger and revealer of the Father and Son in the overview’s description"
+    }
+   ],
+   "rightItems": [
+    {
+     "id": "r2",
+     "text": "Jesus Christ"
+    },
+    {
+     "id": "r3",
+     "text": "Holy Spirit"
+    },
+    {
+     "id": "r1",
+     "text": "God the Father"
+    }
+   ],
+   "correctPairs": [
+    {
+     "leftID": "l1",
+     "rightID": "r1"
+    },
+    {
+     "leftID": "l2",
+     "rightID": "r2"
+    },
+    {
+     "leftID": "l3",
+     "rightID": "r3"
+    }
+   ],
+   "sourceIDs": [
+    "godhead"
+   ],
+   "explanation": "The LDS overview assigns these descriptions while affirming separate beings united in purpose and doctrine. The exercise assesses the source’s wording, not exclusive ownership of an activity.",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "practice",
+    "course_checkpoint"
+   ],
+   "scoring": {
+    "maxPoints": 1,
+    "method": "all_pairs_correct",
+    "partialFeedback": true,
+    "awardAdditionalXP": false
+   },
+   "perspective": "Latter-day Saint institutional",
+   "sourceLocators": [
+    {
+     "sourceID": "godhead",
+     "locator": "Overview: Father, Son, and Spirit roles"
+    }
+   ],
+   "presentation": {
+    "shuffleLeftItems": true,
+    "shuffleRightItems": true,
+    "requireIndependentOrder": true,
+    "interactionModes": [
+     "tap_to_pair",
+     "drag_to_pair"
+    ],
+    "accessibility": "Every pair must be selectable, announceable, changeable, and clearable without dragging."
+   },
+   "overlapsWithQuestionIDs": [
+    "lds-doctrine-c01-m02-bank-q007",
+    "lds-doctrine-c01-m02-bank-q009"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m03-bank-q101",
+   "type": "multiple_choice",
+   "prompt": "According to Doctrine and Covenants 130:22, why is the Holy Ghost a personage of Spirit rather than embodied?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "“Were it not so, the Holy Ghost could not dwell in us.”"
+    },
+    {
+     "id": "o2",
+     "text": "Because the Holy Ghost is not a member of the Godhead"
+    },
+    {
+     "id": "o3",
+     "text": "Because only the Father has a body"
+    },
+    {
+     "id": "o4",
+     "text": "The verse gives no reason"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 22 ends with its reason: “Were it not so, the Holy Ghost could not dwell in us.” It does not remove the Holy Ghost from the Godhead, and it says the Son also has a body.",
+   "sourceIDs": [
+    "dc-130"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "dc-130",
+     "locator": "D&C 130:22"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m03:dc130-reason",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m03-bank-q102",
+   "type": "true_false",
+   "prompt": "Doctrine and Covenants 130:23 says a person may receive the Holy Ghost, and it may descend upon them and not tarry.",
+   "options": [
+    {
+     "id": "o1",
+     "text": "True"
+    },
+    {
+     "id": "o2",
+     "text": "False"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 23: “A man may receive the Holy Ghost, and it may descend upon him and not tarry with him.”",
+   "sourceIDs": [
+    "dc-130"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "dc-130",
+     "locator": "D&C 130:23"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m03:dc130-tarry",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m03-bank-q103",
+   "type": "multiple_choice",
+   "prompt": "Section 130 collects items of instruction Joseph Smith gave at Ramus, Illinois, in 1843, on several subjects. What does that mean for citing it?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "Cite the specific verse that supports your claim, not the section as a whole"
+    },
+    {
+     "id": "o2",
+     "text": "None of it should be treated as canonical"
+    },
+    {
+     "id": "o3",
+     "text": "Every verse in it is about the Godhead"
+    },
+    {
+     "id": "o4",
+     "text": "It should be cited only alongside a conference talk"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "The section is canonical, but its verses address different subjects, so the precise verse is the right citation. It is not limited to the Godhead, and it needs no other source to be cited.",
+   "sourceIDs": [
+    "dc-130",
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "dc-130",
+     "locator": "D&C 130"
+    },
+    {
+     "sourceID": "article",
+     "locator": "Bodies and spirit: Doctrine and Covenants 130"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m03:dc130-setting",
+   "difficulty": "application",
+   "perspective": "Original Hearken reading method grounded in the cited sources",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m03-bank-q104",
+   "type": "multiple_choice",
+   "prompt": "According to Doctrine and Covenants 130:1, what shall we see when the Savior appears?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "That he is a man like ourselves"
+    },
+    {
+     "id": "o2",
+     "text": "That he is a spirit without form"
+    },
+    {
+     "id": "o3",
+     "text": "That he is the Father"
+    },
+    {
+     "id": "o4",
+     "text": "That he cannot be seen"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 1: “we shall see that he is a man like ourselves.” The other options contradict the verse or say something it doesn't.",
+   "sourceIDs": [
+    "dc-130"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "dc-130",
+     "locator": "D&C 130:1"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m03:dc130-man",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m03-bank-q105",
+   "type": "multiple_choice",
+   "prompt": "A writer claims Doctrine and Covenants 130:22 explains everything about the nature of God. Which response is most accurate?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "The verse states that the Father and Son have bodies and the Holy Ghost is a personage of Spirit; further detail is interpretation"
+    },
+    {
+     "id": "o2",
+     "text": "The verse says nothing about the Father"
+    },
+    {
+     "id": "o3",
+     "text": "The verse is not canonical"
+    },
+    {
+     "id": "o4",
+     "text": "The verse describes the Father's body in detail"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 22 makes specific statements and leaves much open. Detailed claims beyond it should be marked as interpretation. It does speak of the Father, it is canonical, and it gives no detailed description.",
+   "sourceIDs": [
+    "dc-130",
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "dc-130",
+     "locator": "D&C 130:22"
+    },
+    {
+     "sourceID": "article",
+     "locator": "Bodies and spirit: Doctrine and Covenants 130"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m03:dc130-limit",
+   "difficulty": "application",
+   "perspective": "Original Hearken reading method grounded in the cited sources",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m03-bank-q106",
+   "type": "true_false",
+   "prompt": "Doctrine and Covenants 130:2 says the same sociality that exists among people here will exist there, coupled with eternal glory.",
+   "options": [
+    {
+     "id": "o1",
+     "text": "True"
+    },
+    {
+     "id": "o2",
+     "text": "False"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 2: “that same sociality which exists among us here will exist among us there, only it will be coupled with eternal glory.”",
+   "sourceIDs": [
+    "dc-130"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "dc-130",
+     "locator": "D&C 130:2"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m03:dc130-sociality",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m03-bank-q107",
+   "type": "multiple_choice",
+   "prompt": "In Matthew 3:16–17, what happens as Jesus comes up out of the water?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "The Spirit of God descends like a dove, and a voice from heaven speaks"
+    },
+    {
+     "id": "o2",
+     "text": "John the Baptist is also baptized"
+    },
+    {
+     "id": "o3",
+     "text": "Jesus is taken up into heaven"
+    },
+    {
+     "id": "o4",
+     "text": "A Personage of fire appears to the crowd"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verses 16–17 describe the heavens opening, the Spirit descending like a dove, and a voice saying, “This is my beloved Son.”",
+   "sourceIDs": [
+    "nt-scenes"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "nt-scenes",
+     "locator": "Matthew 3:16–17"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m03:matt3-scene",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m03-bank-q108",
+   "type": "multiple_choice",
+   "prompt": "In Acts 7:55–56, what does Stephen see?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "The glory of God, and Jesus standing on the right hand of God"
+    },
+    {
+     "id": "o2",
+     "text": "Jesus alone, seated on a throne"
+    },
+    {
+     "id": "o3",
+     "text": "The Holy Ghost in the form of a dove"
+    },
+    {
+     "id": "o4",
+     "text": "An angel holding a book"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 55 says Stephen “saw the glory of God, and Jesus standing on the right hand of God”; verse 56 repeats it.",
+   "sourceIDs": [
+    "nt-scenes"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "nt-scenes",
+     "locator": "Acts 7:55–56"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m03:acts7-vision",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m03-bank-q109",
+   "type": "multiple_choice",
+   "prompt": "In John 17:21–22, what does Jesus ask for his disciples?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "That they may be one, as he and the Father are one"
+    },
+    {
+     "id": "o2",
+     "text": "That they may become the Father"
+    },
+    {
+     "id": "o3",
+     "text": "That they may leave the world immediately"
+    },
+    {
+     "id": "o4",
+     "text": "That they may never be hated"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 21 asks “that they all may be one; as thou, Father, art in me, and I in thee,” and verse 22 “that they may be one, even as we are one.” Verse 15 says he does not ask that they be taken out of the world.",
+   "sourceIDs": [
+    "nt-scenes"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "nt-scenes",
+     "locator": "John 17:15, 21–22"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m03:john17-request",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m03-bank-q110",
+   "type": "multiple_choice",
+   "prompt": "How do Latter-day Saint sources use John 17:21–22?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "As evidence that the oneness of Father and Son is a unity distinct persons can share"
+    },
+    {
+     "id": "o2",
+     "text": "As proof that the disciples became one person"
+    },
+    {
+     "id": "o3",
+     "text": "As a passage Latter-day Saints reject"
+    },
+    {
+     "id": "o4",
+     "text": "As evidence that Jesus prayed to himself"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "The argument runs: Jesus asks that his distinct disciples be one as he and the Father are one, so the oneness is one that distinct persons can share. The other options misstate the argument.",
+   "sourceIDs": [
+    "nt-scenes",
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "nt-scenes",
+     "locator": "John 17:21–22"
+    },
+    {
+     "sourceID": "article",
+     "locator": "What \"one\" means in Latter-day Saint sources"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m03:john17-argument",
+   "difficulty": "application",
+   "perspective": "Original Hearken reading method grounded in the cited sources",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m03-bank-q111",
+   "type": "true_false",
+   "prompt": "Other Christian traditions also read John 17, within their own teaching about God, without drawing the Latter-day Saint conclusion.",
+   "options": [
+    {
+     "id": "o1",
+     "text": "True"
+    },
+    {
+     "id": "o2",
+     "text": "False"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "The Latter-day Saint reading of John 17 is an interpretation. Other traditions read the same passage within their own understanding of God.",
+   "sourceIDs": [
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "article",
+     "locator": "What \"one\" means in Latter-day Saint sources"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m03:john17-other-readings",
+   "difficulty": "introductory",
+   "perspective": "Original Hearken reading method grounded in the cited sources",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m03-bank-q112",
+   "type": "multiple_choice",
+   "prompt": "Why do Latter-day Saint sources cite Matthew 3:13–17 when teaching about the Godhead?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "The Son, the Spirit and the Father's voice appear together in one scene"
+    },
+    {
+     "id": "o2",
+     "text": "It is the only passage that mentions the Holy Ghost"
+    },
+    {
+     "id": "o3",
+     "text": "It says the three are one person"
+    },
+    {
+     "id": "o4",
+     "text": "It describes the Father's body"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "In one scene, the Son stands in the river, the Spirit descends and the Father speaks; Latter-day Saints read that as showing three distinct beings. The passage doesn't make the other claims.",
+   "sourceIDs": [
+    "nt-scenes",
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "nt-scenes",
+     "locator": "Matthew 3:13–17"
+    },
+    {
+     "sourceID": "article",
+     "locator": "Distinct beings in the scriptures"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m03:matt3-why",
+   "difficulty": "introductory",
+   "perspective": "Original Hearken reading method grounded in the cited sources",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m03-bank-q113",
+   "type": "multiple_choice",
+   "prompt": "According to the Church's Godhead page, to whom do Latter-day Saints pray?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "To the Father, in the name of Jesus Christ"
+    },
+    {
+     "id": "o2",
+     "text": "To the Holy Ghost, in the name of the Father"
+    },
+    {
+     "id": "o3",
+     "text": "To Jesus Christ, in the name of the Father"
+    },
+    {
+     "id": "o4",
+     "text": "To the three members of the Godhead jointly"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "The page says Latter-day Saints pray to the Father in the name of Jesus Christ, consistent with 2 Nephi 32:9 and Christ's prayers to the Father in John 17.",
+   "sourceIDs": [
+    "godhead"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "godhead",
+     "locator": "Roles"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m03:gh-prayer",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint institutional",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m03-bank-q114",
+   "type": "true_false",
+   "prompt": "The Church's Godhead page says the Father and the Son have tangible bodies of flesh and bones.",
+   "options": [
+    {
+     "id": "o1",
+     "text": "True"
+    },
+    {
+     "id": "o2",
+     "text": "False"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "The page teaches this and cites Doctrine and Covenants 130:22.",
+   "sourceIDs": [
+    "godhead"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "godhead",
+     "locator": "Roles and bodies"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m03:gh-bodies",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint institutional",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m03-bank-q115",
+   "type": "multiple_choice",
+   "prompt": "Which scripture does the Godhead page cite for the belief in the Father, the Son and the Holy Ghost?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "Article of Faith 1:1"
+    },
+    {
+     "id": "o2",
+     "text": "Article of Faith 1:13"
+    },
+    {
+     "id": "o3",
+     "text": "Moses 1:39"
+    },
+    {
+     "id": "o4",
+     "text": "Doctrine and Covenants 1:38"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "The page cites Article of Faith 1:1. The other passages concern conduct, God's purpose and the Lord's word.",
+   "sourceIDs": [
+    "godhead"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "godhead",
+     "locator": "Scriptures cited"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m03:gh-aof",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint institutional",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m03-bank-q116",
+   "type": "multiple_choice",
+   "prompt": "In Latter-day Saint usage, what does “Godhead” mean?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "The Father, the Son and the Holy Ghost together"
+    },
+    {
+     "id": "o2",
+     "text": "A divine substance the three share"
+    },
+    {
+     "id": "o3",
+     "text": "The Father alone"
+    },
+    {
+     "id": "o4",
+     "text": "The Holy Ghost alone"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Latter-day Saints use “Godhead” for the three together. In this usage it does not name a shared divine substance.",
+   "sourceIDs": [
+    "article",
+    "godhead"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "article",
+     "locator": "Three named in one sentence"
+    },
+    {
+     "sourceID": "godhead",
+     "locator": "Definition"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m03:godhead-word",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint institutional",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m03-bank-q117",
+   "type": "multiple_choice",
+   "prompt": "Which passage uses “God” for the Father, the Son and the Holy Ghost together?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "2 Nephi 31:21"
+    },
+    {
+     "id": "o2",
+     "text": "Article of Faith 1"
+    },
+    {
+     "id": "o3",
+     "text": "Acts 7:55"
+    },
+    {
+     "id": "o4",
+     "text": "Matthew 3:17"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "2 Nephi 31:21 speaks of the doctrine “of the Father, and of the Son, and of the Holy Ghost, which is one God.” Article of Faith 1 and Acts 7:55 use “God” of the Father; Matthew 3:17 records the Father's voice.",
+   "sourceIDs": [
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "article",
+     "locator": "What \"one\" means in Latter-day Saint sources"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m03:god-whole",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m03-bank-q118",
+   "type": "true_false",
+   "prompt": "The roles on the Church's Godhead page mean the Father has no part in redemption.",
+   "options": [
+    {
+     "id": "o1",
+     "text": "True"
+    },
+    {
+     "id": "o2",
+     "text": "False"
+    }
+   ],
+   "correctOptionID": "o2",
+   "explanation": "The page describes how the sources usually speak of each member and says the three are perfectly united in the Father's plan; roles are not a strict division of labor.",
+   "sourceIDs": [
+    "godhead",
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "godhead",
+     "locator": "Roles"
+    },
+    {
+     "sourceID": "article",
+     "locator": "Roles: Father, Son and Holy Ghost"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m03:roles-not-division",
+   "difficulty": "introductory",
+   "perspective": "Original Hearken reading method grounded in the cited sources",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m03-bank-q119",
+   "type": "multiple_choice",
+   "prompt": "Which claim goes beyond the canonical and institutional sources in this module?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "A detailed description of exactly how the Holy Ghost dwells in a person"
+    },
+    {
+     "id": "o2",
+     "text": "The Father and the Son have bodies of flesh and bones"
+    },
+    {
+     "id": "o3",
+     "text": "The Father, Son and Holy Ghost are one in purpose"
+    },
+    {
+     "id": "o4",
+     "text": "The Holy Ghost is a personage of Spirit"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "The sources state the other three. They say little about how the Holy Ghost dwells in a person, so a detailed account of it is commentary or speculation.",
+   "sourceIDs": [
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "article",
+     "locator": "What the sources leave open"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m03:beyond-sources",
+   "difficulty": "application",
+   "perspective": "Original Hearken reading method grounded in the cited sources",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c01-m03-match-q101",
+   "type": "matching",
+   "title": "Who appears?",
+   "prompt": "Match each scene to what it describes.",
+   "instructions": "Match each item on the left to exactly one answer on the right. Use every answer once.",
+   "leftItems": [
+    {
+     "id": "l1",
+     "text": "Jesus's baptism (Matthew 3:16–17)"
+    },
+    {
+     "id": "l2",
+     "text": "Stephen's vision (Acts 7:55–56)"
+    },
+    {
+     "id": "l3",
+     "text": "Joseph Smith—History 1:17"
+    },
+    {
+     "id": "l4",
+     "text": "3 Nephi 11:7–8"
+    }
+   ],
+   "rightItems": [
+    {
+     "id": "r2",
+     "text": "The glory of God, and Jesus standing at his right hand"
+    },
+    {
+     "id": "r3",
+     "text": "Two Personages, one introducing the other"
+    },
+    {
+     "id": "r4",
+     "text": "A voice introducing the Son, who then descends"
+    },
+    {
+     "id": "r1",
+     "text": "The Son in the water, the Spirit like a dove, the Father's voice"
+    }
+   ],
+   "correctPairs": [
+    {
+     "leftID": "l1",
+     "rightID": "r1"
+    },
+    {
+     "leftID": "l2",
+     "rightID": "r2"
+    },
+    {
+     "leftID": "l3",
+     "rightID": "r3"
+    },
+    {
+     "leftID": "l4",
+     "rightID": "r4"
+    }
+   ],
+   "explanation": "Each scene is one Latter-day Saints cite for the distinctness of the Father, Son and Holy Ghost.",
+   "sourceIDs": [
+    "nt-scenes",
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "nt-scenes",
+     "locator": "Matthew 3; Acts 7"
+    },
+    {
+     "sourceID": "article",
+     "locator": "Distinct beings in the scriptures"
+    }
+   ],
+   "scoring": {
+    "maxPoints": 1,
+    "method": "all_pairs_correct",
+    "partialFeedback": true,
+    "awardAdditionalXP": false
+   },
+   "presentation": {
+    "shuffleLeftItems": true,
+    "shuffleRightItems": true,
+    "requireIndependentOrder": true,
+    "interactionModes": [
+     "tap_to_pair",
+     "drag_to_pair"
+    ],
+    "accessibility": "Every pair must be makeable by tapping a left item, then a right item; dragging is optional."
+   },
+   "overlapsWithQuestionIDs": [
+    "lds-doctrine-c01-m03-bank-q107",
+    "lds-doctrine-c01-m03-bank-q108",
+    "lds-doctrine-c01-m03-bank-q112"
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c01",
+   "moduleID": "lds-doctrine-c01-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c01-m02-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c01-m03:scenes",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  }
+ ]
+}

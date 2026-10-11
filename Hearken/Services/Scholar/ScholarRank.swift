@@ -19,7 +19,8 @@ enum ScholarRank: Int, CaseIterable, Identifiable, Comparable {
         }
     }
 
-    /// Cumulative subject XP needed.
+    /// The fixed thresholds of rules version 1. Version 2 computes each path's thresholds from
+    /// its required work (ScholarPathFile.xpThreshold(for:)); these remain the fallback.
     var xpThreshold: Int {
         switch self {
         case .novice: 0
@@ -35,12 +36,12 @@ enum ScholarRank: Int, CaseIterable, Identifiable, Comparable {
 
     var next: ScholarRank? { ScholarRank(rawValue: rawValue + 1) }
 
-    /// "1,500 XP and Stage 2", or "First completed learning item".
-    var requirement: String {
+    /// "1,500 XP and Stage 2", or "First completed learning item", for a given threshold.
+    func requirement(xp: Int) -> String {
         switch self {
         case .novice: "First completed learning item"
-        case .sage: "5,000 XP, Stage 4 and the capstone"
-        default: "\(xpThreshold.formatted()) XP and Stage \(requiredStages)"
+        case .sage: "\(xp.formatted()) XP, Stage 4 and the capstone"
+        default: "\(xp.formatted()) XP and Stage \(requiredStages)"
         }
     }
 

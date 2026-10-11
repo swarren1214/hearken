@@ -1,0 +1,1301 @@
+{
+ "moduleID": "lds-doctrine-c02-m03",
+ "questions": [
+  {
+   "id": "lds-doctrine-c02-m03-bank-q101",
+   "type": "multiple_choice",
+   "prompt": "What argument does Nephi make in 2 Nephi 31:5?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "If the holy Lamb of God needed baptism, how much more do the unholy"
+    },
+    {
+     "id": "o2",
+     "text": "Baptism is only for prophets"
+    },
+    {
+     "id": "o3",
+     "text": "The Lamb of God did not need to be baptized"
+    },
+    {
+     "id": "o4",
+     "text": "Baptism is optional for the faithful"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 5: “if the Lamb of God, he being holy, should have need to be baptized by water … how much more need have we, being unholy.”",
+   "sourceIDs": [
+    "2ne-31"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne-31",
+     "locator": "2 Nephi 31:5"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m03-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m03:2ne31-5",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m03-bank-q102",
+   "type": "multiple_choice",
+   "prompt": "According to 2 Nephi 31:7, what did Christ's baptism witness to the Father?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "That he would be obedient in keeping the Father's commandments"
+    },
+    {
+     "id": "o2",
+     "text": "That he needed forgiveness"
+    },
+    {
+     "id": "o3",
+     "text": "That he was the Father"
+    },
+    {
+     "id": "o4",
+     "text": "That baptism was no longer needed"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 7: he “witnesseth unto the Father that he would be obedient unto him in keeping his commandments.” Nephi stresses that Christ was holy.",
+   "sourceIDs": [
+    "2ne-31"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne-31",
+     "locator": "2 Nephi 31:7"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m03-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m03:2ne31-7",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m03-bank-q103",
+   "type": "multiple_choice",
+   "prompt": "What happened after Christ was baptized, according to 2 Nephi 31:8?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "The Holy Ghost descended upon him in the form of a dove"
+    },
+    {
+     "id": "o2",
+     "text": "He was taken into heaven"
+    },
+    {
+     "id": "o3",
+     "text": "John was baptized by him"
+    },
+    {
+     "id": "o4",
+     "text": "Nothing further"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 8: “the Holy Ghost descended upon him in the form of a dove,” matching Matthew 3:16.",
+   "sourceIDs": [
+    "2ne-31"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne-31",
+     "locator": "2 Nephi 31:8"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m03-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m03:2ne31-8",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m03-bank-q104",
+   "type": "multiple_choice",
+   "prompt": "What words of Christ does Nephi quote in 2 Nephi 31:10?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "“Follow thou me.”"
+    },
+    {
+     "id": "o2",
+     "text": "“This is my beloved Son.”"
+    },
+    {
+     "id": "o3",
+     "text": "“Endure to the end.”"
+    },
+    {
+     "id": "o4",
+     "text": "“Feast upon my words.”"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 10: “Follow thou me.” Nephi adds, “can we follow Jesus save we shall be willing to keep the commandments of the Father?”",
+   "sourceIDs": [
+    "2ne-31"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne-31",
+     "locator": "2 Nephi 31:10"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m03-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m03:2ne31-10",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m03-bank-q105",
+   "type": "multiple_choice",
+   "prompt": "In 2 Nephi 31:17, what is “the gate by which ye should enter”?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "Repentance and baptism by water"
+    },
+    {
+     "id": "o2",
+     "text": "Prayer and fasting"
+    },
+    {
+     "id": "o3",
+     "text": "Reading the scriptures"
+    },
+    {
+     "id": "o4",
+     "text": "Enduring to the end"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 17: “the gate by which ye should enter is repentance and baptism by water; and then cometh a remission of your sins by fire and by the Holy Ghost.”",
+   "sourceIDs": [
+    "2ne-31"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne-31",
+     "locator": "2 Nephi 31:17"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m03-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m03:2ne31-17",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m03-bank-q106",
+   "type": "multiple_choice",
+   "prompt": "Which phrase does 2 Nephi 31:13 use to describe how to follow the Son?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "With full purpose of heart, acting no hypocrisy and no deception, but with real intent"
+    },
+    {
+     "id": "o2",
+     "text": "With perfect knowledge"
+    },
+    {
+     "id": "o3",
+     "text": "Without any repentance"
+    },
+    {
+     "id": "o4",
+     "text": "Only after the Holy Ghost is received"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 13 sets those conditions, and connects them to repenting and taking the name of Christ by baptism.",
+   "sourceIDs": [
+    "2ne-31"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne-31",
+     "locator": "2 Nephi 31:13"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m03-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m03:2ne31-13",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m03-bank-q107",
+   "type": "true_false",
+   "prompt": "In 2 Nephi 31:19, Nephi says that all is done once a person has entered the gate.",
+   "options": [
+    {
+     "id": "o1",
+     "text": "True"
+    },
+    {
+     "id": "o2",
+     "text": "False"
+    }
+   ],
+   "correctOptionID": "o2",
+   "explanation": "Nephi asks, “I would ask if all is done?” and answers, “Nay.” Verse 20 describes pressing forward and enduring.",
+   "sourceIDs": [
+    "2ne-31"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne-31",
+     "locator": "2 Nephi 31:19–20"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m03-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m03:2ne31-19",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m03-bank-q108",
+   "type": "multiple_choice",
+   "prompt": "How does 2 Nephi 31:20 describe pressing forward?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "With steadfastness in Christ, a perfect brightness of hope, and a love of God and of all men"
+    },
+    {
+     "id": "o2",
+     "text": "With fear of failure"
+    },
+    {
+     "id": "o3",
+     "text": "By avoiding all other people"
+    },
+    {
+     "id": "o4",
+     "text": "By relying on one's own merits"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 20 names steadfastness, hope, love and feasting on the word. Verse 19 says to rely wholly on the merits of Christ, not one's own.",
+   "sourceIDs": [
+    "2ne-31"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne-31",
+     "locator": "2 Nephi 31:19–20"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m03-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m03:2ne31-20",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m03-bank-q109",
+   "type": "multiple_choice",
+   "prompt": "How does 2 Nephi 31:21 end its description of the doctrine of Christ?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "“…which is one God, without end.”"
+    },
+    {
+     "id": "o2",
+     "text": "“…which is three Gods.”"
+    },
+    {
+     "id": "o3",
+     "text": "“…which is the Father only.”"
+    },
+    {
+     "id": "o4",
+     "text": "“…which is not yet revealed.”"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 21 calls it “the only and true doctrine of the Father, and of the Son, and of the Holy Ghost, which is one God, without end.”",
+   "sourceIDs": [
+    "2ne-31"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne-31",
+     "locator": "2 Nephi 31:21"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m03-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m03:2ne31-21",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m03-bank-q110",
+   "type": "multiple_choice",
+   "prompt": "What does the Father's voice say in 2 Nephi 31:15?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "“He that endureth to the end, the same shall be saved.”"
+    },
+    {
+     "id": "o2",
+     "text": "“Repent ye, repent ye.”"
+    },
+    {
+     "id": "o3",
+     "text": "“Follow thou me.”"
+    },
+    {
+     "id": "o4",
+     "text": "“Hear ye him.”"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 15 records the Father's words about enduring. “Repent ye” is the Father's voice in verse 11; “Follow thou me” is the Son's in verse 10.",
+   "sourceIDs": [
+    "2ne-31"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne-31",
+     "locator": "2 Nephi 31:10–15"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m03-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m03:2ne31-15",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m03-bank-q111",
+   "type": "multiple_choice",
+   "prompt": "According to Mosiah 18:8–9, those ready for baptism are willing to do what?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "Bear one another's burdens, mourn with those that mourn, comfort those in need, and stand as witnesses of God"
+    },
+    {
+     "id": "o2",
+     "text": "Leave their families"
+    },
+    {
+     "id": "o3",
+     "text": "Give all their property to Alma"
+    },
+    {
+     "id": "o4",
+     "text": "Never speak of their faith"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verses 8–9 list these, “even until death.”",
+   "sourceIDs": [
+    "baptism-passages"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "baptism-passages",
+     "locator": "Mosiah 18:8–9"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m03-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m03:mosiah18-willing",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m03-bank-q112",
+   "type": "multiple_choice",
+   "prompt": "According to Mosiah 18:10, baptism is a witness of what?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "That they have entered into a covenant to serve God and keep his commandments"
+    },
+    {
+     "id": "o2",
+     "text": "That they have already been perfected"
+    },
+    {
+     "id": "o3",
+     "text": "That they have joined Alma's family"
+    },
+    {
+     "id": "o4",
+     "text": "That they have seen an angel"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 10: baptism is “a witness before him that ye have entered into a covenant with him, that ye will serve him and keep his commandments.”",
+   "sourceIDs": [
+    "baptism-passages"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "baptism-passages",
+     "locator": "Mosiah 18:10"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m03-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m03:mosiah18-witness",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m03-bank-q113",
+   "type": "multiple_choice",
+   "prompt": "What does Mosiah 18:10 say God will do for those who make this covenant?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "Pour out his Spirit more abundantly upon them"
+    },
+    {
+     "id": "o2",
+     "text": "Remove all their trials"
+    },
+    {
+     "id": "o3",
+     "text": "Give them wealth"
+    },
+    {
+     "id": "o4",
+     "text": "Show them the plates"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 10: “that he may pour out his Spirit more abundantly upon you.”",
+   "sourceIDs": [
+    "baptism-passages"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "baptism-passages",
+     "locator": "Mosiah 18:10"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m03-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m03:mosiah18-promise",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m03-bank-q114",
+   "type": "multiple_choice",
+   "prompt": "What does Peter tell his hearers in Acts 2:38?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "Repent, and be baptized in the name of Jesus Christ for the remission of sins, and receive the gift of the Holy Ghost"
+    },
+    {
+     "id": "o2",
+     "text": "Be baptized first, and repent later"
+    },
+    {
+     "id": "o3",
+     "text": "Pray without being baptized"
+    },
+    {
+     "id": "o4",
+     "text": "Wait for the apostles to return"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 38 gives that sequence. Latter-day Saints cite it alongside 2 Nephi 31.",
+   "sourceIDs": [
+    "baptism-passages"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "baptism-passages",
+     "locator": "Acts 2:38"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m03-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m03:acts2-38",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m03-bank-q115",
+   "type": "multiple_choice",
+   "prompt": "According to 3 Nephi 11:26, how is baptism performed?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "The person is immersed in the water and comes forth out of the water"
+    },
+    {
+     "id": "o2",
+     "text": "Water is sprinkled on the person"
+    },
+    {
+     "id": "o3",
+     "text": "Water is poured on the head"
+    },
+    {
+     "id": "o4",
+     "text": "The person washes their own hands"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 26: “then shall ye immerse them in the water, and come forth again out of the water.”",
+   "sourceIDs": [
+    "baptism-passages"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "baptism-passages",
+     "locator": "3 Nephi 11:26"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m03-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m03:3ne11-26",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m03-bank-q116",
+   "type": "true_false",
+   "prompt": "In 3 Nephi 11:21–22, Christ gives Nephi and others power to baptize.",
+   "options": [
+    {
+     "id": "o1",
+     "text": "True"
+    },
+    {
+     "id": "o2",
+     "text": "False"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Verse 21: “I give unto you power that ye shall baptize this people”; verse 22 extends it to others.",
+   "sourceIDs": [
+    "baptism-passages"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "baptism-passages",
+     "locator": "3 Nephi 11:21–22"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m03-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m03:3ne11-power",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m03-bank-q117",
+   "type": "multiple_choice",
+   "prompt": "Why do Latter-day Saints cite Acts 2:38 alongside 2 Nephi 31?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "Both present the same pattern: repentance, baptism and the gift of the Holy Ghost"
+    },
+    {
+     "id": "o2",
+     "text": "Acts 2 is quoted in 2 Nephi 31"
+    },
+    {
+     "id": "o3",
+     "text": "Both describe the baptism of Jesus"
+    },
+    {
+     "id": "o4",
+     "text": "Acts 2:38 corrects 2 Nephi 31"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "The two texts share the pattern; Latter-day Saints read that as the same doctrine in both books.",
+   "sourceIDs": [
+    "baptism-passages",
+    "2ne-31",
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "baptism-passages",
+     "locator": "Acts 2:38"
+    },
+    {
+     "sourceID": "2ne-31",
+     "locator": "2 Nephi 31:13, 17"
+    },
+    {
+     "sourceID": "article",
+     "locator": "Baptism: the gate"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m03-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m03:acts-parallel",
+   "difficulty": "application",
+   "perspective": "Original Hearken reading method grounded in the cited sources",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m03-bank-q118",
+   "type": "multiple_choice",
+   "prompt": "How does Article of Faith 4 describe baptism?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "Baptism by immersion for the remission of sins"
+    },
+    {
+     "id": "o2",
+     "text": "Baptism by sprinkling as a symbol"
+    },
+    {
+     "id": "o3",
+     "text": "Baptism for children at birth"
+    },
+    {
+     "id": "o4",
+     "text": "Baptism by the Holy Ghost only"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Article of Faith 4 names “Baptism by immersion for the remission of sins” as the third first principle and ordinance.",
+   "sourceIDs": [
+    "aof-4-5"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "aof-4-5",
+     "locator": "Article of Faith 4"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m03-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m03:aof4-mode",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m03-bank-q119",
+   "type": "multiple_choice",
+   "prompt": "According to Article of Faith 5, how must a person be called to administer the ordinances?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "Called of God, by prophecy, and by the laying on of hands by those in authority"
+    },
+    {
+     "id": "o2",
+     "text": "Chosen by the congregation"
+    },
+    {
+     "id": "o3",
+     "text": "Self-appointed after study"
+    },
+    {
+     "id": "o4",
+     "text": "Called by a family member"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Article of Faith 5 states the principle; 3 Nephi 11:21–25 ties baptism to authority given by Christ.",
+   "sourceIDs": [
+    "aof-4-5",
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "aof-4-5",
+     "locator": "Article of Faith 5"
+    },
+    {
+     "sourceID": "article",
+     "locator": "How baptism is performed"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m03-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m03:aof5-authority",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m03-bank-q120",
+   "type": "multiple_choice",
+   "prompt": "In 2 Nephi 31–32 and 3 Nephi 11, what does “the doctrine of Christ” name?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "A pattern: faith in Christ, repentance, baptism, the Holy Ghost, and enduring to the end"
+    },
+    {
+     "id": "o2",
+     "text": "All of Christian teaching"
+    },
+    {
+     "id": "o3",
+     "text": "The doctrine of the Godhead only"
+    },
+    {
+     "id": "o4",
+     "text": "A list of commandments about the Sabbath"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "In these chapters the phrase names a particular pattern for coming to Christ, not every Christian teaching.",
+   "sourceIDs": [
+    "2ne-31",
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne-31",
+     "locator": "2 Nephi 31:2, 21"
+    },
+    {
+     "sourceID": "article",
+     "locator": "The doctrine of Christ"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m03-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m03:doctrine-of-christ",
+   "difficulty": "introductory",
+   "perspective": "Original Hearken reading method grounded in the cited sources",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m03-bank-q121",
+   "type": "true_false",
+   "prompt": "In Latter-day Saint practice, the gift of the Holy Ghost is conferred by the laying on of hands after baptism.",
+   "options": [
+    {
+     "id": "o1",
+     "text": "True"
+    },
+    {
+     "id": "o2",
+     "text": "False"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "Article of Faith 4 lists laying on of hands for the gift of the Holy Ghost after baptism.",
+   "sourceIDs": [
+    "aof-4-5",
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "aof-4-5",
+     "locator": "Article of Faith 4"
+    },
+    {
+     "sourceID": "article",
+     "locator": "Baptism: the gate"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m03-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m03:gift-laying-on",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m03-bank-q122",
+   "type": "multiple_choice",
+   "prompt": "What does Nephi's image of a gate suggest about baptism?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "It is a beginning that opens onto a path"
+    },
+    {
+     "id": "o2",
+     "text": "It is the end of the journey"
+    },
+    {
+     "id": "o3",
+     "text": "It is optional"
+    },
+    {
+     "id": "o4",
+     "text": "It replaces repentance"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "A gate opens onto “this strait and narrow path which leads to eternal life” (verse 18); Nephi then asks whether all is done and says no.",
+   "sourceIDs": [
+    "2ne-31",
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne-31",
+     "locator": "2 Nephi 31:17–19"
+    },
+    {
+     "sourceID": "article",
+     "locator": "Baptism: the gate"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m03-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m03:gate-image",
+   "difficulty": "application",
+   "perspective": "Original Hearken reading method grounded in the cited sources",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m03-bank-q123",
+   "type": "multiple_choice",
+   "prompt": "Where does the phrase “to fulfil all righteousness,” used in 2 Nephi 31, first appear in the Bible?",
+   "options": [
+    {
+     "id": "o1",
+     "text": "Matthew 3:15, in Jesus's answer to John"
+    },
+    {
+     "id": "o2",
+     "text": "Acts 2:38"
+    },
+    {
+     "id": "o3",
+     "text": "John 17:21"
+    },
+    {
+     "id": "o4",
+     "text": "Acts 7:56"
+    }
+   ],
+   "correctOptionID": "o1",
+   "explanation": "In Matthew 3:15 Jesus says, “thus it becometh us to fulfil all righteousness.”",
+   "sourceIDs": [
+    "2ne-31",
+    "article"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "2ne-31",
+     "locator": "2 Nephi 31:5–6"
+    },
+    {
+     "sourceID": "article",
+     "locator": "Christ's own baptism"
+    }
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m03-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m03:fulfil-righteousness",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "reading_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  },
+  {
+   "id": "lds-doctrine-c02-m03-match-q101",
+   "type": "matching",
+   "title": "Terms of the covenant",
+   "prompt": "Match each promise to the passage that states it.",
+   "instructions": "Match each item on the left to exactly one answer on the right. Use every answer once.",
+   "leftItems": [
+    {
+     "id": "l1",
+     "text": "Bear one another's burdens"
+    },
+    {
+     "id": "l2",
+     "text": "Stand as witnesses of God at all times and in all things"
+    },
+    {
+     "id": "l3",
+     "text": "Take upon you the name of Christ"
+    },
+    {
+     "id": "l4",
+     "text": "God will pour out his Spirit more abundantly"
+    }
+   ],
+   "rightItems": [
+    {
+     "id": "r2",
+     "text": "Mosiah 18:9"
+    },
+    {
+     "id": "r3",
+     "text": "2 Nephi 31:13"
+    },
+    {
+     "id": "r4",
+     "text": "Mosiah 18:10"
+    },
+    {
+     "id": "r1",
+     "text": "Mosiah 18:8"
+    }
+   ],
+   "correctPairs": [
+    {
+     "leftID": "l1",
+     "rightID": "r1"
+    },
+    {
+     "leftID": "l2",
+     "rightID": "r2"
+    },
+    {
+     "leftID": "l3",
+     "rightID": "r3"
+    },
+    {
+     "leftID": "l4",
+     "rightID": "r4"
+    }
+   ],
+   "explanation": "Citing each term of the baptismal covenant to its verse keeps a description accurate.",
+   "sourceIDs": [
+    "baptism-passages",
+    "2ne-31"
+   ],
+   "sourceLocators": [
+    {
+     "sourceID": "baptism-passages",
+     "locator": "Mosiah 18:8–10"
+    },
+    {
+     "sourceID": "2ne-31",
+     "locator": "2 Nephi 31:13"
+    }
+   ],
+   "scoring": {
+    "maxPoints": 1,
+    "method": "all_pairs_correct",
+    "partialFeedback": true,
+    "awardAdditionalXP": false
+   },
+   "presentation": {
+    "shuffleLeftItems": true,
+    "shuffleRightItems": true,
+    "requireIndependentOrder": true,
+    "interactionModes": [
+     "tap_to_pair",
+     "drag_to_pair"
+    ],
+    "accessibility": "Every pair must be makeable by tapping a left item, then a right item; dragging is optional."
+   },
+   "overlapsWithQuestionIDs": [
+    "lds-doctrine-c02-m03-bank-q111",
+    "lds-doctrine-c02-m03-bank-q113"
+   ],
+   "revision": 1,
+   "subjectID": "lds-doctrine",
+   "courseID": "lds-doctrine-c02",
+   "moduleID": "lds-doctrine-c02-m03",
+   "objectiveIDs": [
+    "lds-doctrine-c02-m03-objective-01"
+   ],
+   "questionFamilyID": "lds-doctrine-c02-m03:covenant-terms",
+   "difficulty": "introductory",
+   "perspective": "Latter-day Saint canonical text",
+   "eligibleAssessmentTypes": [
+    "lesson_check",
+    "practice",
+    "course_checkpoint",
+    "stage_advancement"
+   ]
+  }
+ ]
+}

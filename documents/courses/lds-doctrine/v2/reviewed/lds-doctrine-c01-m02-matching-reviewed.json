@@ -1,0 +1,243 @@
+{
+  "schemaVersion": "1.1",
+  "contentVersion": 1,
+  "status": "reviewed_draft_not_integrated",
+  "subjectID": "lds-doctrine",
+  "courseID": "lds-doctrine-c01",
+  "moduleID": "lds-doctrine-c01-m02",
+  "objectives": [
+    {
+      "id": "lds-doctrine-c01-m02-objective-01",
+      "text": "Explain the LDS distinction between unity and identity."
+    },
+    {
+      "id": "lds-doctrine-c01-m02-objective-02",
+      "text": "Represent Nicene belief without caricature."
+    }
+  ],
+  "questions": [
+    {
+      "id": "lds-doctrine-c01-m02-match-q001",
+      "revision": 1,
+      "type": "matching",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m02",
+      "title": "Roles in the LDS Godhead overview",
+      "prompt": "Match the role descriptions to the member named in the Church’s Godhead overview. These are the source’s descriptions, not claims that other divine persons have no part in those activities.",
+      "instructions": "Match each statement on the left to exactly one answer on the right. Use every answer once.",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m02-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m02:godhead-roles",
+      "difficulty": "introductory",
+      "leftItems": [
+        {
+          "id": "l1",
+          "text": "The ultimate object of worship in the overview’s description"
+        },
+        {
+          "id": "l2",
+          "text": "Lord and Redeemer in the overview’s description"
+        },
+        {
+          "id": "l3",
+          "text": "Messenger and revealer of the Father and Son in the overview’s description"
+        }
+      ],
+      "rightItems": [
+        {
+          "id": "r2",
+          "text": "Jesus Christ"
+        },
+        {
+          "id": "r3",
+          "text": "Holy Spirit"
+        },
+        {
+          "id": "r1",
+          "text": "God the Father"
+        }
+      ],
+      "correctPairs": [
+        {
+          "leftID": "l1",
+          "rightID": "r1"
+        },
+        {
+          "leftID": "l2",
+          "rightID": "r2"
+        },
+        {
+          "leftID": "l3",
+          "rightID": "r3"
+        }
+      ],
+      "sourceIDs": [
+        "godhead"
+      ],
+      "explanation": "The LDS overview assigns these descriptions while affirming separate beings united in purpose and doctrine. The exercise assesses the source’s wording, not exclusive ownership of an activity.",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "practice",
+        "course_checkpoint"
+      ],
+      "scoring": {
+        "maxPoints": 1,
+        "method": "all_pairs_correct",
+        "partialFeedback": true,
+        "awardAdditionalXP": false
+      },
+      "perspective": "Latter-day Saint institutional",
+      "sourceLocators": [
+        {
+          "sourceID": "godhead",
+          "locator": "Overview: Father, Son, and Spirit roles"
+        }
+      ],
+      "presentation": {
+        "shuffleLeftItems": true,
+        "shuffleRightItems": true,
+        "requireIndependentOrder": true,
+        "interactionModes": [
+          "tap_to_pair",
+          "drag_to_pair"
+        ],
+        "accessibility": "Every pair must be selectable, announceable, changeable, and clearable without dragging."
+      },
+      "overlapsWithQuestionIDs": [
+        "lds-doctrine-c01-m02-bank-q007",
+        "lds-doctrine-c01-m02-bank-q009"
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m02-match-q002",
+      "revision": 1,
+      "type": "matching",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m02",
+      "title": "Catholic theological vocabulary",
+      "prompt": "Use Catechism §252 to match each explanation with its technical term.",
+      "instructions": "Match each statement on the left to exactly one answer on the right. Use every answer once.",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m02-objective-02"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m02:catholic-terminology",
+      "difficulty": "introductory",
+      "leftItems": [
+        {
+          "id": "l1",
+          "text": "The divine being considered in its unity"
+        },
+        {
+          "id": "l2",
+          "text": "The Father, Son, and Holy Spirit considered in their real distinction"
+        },
+        {
+          "id": "l3",
+          "text": "The relationships in which the persons’ distinction lies"
+        }
+      ],
+      "rightItems": [
+        {
+          "id": "r2",
+          "text": "Person (hypostasis)"
+        },
+        {
+          "id": "r3",
+          "text": "Relation"
+        },
+        {
+          "id": "r1",
+          "text": "Substance (essence or nature)"
+        }
+      ],
+      "correctPairs": [
+        {
+          "leftID": "l1",
+          "rightID": "r1"
+        },
+        {
+          "leftID": "l2",
+          "rightID": "r2"
+        },
+        {
+          "leftID": "l3",
+          "rightID": "r3"
+        }
+      ],
+      "sourceIDs": [
+        "catholic-trinity"
+      ],
+      "explanation": "These are the Catechism’s technical meanings. Person is not an interchangeable word for substance, and real distinction of persons does not mean three independent gods.",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "practice",
+        "course_checkpoint"
+      ],
+      "scoring": {
+        "maxPoints": 1,
+        "method": "all_pairs_correct",
+        "partialFeedback": true,
+        "awardAdditionalXP": false
+      },
+      "perspective": "Roman Catholic institutional",
+      "sourceLocators": [
+        {
+          "sourceID": "catholic-trinity",
+          "locator": "Catechism §§252–255 (technical terms in §252)"
+        }
+      ],
+      "presentation": {
+        "shuffleLeftItems": true,
+        "shuffleRightItems": true,
+        "requireIndependentOrder": true,
+        "interactionModes": [
+          "tap_to_pair",
+          "drag_to_pair"
+        ],
+        "accessibility": "Every pair must be selectable, announceable, changeable, and clearable without dragging."
+      },
+      "overlapsWithQuestionIDs": [
+        "lds-doctrine-c01-m02-bank-q004",
+        "lds-doctrine-c01-m02-bank-q006",
+        "lds-doctrine-c01-m02-bank-q008",
+        "lds-doctrine-c01-m02-bank-q010"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "godhead",
+      "title": "Godhead",
+      "url": "https://www.churchofjesuschrist.org/study/manual/gospel-topics/godhead?lang=eng",
+      "perspective": "Latter-day Saint institutional",
+      "rights": "link_only",
+      "editorialNote": "",
+      "verifiedDate": "2026-10-10",
+      "verificationMethod": "web_source_identity"
+    },
+    {
+      "id": "catholic-trinity",
+      "title": "Catechism of the Catholic Church, §§232–267",
+      "url": "https://www.vatican.va/archive/ENG0015/__P17.HTM",
+      "perspective": "Roman Catholic institutional",
+      "rights": "link_only",
+      "editorialNote": "",
+      "verifiedDate": "2026-10-10",
+      "verificationMethod": "web_source_identity"
+    }
+  ],
+  "review": {
+    "reviewerModels": [
+      "gpt-6-astra",
+      "gpt-6-sol"
+    ],
+    "reviewPaths": [
+      "reviews/matching-01-astra.md",
+      "reviews/matching-01-sol.md"
+    ],
+    "candidateSHA256": "82eb5feb6d736ef96e8c909a0e5808ad256524a9c9dbb91c43da7783ff18318d"
+  }
+}

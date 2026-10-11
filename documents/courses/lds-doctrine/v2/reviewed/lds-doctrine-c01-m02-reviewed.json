@@ -1,0 +1,567 @@
+{
+  "schemaVersion": "1.0",
+  "contentVersion": 1,
+  "status": "reviewed_draft_not_integrated",
+  "subjectID": "lds-doctrine",
+  "courseID": "lds-doctrine-c01",
+  "moduleID": "lds-doctrine-c01-m02",
+  "title": "The Godhead and the language of unity",
+  "objectives": [
+    {
+      "id": "lds-doctrine-c01-m02-objective-01",
+      "text": "Explain the LDS distinction between unity and identity."
+    },
+    {
+      "id": "lds-doctrine-c01-m02-objective-02",
+      "text": "Represent Nicene belief without caricature."
+    }
+  ],
+  "sources": [
+    {
+      "id": "godhead",
+      "title": "Godhead",
+      "url": "https://www.churchofjesuschrist.org/study/manual/gospel-topics/godhead?lang=eng",
+      "perspective": "Latter-day Saint institutional",
+      "rights": "link_only",
+      "editorialNote": "",
+      "verifiedDate": "2026-10-10",
+      "verificationMethod": "web_source_identity"
+    },
+    {
+      "id": "catholic-trinity",
+      "title": "Catechism of the Catholic Church, §§232–267",
+      "url": "https://www.vatican.va/archive/ENG0015/__P17.HTM",
+      "perspective": "Roman Catholic institutional",
+      "rights": "link_only",
+      "editorialNote": "",
+      "verifiedDate": "2026-10-10",
+      "verificationMethod": "web_source_identity"
+    },
+    {
+      "id": "scripture-dc-testament.dc.130-22-23",
+      "title": "Doctrine and Covenants 130:22–23",
+      "url": "https://www.churchofjesuschrist.org/study/scriptures/dc-testament/dc/130?lang=eng&id=p22-p23#p22",
+      "perspective": "Latter-day Saint canonical text",
+      "rights": "existing_app_text",
+      "editorialNote": "Use the app’s licensed/approved scripture edition. This curriculum does not independently clear the rights to that edition.",
+      "verifiedDate": "2026-10-10",
+      "verificationMethod": "local_scripture_locator_check"
+    },
+    {
+      "id": "lds-doctrine-c01-m02-original-lesson",
+      "title": "The Godhead and the language of unity",
+      "perspective": "Original Hearken teaching method",
+      "rights": "original_content",
+      "body": "Theological words are useful only when their meanings are made explicit. In Latter-day Saint teaching, Father, Son, and Holy Ghost are distinct, while their work and purpose are united. Read statements about their unity beside passages that distinguish them. Do not turn “one” into a single definition that must apply in every context. When comparing this teaching with Nicene Christianity, ask how each tradition uses person, being, substance, and unity. Nicene belief is not simply the idea that God changes masks; that description confuses the Trinity with modalism. A good first explanation stays close to its own sources and admits where ordinary analogies break down. Make a two-column glossary: what a source says, and the meaning you are assigning to its words.",
+      "verificationMethod": "included_original_lesson"
+    }
+  ],
+  "questions": [
+    {
+      "id": "lds-doctrine-c01-m02-bank-q001",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m02",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m02-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m02:holy-ghost-spirit",
+      "difficulty": "introductory",
+      "prompt": "According to D&C 130:22, which description distinguishes the Holy Ghost from the Father and Son?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "The Holy Ghost is a personage of spirit"
+        },
+        {
+          "id": "o2",
+          "text": "The Holy Ghost has a body of flesh and bones"
+        },
+        {
+          "id": "o3",
+          "text": "The Holy Ghost is another name for the Father"
+        },
+        {
+          "id": "o4",
+          "text": "The Holy Ghost is not a member of the Godhead"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "The verse identifies the Holy Ghost as a personage of spirit and describes the Father and Son as embodied. The other descriptions contradict that distinction.",
+      "sourceIDs": [
+        "scripture-dc-testament.dc.130-22-23"
+      ],
+      "perspective": "Latter-day Saint canonical text",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "practice",
+        "course_checkpoint"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "scripture-dc-testament.dc.130-22-23",
+          "locator": "D&C 130:22"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m02-bank-q002",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m02",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m02-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m02:unity-purpose",
+      "difficulty": "introductory",
+      "prompt": "How does the Church’s Godhead explanation describe the unity of Father, Son, and Holy Ghost?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "One person appearing in three roles"
+        },
+        {
+          "id": "o2",
+          "text": "United in purpose while distinct beings"
+        },
+        {
+          "id": "o3",
+          "text": "Three unrelated beings with separate purposes"
+        },
+        {
+          "id": "o4",
+          "text": "Three names for the same embodied individual"
+        }
+      ],
+      "correctOptionID": "o2",
+      "explanation": "The institutional explanation combines distinct beings with unity of purpose. It does not describe interchangeable roles or unrelated purposes.",
+      "sourceIDs": [
+        "godhead"
+      ],
+      "perspective": "Latter-day Saint institutional",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "practice",
+        "course_checkpoint"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "godhead",
+          "locator": "Overview: distinct beings, roles, purpose and doctrine"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m02-bank-q003",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m02",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m02-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m02:unity-purpose",
+      "difficulty": "application",
+      "prompt": "A reader says the LDS source’s phrase “one in purpose” means one person. Which evidence most directly tests that interpretation?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "The same source also calls the members distinct beings"
+        },
+        {
+          "id": "o2",
+          "text": "The source discusses all three members in one article"
+        },
+        {
+          "id": "o3",
+          "text": "The source refers to one plan of salvation"
+        },
+        {
+          "id": "o4",
+          "text": "The source uses the collective word Godhead"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "The explicit description of distinct beings tests the proposed identity of person. One article, one plan, and a collective label do not override that distinction.",
+      "sourceIDs": [
+        "godhead",
+        "lds-doctrine-c01-m02-original-lesson"
+      ],
+      "perspective": "Original Hearken reading method grounded in the cited sources",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "practice",
+        "course_checkpoint"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "godhead",
+          "locator": "Overview: distinct beings, roles, purpose and doctrine"
+        },
+        {
+          "sourceID": "lds-doctrine-c01-m02-original-lesson",
+          "locator": "Included module lesson"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m02-bank-q004",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m02",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m02-objective-02"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m02:nicene-persons",
+      "difficulty": "application",
+      "prompt": "According to the Catholic Catechism’s account of the Trinity, which summary is most accurate?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "One divine person changing between three roles"
+        },
+        {
+          "id": "o2",
+          "text": "Three independent gods cooperating"
+        },
+        {
+          "id": "o3",
+          "text": "Three distinct persons in one divine substance"
+        },
+        {
+          "id": "o4",
+          "text": "The Father alone is divine; Son and Spirit are creatures"
+        }
+      ],
+      "correctOptionID": "o3",
+      "explanation": "The Catechism distinguishes the persons while affirming one divine substance. The alternatives describe different positions, not its account of the Trinity.",
+      "sourceIDs": [
+        "catholic-trinity"
+      ],
+      "perspective": "Roman Catholic institutional",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "practice",
+        "course_checkpoint"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "catholic-trinity",
+          "locator": "Catechism §§252–254"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m02-bank-q005",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m02",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m02-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m02:concept-5",
+      "difficulty": "introductory",
+      "prompt": "Which claim stays within what D&C 130:22 explicitly says about the Father and Son?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "Father and Son share one body of flesh and bones"
+        },
+        {
+          "id": "o2",
+          "text": "Father and Son each have a body of flesh and bones"
+        },
+        {
+          "id": "o3",
+          "text": "Father has a body of flesh and bones but Son is a personage of spirit"
+        },
+        {
+          "id": "o4",
+          "text": "Son has a body of flesh and bones but Father is a personage of spirit"
+        }
+      ],
+      "correctOptionID": "o2",
+      "explanation": "D&C 130:22 describes both Father and Son as embodied. It assigns the spirit-personage description to the Holy Ghost, rather than either Father or Son, and does not say they share one body.",
+      "sourceIDs": [
+        "scripture-dc-testament.dc.130-22-23"
+      ],
+      "perspective": "Latter-day Saint canonical text",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "practice",
+        "course_checkpoint"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "scripture-dc-testament.dc.130-22-23",
+          "locator": "D&C 130:22"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m02-bank-q006",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m02",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m02-objective-02"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m02:concept-6",
+      "difficulty": "application",
+      "prompt": "You are comparing LDS and Catholic descriptions of God. Which glossary method is most responsible?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "Use the LDS meaning of “being” for both traditions"
+        },
+        {
+          "id": "o2",
+          "text": "Replace both traditions’ language with one analogy"
+        },
+        {
+          "id": "o3",
+          "text": "Treat “person” and “substance” as interchangeable words"
+        },
+        {
+          "id": "o4",
+          "text": "Record how each source defines its terms before comparing them"
+        }
+      ],
+      "correctOptionID": "o4",
+      "explanation": "A comparison must preserve each tradition’s terminology. Importing one definition, relying on an analogy, or equating distinct terms can misrepresent either position.",
+      "sourceIDs": [
+        "godhead",
+        "catholic-trinity",
+        "lds-doctrine-c01-m02-original-lesson"
+      ],
+      "perspective": "Original Hearken reading method grounded in the cited sources",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "practice",
+        "course_checkpoint"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "godhead",
+          "locator": "Overview: distinct beings, roles, purpose and doctrine"
+        },
+        {
+          "sourceID": "catholic-trinity",
+          "locator": "Catechism §§252–254"
+        },
+        {
+          "sourceID": "lds-doctrine-c01-m02-original-lesson",
+          "locator": "Included module lesson"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m02-bank-q007",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m02",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m02-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m02:holy-spirit-role",
+      "difficulty": "introductory",
+      "prompt": "According to the LDS Godhead overview, which role is assigned to the Holy Spirit?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "The ultimate object of worship"
+        },
+        {
+          "id": "o2",
+          "text": "The Lord and Redeemer"
+        },
+        {
+          "id": "o3",
+          "text": "The messenger and revealer of the Father and Son"
+        },
+        {
+          "id": "o4",
+          "text": "The embodied Father of Jesus Christ"
+        }
+      ],
+      "correctOptionID": "o3",
+      "explanation": "The overview identifies the Holy Spirit as messenger and revealer. It describes the Father as the ultimate object of worship and the Son as Lord and Redeemer.",
+      "sourceIDs": [
+        "godhead"
+      ],
+      "perspective": "Latter-day Saint institutional",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "practice",
+        "course_checkpoint"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "godhead",
+          "locator": "Overview: distinct beings, roles, purpose and doctrine"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m02-bank-q008",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m02",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m02-objective-02"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m02:comparison-vocabulary",
+      "difficulty": "introductory",
+      "prompt": "Which comparison accurately represents both assigned institutional sources?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "Both sources teach that the Father, Son, and Spirit are three names for one person"
+        },
+        {
+          "id": "o2",
+          "text": "The Catholic source teaches three independent gods; the LDS source teaches one person"
+        },
+        {
+          "id": "o3",
+          "text": "Both sources use “person” and “substance” as interchangeable words"
+        },
+        {
+          "id": "o4",
+          "text": "The LDS source describes separate beings; the Catholic source describes distinct persons in one divine substance"
+        }
+      ],
+      "correctOptionID": "o4",
+      "explanation": "The comparison preserves each source’s vocabulary. Neither source teaches interchangeable names for one person; the Catholic source rejects three gods and distinguishes person from substance.",
+      "sourceIDs": [
+        "godhead",
+        "catholic-trinity"
+      ],
+      "perspective": "Comparative Latter-day Saint and Roman Catholic institutional sources",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "practice",
+        "course_checkpoint"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "godhead",
+          "locator": "Overview: distinct beings, roles, purpose and doctrine"
+        },
+        {
+          "sourceID": "catholic-trinity",
+          "locator": "Catechism §§252–254"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m02-bank-q009",
+      "revision": 1,
+      "type": "true_false",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m02",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m02-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m02:son-role",
+      "difficulty": "introductory",
+      "prompt": "The LDS Godhead overview describes the Son as Lord and Redeemer.",
+      "options": [
+        {
+          "id": "o1",
+          "text": "True"
+        },
+        {
+          "id": "o2",
+          "text": "False"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "The overview assigns this role to the Son while also distinguishing the roles of Father and Holy Spirit.",
+      "sourceIDs": [
+        "godhead"
+      ],
+      "perspective": "Latter-day Saint institutional",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "practice",
+        "course_checkpoint"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "godhead",
+          "locator": "Overview: distinct beings, roles, purpose and doctrine"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m02-bank-q010",
+      "revision": 1,
+      "type": "true_false",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m02",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m02-objective-02"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m02:catholic-terminology",
+      "difficulty": "application",
+      "prompt": "The Catholic Catechism uses “person” to designate the divine being in its unity rather than the distinction of Father, Son, and Spirit.",
+      "options": [
+        {
+          "id": "o1",
+          "text": "True"
+        },
+        {
+          "id": "o2",
+          "text": "False"
+        }
+      ],
+      "correctOptionID": "o2",
+      "explanation": "Catechism §252 uses substance for divine being in unity and person for the real distinction of Father, Son, and Holy Spirit.",
+      "sourceIDs": [
+        "catholic-trinity"
+      ],
+      "perspective": "Roman Catholic institutional",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "practice",
+        "course_checkpoint"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "catholic-trinity",
+          "locator": "Catechism §§252–254"
+        }
+      ]
+    }
+  ],
+  "review": {
+    "reviewerModels": [
+      "gpt-6-astra",
+      "gpt-6-sol"
+    ],
+    "reviewPaths": [
+      "reviews/batch-01-astra.md",
+      "reviews/batch-01-sol.md"
+    ],
+    "candidateSHA256": "c52418bf55bfd93af33123c8e63389a4b8dcd0ad67b3930c84af365ed840726a",
+    "note": "Independent model audits followed by author corrections and revised-candidate checks; no claim of human scholarly certification."
+  }
+}

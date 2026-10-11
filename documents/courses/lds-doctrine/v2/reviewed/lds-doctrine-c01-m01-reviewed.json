@@ -1,0 +1,557 @@
+{
+  "schemaVersion": "1.0",
+  "contentVersion": 1,
+  "status": "reviewed_draft_not_integrated",
+  "subjectID": "lds-doctrine",
+  "courseID": "lds-doctrine-c01",
+  "moduleID": "lds-doctrine-c01-m01",
+  "title": "Sources, authority, and careful claims",
+  "objectives": [
+    {
+      "id": "lds-doctrine-c01-m01-objective-01",
+      "text": "Distinguish canon, institutional teaching, commentary, and historical evidence."
+    },
+    {
+      "id": "lds-doctrine-c01-m01-objective-02",
+      "text": "State a doctrinal claim with a source and a limit."
+    }
+  ],
+  "sources": [
+    {
+      "id": "authority",
+      "title": "Approaching Latter-day Saint Doctrine",
+      "url": "https://newsroom.churchofjesuschrist.org/article/approaching-mormon-doctrine",
+      "perspective": "Latter-day Saint institutional",
+      "rights": "link_only",
+      "editorialNote": "Institutional guidance on identifying doctrine; an interpretive guide, not a complete hierarchy of every statement.",
+      "verifiedDate": "2026-10-10",
+      "verificationMethod": "web_source_identity"
+    },
+    {
+      "id": "scripture-pgp.a-of-f.1-1-4",
+      "title": "Articles of Faith 1:1–4",
+      "url": "https://www.churchofjesuschrist.org/study/scriptures/pgp/a-of-f/1?lang=eng&id=p1-p4#p1",
+      "perspective": "Latter-day Saint canonical text",
+      "rights": "existing_app_text",
+      "editorialNote": "Use the app’s licensed/approved scripture edition. This curriculum does not independently clear the rights to that edition.",
+      "verifiedDate": "2026-10-10",
+      "verificationMethod": "local_scripture_locator_check"
+    },
+    {
+      "id": "lds-doctrine-c01-m01-original-lesson",
+      "title": "Sources, authority, and careful claims",
+      "perspective": "Original Hearken teaching method",
+      "rights": "original_content",
+      "body": "Studying doctrine begins with identifying the kind of claim being made. A passage can be canonical, a statement can represent current institutional teaching, and a book can offer useful commentary without all three having the same function. A historical record may tell us what someone taught at a particular time without settling what the Church teaches today. Keep four fields beside every note: claim, source, setting, and confidence. Ask whether your wording is broader than the evidence. “This passage teaches…” is often more defensible than “Every Latter-day Saint believes…”. This course assesses your ability to understand and explain teachings; it does not assess personal belief or religious worthiness. Start a source ledger now. You will revise it as new evidence changes how precisely you can express a claim.",
+      "verificationMethod": "included_original_lesson"
+    }
+  ],
+  "questions": [
+    {
+      "id": "lds-doctrine-c01-m01-bank-q001",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:standard-works",
+      "difficulty": "introductory",
+      "prompt": "Which collection consists of the four Latter-day Saint standard works?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "Bible, Book of Mormon, Doctrine and Covenants, Pearl of Great Price"
+        },
+        {
+          "id": "o2",
+          "text": "Bible, Book of Mormon, general conference addresses, Church History"
+        },
+        {
+          "id": "o3",
+          "text": "Old Testament, New Testament, Book of Mormon, Doctrine and Covenants"
+        },
+        {
+          "id": "o4",
+          "text": "Bible, Articles of Faith, Church Handbook, Pearl of Great Price"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "The institutional guide names these four works. Conference addresses and the handbook are not additional standard works; the Old and New Testaments belong to the Bible.",
+      "sourceIDs": [
+        "authority"
+      ],
+      "perspective": "Latter-day Saint institutional",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "practice",
+        "course_checkpoint"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "authority",
+          "locator": "Principles on isolated statements, context, standard works, and future change"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q002",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:concept-2",
+      "difficulty": "introductory",
+      "prompt": "A single author offers a new explanation in a devotional book, and you have not found institutional endorsement. How should you provisionally classify the explanation?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "Canonical text"
+        },
+        {
+          "id": "o2",
+          "text": "Official declaration"
+        },
+        {
+          "id": "o3",
+          "text": "Individual commentary"
+        },
+        {
+          "id": "o4",
+          "text": "Historical consensus"
+        }
+      ],
+      "correctOptionID": "o3",
+      "explanation": "A proposal in a devotional book is commentary. Canonical or institutional status requires additional evidence; popularity does not establish consensus.",
+      "sourceIDs": [
+        "authority"
+      ],
+      "perspective": "Latter-day Saint institutional",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "practice",
+        "course_checkpoint"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "authority",
+          "locator": "Principles on isolated statements, context, standard works, and future change"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q003",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-02"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:concept-3",
+      "difficulty": "application",
+      "prompt": "A diary records what a Church member taught in 1880. Which claim does that entry most directly support?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "The teaching is binding on members today"
+        },
+        {
+          "id": "o2",
+          "text": "The diarist reports this teaching in that setting"
+        },
+        {
+          "id": "o3",
+          "text": "The teaching was widely discussed in that ward"
+        },
+        {
+          "id": "o4",
+          "text": "The teaching was included in the standard works"
+        }
+      ],
+      "correctOptionID": "o2",
+      "explanation": "The entry directly establishes what the diarist reports. Broader claims about present authority, wider discussion, or canonization need further evidence.",
+      "sourceIDs": [
+        "authority",
+        "lds-doctrine-c01-m01-original-lesson"
+      ],
+      "perspective": "Original Hearken reading method grounded in the cited sources",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "practice",
+        "course_checkpoint"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "authority",
+          "locator": "Principles on isolated statements, context, standard works, and future change"
+        },
+        {
+          "sourceID": "lds-doctrine-c01-m01-original-lesson",
+          "locator": "Included module lesson"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q004",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:isolated-statement",
+      "difficulty": "introductory",
+      "prompt": "According to the Church’s guide to approaching doctrine, how should an isolated statement by a leader be treated?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "As binding whenever the speaker held a leadership office"
+        },
+        {
+          "id": "o2",
+          "text": "As sufficient if it appeared in print"
+        },
+        {
+          "id": "o3",
+          "text": "As doctrine if it has been widely quoted"
+        },
+        {
+          "id": "o4",
+          "text": "As a statement whose context and doctrinal standing need examination"
+        }
+      ],
+      "correctOptionID": "o4",
+      "explanation": "The guide cautions that a single statement on one occasion does not necessarily constitute binding doctrine. Office, publication, and circulation alone do not settle its status.",
+      "sourceIDs": [
+        "authority"
+      ],
+      "perspective": "Latter-day Saint institutional",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "practice",
+        "course_checkpoint"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "authority",
+          "locator": "Principles on isolated statements, context, standard works, and future change"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q005",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-02"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:concept-5",
+      "difficulty": "application",
+      "prompt": "Which revision best matches the evidence when your source is one institutional explanation?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "This explanation teaches the claim; it does not establish every member’s personal view."
+        },
+        {
+          "id": "o2",
+          "text": "Most members believe the claim because an institutional explanation exists."
+        },
+        {
+          "id": "o3",
+          "text": "This explanation establishes how the claim has always been taught."
+        },
+        {
+          "id": "o4",
+          "text": "This explanation is the only possible interpretation of the canonical texts."
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "Attribution limits the claim to the source consulted. The other answers infer member opinions, historical continuity, or exclusive interpretation without evidence.",
+      "sourceIDs": [
+        "authority",
+        "lds-doctrine-c01-m01-original-lesson"
+      ],
+      "perspective": "Original Hearken reading method grounded in the cited sources",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "practice",
+        "course_checkpoint"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "authority",
+          "locator": "Principles on isolated statements, context, standard works, and future change"
+        },
+        {
+          "sourceID": "lds-doctrine-c01-m01-original-lesson",
+          "locator": "Included module lesson"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q006",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:concept-6",
+      "difficulty": "introductory",
+      "prompt": "A note quotes Article of Faith 4’s list of first principles and ordinances. Which source category applies to the quoted passage?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "Historical diary"
+        },
+        {
+          "id": "o2",
+          "text": "Individual commentary"
+        },
+        {
+          "id": "o3",
+          "text": "Canonical text"
+        },
+        {
+          "id": "o4",
+          "text": "Institutional handbook"
+        }
+      ],
+      "correctOptionID": "o3",
+      "explanation": "The quoted passage belongs to the Articles of Faith in the Pearl of Great Price, a standard work. A reader’s explanation of it may be commentary, but the question asks about the passage itself.",
+      "sourceIDs": [
+        "scripture-pgp.a-of-f.1-1-4"
+      ],
+      "perspective": "Latter-day Saint canonical text",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "practice",
+        "course_checkpoint"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "scripture-pgp.a-of-f.1-1-4",
+          "locator": "Articles of Faith 1–4"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q007",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-02"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:concept-7",
+      "difficulty": "application",
+      "prompt": "An 1880 diary and a current institutional explanation use different wording about the same topic. Which source-ledger decision best preserves the available evidence?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "Mark the diary as describing the current teaching"
+        },
+        {
+          "id": "o2",
+          "text": "Record the date, setting, and claim of each source before explaining the difference"
+        },
+        {
+          "id": "o3",
+          "text": "Merge the two accounts into a single statement without dates"
+        },
+        {
+          "id": "o4",
+          "text": "Mark the current explanation as confirming every detail in the diary"
+        }
+      ],
+      "correctOptionID": "o2",
+      "explanation": "Separate dated records preserve the evidence for later comparison. The other options assume continuity or agreement without examining the actual claims.",
+      "sourceIDs": [
+        "authority",
+        "lds-doctrine-c01-m01-original-lesson"
+      ],
+      "perspective": "Original Hearken reading method grounded in the cited sources",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "practice",
+        "course_checkpoint"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "authority",
+          "locator": "Principles on isolated statements, context, standard works, and future change"
+        },
+        {
+          "sourceID": "lds-doctrine-c01-m01-original-lesson",
+          "locator": "Included module lesson"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q008",
+      "revision": 1,
+      "type": "multiple_choice",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-02"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:concept-8",
+      "difficulty": "introductory",
+      "prompt": "Which statement both attributes Article of Faith 2 accurately and stays within its claim?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "Article of Faith 2 explains every consequence of the Fall"
+        },
+        {
+          "id": "o2",
+          "text": "Article of Faith 2 establishes how every Christian tradition understands original sin"
+        },
+        {
+          "id": "o3",
+          "text": "Article of Faith 2 says human choices have no consequences"
+        },
+        {
+          "id": "o4",
+          "text": "Article of Faith 2 assigns punishment for personal sins rather than Adam’s transgression"
+        }
+      ],
+      "correctOptionID": "o4",
+      "explanation": "The fourth statement accurately attributes the article’s specific claim. The others extend it into an exhaustive account, a universal Christian position, or a denial of responsibility.",
+      "sourceIDs": [
+        "scripture-pgp.a-of-f.1-1-4"
+      ],
+      "perspective": "Latter-day Saint canonical text",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "practice",
+        "course_checkpoint"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "scripture-pgp.a-of-f.1-1-4",
+          "locator": "Articles of Faith 1–4"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q009",
+      "revision": 1,
+      "type": "true_false",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:future-change",
+      "difficulty": "introductory",
+      "prompt": "The Church’s guide to doctrine allows for future additions or changes to teachings or practices.",
+      "options": [
+        {
+          "id": "o1",
+          "text": "True"
+        },
+        {
+          "id": "o2",
+          "text": "False"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "The guide describes the Church’s teachings and practices as open to future revelation and change.",
+      "sourceIDs": [
+        "authority"
+      ],
+      "perspective": "Latter-day Saint institutional",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "practice",
+        "course_checkpoint"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "authority",
+          "locator": "Principles on isolated statements, context, standard works, and future change"
+        }
+      ]
+    },
+    {
+      "id": "lds-doctrine-c01-m01-bank-q010",
+      "revision": 1,
+      "type": "true_false",
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c01",
+      "moduleID": "lds-doctrine-c01-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c01-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c01-m01:quotation-status",
+      "difficulty": "introductory",
+      "prompt": "A devotional commentary becomes canonical simply because it quotes an Article of Faith.",
+      "options": [
+        {
+          "id": "o1",
+          "text": "True"
+        },
+        {
+          "id": "o2",
+          "text": "False"
+        }
+      ],
+      "correctOptionID": "o2",
+      "explanation": "The canonical status of a quoted passage does not automatically extend to the commentary quoting it.",
+      "sourceIDs": [
+        "authority",
+        "lds-doctrine-c01-m01-original-lesson"
+      ],
+      "perspective": "Original Hearken reading method grounded in the cited sources",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "practice",
+        "course_checkpoint"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "authority",
+          "locator": "Principles on isolated statements, context, standard works, and future change"
+        },
+        {
+          "sourceID": "lds-doctrine-c01-m01-original-lesson",
+          "locator": "Included module lesson"
+        }
+      ]
+    }
+  ],
+  "review": {
+    "reviewerModels": [
+      "gpt-6-astra",
+      "gpt-6-sol"
+    ],
+    "reviewPaths": [
+      "reviews/batch-01-astra.md",
+      "reviews/batch-01-sol.md"
+    ],
+    "candidateSHA256": "c52418bf55bfd93af33123c8e63389a4b8dcd0ad67b3930c84af365ed840726a",
+    "note": "Independent model audits followed by author corrections and revised-candidate checks; no claim of human scholarly certification."
+  }
+}

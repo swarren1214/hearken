@@ -1,8 +1,8 @@
 import SwiftData
 import SwiftUI
 
-/// The full-screen moment when a rank is earned: a glow blooms, the medal rises with a spring,
-/// a light band sweeps across its face, the emblem pops in, the rank dots appear one by one,
+/// The full-screen moment when a rank is earned: a glow blooms, the medal rises as a 3D coin
+/// spinning into place, the emblem pops in, the rank dots appear one by one,
 /// and motes drift up. Then the details and buttons fade in. Reduce Motion: a simple fade.
 struct BadgeUnlockView: View {
     let grant: RankGrant
@@ -13,7 +13,6 @@ struct BadgeUnlockView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var bloom = false
     @State private var risen = false
-    @State private var sweep: CGFloat = -1
     @State private var emblemIn = false
     @State private var dots = 0
     @State private var detailsIn = false
@@ -63,16 +62,10 @@ struct BadgeUnlockView: View {
     }
 
     private var medal: some View {
-        ScholarBadge(rank: rank, size: medalSize, emblemScale: emblemIn ? 1 : 0.35, emblemTurn: emblemIn ? 0 : -25, dotsShown: dots, raysTurn: raysTurn)
-            .overlay {
-                // The light band sweeping across the face.
-                LinearGradient(colors: [.clear, .white.opacity(0.5), .clear], startPoint: .leading, endPoint: .trailing)
-                    .frame(width: 70)
-                    .rotationEffect(.degrees(18))
-                    .offset(x: sweep * medalSize)
-                    .mask(Circle().padding(medalSize * 19 / 256))
-                    .allowsHitTesting(false)
-            }
+        // The coin spins into place as it rises, then idles (sway, a full turn now and then)
+        // once the details are in. Drag it to spin it.
+        ScholarCoin(rank: rank, size: medalSize, idles: detailsIn, introSpin: true,
+                    emblemScale: emblemIn ? 1 : 0.35, emblemTurn: emblemIn ? 0 : -25, dotsShown: dots, raysTurn: raysTurn)
             .scaleEffect(risen ? 1 : 0.68)
             .offset(y: risen ? 0 : 22)
             .opacity(risen ? 1 : 0)
@@ -154,14 +147,12 @@ struct BadgeUnlockView: View {
                 dots = rank.rawValue
                 detailsIn = true
             }
-            sweep = 2
             return
         }
         withAnimation(.easeOut(duration: 1.4)) { bloom = true }
         try? await Task.sleep(for: .milliseconds(150))
         withAnimation(.spring(response: 0.75, dampingFraction: 0.62)) { risen = true }
         try? await Task.sleep(for: .milliseconds(450))
-        withAnimation(.easeInOut(duration: 1.0)) { sweep = 1.2 }
         try? await Task.sleep(for: .milliseconds(150))
         withAnimation(.spring(response: 0.6, dampingFraction: 0.55)) { emblemIn = true }
         try? await Task.sleep(for: .milliseconds(450))

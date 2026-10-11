@@ -1,0 +1,1448 @@
+{
+  "schemaVersion": "1.1",
+  "contentVersion": 1,
+  "status": "draft_pending_review",
+  "subjectID": "lds-doctrine",
+  "courseID": "lds-doctrine-c02",
+  "moduleID": "lds-doctrine-c02-m01",
+  "title": "The plan of salvation",
+  "objectives": [
+    {
+      "id": "lds-doctrine-c02-m01-objective-01",
+      "text": "Outline the plan of salvation from its canonical and institutional sources, distinguishing quotation from interpretation."
+    }
+  ],
+  "sources": [
+    {
+      "id": "article",
+      "title": "The plan of salvation (Hearken article)",
+      "perspective": "Original Hearken teaching method",
+      "rights": "original_content",
+      "verifiedDate": "2026-10-10",
+      "verificationMethod": "authored"
+    },
+    {
+      "id": "moses1-abr3",
+      "title": "Moses 1:30–39; Abraham 3:22–28",
+      "perspective": "Latter-day Saint canonical text",
+      "rights": "existing_app_text",
+      "verifiedDate": "2026-10-10",
+      "verificationMethod": "local_scripture_text_check",
+      "passage": {
+        "chapterID": "pgp.moses.1",
+        "from": 30,
+        "to": 39
+      }
+    },
+    {
+      "id": "plan-of-salvation",
+      "title": "Plan of Salvation (Gospel Topics)",
+      "perspective": "Latter-day Saint institutional",
+      "rights": "link_only",
+      "verifiedDate": "2026-10-10",
+      "verificationMethod": "web_fetch_read",
+      "url": "https://www.churchofjesuschrist.org/study/manual/gospel-topics/plan-of-salvation?lang=eng"
+    },
+    {
+      "id": "alma-42",
+      "title": "Alma 42",
+      "perspective": "Latter-day Saint canonical text",
+      "rights": "existing_app_text",
+      "verifiedDate": "2026-10-10",
+      "verificationMethod": "local_scripture_text_check",
+      "passage": {
+        "chapterID": "bofm.alma.42",
+        "from": 1,
+        "to": 31
+      }
+    },
+    {
+      "id": "authority",
+      "title": "Approaching Latter-day Saint Doctrine",
+      "url": "https://newsroom.churchofjesuschrist.org/article/approaching-mormon-doctrine",
+      "perspective": "Latter-day Saint institutional",
+      "rights": "link_only"
+    }
+  ],
+  "questions": [
+    {
+      "id": "lds-doctrine-c02-m01-bank-q101",
+      "type": "multiple_choice",
+      "prompt": "According to Moses 1:39, what is God's work and glory?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "To bring to pass the immortality and eternal life of man"
+        },
+        {
+          "id": "o2",
+          "text": "To create worlds without number"
+        },
+        {
+          "id": "o3",
+          "text": "To test only the faithful"
+        },
+        {
+          "id": "o4",
+          "text": "To reveal all things to Moses"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "Verse 39 names immortality and eternal life. Verse 33 mentions worlds without number, but as creation, not as God's stated work and glory; verse 35 says Moses is told only about this earth.",
+      "sourceIDs": [
+        "moses1-abr3"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "moses1-abr3",
+          "locator": "Moses 1:33–39"
+        }
+      ],
+      "revision": 1,
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c02",
+      "moduleID": "lds-doctrine-c02-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c02-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c02-m01:moses1-39",
+      "difficulty": "introductory",
+      "perspective": "Latter-day Saint canonical text",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ]
+    },
+    {
+      "id": "lds-doctrine-c02-m01-bank-q102",
+      "type": "multiple_choice",
+      "prompt": "When Moses asks why the creations exist (Moses 1:30), how does God first answer?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "He made them for his own purpose, and that wisdom remains in him"
+        },
+        {
+          "id": "o2",
+          "text": "He explains every reason in detail"
+        },
+        {
+          "id": "o3",
+          "text": "He refuses to speak with Moses"
+        },
+        {
+          "id": "o4",
+          "text": "He says Moses already knows the answer"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "Verse 31: “For mine own purpose have I made these things. Here is wisdom and it remaineth in me.” He then tells Moses some things, but not all.",
+      "sourceIDs": [
+        "moses1-abr3"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "moses1-abr3",
+          "locator": "Moses 1:31"
+        }
+      ],
+      "revision": 1,
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c02",
+      "moduleID": "lds-doctrine-c02-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c02-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c02-m01:moses1-31",
+      "difficulty": "introductory",
+      "perspective": "Latter-day Saint canonical text",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ]
+    },
+    {
+      "id": "lds-doctrine-c02-m01-bank-q103",
+      "type": "multiple_choice",
+      "prompt": "According to Moses 1:32–33, by whom did God create?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "By his Only Begotten Son"
+        },
+        {
+          "id": "o2",
+          "text": "By Moses"
+        },
+        {
+          "id": "o3",
+          "text": "By the angels"
+        },
+        {
+          "id": "o4",
+          "text": "By the Holy Ghost alone"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "Verse 33: “by the Son I created them, which is mine Only Begotten.”",
+      "sourceIDs": [
+        "moses1-abr3"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "moses1-abr3",
+          "locator": "Moses 1:32–33"
+        }
+      ],
+      "revision": 1,
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c02",
+      "moduleID": "lds-doctrine-c02-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c02-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c02-m01:moses1-son",
+      "difficulty": "introductory",
+      "perspective": "Latter-day Saint canonical text",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ]
+    },
+    {
+      "id": "lds-doctrine-c02-m01-bank-q104",
+      "type": "true_false",
+      "prompt": "In Moses 1:35, God says he will give Moses only an account of this earth and its inhabitants.",
+      "options": [
+        {
+          "id": "o1",
+          "text": "True"
+        },
+        {
+          "id": "o2",
+          "text": "False"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "Verse 35: “only an account of this earth, and the inhabitants thereof, give I unto you.”",
+      "sourceIDs": [
+        "moses1-abr3"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "moses1-abr3",
+          "locator": "Moses 1:35"
+        }
+      ],
+      "revision": 1,
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c02",
+      "moduleID": "lds-doctrine-c02-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c02-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c02-m01:moses1-35",
+      "difficulty": "introductory",
+      "perspective": "Latter-day Saint canonical text",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ]
+    },
+    {
+      "id": "lds-doctrine-c02-m01-bank-q105",
+      "type": "multiple_choice",
+      "prompt": "What was Abraham shown in Abraham 3:22?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "The intelligences that were organized before the world was"
+        },
+        {
+          "id": "o2",
+          "text": "The location of the Garden of Eden"
+        },
+        {
+          "id": "o3",
+          "text": "The final judgment"
+        },
+        {
+          "id": "o4",
+          "text": "The building of a temple"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "Verse 22: “the intelligences that were organized before the world was; and among all these there were many of the noble and great ones.”",
+      "sourceIDs": [
+        "moses1-abr3"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "moses1-abr3",
+          "locator": "Abraham 3:22"
+        }
+      ],
+      "revision": 1,
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c02",
+      "moduleID": "lds-doctrine-c02-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c02-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c02-m01:abr3-22",
+      "difficulty": "introductory",
+      "perspective": "Latter-day Saint canonical text",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ]
+    },
+    {
+      "id": "lds-doctrine-c02-m01-bank-q106",
+      "type": "multiple_choice",
+      "prompt": "According to Abraham 3:25, what was the earth for?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "To prove them, to see if they would do all things the Lord commanded"
+        },
+        {
+          "id": "o2",
+          "text": "To give the noble and great ones a reward"
+        },
+        {
+          "id": "o3",
+          "text": "To keep the spirits away from God"
+        },
+        {
+          "id": "o4",
+          "text": "To end the premortal council"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "Verse 25: “we will prove them herewith, to see if they will do all things whatsoever the Lord their God shall command them.”",
+      "sourceIDs": [
+        "moses1-abr3"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "moses1-abr3",
+          "locator": "Abraham 3:25"
+        }
+      ],
+      "revision": 1,
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c02",
+      "moduleID": "lds-doctrine-c02-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c02-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c02-m01:abr3-25",
+      "difficulty": "introductory",
+      "perspective": "Latter-day Saint canonical text",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ]
+    },
+    {
+      "id": "lds-doctrine-c02-m01-bank-q107",
+      "type": "multiple_choice",
+      "prompt": "According to Abraham 3:26, what will those who keep their second estate receive?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "Glory added upon their heads for ever and ever"
+        },
+        {
+          "id": "o2",
+          "text": "To be added upon"
+        },
+        {
+          "id": "o3",
+          "text": "A place in the same kingdom as those who did not"
+        },
+        {
+          "id": "o4",
+          "text": "Nothing further"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "Verse 26 says those who keep their first estate “shall be added upon,” and those who keep their second estate “shall have glory added upon their heads for ever and ever.”",
+      "sourceIDs": [
+        "moses1-abr3"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "moses1-abr3",
+          "locator": "Abraham 3:26"
+        }
+      ],
+      "revision": 1,
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c02",
+      "moduleID": "lds-doctrine-c02-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c02-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c02-m01:abr3-26",
+      "difficulty": "introductory",
+      "perspective": "Latter-day Saint canonical text",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ]
+    },
+    {
+      "id": "lds-doctrine-c02-m01-bank-q108",
+      "type": "multiple_choice",
+      "prompt": "How does the council in Abraham 3:27–28 end?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "The Lord sends the first who answered; the second is angry, and many follow him"
+        },
+        {
+          "id": "o2",
+          "text": "Both volunteers are sent"
+        },
+        {
+          "id": "o3",
+          "text": "The Lord sends the second who answered"
+        },
+        {
+          "id": "o4",
+          "text": "No one answers the Lord's question"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "Verse 27: “I will send the first.” Verse 28: “the second was angry, and kept not his first estate; and, at that day, many followed after him.”",
+      "sourceIDs": [
+        "moses1-abr3"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "moses1-abr3",
+          "locator": "Abraham 3:27–28"
+        }
+      ],
+      "revision": 1,
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c02",
+      "moduleID": "lds-doctrine-c02-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c02-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c02-m01:abr3-27",
+      "difficulty": "introductory",
+      "perspective": "Latter-day Saint canonical text",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ]
+    },
+    {
+      "id": "lds-doctrine-c02-m01-bank-q109",
+      "type": "true_false",
+      "prompt": "Abraham 3:26 defines “first estate” as premortal life.",
+      "options": [
+        {
+          "id": "o1",
+          "text": "True"
+        },
+        {
+          "id": "o2",
+          "text": "False"
+        }
+      ],
+      "correctOptionID": "o2",
+      "explanation": "The verse uses the terms without defining them. Reading the first estate as premortal life is a widely taught interpretation, and should be attributed as one.",
+      "sourceIDs": [
+        "moses1-abr3",
+        "article"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "moses1-abr3",
+          "locator": "Abraham 3:26"
+        },
+        {
+          "sourceID": "article",
+          "locator": "Before this life: Abraham 3"
+        }
+      ],
+      "revision": 1,
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c02",
+      "moduleID": "lds-doctrine-c02-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c02-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c02-m01:abr3-define",
+      "difficulty": "introductory",
+      "perspective": "Original Hearken reading method grounded in the cited sources",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ]
+    },
+    {
+      "id": "lds-doctrine-c02-m01-bank-q110",
+      "type": "multiple_choice",
+      "prompt": "What does the Church's Plan of Salvation page say about life before birth?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "People lived with heavenly parents as their spirit children"
+        },
+        {
+          "id": "o2",
+          "text": "People did not exist before birth"
+        },
+        {
+          "id": "o3",
+          "text": "Only prophets existed before birth"
+        },
+        {
+          "id": "o4",
+          "text": "Spirits were created at the moment of birth"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "The page says that before birth people lived with heavenly parents as their spirit children.",
+      "sourceIDs": [
+        "plan-of-salvation"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "plan-of-salvation",
+          "locator": "Premortal life"
+        }
+      ],
+      "revision": 1,
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c02",
+      "moduleID": "lds-doctrine-c02-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c02-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c02-m01:pos-premortal",
+      "difficulty": "introductory",
+      "perspective": "Latter-day Saint institutional",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ]
+    },
+    {
+      "id": "lds-doctrine-c02-m01-bank-q111",
+      "type": "multiple_choice",
+      "prompt": "Which purposes of mortal life does the page name?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "Gaining a physical body and using agency"
+        },
+        {
+          "id": "o2",
+          "text": "Earning a place in the premortal council"
+        },
+        {
+          "id": "o3",
+          "text": "Avoiding every trial"
+        },
+        {
+          "id": "o4",
+          "text": "Learning the location of Eden"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "The page names gaining a physical body and agency, including choosing to repent and to receive ordinances.",
+      "sourceIDs": [
+        "plan-of-salvation"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "plan-of-salvation",
+          "locator": "Purposes of mortal life"
+        }
+      ],
+      "revision": 1,
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c02",
+      "moduleID": "lds-doctrine-c02-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c02-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c02-m01:pos-mortality",
+      "difficulty": "introductory",
+      "perspective": "Latter-day Saint institutional",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ]
+    },
+    {
+      "id": "lds-doctrine-c02-m01-bank-q112",
+      "type": "multiple_choice",
+      "prompt": "According to the page, why was the Atonement of Jesus Christ necessary?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "Because no unclean thing can dwell with God"
+        },
+        {
+          "id": "o2",
+          "text": "Because the premortal council failed"
+        },
+        {
+          "id": "o3",
+          "text": "Because the earth needed to be created"
+        },
+        {
+          "id": "o4",
+          "text": "Because agency had been destroyed"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "The page says the Atonement was necessary because nothing unclean can live with God, and that through it people can repent and return.",
+      "sourceIDs": [
+        "plan-of-salvation"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "plan-of-salvation",
+          "locator": "The Atonement"
+        }
+      ],
+      "revision": 1,
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c02",
+      "moduleID": "lds-doctrine-c02-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c02-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c02-m01:pos-atonement",
+      "difficulty": "introductory",
+      "perspective": "Latter-day Saint institutional",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ]
+    },
+    {
+      "id": "lds-doctrine-c02-m01-bank-q113",
+      "type": "true_false",
+      "prompt": "According to the page, death separates the spirit from the body, and the spirit continues to live.",
+      "options": [
+        {
+          "id": "o1",
+          "text": "True"
+        },
+        {
+          "id": "o2",
+          "text": "False"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "The page teaches that at death the spirit separates from the body and continues to live.",
+      "sourceIDs": [
+        "plan-of-salvation"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "plan-of-salvation",
+          "locator": "Death and the spirit world"
+        }
+      ],
+      "revision": 1,
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c02",
+      "moduleID": "lds-doctrine-c02-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c02-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c02-m01:pos-death",
+      "difficulty": "introductory",
+      "perspective": "Latter-day Saint institutional",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ]
+    },
+    {
+      "id": "lds-doctrine-c02-m01-bank-q114",
+      "type": "multiple_choice",
+      "prompt": "The page says a third of Heavenly Father's spirit children followed Lucifer. Where does that detail come from?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "The Church's page, which cites Revelation 12; Abraham 3:28 says only “many followed after him”"
+        },
+        {
+          "id": "o2",
+          "text": "Abraham 3:28, which gives the fraction"
+        },
+        {
+          "id": "o3",
+          "text": "Moses 1:39"
+        },
+        {
+          "id": "o4",
+          "text": "Alma 42:15"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "The fraction comes from the page and the passage it cites. Abraham 3:28 says “many,” so a careful claim attributes the detail to its own source.",
+      "sourceIDs": [
+        "plan-of-salvation",
+        "moses1-abr3",
+        "article"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "plan-of-salvation",
+          "locator": "Premortal life"
+        },
+        {
+          "sourceID": "moses1-abr3",
+          "locator": "Abraham 3:28"
+        },
+        {
+          "sourceID": "article",
+          "locator": "The council and agency: Moses 4"
+        }
+      ],
+      "revision": 1,
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c02",
+      "moduleID": "lds-doctrine-c02-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c02-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c02-m01:pos-third",
+      "difficulty": "application",
+      "perspective": "Original Hearken reading method grounded in the cited sources",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ]
+    },
+    {
+      "id": "lds-doctrine-c02-m01-bank-q115",
+      "type": "multiple_choice",
+      "prompt": "According to the page, by what are people judged at the final judgment?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "Their desires and their obedience to the commandments"
+        },
+        {
+          "id": "o2",
+          "text": "Their premortal choices only"
+        },
+        {
+          "id": "o3",
+          "text": "Their knowledge of scripture"
+        },
+        {
+          "id": "o4",
+          "text": "The number of ordinances they received"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "The page says God judges people according to their desires and obedience to the commandments.",
+      "sourceIDs": [
+        "plan-of-salvation"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "plan-of-salvation",
+          "locator": "Judgment"
+        }
+      ],
+      "revision": 1,
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c02",
+      "moduleID": "lds-doctrine-c02-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c02-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c02-m01:pos-judgment",
+      "difficulty": "introductory",
+      "perspective": "Latter-day Saint institutional",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ]
+    },
+    {
+      "id": "lds-doctrine-c02-m01-bank-q116",
+      "type": "multiple_choice",
+      "prompt": "According to Alma 42:25, can mercy rob justice?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "No, “not one whit”"
+        },
+        {
+          "id": "o2",
+          "text": "Yes, whenever a person repents"
+        },
+        {
+          "id": "o3",
+          "text": "Yes, at the final judgment"
+        },
+        {
+          "id": "o4",
+          "text": "The chapter doesn't say"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "Verse 25: “What, do ye suppose that mercy can rob justice? I say unto you, Nay; not one whit.”",
+      "sourceIDs": [
+        "alma-42"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "alma-42",
+          "locator": "Alma 42:25"
+        }
+      ],
+      "revision": 1,
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c02",
+      "moduleID": "lds-doctrine-c02-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c02-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c02-m01:alma42-justice",
+      "difficulty": "introductory",
+      "perspective": "Latter-day Saint canonical text",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ]
+    },
+    {
+      "id": "lds-doctrine-c02-m01-bank-q117",
+      "type": "multiple_choice",
+      "prompt": "According to Alma 42:15, why must an atonement be made?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "The plan of mercy could not be brought about without it"
+        },
+        {
+          "id": "o2",
+          "text": "To end the probationary state"
+        },
+        {
+          "id": "o3",
+          "text": "To replace the law"
+        },
+        {
+          "id": "o4",
+          "text": "To make justice unnecessary"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "Verse 15: “the plan of mercy could not be brought about except an atonement should be made; therefore God himself atoneth for the sins of the world.”",
+      "sourceIDs": [
+        "alma-42"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "alma-42",
+          "locator": "Alma 42:15"
+        }
+      ],
+      "revision": 1,
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c02",
+      "moduleID": "lds-doctrine-c02-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c02-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c02-m01:alma42-15",
+      "difficulty": "introductory",
+      "perspective": "Latter-day Saint canonical text",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ]
+    },
+    {
+      "id": "lds-doctrine-c02-m01-bank-q118",
+      "type": "multiple_choice",
+      "prompt": "How does Alma 42:4 describe the time granted to people?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "As a probationary time, a time to repent and serve God"
+        },
+        {
+          "id": "o2",
+          "text": "As a punishment for Adam's transgression"
+        },
+        {
+          "id": "o3",
+          "text": "As a reward for the premortal council"
+        },
+        {
+          "id": "o4",
+          "text": "As a time without law"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "Verse 4: “a probationary time, a time to repent and serve God.” Verse 10 also calls it “a preparatory state.”",
+      "sourceIDs": [
+        "alma-42"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "alma-42",
+          "locator": "Alma 42:4, 10"
+        }
+      ],
+      "revision": 1,
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c02",
+      "moduleID": "lds-doctrine-c02-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c02-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c02-m01:alma42-4",
+      "difficulty": "introductory",
+      "perspective": "Latter-day Saint canonical text",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ]
+    },
+    {
+      "id": "lds-doctrine-c02-m01-bank-q119",
+      "type": "true_false",
+      "prompt": "Alma 42:23 says the atonement brings to pass the resurrection, which brings people back into God's presence to be judged.",
+      "options": [
+        {
+          "id": "o1",
+          "text": "True"
+        },
+        {
+          "id": "o2",
+          "text": "False"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "Verse 23 links the atonement, the resurrection, the return to God's presence and judgment “according to their works.”",
+      "sourceIDs": [
+        "alma-42"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "alma-42",
+          "locator": "Alma 42:23"
+        }
+      ],
+      "revision": 1,
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c02",
+      "moduleID": "lds-doctrine-c02-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c02-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c02-m01:alma42-23",
+      "difficulty": "introductory",
+      "perspective": "Latter-day Saint canonical text",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ]
+    },
+    {
+      "id": "lds-doctrine-c02-m01-bank-q120",
+      "type": "multiple_choice",
+      "prompt": "What does Alma 42:27 say about those who will not come and partake of the waters of life?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "They are not compelled to come"
+        },
+        {
+          "id": "o2",
+          "text": "They are forced to come"
+        },
+        {
+          "id": "o3",
+          "text": "They are already saved"
+        },
+        {
+          "id": "o4",
+          "text": "They are not mentioned"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "Verse 27: “whosoever will come may come … and whosoever will not come the same is not compelled to come.”",
+      "sourceIDs": [
+        "alma-42"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "alma-42",
+          "locator": "Alma 42:27"
+        }
+      ],
+      "revision": 1,
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c02",
+      "moduleID": "lds-doctrine-c02-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c02-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c02-m01:alma42-27",
+      "difficulty": "introductory",
+      "perspective": "Latter-day Saint canonical text",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ]
+    },
+    {
+      "id": "lds-doctrine-c02-m01-bank-q121",
+      "type": "true_false",
+      "prompt": "In Alma 42, mercy works by setting justice aside.",
+      "options": [
+        {
+          "id": "o1",
+          "text": "True"
+        },
+        {
+          "id": "o2",
+          "text": "False"
+        }
+      ],
+      "correctOptionID": "o2",
+      "explanation": "Alma says mercy cannot rob justice (verse 25); mercy claims the penitent because of the atonement (verse 23), so both are satisfied.",
+      "sourceIDs": [
+        "alma-42",
+        "article"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "alma-42",
+          "locator": "Alma 42:23–25"
+        },
+        {
+          "sourceID": "article",
+          "locator": "Christ's Atonement at the center"
+        }
+      ],
+      "revision": 1,
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c02",
+      "moduleID": "lds-doctrine-c02-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c02-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c02-m01:alma42-suspend",
+      "difficulty": "introductory",
+      "perspective": "Latter-day Saint canonical text",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ]
+    },
+    {
+      "id": "lds-doctrine-c02-m01-bank-q122",
+      "type": "multiple_choice",
+      "prompt": "Which name for the plan does Alma 42:8 use?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "The great plan of happiness"
+        },
+        {
+          "id": "o2",
+          "text": "The plan of mercy"
+        },
+        {
+          "id": "o3",
+          "text": "The plan of redemption"
+        },
+        {
+          "id": "o4",
+          "text": "The great plan of salvation"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "Verse 8 says “great plan of happiness.” Alma uses the others in verses 15, 11 and 5.",
+      "sourceIDs": [
+        "alma-42"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "alma-42",
+          "locator": "Alma 42:5, 8, 11, 15"
+        }
+      ],
+      "revision": 1,
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c02",
+      "moduleID": "lds-doctrine-c02-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c02-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c02-m01:alma42-8",
+      "difficulty": "introductory",
+      "perspective": "Latter-day Saint canonical text",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ]
+    },
+    {
+      "id": "lds-doctrine-c02-m01-match-q101",
+      "type": "matching",
+      "title": "Names for the plan",
+      "prompt": "Match each name for the plan to the verse in Alma 42 that uses it.",
+      "instructions": "Match each item on the left to exactly one answer on the right. Use every answer once.",
+      "leftItems": [
+        {
+          "id": "l1",
+          "text": "The great plan of salvation"
+        },
+        {
+          "id": "l2",
+          "text": "The great plan of happiness"
+        },
+        {
+          "id": "l3",
+          "text": "The plan of redemption"
+        },
+        {
+          "id": "l4",
+          "text": "The plan of mercy"
+        }
+      ],
+      "rightItems": [
+        {
+          "id": "r2",
+          "text": "Alma 42:8"
+        },
+        {
+          "id": "r3",
+          "text": "Alma 42:11"
+        },
+        {
+          "id": "r4",
+          "text": "Alma 42:15"
+        },
+        {
+          "id": "r1",
+          "text": "Alma 42:5"
+        }
+      ],
+      "correctPairs": [
+        {
+          "leftID": "l1",
+          "rightID": "r1"
+        },
+        {
+          "leftID": "l2",
+          "rightID": "r2"
+        },
+        {
+          "leftID": "l3",
+          "rightID": "r3"
+        },
+        {
+          "leftID": "l4",
+          "rightID": "r4"
+        }
+      ],
+      "explanation": "Alma uses all four names in one chapter, each highlighting a different aspect of the same plan.",
+      "sourceIDs": [
+        "alma-42"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "alma-42",
+          "locator": "Alma 42:5, 8, 11, 15"
+        }
+      ],
+      "scoring": {
+        "maxPoints": 1,
+        "method": "all_pairs_correct",
+        "partialFeedback": true,
+        "awardAdditionalXP": false
+      },
+      "presentation": {
+        "shuffleLeftItems": true,
+        "shuffleRightItems": true,
+        "requireIndependentOrder": true,
+        "interactionModes": [
+          "tap_to_pair",
+          "drag_to_pair"
+        ],
+        "accessibility": "Every pair must be makeable by tapping a left item, then a right item; dragging is optional."
+      },
+      "overlapsWithQuestionIDs": [
+        "lds-doctrine-c02-m01-bank-q122"
+      ],
+      "revision": 1,
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c02",
+      "moduleID": "lds-doctrine-c02-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c02-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c02-m01:plan-names",
+      "difficulty": "introductory",
+      "perspective": "Latter-day Saint canonical text",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ]
+    },
+    {
+      "id": "lds-doctrine-c02-m01-bank-q123",
+      "type": "multiple_choice",
+      "prompt": "Which of these is a widely taught reading rather than a quotation?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "“The second estate is mortal life.”"
+        },
+        {
+          "id": "o2",
+          "text": "“This is my work and my glory” (Moses 1:39)"
+        },
+        {
+          "id": "o3",
+          "text": "“We will prove them herewith” (Abraham 3:25)"
+        },
+        {
+          "id": "o4",
+          "text": "“Mercy claimeth the penitent” (Alma 42:23)"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "The other three quote scripture. Identifying the second estate with mortal life is a common reading of Abraham 3:26, and belongs in notes labeled as interpretation.",
+      "sourceIDs": [
+        "moses1-abr3",
+        "article"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "moses1-abr3",
+          "locator": "Abraham 3:26"
+        },
+        {
+          "sourceID": "article",
+          "locator": "Keeping the outline honest"
+        }
+      ],
+      "revision": 1,
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c02",
+      "moduleID": "lds-doctrine-c02-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c02-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c02-m01:interpretation-label",
+      "difficulty": "application",
+      "perspective": "Original Hearken reading method grounded in the cited sources",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ]
+    },
+    {
+      "id": "lds-doctrine-c02-m01-bank-q124",
+      "type": "multiple_choice",
+      "prompt": "Moses 1:39 is a strong source for which claim?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "In Latter-day Saint scripture, God's work centers on human immortality and eternal life"
+        },
+        {
+          "id": "o2",
+          "text": "Detailed facts about other worlds"
+        },
+        {
+          "id": "o3",
+          "text": "The exact number of God's creations"
+        },
+        {
+          "id": "o4",
+          "text": "Everything about why God created"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "The passage states God's purpose and openly declines to give details about other worlds or all of God's reasons (verses 31, 35).",
+      "sourceIDs": [
+        "moses1-abr3",
+        "article"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "moses1-abr3",
+          "locator": "Moses 1:31–39"
+        },
+        {
+          "sourceID": "article",
+          "locator": "God's stated purpose: Moses 1:39"
+        }
+      ],
+      "revision": 1,
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c02",
+      "moduleID": "lds-doctrine-c02-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c02-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c02-m01:moses1-scope",
+      "difficulty": "application",
+      "perspective": "Original Hearken reading method grounded in the cited sources",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ]
+    },
+    {
+      "id": "lds-doctrine-c02-m01-bank-q125",
+      "type": "multiple_choice",
+      "prompt": "What does each passage contribute to the account of the premortal council?",
+      "options": [
+        {
+          "id": "o1",
+          "text": "Abraham 3 gives the setting, the purpose of proving the spirits and the two volunteers; Moses 4 names agency as the issue"
+        },
+        {
+          "id": "o2",
+          "text": "Abraham 3 names agency as the issue; Moses 4 gives the two volunteers only"
+        },
+        {
+          "id": "o3",
+          "text": "Both passages say exactly the same things"
+        },
+        {
+          "id": "o4",
+          "text": "Neither passage mentions the council"
+        }
+      ],
+      "correctOptionID": "o1",
+      "explanation": "Read side by side, the passages complement each other; a careful account cites the passage for each detail.",
+      "sourceIDs": [
+        "moses1-abr3",
+        "article"
+      ],
+      "sourceLocators": [
+        {
+          "sourceID": "moses1-abr3",
+          "locator": "Abraham 3:22–28"
+        },
+        {
+          "sourceID": "article",
+          "locator": "The council and agency: Moses 4"
+        }
+      ],
+      "revision": 1,
+      "subjectID": "lds-doctrine",
+      "courseID": "lds-doctrine-c02",
+      "moduleID": "lds-doctrine-c02-m01",
+      "objectiveIDs": [
+        "lds-doctrine-c02-m01-objective-01"
+      ],
+      "questionFamilyID": "lds-doctrine-c02-m01:council-sources",
+      "difficulty": "application",
+      "perspective": "Original Hearken reading method grounded in the cited sources",
+      "eligibleAssessmentTypes": [
+        "lesson_check",
+        "reading_check",
+        "practice",
+        "course_checkpoint",
+        "stage_advancement"
+      ]
+    }
+  ],
+  "review": {
+    "note": "Authored by Claude for Hearken's v2 course; scripture wording checked against the app's text and linked pages read in full. Needs Steve's review before shipping."
+  }
+}

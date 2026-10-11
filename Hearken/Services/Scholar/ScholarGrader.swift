@@ -26,6 +26,44 @@ struct ResponseReview {
     var feedback: String
 }
 
+@Generable
+struct CriterionScore {
+    @Guide(description: "The criterion's id, exactly as given")
+    var criterionID: String
+
+    @Guide(description: "0, 1 or 2, following that criterion's descriptions", .range(0...2))
+    var points: Int
+
+    @Guide(description: "The short phrase or sentence from the essay this score rests on, quoted exactly; empty if there is none")
+    var evidence: String
+}
+
+@Generable
+struct EssayScore {
+    @Guide(description: "One score for every rubric criterion, in the order given")
+    var criteria: [CriterionScore]
+
+    @Guide(description: "One concrete, kind suggestion for the next draft: the single change that would raise the score most. Never comment on the learner's beliefs.")
+    var suggestion: String
+}
+
+/// An essay's result: points per criterion, in rubric order.
+struct ScoredEssay: Codable, Hashable {
+    struct Criterion: Codable, Hashable {
+        let id: String
+        let points: Int
+        let evidence: String
+    }
+
+    let criteria: [Criterion]
+    let suggestion: String
+
+    var total: Int { criteria.reduce(0) { $0 + $1.points } }
+
+    /// Passing: the essay's points to pass, with no criterion at zero.
+    func passes(_ essay: PathEssay) -> Bool { total >= essay.pointsToPass && !criteria.contains { $0.points == 0 } }
+}
+
 /// A short answer's score.
 struct ScoredAnswer: Codable, Hashable {
     let points: Int
@@ -70,6 +108,32 @@ enum ScholarGrader {
         let response = try await session.respond(to: prompt, generating: ShortAnswerScore.self, options: GenerationOptions(temperature: 0))
         let content = response.content
         return ScoredAnswer(points: min(max(content.points, 0), PathQuestion.maxPoints), feedback: content.feedback)
+    }
+
+    /// Scores an essay against its rubric. `sources` is the text of the module's assigned
+    /// passages, so accuracy is judged against what they actually say. Throws when the model
+    /// can't respond.
+    static func score(essay: PathEssay, prompt: PathEssay.Prompt, text: String, sources: String) async throws -> ScoredEssay {
+        let session = LanguageModelSession(instructions: instructions)
+        let rubric = essay.rubric.map { "- id: \($0.id) (\($0.title)). 2 points: \($0.full). 1 point: \($0.partial). 0 points: \($0.none)." }.joined(separator: "\n")
+        var request = """
+        Essay prompt: \(prompt.prompt)
+
+        What a strong essay includes (answer guide): \(prompt.guide)
+
+        Rubric, one score per criterion:
+        \(rubric)
+        """
+        if !sources.isEmpty { request += "\n\nThe assigned sources, for checking accuracy:\n\(sources)" }
+        request += "\n\nLearner's essay:\n\(text)\n\nScore the essay on every criterion."
+        let response = try await session.respond(to: request, generating: EssayScore.self, options: GenerationOptions(temperature: 0))
+        let content = response.content
+        // Match scores to the rubric by id, falling back to order; a criterion the model left out scores 1.
+        let criteria = essay.rubric.enumerated().map { index, criterion in
+            let score = content.criteria.first { $0.criterionID == criterion.id } ?? (index < content.criteria.count ? content.criteria[index] : nil)
+            return ScoredEssay.Criterion(id: criterion.id, points: min(max(score?.points ?? 1, 0), 2), evidence: score?.evidence ?? "")
+        }
+        return ScoredEssay(criteria: criteria, suggestion: content.suggestion)
     }
 
     /// A light review of the written response that completes a learning item.
