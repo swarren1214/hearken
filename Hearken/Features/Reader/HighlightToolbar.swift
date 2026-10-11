@@ -119,9 +119,18 @@ struct HighlightToolbar: View {
                     copied = false
                 }
             }
-            Divider()
-            Button("Remove Highlight", systemImage: "trash", role: .destructive, action: onRemove)
-                .disabled(selectedHue == nil)
+            // Only for an existing highlight; a fresh selection has nothing to remove.
+            if selectedHue != nil {
+                Divider()
+                Button(role: .destructive, action: onRemove) {
+                    Label {
+                        Text("Remove Highlight")
+                    } icon: {
+                        // Drawn red itself: the menu's tint would otherwise color it like the others.
+                        Image(uiImage: UIImage(systemName: "trash")?.withTintColor(.systemRed, renderingMode: .alwaysOriginal) ?? UIImage())
+                    }
+                }
+            }
         } label: {
             Image(systemName: "ellipsis")
                 .font(.body.weight(.semibold))
@@ -131,6 +140,8 @@ struct HighlightToolbar: View {
                 .contentShape(Circle())
         }
         .menuOrder(.fixed)
+        // Menu icons match their text (the app's accent would turn them blue).
+        .tint(.primary)
         .accessibilityLabel("More actions")
     }
 

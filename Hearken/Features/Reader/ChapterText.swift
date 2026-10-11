@@ -716,12 +716,26 @@ struct ChapterTextView: UIViewRepresentable {
         /// included, in either direction.
         private func strokeRange(to index: Int, in text: NSString) -> NSRange? {
             guard let anchor else { return nil }
-            var lower = max(0, min(anchor, index))
+            var lower = Self.snappedToWordStart(max(0, min(anchor, index)), in: text)
             var upper = min(text.length, max(anchor, index) + 1)
             // Don't start or end on spaces or line breaks.
             while lower < upper, Self.isSpace(text.character(at: lower)) { lower += 1 }
             while upper > lower, Self.isSpace(text.character(at: upper - 1)) { upper -= 1 }
             return upper > lower ? NSRange(location: lower, length: upper - lower) : nil
+        }
+
+        /// A stroke that starts within one letter of a word's beginning starts at the beginning:
+        /// on the word's second letter it moves back one, and on the space just before the word
+        /// it moves forward one. Anywhere else it stays where the tip landed.
+        static func snappedToWordStart(_ index: Int, in text: NSString) -> Int {
+            func isWord(_ i: Int) -> Bool {
+                guard i >= 0, i < text.length, let scalar = Unicode.Scalar(text.character(at: i)) else { return false }
+                return CharacterSet.alphanumerics.contains(scalar)
+            }
+            guard index >= 0, index < text.length else { return index }
+            if isWord(index), isWord(index - 1), !isWord(index - 2) { return index - 1 }
+            if isSpace(text.character(at: index)), isWord(index + 1) { return index + 1 }
+            return index
         }
 
         private static func isSpace(_ character: unichar) -> Bool {
@@ -817,6 +831,7 @@ struct ChapterTextView: UIViewRepresentable {
                 let storage = textView.textStorage
                 // Before the letter a stroke would start on (the same rule as drawing).
                 let index = character(at: hover.location(in: textView), in: textView)
+                    .map { Self.snappedToWordStart($0, in: storage.string as NSString) }
                     ?? textView.offset(from: textView.beginningOfDocument, to: position)
                 let start = textView.position(from: textView.beginningOfDocument, offset: index) ?? position
                 let fontIndex = min(max(index, 0), storage.length - 1)
