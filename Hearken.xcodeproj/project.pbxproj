@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4E4B00000000000000000105 /* KokoroSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 4E4B00000000000000000103 /* KokoroSwift */; };
+		4E4B00000000000000000106 /* MLX in Frameworks */ = {isa = PBXBuildFile; productRef = 4E4B00000000000000000104 /* MLX */; };
 		D832485B3079D80E002B3903 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D832485A3079D80E002B3903 /* WidgetKit.framework */; };
 		D832485D3079D80E002B3903 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D832485C3079D80E002B3903 /* SwiftUI.framework */; };
 		D83248683079D810002B3903 /* HearkenWidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D83248583079D80E002B3903 /* HearkenWidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		4E4B00000000000000000105 /* KokoroSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 4E4B00000000000000000103 /* KokoroSwift */; };
-		4E4B00000000000000000106 /* MLX in Frameworks */ = {isa = PBXBuildFile; productRef = 4E4B00000000000000000104 /* MLX */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */

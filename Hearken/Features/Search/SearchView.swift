@@ -80,6 +80,7 @@ struct SearchView: View {
     @AppStorage(SearchHistory.key) private var recentStorage = ""
 
     @State private var verseHits: [VerseHit] = []
+    @State private var showsNotebook = false
     @State private var searchedQuery = ""
     @State private var isSearching = false
 
@@ -103,12 +104,41 @@ struct SearchView: View {
             }
         }
         .task(id: "\(trimmed)|\(scope.rawValue)") { await runSearch() }
+        .sheet(isPresented: $showsNotebook) {
+            NavigationStack { NotebookView(showsClose: true) }
+        }
+    }
+
+    /// My Notebook: every highlight and note, searchable on its own.
+    private var notebookRow: some View {
+        Section {
+            Button { showsNotebook = true } label: {
+                HStack(spacing: 12) {
+                    SymbolTile(systemName: "note.text")
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("My Notebook")
+                            .foregroundStyle(.primary)
+                        Text("Your highlights and notes")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer(minLength: 0)
+                    Image(systemName: "chevron.right")
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(.tertiary)
+                }
+                .contentShape(.rect)
+            }
+            .buttonStyle(.plain)
+        }
     }
 
     // MARK: Empty state
 
     @ViewBuilder
     private var emptyState: some View {
+        notebookRow
+
         if recents.isEmpty {
             ContentUnavailableView {
                 Label("Search the Scriptures", systemImage: "magnifyingglass")

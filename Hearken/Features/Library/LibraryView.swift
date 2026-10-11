@@ -25,6 +25,14 @@ struct LibraryView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 NavigationLink {
+                    NotebookView()
+                } label: {
+                    Label("Notebook", systemImage: "note.text")
+                }
+                .tint(Color.primary)
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                NavigationLink {
                     ReadingPlansView()
                 } label: {
                     Label("Reading Plans", systemImage: "calendar")

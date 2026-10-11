@@ -19,7 +19,7 @@ final class NeuralSpeechPlayer {
     /// The real length of a verse once it's generated (seconds at 1×).
     var onDuration: (Int, Double) -> Void = { _, _ in }
     /// Generation failed (e.g. the model couldn't load); the engine falls back to system voices.
-    var onError: (Int) -> Void = { _ in }
+    var onError: (Int, String) -> Void = { _, _ in }
 
     private(set) var isRunning = false
     private(set) var isPaused = false
@@ -31,6 +31,7 @@ final class NeuralSpeechPlayer {
     private let format = AVAudioFormat(standardFormatWithSampleRate: KokoroSynth.sampleRate, channels: 1)!
 
     private var generation = 0
+    private var sampleGeneration = 0
     private var producer: Task<Void, Never>?
     /// Verses scheduled and not yet finished, in play order.
     private var scheduled: [Int] = []
@@ -89,15 +90,42 @@ final class NeuralSpeechPlayer {
     }
 
     /// A short sample in a voice (Settings › Listening).
-    func playSample(_ text: String, voice: String, tuning: VoiceTuning) {
+    /// Tells the caller when the sample starts (after it's generated) and ends, or why it failed.
+    func playSample(
+        _ text: String, voice: String, tuning: VoiceTuning,
+        onStart: @escaping () -> Void, onEnd: @escaping () -> Void, onError: @escaping (String) -> Void
+    ) {
+        sampleGeneration += 1
+        let current = sampleGeneration
+        samplePlayer.stop()
         Task {
-            guard let samples = try? await KokoroSynth.shared.synthesize(KokoroText.prepare(text), voice: voice, tuning: tuning, gpu: isForeground),
-                  let buffer = makeBuffer(samples, trailingSilence: 0) else { return }
+            let samples: [Float]
+            do {
+                samples = try await KokoroSynth.shared.synthesize(KokoroText.prepare(text), voice: voice, tuning: tuning, gpu: isForeground)
+            } catch {
+                if current == sampleGeneration { onError(error.localizedDescription) }
+                return
+            }
+            guard current == sampleGeneration else { return }
+            guard let buffer = makeBuffer(samples, trailingSilence: 0) else {
+                onError("The voice didn't produce any sound.")
+                return
+            }
             startEngine()
-            samplePlayer.stop()
-            samplePlayer.scheduleBuffer(buffer, at: nil, options: .interrupts, completionHandler: nil)
+            samplePlayer.scheduleBuffer(buffer, at: nil, options: .interrupts, completionCallbackType: .dataPlayedBack) { [weak self] _ in
+                guard let self else { return }
+                Task { @MainActor in
+                    if current == self.sampleGeneration { onEnd() }
+                }
+            }
             samplePlayer.play()
+            onStart()
         }
+    }
+
+    func stopSample() {
+        sampleGeneration += 1
+        samplePlayer.stop()
     }
 
     // MARK: Generating
@@ -118,7 +146,7 @@ final class NeuralSpeechPlayer {
                 samples = try await KokoroSynth.shared.synthesize(item.text, voice: voice, tuning: tuning, gpu: isForeground)
             } catch {
                 guard current == generation else { return }
-                onError(item.index)
+                onError(item.index, error.localizedDescription)
                 return
             }
             guard !Task.isCancelled, current == generation else { return }

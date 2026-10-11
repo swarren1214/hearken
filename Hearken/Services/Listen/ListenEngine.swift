@@ -62,6 +62,10 @@ final class ListenEngine: NSObject {
     private(set) var finished: FinishedChapter?
     /// The full player sheet.
     var showsPlayer = false
+    /// A voice sample playing (or being generated) in Settings, for its play button.
+    private(set) var preview: VoicePreview?
+    /// Why the natural voice last failed, shown in Settings.
+    private(set) var naturalVoiceError: String?
 
     // MARK: Settings (saved)
 
@@ -109,6 +113,11 @@ final class ListenEngine: NSObject {
     /// choice saved yet, natural voices win over the system ones.
     var naturalVoiceID: String? {
         guard KokoroModel.shared.isReady, !naturalVoiceFailed else { return nil }
+        return chosenNaturalVoiceID
+    }
+
+    /// The natural voice picked in Settings (or the default), whether or not it can play right now.
+    var chosenNaturalVoiceID: String? {
         guard let voiceID else { return KokoroVoices.defaultID }
         return voiceID.hasPrefix(Self.naturalPrefix) ? String(voiceID.dropFirst(Self.naturalPrefix.count)) : nil
     }
@@ -133,6 +142,8 @@ final class ListenEngine: NSObject {
     @ObservationIgnored private var artworkWorkID: String?
     /// Plays a voice sample from Settings without touching the session.
     @ObservationIgnored private let sampler = AVSpeechSynthesizer()
+    /// The system-voice sample being spoken, so a late callback from a stopped one is ignored.
+    @ObservationIgnored private var sampleUtterance: ObjectIdentifier?
     /// Kokoro playback, used instead of the synthesizer when a natural voice is chosen.
     @ObservationIgnored private let neural = NeuralSpeechPlayer()
     /// Set if Kokoro fails this session (e.g. out of memory); the system voice takes over.
@@ -171,16 +182,19 @@ final class ListenEngine: NSObject {
             guard let self, self.verseSeconds.indices.contains(index) else { return }
             self.verseSeconds[index] = seconds / self.speed
         }
-        neural.onError = { [weak self] index in
+        neural.onError = { [weak self] index, message in
             guard let self else { return }
             self.naturalVoiceFailed = true
+            self.naturalVoiceError = message
             if self.isPlaying { self.speak(from: index) }
         }
+        sampler.delegate = self
     }
 
     /// The natural voice model finished downloading: switch to it, from the verse being read.
     func voiceAvailabilityChanged() {
         naturalVoiceFailed = false
+        naturalVoiceError = nil
         if isPlaying, !neural.isRunning, naturalVoiceID != nil { speak(from: index) }
     }
 
@@ -393,6 +407,9 @@ final class ListenEngine: NSObject {
     }
 
     func setVoice(_ id: String?) {
+        // Picking a voice is a fresh try for natural voices after an error.
+        naturalVoiceFailed = false
+        naturalVoiceError = nil
         voiceID = id
         UserDefaults.standard.set(id, forKey: Keys.voice)
         settingsChanged()
@@ -429,20 +446,58 @@ final class ListenEngine: NSObject {
     }
 
     /// Speaks a short sample in `voiceID` (Settings › Listening).
+    /// Plays a sample in `voiceID`, or stops it if that sample is already playing.
     func playSample(voiceID: String) {
+        let wasThis = preview?.voiceID == voiceID
+        stopSample()
+        guard !wasThis else { return }
         let sample = "And now as I said concerning faith—faith is not to have a perfect knowledge of things."
+        if !isPlaying { activateSession() }
+        preview = VoicePreview(voiceID: voiceID, isPlaying: false)
         if voiceID.hasPrefix(Self.naturalPrefix) {
-            if !isPlaying { activateSession() }
-            neural.playSample(sample, voice: String(voiceID.dropFirst(Self.naturalPrefix.count)), tuning: tuning)
+            naturalVoiceError = nil
+            neural.playSample(
+                sample, voice: String(voiceID.dropFirst(Self.naturalPrefix.count)), tuning: tuning,
+                onStart: { [weak self] in
+                    guard let self, self.preview?.voiceID == voiceID else { return }
+                    self.preview?.isPlaying = true
+                },
+                onEnd: { [weak self] in
+                    if self?.preview?.voiceID == voiceID { self?.preview = nil }
+                },
+                onError: { [weak self] message in
+                    guard let self else { return }
+                    if self.preview?.voiceID == voiceID { self.preview = nil }
+                    self.naturalVoiceError = message
+                }
+            )
             return
         }
-        sampler.stopSpeaking(at: .immediate)
-        let utterance = AVSpeechUtterance(string: "And now as I said concerning faith—faith is not to have a perfect knowledge of things.")
+        let utterance = AVSpeechUtterance(string: sample)
         utterance.voice = AVSpeechSynthesisVoice(identifier: voiceID)
         utterance.rate = SpeechText.rate(for: speed)
-        if !isPlaying { activateSession() }
+        sampleUtterance = ObjectIdentifier(utterance)
         sampler.speak(utterance)
     }
+
+    func stopSample() {
+        preview = nil
+        neural.stopSample()
+        if sampler.isSpeaking { sampler.stopSpeaking(at: .immediate) }
+    }
+
+    fileprivate func sampleStarted(_ utterance: ObjectIdentifier) {
+        guard utterance == sampleUtterance else { return }
+        preview?.isPlaying = true
+    }
+
+    fileprivate func sampleEnded(_ utterance: ObjectIdentifier) {
+        guard utterance == sampleUtterance else { return }
+        sampleUtterance = nil
+        preview = nil
+    }
+
+    fileprivate func isSampler(_ id: ObjectIdentifier) -> Bool { id == ObjectIdentifier(sampler) }
 
     /// Asks to use the person's Personal Voice; true when allowed.
     func requestPersonalVoice() async -> Bool {
@@ -714,11 +769,34 @@ final class ListenEngine: NSObject {
 extension ListenEngine: AVSpeechSynthesizerDelegate {
     nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didStart utterance: AVSpeechUtterance) {
         let id = ObjectIdentifier(utterance)
-        Task { @MainActor in ListenEngine.shared.didStart(id) }
+        let source = ObjectIdentifier(synthesizer)
+        Task { @MainActor in
+            let engine = ListenEngine.shared
+            engine.isSampler(source) ? engine.sampleStarted(id) : engine.didStart(id)
+        }
     }
 
     nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
         let id = ObjectIdentifier(utterance)
-        Task { @MainActor in ListenEngine.shared.didFinish(id) }
+        let source = ObjectIdentifier(synthesizer)
+        Task { @MainActor in
+            let engine = ListenEngine.shared
+            engine.isSampler(source) ? engine.sampleEnded(id) : engine.didFinish(id)
+        }
     }
+
+    nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) {
+        let id = ObjectIdentifier(utterance)
+        let source = ObjectIdentifier(synthesizer)
+        Task { @MainActor in
+            let engine = ListenEngine.shared
+            if engine.isSampler(source) { engine.sampleEnded(id) }
+        }
+    }
+}
+
+/// A voice sample in Settings: being generated (natural voices take a moment), then playing.
+struct VoicePreview: Equatable {
+    let voiceID: String
+    var isPlaying: Bool
 }

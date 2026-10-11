@@ -11,6 +11,11 @@ struct ListenSettingsView: View {
     @State private var bestID: String?
     @State private var personalStatus = AVSpeechSynthesizer.personalVoiceAuthorizationStatus
     @State private var showsVoiceHelp = false
+    /// Which natural-voice groups are open, and the accent tab inside each.
+    @State private var femaleOpen = false
+    @State private var maleOpen = false
+    @State private var femaleBritish = false
+    @State private var maleBritish = false
 
     var body: some View {
         Form {
@@ -70,8 +75,10 @@ struct ListenSettingsView: View {
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             reload()
+            openCurrentGroup()
             if model.isReady { KokoroSynth.shared.prewarm() }
         }
+        .onDisappear { engine.stopSample() }
         .onReceive(NotificationCenter.default.publisher(for: AVSpeechSynthesizer.availableVoicesDidChangeNotification)) { _ in
             reload()
         }
@@ -89,21 +96,15 @@ struct ListenSettingsView: View {
         switch model.state {
         case .ready:
             Section {
-                Picker("Voice", selection: genderBinding) {
-                    Text("Female").tag(false)
-                    Text("Male").tag(true)
-                }
-                .pickerStyle(.segmented)
-                Picker("Accent", selection: accentBinding) {
-                    Text("American").tag(false)
-                    Text("British").tag(true)
-                }
-                .pickerStyle(.segmented)
-                ForEach(filteredNatural) { voice in
-                    naturalRow(voice)
-                }
+                voiceGroup(male: false, isOpen: $femaleOpen, british: $femaleBritish)
+                voiceGroup(male: true, isOpen: $maleOpen, british: $maleBritish)
             } header: {
                 Text("Natural Voices")
+            } footer: {
+                if let error = engine.naturalVoiceError {
+                    Text("The natural voice couldn't play: \(error)")
+                        .foregroundStyle(.red)
+                }
             }
 
             Section {
@@ -115,8 +116,8 @@ struct ListenSettingsView: View {
                     "Expressiveness", value: engine.tuning.expressiveness, steps: VoiceTuning.expressions,
                     low: "Calmer", high: "More expressive", set: engine.setExpressiveness
                 )
-                Button("Hear It", systemImage: "play.circle") {
-                    if let id = engine.naturalVoiceID { engine.playSample(voiceID: ListenEngine.naturalPrefix + id) }
+                if let id = engine.chosenNaturalVoiceID {
+                    VoicePreviewButton(voiceID: ListenEngine.naturalPrefix + id, title: "Hear It")
                 }
             } header: {
                 Text("Voice Style")
@@ -176,28 +177,60 @@ struct ListenSettingsView: View {
         }
     }
 
-    /// The chosen gender and accent's voices, featured ones first.
-    private var filteredNatural: [KokoroVoices.Voice] {
-        let featured = KokoroVoices.featured.compactMap(KokoroVoices.voice)
-        let ordered = featured + KokoroVoices.all.filter { !KokoroVoices.featured.contains($0.id) }
-        return ordered.filter { $0.isMale == currentNatural.isMale && $0.isBritish == currentNatural.isBritish }
-    }
-
+    /// The natural voice picked (or the default).
     private var currentNatural: KokoroVoices.Voice {
-        engine.naturalVoiceID.flatMap(KokoroVoices.voice) ?? KokoroVoices.voice(KokoroVoices.defaultID)!
+        engine.chosenNaturalVoiceID.flatMap(KokoroVoices.voice) ?? KokoroVoices.voice(KokoroVoices.defaultID)!
     }
 
-    /// Switching gender picks that gender's recommended voice in the same accent.
-    private var genderBinding: Binding<Bool> {
-        Binding(get: { currentNatural.isMale }, set: { male in
-            engine.setVoice(ListenEngine.naturalPrefix + KokoroVoices.recommended(male: male, british: currentNatural.isBritish))
-        })
+    /// One gender's voices: a row that opens to show American / British tabs and the voices.
+    private func voiceGroup(male: Bool, isOpen: Binding<Bool>, british: Binding<Bool>) -> some View {
+        let holdsCurrent = currentNatural.isMale == male && engine.chosenNaturalVoiceID != nil
+        let voices = ordered.filter { $0.isMale == male && $0.isBritish == british.wrappedValue }
+        return DisclosureGroup(isExpanded: isOpen.animation(.snappy)) {
+            Picker("Accent", selection: british.animation(.snappy)) {
+                Text("American").tag(false)
+                Text("British").tag(true)
+            }
+            .pickerStyle(.segmented)
+            .labelsHidden()
+            .padding(.vertical, 4)
+            ForEach(voices) { voice in
+                naturalRow(voice)
+            }
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: male ? "person.fill" : "person")
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(.tint)
+                    .frame(width: 24)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(male ? "Male Voices" : "Female Voices")
+                    if holdsCurrent {
+                        Text("\(currentNatural.name) · \(currentNatural.isBritish ? "British" : "American")")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+        }
     }
 
-    private var accentBinding: Binding<Bool> {
-        Binding(get: { currentNatural.isBritish }, set: { british in
-            engine.setVoice(ListenEngine.naturalPrefix + KokoroVoices.recommended(male: currentNatural.isMale, british: british))
-        })
+    /// Featured voices first, then the rest.
+    private var ordered: [KokoroVoices.Voice] {
+        let featured = KokoroVoices.featured.compactMap(KokoroVoices.voice)
+        return featured + KokoroVoices.all.filter { !KokoroVoices.featured.contains($0.id) }
+    }
+
+    /// Opens the group holding the chosen voice, on its accent tab.
+    private func openCurrentGroup() {
+        let voice = currentNatural
+        if voice.isMale {
+            maleOpen = true
+            maleBritish = voice.isBritish
+        } else {
+            femaleOpen = true
+            femaleBritish = voice.isBritish
+        }
     }
 
     /// A five-step slider with words at each end, like Siri's voice settings.
@@ -221,7 +254,7 @@ struct ListenSettingsView: View {
     }
 
     private func naturalRow(_ voice: KokoroVoices.Voice) -> some View {
-        let selected = engine.naturalVoiceID == voice.id
+        let selected = engine.chosenNaturalVoiceID == voice.id
         return HStack(spacing: 12) {
             Button {
                 engine.setVoice(ListenEngine.naturalPrefix + voice.id)
@@ -253,20 +286,14 @@ struct ListenSettingsView: View {
             .buttonStyle(.plain)
             .accessibilityAddTraits(selected ? .isSelected : [])
 
-            Button("Play Sample", systemImage: "play.circle.fill") {
-                engine.playSample(voiceID: ListenEngine.naturalPrefix + voice.id)
-            }
-            .labelStyle(.iconOnly)
-            .font(.title2)
-            .foregroundStyle(.secondary)
-            .buttonStyle(.borderless)
+            VoicePreviewButton(voiceID: ListenEngine.naturalPrefix + voice.id)
         }
     }
 
     // MARK: System voices
 
     private func voiceRow(_ option: ListenVoices.Option) -> some View {
-        let selected = engine.naturalVoiceID == nil && (engine.voiceID ?? bestID) == option.id
+        let selected = engine.naturalVoiceID == nil && engine.chosenNaturalVoiceID == nil && (engine.voiceID ?? bestID) == option.id
         return HStack(spacing: 12) {
             Button {
                 engine.setVoice(option.id)
@@ -296,19 +323,54 @@ struct ListenSettingsView: View {
             .buttonStyle(.plain)
             .accessibilityAddTraits(selected ? .isSelected : [])
 
-            Button("Play Sample", systemImage: "play.circle.fill") {
-                engine.playSample(voiceID: option.id)
-            }
-            .labelStyle(.iconOnly)
-            .font(.title2)
-            .foregroundStyle(.secondary)
-            .buttonStyle(.borderless)
+            VoicePreviewButton(voiceID: option.id)
         }
     }
 
     private func reload() {
         voices = ListenVoices.available()
         bestID = ListenVoices.best()?.identifier
+    }
+}
+
+/// Play a voice sample: a spinner while a natural voice generates it, a moving waveform while
+/// it plays (tap again to stop), and the play icon otherwise.
+struct VoicePreviewButton: View {
+    let voiceID: String
+    var title: String?
+
+    @State private var engine = ListenEngine.shared
+
+    var body: some View {
+        let preview = engine.preview?.voiceID == voiceID ? engine.preview : nil
+        Button {
+            engine.playSample(voiceID: voiceID)
+        } label: {
+            HStack(spacing: 8) {
+                ZStack {
+                    if let preview, !preview.isPlaying {
+                        ProgressView()
+                    } else if preview != nil {
+                        Image(systemName: "waveform.circle.fill")
+                            .symbolEffect(.variableColor.iterative.reversing, options: .repeating, isActive: true)
+                            .foregroundStyle(.tint)
+                    } else {
+                        Image(systemName: "play.circle.fill")
+                            .foregroundStyle(title == nil ? AnyShapeStyle(.secondary) : AnyShapeStyle(.tint))
+                    }
+                }
+                .font(.title2)
+                .frame(width: 32, height: 32)
+                if let title {
+                    Text(preview == nil ? title : "Stop")
+                        .foregroundStyle(.tint)
+                }
+            }
+            .contentShape(.rect)
+        }
+        .buttonStyle(.borderless)
+        .animation(.snappy, value: preview)
+        .accessibilityLabel(preview == nil ? "Play sample" : "Stop sample")
     }
 }
 

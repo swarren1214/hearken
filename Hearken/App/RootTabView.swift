@@ -37,7 +37,7 @@ struct RootTabView: View {
             Tab(value: AppTab.scriptures) {
                 NavigationStack { LibraryView() }
             } label: {
-                Image(systemName: "book.fill").accessibilityLabel("Library")
+                Image(systemName: "books.vertical.fill").accessibilityLabel("Library")
             }
 
             Tab(value: AppTab.search, role: .search) {

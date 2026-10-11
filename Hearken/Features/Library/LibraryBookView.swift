@@ -20,6 +20,8 @@ struct LibraryBookView: View {
     @State private var coverGone = false
     @State private var showsBookmarks = false
     @State private var bookmarkJump: BookmarkTarget?
+    /// A book whose highlights and notes to show (a chapter's Show in Notebook).
+    @State private var notebookBookID: String?
 
     init(work: LibraryWork) {
         self.work = work
@@ -76,6 +78,9 @@ struct LibraryBookView: View {
         }
         .navigationDestination(item: $bookmarkJump) { target in
             ReaderView(chapterID: target.chapterID, verse: target.verse)
+        }
+        .navigationDestination(item: $notebookBookID) { bookID in
+            NotebookView(bookID: bookID)
         }
         .overlay { openingCover }
         .task { await openCover() }
@@ -232,7 +237,7 @@ struct LibraryBookView: View {
             .accessibilityValue([reading ? "Reading now" : nil, expanded ? "Expanded" : "Collapsed"].compactMap { $0 }.joined(separator: ", "))
 
             if expanded {
-                ChapterGrid(book: book, progress: progress)
+                ChapterGrid(book: book, progress: progress) { notebookBookID = $0 }
                     .padding(.horizontal, 16)
                     .padding(.top, 4)
                     .padding(.bottom, 16)
@@ -357,6 +362,8 @@ struct BreadcrumbBar: View {
 private struct ChapterGrid: View {
     let book: LibraryBook
     let progress: LibraryProgress
+    /// Opens the Notebook filtered to this book.
+    let onShowNotebook: (String) -> Void
 
     @Environment(\.modelContext) private var modelContext
     @Environment(AccountService.self) private var account
@@ -390,6 +397,9 @@ private struct ChapterGrid: View {
                     }
                     Button("Listen", systemImage: "headphones") {
                         ListenEngine.shared.start(chapterID: id)
+                    }
+                    Button("Show in Notebook", systemImage: "note.text") {
+                        onShowNotebook(book.id)
                     }
                 }
             }

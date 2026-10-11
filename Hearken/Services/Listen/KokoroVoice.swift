@@ -120,7 +120,7 @@ final class KokoroModel: NSObject {
         }
         if defaults.bool(forKey: Keys.broken) {
             state = .failed("The natural voice couldn't load on this device.")
-        } else if FileManager.default.fileExists(atPath: Self.localURL.path()) {
+        } else if FileManager.default.fileExists(atPath: Self.localURL.path(percentEncoded: false)) {
             state = .ready
         }
         #endif
@@ -334,7 +334,7 @@ nonisolated final class KokoroSynth: @unchecked Sendable {
     private func loadIfNeeded() throws -> KokoroTTS {
         if let tts { return tts }
         let url = KokoroModel.localURL
-        guard FileManager.default.fileExists(atPath: url.path()) else { throw CocoaError(.fileNoSuchFile) }
+        guard FileManager.default.fileExists(atPath: url.path(percentEncoded: false)) else { throw CocoaError(.fileNoSuchFile) }
         // If loading crashes the app, the flag is still set next launch and natural voices turn off.
         KokoroModel.markLoading(true)
         let loaded = KokoroTTS(modelPath: url, g2p: .misaki)
