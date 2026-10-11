@@ -143,8 +143,8 @@ struct ScholarCoin: View {
 private enum Ease {
     static func inOut(_ t: Double) -> Double { t * t * (3 - 2 * t) }
     static func outCubic(_ t: Double) -> Double { 1 - pow(1 - t, 3) }
-    static func outBack(_ t: Double) -> Double {
-        let c1 = 1.4, c3 = c1 + 1
+    static func outBack(_ t: Double, overshoot c1: Double = 1.4) -> Double {
+        let c3 = c1 + 1
         return 1 + c3 * pow(t - 1, 3) + c1 * pow(t - 1, 2)
     }
 }
@@ -164,6 +164,8 @@ private struct CoinRender: View {
     let emblemTurn: Double
     let dotsShown: Int?
     let raysTurn: Double
+    /// The floor shadow below the coin. Off where the coin sits inside a card.
+    var showsShadow: Bool = true
 
     private let layers = 12
 
@@ -178,12 +180,14 @@ private struct CoinRender: View {
 
         ZStack(alignment: .top) {
             // Shadow on the "floor": narrows edge-on and as the coin floats up.
-            Ellipse()
-                .fill(RadialGradient(colors: [.black.opacity(0.5), .clear], center: .center, startRadius: 0, endRadius: size * 0.4))
-                .frame(width: size * 0.78 * max(abs(c), 0.25) + thickness, height: size * 0.11)
-                .scaleEffect(1 - bob * 0.08)
-                .opacity(0.8 - bob * 0.15)
-                .offset(y: size * 1.04)
+            if showsShadow {
+                Ellipse()
+                    .fill(RadialGradient(colors: [.black.opacity(0.5), .clear], center: .center, startRadius: 0, endRadius: size * 0.4))
+                    .frame(width: size * 0.78 * max(abs(c), 0.25) + thickness, height: size * 0.11)
+                    .scaleEffect(1 - bob * 0.08)
+                    .opacity(0.8 - bob * 0.15)
+                    .offset(y: size * 1.04)
+            }
 
             ZStack {
                 ForEach(order, id: \.self) { index in
@@ -211,7 +215,7 @@ private struct CoinRender: View {
             .rotation3DEffect(.degrees(tilt), axis: (x: 1, y: 0, z: 0), perspective: 0.45)
             .offset(y: -bob * size * 0.04)
         }
-        .frame(width: size, height: size * 1.16, alignment: .top)
+        .frame(width: size, height: showsShadow ? size * 1.16 : size, alignment: .top)
     }
 
     private func front(sweep s: Double) -> some View {
@@ -280,6 +284,87 @@ private struct CoinBack: View {
     }
 
     private var numeral: String { ["I", "II", "III", "IV", "V"][max(0, min(4, rank.rawValue - 1))] }
+}
+
+// MARK: - Tap to flip
+
+/// A medal that turns over when tapped: a turn and a half in 3D to show the engraved back, and
+/// the same again to come back to the front. At rest on its front it shows `face`, so a card
+/// keeps its own badge (with its progress ring); the 3D coin takes over only while turning and
+/// while the back is up. Tapping mid-turn reverses toward the other side.
+///
+/// Reduce Motion: the faces cross-fade instead of spinning.
+/// Timing for `FlippingCoin`; generic types can't hold static stored properties.
+private let flipDuration = 1.15
+private let flipSpin = 540.0
+
+struct FlippingCoin<Face: View>: View {
+    let rank: ScholarRank
+    var size: CGFloat = 112
+    @ViewBuilder var face: () -> Face
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    /// Where the coin is headed (or rests): a multiple of 180, odd multiples are back up.
+    @State private var target = 0.0
+    @State private var turn: Turn?
+    @State private var landings = 0
+
+    private struct Turn { var from: Double; var to: Double; var at: Date }
+
+    private var backUp: Bool { Int((target / 180).rounded()).isMultiple(of: 2) == false }
+
+    var body: some View {
+        ZStack {
+            if turn == nil && !backUp {
+                face().transition(.opacity)
+            } else if let turn {
+                TimelineView(.animation) { context in
+                    let p = progress(turn, at: context.date)
+                    coin(angle: turn.from + (turn.to - turn.from) * Ease.outBack(p, overshoot: 0.7),
+                         tilt: 8 * sin(.pi * min(p * 1.3, 1)))
+                }
+            } else {
+                coin(angle: target, tilt: 0).transition(.opacity)
+            }
+        }
+        .frame(width: size, height: size)
+        .contentShape(.circle)
+        .onTapGesture(perform: flip)
+        .sensoryFeedback(.impact(weight: .light), trigger: landings)
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isButton)
+        .accessibilityHint(backUp ? "Turns the medal back to its front" : "Turns the medal over")
+        .accessibilityAction { flip() }
+    }
+
+    private func coin(angle: Double, tilt: Double) -> some View {
+        CoinRender(rank: rank, size: size, angle: angle, tilt: tilt, bob: 0,
+                   emblemScale: 1, emblemTurn: 0, dotsShown: nil, raysTurn: 0, showsShadow: false)
+    }
+
+    private func progress(_ turn: Turn, at date: Date) -> Double {
+        min(max(date.timeIntervalSince(turn.at) / flipDuration, 0), 1)
+    }
+
+    private func flip() {
+        if reduceMotion {
+            withAnimation(.easeInOut(duration: 0.3)) { target += 180 }
+            landings += 1
+            return
+        }
+        // Start from wherever the coin is now, even mid-turn, and head for the other side.
+        let from = turn.map { $0.from + ($0.to - $0.from) * Ease.outBack(progress($0, at: .now), overshoot: 0.7) } ?? target
+        let to = target + flipSpin
+        target = to
+        turn = Turn(from: from, to: to, at: .now)
+        Task {
+            try? await Task.sleep(for: .seconds(flipDuration))
+            guard turn?.to == to else { return }
+            // Fade back to the card's own badge (and its ring) once the front is up.
+            withAnimation(.easeOut(duration: 0.2)) { turn = nil }
+            landings += 1
+        }
+    }
 }
 
 // MARK: - Device tilt

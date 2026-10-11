@@ -263,143 +263,311 @@ private struct SubjectPathContent: View {
 
 // MARK: - Rank header
 
-/// Where you stand on this path: your medal and rank, a ladder of all five badges with
-/// "you are here", and exactly what the next badge needs.
+/// Where you stand on this path. Collapsed, a compact banner: your medal and rank, the next badge
+/// and one XP bar. Tap it to expand: the medal (tap it to flip), the ladder of all five badges
+/// filling toward the next one, and a bar for each thing the next badge needs. Remembers whether
+/// it was left open.
 private struct RankHeader: View {
     let path: ScholarPathFile
     let progress: ScholarProgress
 
+    @AppStorage("scholarRankCardExpanded") private var expanded = false
+    @Namespace private var space
+
     var body: some View {
+        let rank = progress.rank
+        let palette = (rank ?? .novice).palette
+        VStack(alignment: .leading, spacing: 0) {
+            if expanded { expandedCard } else { compactCard }
+        }
+        .foregroundStyle(.white)
+        .padding(expanded ? 18 : 16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(LinearGradient(colors: [palette.top, palette.bottom], startPoint: .topLeading, endPoint: .bottomTrailing), in: .rect(cornerRadius: 26))
+        .shadow(color: palette.bottom.opacity(0.25), radius: 15, y: 10)
+        .contentShape(.rect(cornerRadius: 26))
+        .onTapGesture(perform: toggle)
+        .sensoryFeedback(.selection, trigger: expanded)
+        .accessibilityElement(children: .contain)
+        .accessibilityAction(named: expanded ? "Show less" : "Show more", toggle)
+    }
+
+    private func toggle() {
+        withAnimation(.spring(duration: 0.45, bounce: 0.12)) { expanded.toggle() }
+    }
+
+    // MARK: Compact
+
+    private var compactCard: some View {
+        let rank = progress.rank
+        let next = progress.nextRank
+        return VStack(alignment: .leading, spacing: 0) {
+            HStack(spacing: 14) {
+                ScholarBadge(rank: rank ?? .novice, size: 64, status: rank == nil ? .next : .earned)
+                    .matchedGeometryEffect(id: "medal", in: space)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(rank?.name ?? "No badge yet")
+                        .font(.title2.bold())
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                    Text(compactSubtitle)
+                        .font(.subheadline)
+                        .foregroundStyle(.white.opacity(0.72))
+                        .lineLimit(2)
+                }
+                Spacer(minLength: 0)
+                chevron
+            }
+            if let next, next > .novice {
+                bar(progress.xpFraction, color: barColor(next))
+                    .padding(.top, 16)
+                HStack {
+                    Text(progress.xpReached ? "XP reached" : "\(progress.xp.formatted()) of \(progress.threshold(next).formatted()) XP")
+                    Spacer(minLength: 8)
+                    Text(stageSummary(next))
+                }
+                .font(.footnote)
+                .monospacedDigit()
+                .foregroundStyle(.white.opacity(0.65))
+                .lineLimit(1)
+                .minimumScaleFactor(0.85)
+                .padding(.top, 8)
+            }
+        }
+        .transition(.opacity)
+    }
+
+    private var compactSubtitle: String {
+        guard progress.rank != nil else { return "Finish any item to earn Novice" }
+        guard let next = progress.nextRank else { return "Every badge earned" }
+        return "\(next.name) next"
+    }
+
+    // MARK: Expanded
+
+    private var expandedCard: some View {
         let rank = progress.rank
         let next = progress.nextRank
         let palette = (rank ?? .novice).palette
-        VStack(alignment: .leading, spacing: 16) {
-            HStack(spacing: 14) {
-                // The ring is XP toward the next badge, so it only appears once you hold a rank
-                // and there's a next one with an XP requirement.
-                let showsRing = rank != nil && (next.map { progress.threshold($0) } ?? 0) > 0
-                ScholarBadge(rank: rank ?? .novice, size: 112, status: rank == nil ? .next : .earned,
-                             progress: showsRing ? progress.xpFraction : nil,
-                             tint: showsRing ? (progress.xpReached ? Optional(Feedback.correct) : next?.palette.light) : nil)
-                VStack(alignment: .leading, spacing: 3) {
+        return VStack(alignment: .leading, spacing: 0) {
+            HStack(spacing: 16) {
+                Group {
+                    if let rank {
+                        // Tap the medal to turn it over; tap anywhere else to collapse.
+                        FlippingCoin(rank: rank, size: 88) { ScholarBadge(rank: rank, size: 88) }
+                    } else {
+                        ScholarBadge(rank: .novice, size: 88, status: .next)
+                    }
+                }
+                .matchedGeometryEffect(id: "medal", in: space)
+                VStack(alignment: .leading, spacing: 2) {
                     Text(rank == nil ? "NOT STARTED" : "YOUR RANK")
                         .font(.caption.weight(.bold))
                         .tracking(0.8)
                         .foregroundStyle(palette.light)
                     Text(rank?.name ?? "No badge yet")
                         .font(.title.bold())
-                        .minimumScaleFactor(0.8)
                         .lineLimit(1)
-                    Text(rankDetail(rank))
-                        .font(.footnote)
-                        .foregroundStyle(.white.opacity(0.75))
-                    NavigationLink {
-                        BadgesView()
-                    } label: {
-                        Text("All Badges")
-                            .font(.footnote.weight(.semibold))
-                            .padding(.horizontal, 12)
-                            .frame(height: 30)
-                            .background(.white.opacity(0.14), in: Capsule())
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.top, 6)
+                        .minimumScaleFactor(0.8)
+                    Text(rank.map { "Badge \($0.rawValue) of 5" } ?? "Badge 1 of 5 is your first")
+                        .font(.subheadline)
+                        .foregroundStyle(.white.opacity(0.72))
                 }
+                Spacer(minLength: 0)
+                chevron
             }
 
-            ladder
+            ladder.padding(.top, 20)
 
-            Divider().overlay(.white.opacity(0.16))
+            Rectangle().fill(.white.opacity(0.12)).frame(height: 1).padding(.vertical, 16)
 
             if let next {
-                VStack(alignment: .leading, spacing: 10) {
-                    HStack(spacing: 10) {
-                        ScholarBadge(rank: next, size: 32, status: .next)
-                        VStack(alignment: .leading, spacing: 1) {
-                            Text("Next badge: \(next.name)").font(.subheadline.weight(.semibold))
-                            Text(nextDetail(next)).font(.caption).foregroundStyle(.white.opacity(0.75))
-                        }
-                        Spacer(minLength: 0)
+                HStack(spacing: 10) {
+                    ScholarBadge(rank: next, size: 28, status: .next)
+                    Text("Next: \(next.name)").font(.headline)
+                }
+                if next > .novice {
+                    VStack(spacing: 12) {
+                        requirement("XP", value: progress.xp.formatted(), of: "/ \(progress.threshold(next).formatted())",
+                                    fraction: progress.xpFraction, color: barColor(next))
+                        stageRequirement(next)
                     }
-                    if next > .novice {
-                        HStack(spacing: 10) {
-                            xpTile(next)
-                            stageTile(next)
-                        }
+                    .padding(.top, 14)
+                    if next == .sage {
+                        Text("Plus the capstone")
+                            .font(.footnote)
+                            .foregroundStyle(.white.opacity(0.65))
+                            .padding(.top, 10)
                     }
+                } else {
+                    Text(nextDetail(next))
+                        .font(.footnote)
+                        .foregroundStyle(.white.opacity(0.72))
+                        .padding(.top, 8)
                 }
             } else {
                 Text("You've earned every badge this path offers so far. More stages are on the way.")
                     .font(.footnote)
                     .foregroundStyle(.white.opacity(0.75))
             }
+
+            NavigationLink {
+                BadgesView()
+            } label: {
+                HStack {
+                    Text("All Badges")
+                    Spacer()
+                    Image(systemName: "chevron.right").font(.footnote.weight(.bold)).opacity(0.7)
+                }
+                .font(.subheadline.weight(.semibold))
+                .padding(.horizontal, 14)
+                .frame(height: 40)
+                .background(.white.opacity(0.1), in: .rect(cornerRadius: 14))
+                .contentShape(.rect)
+            }
+            .buttonStyle(.plain)
+            .padding(.top, 18)
         }
-        .foregroundStyle(.white)
-        .padding(18)
-        .background(LinearGradient(colors: [palette.top, palette.bottom], startPoint: .topLeading, endPoint: .bottomTrailing), in: .rect(cornerRadius: 26))
-        .shadow(color: palette.bottom.opacity(0.25), radius: 15, y: 10)
+        .transition(.opacity)
+    }
+
+    private var chevron: some View {
+        Image(systemName: "chevron.down")
+            .font(.footnote.weight(.bold))
+            .rotationEffect(.degrees(expanded ? 180 : 0))
+            .frame(width: 30, height: 30)
+            .background(.white.opacity(0.12), in: Circle())
+            .matchedGeometryEffect(id: "chevron", in: space)
+            .accessibilityHidden(true)
     }
 
     // MARK: Ladder
 
-    /// All five badges left to right, earned ones lit, the next one marked, with the XP each needs.
+    /// The five badges with no labels. The line between them is lit up to your rank and fills
+    /// toward the next one with your XP.
     private var ladder: some View {
         let ranks = ScholarRank.allCases.sorted()
+        let current = progress.rank
         let next = progress.nextRank
-        return HStack(alignment: .top, spacing: 0) {
+        let toward = min(max(progress.xpFraction, 0), 1)
+        return HStack(spacing: 0) {
             ForEach(Array(ranks.enumerated()), id: \.element) { index, rank in
-                let earned = progress.rank.map { rank <= $0 } ?? false
+                let earned = current.map { rank <= $0 } ?? false
+                let isCurrent = rank == current
                 let isNext = rank == next
-                let isCurrent = rank == progress.rank
-                let nextEarned = index < ranks.count - 1 && (progress.rank.map { ranks[index + 1] <= $0 } ?? false)
-                VStack(spacing: 5) {
-                    ZStack {
-                        // Connector to the previous badge, lit once this one is earned.
-                        HStack(spacing: 0) {
-                            Rectangle()
-                                .fill(index == 0 ? .clear : (earned ? Color.white.opacity(0.85) : Color.white.opacity(0.18)))
-                                .frame(height: 3)
-                            Rectangle()
-                                .fill(index == ranks.count - 1 ? .clear : (nextEarned ? Color.white.opacity(0.85) : Color.white.opacity(0.18)))
-                                .frame(height: 3)
-                        }
-                        ScholarBadge(rank: rank, size: 38, status: earned ? .earned : isNext ? .next : .locked)
-                            .padding(3)
-                            .overlay {
-                                if isCurrent || (progress.rank == nil && isNext) {
-                                    Circle().strokeBorder(.white, lineWidth: 2)
-                                }
-                            }
+                // How lit the segment from this badge to the next one is.
+                let after: Double = index == ranks.count - 1 ? 0
+                    : (current.map { ranks[index + 1] <= $0 } ?? false) ? 1
+                    : isCurrent ? toward : 0
+                let before: Double = index == 0 ? 0
+                    : earned ? 1
+                    : isNext && current != nil ? toward : 0
+                ZStack {
+                    HStack(spacing: 0) {
+                        segment(fill: index == 0 ? nil : max(0, before * 2 - 1))
+                        segment(fill: index == ranks.count - 1 ? nil : min(after * 2, 1))
                     }
-                    Text(rank.name)
-                        .font(.caption2.weight(isCurrent || isNext ? .bold : .regular))
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.7)
-                    Text(progress.threshold(rank) == 0 ? "Start" : "\(progress.threshold(rank).formatted()) XP")
-                        .font(.caption2)
-                        .monospacedDigit()
-                        .foregroundStyle(.white.opacity(0.65))
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.7)
-                    Text(isCurrent ? "YOU" : isNext ? "NEXT" : " ")
-                        .font(.system(size: 9, weight: .heavy))
-                        .tracking(0.6)
-                        .foregroundStyle(isCurrent ? Color.white : rank.palette.light)
+                    let size: CGFloat = isCurrent || isNext ? 40 : 34
+                    ScholarBadge(rank: rank, size: size, status: earned ? .earned : isNext ? .next : .locked)
+                        .padding(3)
+                        .overlay {
+                            if isCurrent || (current == nil && isNext) {
+                                Circle().strokeBorder(.white, lineWidth: 2.5)
+                            }
+                        }
                 }
                 .frame(maxWidth: .infinity)
-                .opacity(earned || isNext ? 1 : 0.6)
-                .accessibilityElement(children: .ignore)
-                .accessibilityLabel("\(rank.name), \(earned ? "earned" : isNext ? "next" : "locked")")
             }
+        }
+        .frame(height: 46)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(ladderLabel)
+    }
+
+    /// Half the connector between two badges; `nil` draws nothing (the ends of the ladder).
+    @ViewBuilder
+    private func segment(fill: Double?) -> some View {
+        if let fill {
+            Rectangle()
+                .fill(.white.opacity(0.14))
+                .overlay(alignment: .leading) {
+                    GeometryReader { geo in
+                        Rectangle().fill(barColor(progress.nextRank ?? .novice)).frame(width: geo.size.width * fill)
+                    }
+                }
+                .frame(height: 3)
+        } else {
+            Color.clear.frame(height: 3)
         }
     }
 
-    // MARK: Text
+    private var ladderLabel: String {
+        ScholarRank.allCases.sorted().map { rank in
+            let earned = progress.rank.map { rank <= $0 } ?? false
+            return "\(rank.name), \(earned ? "earned" : rank == progress.nextRank ? "next" : "locked")"
+        }.joined(separator: "; ")
+    }
 
-    private func rankDetail(_ rank: ScholarRank?) -> String {
-        guard let rank else { return "Finish your first learning item to earn Novice, badge 1 of 5." }
-        if let grant = progress.grant(rank) { return "Badge \(rank.rawValue) of 5 · earned \(BookmarksSheet.date(grant.earnedAt))" }
-        return "Badge \(rank.rawValue) of 5 · \(progress.xp.formatted()) XP"
+    // MARK: Requirements
+
+    private func barColor(_ next: ScholarRank) -> Color {
+        progress.xpReached ? Feedback.correct : next.palette.light
+    }
+
+    private func bar(_ fraction: Double, color: Color) -> some View {
+        Capsule()
+            .fill(.white.opacity(0.14))
+            .overlay(alignment: .leading) {
+                GeometryReader { geo in
+                    // A sliver shows even at 0, so the bar reads as a bar.
+                    Capsule().fill(color).frame(width: max(6, geo.size.width * min(max(fraction, 0), 1)))
+                }
+            }
+            .frame(height: 6)
+            .accessibilityHidden(true)
+    }
+
+    private func requirement(_ title: String, value: String, of total: String, fraction: Double, color: Color) -> some View {
+        VStack(spacing: 6) {
+            HStack(alignment: .firstTextBaseline) {
+                Text(title).font(.subheadline.weight(.bold))
+                Spacer()
+                HStack(alignment: .firstTextBaseline, spacing: 4) {
+                    Text(value).font(.subheadline.weight(.semibold))
+                    if !total.isEmpty {
+                        Text(total).font(.subheadline).foregroundStyle(.white.opacity(0.6))
+                    }
+                }
+            }
+            .monospacedDigit()
+            bar(fraction, color: color)
+        }
+        .accessibilityElement(children: .combine)
+    }
+
+    private func stageRequirement(_ next: ScholarRank) -> some View {
+        let s = stageCounts
+        return requirement("Stage \(next.requiredStages)",
+                           value: s.complete ? "Complete" : s.done == s.total ? "Exam left" : "\(s.done)",
+                           of: s.complete || s.done == s.total ? "" : "/ \(s.total) courses",
+                           fraction: s.fraction, color: s.complete ? Feedback.correct : next.palette.light)
+    }
+
+    private var stageCounts: (done: Int, total: Int, complete: Bool, fraction: Double) {
+        let stage = progress.nextStage
+        let total = stage?.courses.count ?? 0
+        let done = stage.map { progress.coursesComplete(in: $0) } ?? 0
+        let complete = stage.map { progress.isComplete($0) } ?? false
+        // The stage's courses, then its exam.
+        let fraction = total == 0 ? 0 : (Double(done) + (complete ? 1 : 0)) / Double(total + 1)
+        return (done, total, complete, fraction)
+    }
+
+    private func stageSummary(_ next: ScholarRank) -> String {
+        let s = stageCounts
+        if s.complete { return "Stage \(next.requiredStages) complete" }
+        if s.done == s.total { return "Stage \(next.requiredStages) · exam left" }
+        return "Stage \(next.requiredStages) · \(s.done) of \(s.total) courses"
     }
 
     private func nextDetail(_ next: ScholarRank) -> String {
@@ -409,48 +577,7 @@ private struct RankHeader: View {
             }
             return "Finish any learning item"
         }
-        if next == .sage { return "\(progress.threshold(next).formatted()) XP, Stage \(next.requiredStages) and the capstone" }
         return "\(progress.threshold(next).formatted()) XP and Stage \(next.requiredStages) complete"
-    }
-
-    // MARK: Tiles
-
-    private func tile<Ring: View>(@ViewBuilder ring: () -> Ring, title: String, detail: String) -> some View {
-        HStack(spacing: 8) {
-            ring()
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title).font(.subheadline.weight(.semibold)).monospacedDigit()
-                Text(detail).font(.caption).foregroundStyle(.white.opacity(0.7))
-            }
-            Spacer(minLength: 0)
-        }
-        .padding(10)
-        .frame(maxWidth: .infinity)
-        .background(.white.opacity(0.08), in: .rect(cornerRadius: 18))
-        .accessibilityElement(children: .combine)
-    }
-
-    private func xpTile(_ next: ScholarRank) -> some View {
-        let reached = progress.xpReached
-        let remaining = max(progress.threshold(next) - progress.xp, 0)
-        return tile(
-            ring: { RequirementRing(progress: progress.xpFraction, label: "\(Int((progress.xpFraction * 100).rounded()))%", color: reached ? Feedback.correct : next.palette.light, track: .white.opacity(0.14)) },
-            title: "\(progress.xp.formatted()) XP",
-            detail: reached ? "XP reached" : "of \(progress.threshold(next).formatted()) · \(remaining.formatted()) to go"
-        )
-    }
-
-    private func stageTile(_ next: ScholarRank) -> some View {
-        let stage = progress.nextStage
-        let total = stage?.courses.count ?? 0
-        let done = stage.map { progress.coursesComplete(in: $0) } ?? 0
-        let complete = stage.map { progress.isComplete($0) } ?? false
-        let fraction = total == 0 ? 0 : (Double(done) + (complete ? 1 : 0)) / Double(total + 1)
-        return tile(
-            ring: { RequirementRing(progress: fraction, label: complete ? "✓" : "\(done)/\(total)", color: complete ? Feedback.correct : next.palette.light, track: .white.opacity(0.14)) },
-            title: "Stage \(next.requiredStages)",
-            detail: complete ? "Complete" : done == total ? "check left" : "\(done) of \(total) courses"
-        )
     }
 }
 
