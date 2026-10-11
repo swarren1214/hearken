@@ -34,9 +34,11 @@ struct HighlightColorsView: View {
             }
 
             Section {
-                Picker("New Highlights", selection: Binding(get: { legend.defaultStyle }, set: { legend.setDefaultStyle($0) })) {
-                    ForEach(HighlightStyle.allCases) { Text($0.name).tag($0) }
-                }
+                CheckPicker(
+                    "New Highlights",
+                    selection: Binding(get: { legend.defaultStyle }, set: { legend.setDefaultStyle($0) }),
+                    options: HighlightStyle.allCases.map { .init(value: $0, title: $0.name) }
+                )
                 Toggle("Show Names in Toolbar", isOn: Binding(get: { legend.showNames }, set: { legend.setShowNames($0) }))
             } header: {
                 Text("Defaults")

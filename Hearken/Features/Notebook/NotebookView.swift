@@ -131,13 +131,11 @@ struct NotebookView: View {
             }
 
             ToolbarItem(placement: .bottomBar) {
-                Menu {
-                    Picker("Group", selection: $grouping.animation(.snappy)) {
-                        ForEach(NotebookGrouping.allCases) { option in
-                            Label(option.title, systemImage: option.symbol).tag(option)
-                        }
+                CheckMenu(NotebookGrouping.allCases.map { option in
+                    CheckMenuItem.choice(option.title, systemImage: option.symbol, isSelected: option == grouping) {
+                        withAnimation(.snappy) { grouping = option }
                     }
-                } label: {
+                }) {
                     Label("Group", systemImage: "rectangle.3.group")
                 }
                 .tint(Color.primary)

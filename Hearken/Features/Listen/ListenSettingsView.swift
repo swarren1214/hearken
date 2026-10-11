@@ -58,11 +58,11 @@ struct ListenSettingsView: View {
                     .labelsHidden()
                 }
                 .padding(.vertical, 4)
-                Picker("Pause Between Verses", selection: Binding(get: { engine.versePause }, set: { engine.setVersePause($0) })) {
-                    ForEach(VersePause.allCases) { pause in
-                        Text(pause.title).tag(pause)
-                    }
-                }
+                CheckPicker(
+                    "Pause Between Verses",
+                    selection: Binding(get: { engine.versePause }, set: { engine.setVersePause($0) }),
+                    options: VersePause.allCases.map { .init(value: $0, title: $0.title) }
+                )
                 Toggle("Read Verse Numbers", isOn: Binding(get: { engine.readsVerseNumbers }, set: { engine.setReadsVerseNumbers($0) }))
                 Toggle("Continue to Next Chapter", isOn: Binding(get: { engine.autoContinue }, set: { engine.setAutoContinue($0) }))
             } header: {

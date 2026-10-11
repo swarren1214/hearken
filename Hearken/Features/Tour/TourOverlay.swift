@@ -15,7 +15,6 @@ struct TourOverlay: View {
     @Environment(\.colorSchemeContrast) private var contrast
 
     @State private var cardHeight: CGFloat = 0
-    @State private var pulse = false
     @AccessibilityFocusState private var titleFocused: Bool
 
     /// Side margin for the card, and its gap from the spotlight.
@@ -69,15 +68,6 @@ struct TourOverlay: View {
                     .offset(x: hole.minX, y: hole.minY)
                     .onTapGesture { tour.next() }
                     .accessibilityHidden(true)
-
-                RoundedRectangle(cornerRadius: Self.holeRadius, style: .continuous)
-                    .strokeBorder(Color.white.opacity(0.9), lineWidth: increased ? 3 : 2)
-                    .frame(width: hole.width, height: hole.height)
-                    .scaleEffect(reduceMotion ? 1 : (pulse ? 1.06 : 1))
-                    .opacity(reduceMotion ? 0.9 : (pulse ? 0 : 0.9))
-                    .offset(x: hole.minX, y: hole.minY)
-                    .allowsHitTesting(false)
-                    .accessibilityHidden(true)
             }
 
             card(step, screenHeight: screenHeight)
@@ -87,10 +77,6 @@ struct TourOverlay: View {
         }
         .animation(motion, value: step)
         .animation(motion, value: placement)
-        .onAppear {
-            guard !reduceMotion else { return }
-            withAnimation(.easeOut(duration: 1.6).repeatForever(autoreverses: false)) { pulse = true }
-        }
         .onChange(of: step, initial: true) {
             // VoiceOver starts each step at the card's title.
             Task { titleFocused = true }

@@ -222,16 +222,10 @@ struct PlanStartSheet: View {
 
                 if self.plan.isCustom {
                     Section("Books") {
-                        Picker("Read from", selection: $workID) {
-                            ForEach(Self.customWorks) { work in Text(work.title).tag(work.id) }
-                        }
+                        CheckPicker("Read from", selection: $workID, options: Self.customWorks.map { .init(value: $0.id, title: $0.title) })
                         if workBooks.count > 1 {
-                            Picker("First book", selection: $firstBookID) {
-                                ForEach(workBooks) { book in Text(book.title).tag(book.id) }
-                            }
-                            Picker("Last book", selection: $lastBookID) {
-                                ForEach(workBooks) { book in Text(book.title).tag(book.id) }
-                            }
+                            CheckPicker("First book", selection: $firstBookID, options: workBooks.map { .init(value: $0.id, title: $0.title) })
+                            CheckPicker("Last book", selection: $lastBookID, options: workBooks.map { .init(value: $0.id, title: $0.title) })
                         }
                         Stepper(value: $customDays, in: 1...max(plan.chapterIDs.count, 1), step: customDays >= 30 ? 5 : 1) {
                             LabeledContent("Days", value: "\(plan.days)")
@@ -252,10 +246,10 @@ struct PlanStartSheet: View {
 
                 Section {
                     DatePicker("Start", selection: $startDate, in: Calendar.current.startOfDay(for: .now)..., displayedComponents: .date)
-                    Picker("Reading days", selection: $weekdaysOnly) {
-                        Text("Every day").tag(false)
-                        Text("Weekdays").tag(true)
-                    }
+                    CheckPicker("Reading days", selection: $weekdaysOnly, options: [
+                        .init(value: false, title: "Every day"),
+                        .init(value: true, title: "Weekdays"),
+                    ])
                     Toggle("Remind me", isOn: $reminder)
                     if reminder {
                         DatePicker("Time", selection: $reminderTime, displayedComponents: .hourAndMinute)
@@ -375,16 +369,13 @@ struct PlanDetailView: View {
                 .background(Color(.systemGroupedBackground))
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
-                        Menu {
-                            Button("Reschedule", systemImage: "calendar.badge.clock") { reschedule(state) }
-                                .disabled(state.daysBehind == 0)
-                            Toggle("Daily Reminder", systemImage: "bell", isOn: reminderBinding)
-                            if AppConfig.cloudSyncEnabled {
-                                Button("Read with Others", systemImage: "person.3") { creatingGroup = true }
-                            }
-                            Divider()
-                            Button("End Plan", systemImage: "xmark.circle", role: .destructive) { confirmEnd = true }
-                        } label: {
+                        CheckMenu([
+                            CheckMenuItem.button("Reschedule", systemImage: "calendar.badge.clock", isDisabled: state.daysBehind == 0) { reschedule(state) },
+                            CheckMenuItem.toggle("Daily Reminder", systemImage: "bell", isOn: reminderBinding),
+                        ] + (AppConfig.cloudSyncEnabled ? [CheckMenuItem.button("Read with Others", systemImage: "person.3") { creatingGroup = true }] : []) + [
+                            CheckMenuItem.divider,
+                            CheckMenuItem.button("End Plan", systemImage: "xmark.circle", role: .destructive) { confirmEnd = true },
+                        ]) {
                             Label("Plan Options", systemImage: "ellipsis")
                         }
                         .tint(Color.primary)

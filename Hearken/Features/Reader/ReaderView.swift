@@ -152,28 +152,21 @@ struct ReaderView: View {
                 }
 
                 ToolbarItem(placement: .topBarTrailing) {
-                    Menu {
-                        Section("Text Size · \(Int(textSize)) pt") {
-                            // Menus can't hold sliders, so this is the system's in-menu stepper:
-                            // two buttons side by side that leave the menu open between taps.
-                            ControlGroup {
-                                Button("Smaller", systemImage: "textformat.size.smaller") {
-                                    textSize = max(15, textSize - 1)
-                                }
-                                .disabled(textSize <= 15)
-                                Button("Larger", systemImage: "textformat.size.larger") {
-                                    textSize = min(28, textSize + 1)
-                                }
-                                .disabled(textSize >= 28)
-                            }
-                            .menuActionDismissBehavior(.disabled)
-                        }
-                        Picker("Layout", systemImage: layout.symbol, selection: $layout) {
-                            ForEach(ReaderLayout.allCases) { option in
-                                Label(option.title, systemImage: option.symbol).tag(option)
-                            }
-                        }
-                    } label: {
+                    CheckMenu([
+                        CheckMenuItem.header("Text Size · \(Int(textSize)) pt"),
+                        // Two buttons side by side that leave the menu open between taps.
+                        CheckMenuItem.stepper(CheckMenuStepper(
+                            decreaseTitle: "Smaller", decreaseImage: "textformat.size.smaller",
+                            increaseTitle: "Larger", increaseImage: "textformat.size.larger",
+                            canDecrease: textSize > 15, canIncrease: textSize < 28,
+                            decrease: { textSize = max(15, textSize - 1) },
+                            increase: { textSize = min(28, textSize + 1) }
+                        )),
+                        CheckMenuItem.divider,
+                        CheckMenuItem.header("Layout"),
+                    ] + ReaderLayout.allCases.map { option in
+                        CheckMenuItem.choice(option.title, systemImage: option.symbol, isSelected: option == layout) { layout = option }
+                    }) {
                         Label("Reader Options", systemImage: "ellipsis")
                     }
                     .tint(Color.primary)

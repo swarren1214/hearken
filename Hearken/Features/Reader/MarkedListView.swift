@@ -60,16 +60,13 @@ struct MarkedListView: View {
         .navigationTitle("Notes and Highlights")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Menu {
-                    Picker("Color", selection: $filter) {
-                        Text("All Colors").tag(HighlightHue?.none)
-                        ForEach(legend.entries) { entry in
-                            Label(legend.name(for: entry.hue), systemImage: "circle.fill")
-                                .tint(entry.hue.color)
-                                .tag(HighlightHue?.some(entry.hue))
-                        }
+                CheckMenu([
+                    CheckMenuItem.choice("All Colors", isSelected: filter == nil) { filter = nil },
+                ] + legend.entries.map { entry in
+                    CheckMenuItem.choice(legend.name(for: entry.hue), systemImage: "circle.fill", iconColor: entry.hue.color, isSelected: filter == entry.hue) {
+                        filter = entry.hue
                     }
-                } label: {
+                }) {
                     Label("Filter", systemImage: filter == nil ? "line.3.horizontal.decrease.circle" : "line.3.horizontal.decrease.circle.fill")
                 }
                 .tint(Color.primary)

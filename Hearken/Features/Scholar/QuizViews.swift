@@ -108,19 +108,9 @@ struct BankQuestionView: View {
                 let correct = chosen != nil && chosen == key[leftID]
                 VStack(alignment: .leading, spacing: 10) {
                     Text(left[leftID] ?? "").font(.body.weight(.semibold)).fixedSize(horizontal: false, vertical: true)
-                    Menu {
-                        ForEach(layout.rightOrder, id: \.self) { rightID in
-                            Button {
-                                pair(leftID, rightID)
-                            } label: {
-                                if chosen == rightID {
-                                    Label(right[rightID] ?? "", systemImage: "checkmark")
-                                } else {
-                                    Text(right[rightID] ?? "")
-                                }
-                            }
-                        }
-                    } label: {
+                    CheckMenu(layout.rightOrder.map { rightID in
+                        CheckMenuItem.choice(right[rightID] ?? "", isSelected: chosen == rightID) { pair(leftID, rightID) }
+                    }) {
                         HStack(spacing: 8) {
                             Text(chosen.flatMap { right[$0] } ?? "Choose a match")
                                 .foregroundStyle(chosen == nil ? Color.accentColor : .primary)

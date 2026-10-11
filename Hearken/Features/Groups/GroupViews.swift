@@ -271,12 +271,11 @@ struct CreateGroupSheet: View {
                 .padding(.vertical, 4)
             }
             Section {
-                Picker("Plan", selection: $planID) {
-                    if let customPlan {
-                        Text(customPlan.title).tag(ReadingPlan.customID)
-                    }
-                    ForEach(ReadingPlanCatalog.plans) { plan in Text(plan.title).tag(plan.id) }
-                }
+                CheckPicker(
+                    "Plan", selection: $planID,
+                    options: (customPlan.map { [CheckPickerOption(value: ReadingPlan.customID, title: $0.title)] } ?? [])
+                        + ReadingPlanCatalog.plans.map { CheckPickerOption(value: $0.id, title: $0.title) }
+                )
             } footer: {
                 Text("Everyone follows the same schedule, starting \(startDate == Calendar.current.startOfDay(for: .now) ? "today" : PlanFormat.shortDate(startDate)). Members see only your progress on this plan and what you choose to share.")
             }
@@ -521,15 +520,13 @@ struct GroupDetailView: View {
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
-                Menu {
-                    Toggle("Activity Notifications", systemImage: "bell", isOn: $notify)
-                    if group.isOwner {
-                        Button("Members", systemImage: "person.2") { showMembers = true }
-                    }
-                    Button(group.isOwner ? "Delete Group" : "Leave Group", systemImage: group.isOwner ? "trash" : "rectangle.portrait.and.arrow.right", role: .destructive) {
+                CheckMenu([
+                    CheckMenuItem.toggle("Activity Notifications", systemImage: "bell", isOn: $notify),
+                ] + (group.isOwner ? [CheckMenuItem.button("Members", systemImage: "person.2") { showMembers = true }] : []) + [
+                    CheckMenuItem.button(group.isOwner ? "Delete Group" : "Leave Group", systemImage: group.isOwner ? "trash" : "rectangle.portrait.and.arrow.right", role: .destructive) {
                         confirmLeave = true
-                    }
-                } label: {
+                    },
+                ]) {
                     Label("Group Options", systemImage: "ellipsis")
                 }
                 .tint(Color.primary)

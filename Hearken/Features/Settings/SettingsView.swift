@@ -98,11 +98,9 @@ struct SettingsView: View {
                     LabeledContent("Listening", value: ListenEngine.shared.voiceName)
                 }
                 Toggle("Verse Numbers", isOn: $showVerseNumbers)
-                Picker("Layout", selection: $readerLayout) {
-                    ForEach(ReaderLayout.allCases) { layout in
-                        Label(layout.title, systemImage: layout.symbol).tag(layout)
-                    }
-                }
+                CheckPicker("Layout", selection: $readerLayout, options: ReaderLayout.allCases.map {
+                    .init(value: $0, title: $0.title, systemImage: $0.symbol)
+                })
             }
 
             Section("Study") {

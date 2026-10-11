@@ -246,13 +246,9 @@ struct ListenPlayerSheet: View {
 
     private var chips: some View {
         HStack(spacing: 8) {
-            Menu {
-                Picker("Speed", selection: Binding(get: { engine.speed }, set: { engine.setSpeed($0) })) {
-                    ForEach(ListenFormat.speeds, id: \.self) { speed in
-                        Text(ListenFormat.speed(speed)).tag(speed)
-                    }
-                }
-            } label: {
+            CheckMenu(ListenFormat.speeds.map { speed in
+                CheckMenuItem.choice(ListenFormat.speed(speed), isSelected: speed == engine.speed) { engine.setSpeed(speed) }
+            }) {
                 chip(caption: "Speed") {
                     Text(ListenFormat.speed(engine.speed)).font(.body.weight(.bold)).monospacedDigit()
                 }
@@ -264,13 +260,9 @@ struct ListenPlayerSheet: View {
                 }
             }
 
-            Menu {
-                Picker("Sleep Timer", selection: Binding(get: { engine.sleep }, set: { engine.setSleep($0) })) {
-                    ForEach(ListenSleep.options) { option in
-                        Text(option.title).tag(option)
-                    }
-                }
-            } label: {
+            CheckMenu([CheckMenuItem.header("Sleep Timer")] + ListenSleep.options.map { option in
+                CheckMenuItem.choice(option.title, isSelected: option == engine.sleep) { engine.setSleep(option) }
+            }) {
                 chip(caption: sleepCaption) {
                     Image(systemName: engine.sleep == .off ? "moon" : "moon.fill").font(.body.weight(.semibold))
                 }

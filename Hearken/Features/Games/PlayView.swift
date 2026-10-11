@@ -14,6 +14,7 @@ struct PlayView: View {
     @Query private var grants: [RankGrant]
     @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
     @State private var activeGame: GameRequest?
+    @State private var mapQuest: MapQuestCategory?
 
     private let mastery = MasteryService()
     private static let reviewLimit = 10
@@ -34,6 +35,7 @@ struct PlayView: View {
                 .tourTarget(.play)
 
                 quickPlay
+                mapQuestSection
                 subjectsGrid(snapshot: snapshot)
             }
             .padding(.horizontal, 16)
@@ -56,6 +58,64 @@ struct PlayView: View {
             }
         }
         .fullScreenCover(item: $activeGame) { GameView(request: $0) }
+        .fullScreenCover(item: $mapQuest) { MapQuestView(category: $0) }
+    }
+
+    // MARK: Map Quest
+
+    /// Geography rounds: a place is named, you drop a pin on the map.
+    private var mapQuestSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Map Quest").font(.title2.bold())
+            HStack(alignment: .top, spacing: 12) {
+                ForEach(MapQuestCatalog.all) { category in
+                    mapQuestCard(category)
+                }
+            }
+            .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private func mapQuestCard(_ category: MapQuestCategory) -> some View {
+        let colors: [Color] = category.id == MapQuestCatalog.bible.id
+            ? [Color(red: 0.11, green: 0.42, blue: 0.62), Color(red: 0.16, green: 0.62, blue: 0.62)]
+            : [Color(red: 0.60, green: 0.33, blue: 0.16), Color(red: 0.85, green: 0.55, blue: 0.22)]
+        let best = sessions
+            .filter { $0.gameType == "mapQuest" && $0.subjectID == category.id }
+            .map(\.correct)
+            .max()
+
+        return Button {
+            mapQuest = category
+        } label: {
+            VStack(alignment: .leading, spacing: 12) {
+                Image(systemName: category.symbol)
+                    .font(.title2)
+                    .frame(width: 44, height: 44)
+                    .background(.white.opacity(0.2), in: .rect(cornerRadius: 12))
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(category.title)
+                        .font(.headline)
+                        .multilineTextAlignment(.leading)
+                    Text(category.subtitle)
+                        .font(.caption)
+                        .opacity(0.9)
+                        .multilineTextAlignment(.leading)
+                }
+                Spacer(minLength: 0)
+                Text(best.map { "Best: \($0) of \(MapQuestCategory.roundLength) close" } ?? "\(category.places.count) places")
+                    .font(.caption.weight(.semibold))
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(.white.opacity(0.22), in: Capsule())
+            }
+            .foregroundStyle(.white)
+            .padding(16)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .background(LinearGradient(colors: colors, startPoint: .topLeading, endPoint: .bottomTrailing), in: .rect(cornerRadius: 22))
+        }
+        .buttonStyle(.plain)
+        .accessibilityHint("Drop pins on a map to find each place.")
     }
 
     // MARK: Daily and review
