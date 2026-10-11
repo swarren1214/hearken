@@ -216,18 +216,18 @@ struct PlayView: View {
                     .font(.body)
             }
             ForEach(subjects) { subject in
-                NavigationLink {
-                    SubjectDetailView(subject: subject)
-                } label: {
-                    if let path = PathCatalog.shared.path(for: subject.id) {
+                if let path = PathCatalog.shared.path(for: subject.id) {
+                    NavigationLink {
+                        SubjectDetailView(subject: subject)
+                    } label: {
                         ScholarProgressReader(path: path) { progress in
                             PathSubjectCard(subject: subject, progress: progress)
                         }
-                    } else {
-                        LegacySubjectCard(subject: subject, mastery: mastery.subjectMastery(subject, content: content, snapshot: snapshot))
                     }
+                    .buttonStyle(.plain)
+                } else {
+                    ComingSoonSubjectCard(subject: subject)
                 }
-                .buttonStyle(.plain)
             }
         }
     }
@@ -297,20 +297,19 @@ private struct PathSubjectCard: View {
 }
 
 /// A subject without a Scholar Path yet: its units and games are still here.
-private struct LegacySubjectCard: View {
+/// A subject that isn't built yet: grayed out, can't be opened.
+private struct ComingSoonSubjectCard: View {
     let subject: Subject
-    let mastery: Double
 
     var body: some View {
         HStack(spacing: 12) {
             SymbolTile(systemName: subject.symbol, size: 52)
+                .grayscale(1)
+                .opacity(0.6)
                 .frame(width: 72, height: 72)
-            VStack(alignment: .leading, spacing: 4) {
-                Text(subject.name).font(.headline).multilineTextAlignment(.leading)
-                Text("Scholar Path coming soon").font(.footnote).foregroundStyle(.secondary)
-                Text("\(subject.units.count) units · \(Int((mastery * 100).rounded()))% recall")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 6) {
+                Text(subject.name).font(.headline).foregroundStyle(.secondary).multilineTextAlignment(.leading)
+                ComingSoonTag()
             }
             Spacer(minLength: 0)
         }
@@ -319,8 +318,9 @@ private struct LegacySubjectCard: View {
         .padding(.trailing, 14)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color(.secondarySystemGroupedBackground), in: .rect(cornerRadius: 22))
-        .contentShape(.rect(cornerRadius: 22))
+        .opacity(0.8)
         .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(subject.name), coming soon")
     }
 }
 

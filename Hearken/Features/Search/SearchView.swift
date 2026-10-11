@@ -207,12 +207,21 @@ struct SearchView: View {
         if !subjects.isEmpty {
             Section("Subjects") {
                 ForEach(subjects) { subject in
-                    NavigationLink {
-                        SubjectDetailView(subject: subject)
-                    } label: {
+                    if subject.isAvailable {
+                        NavigationLink {
+                            SubjectDetailView(subject: subject)
+                        } label: {
+                            HStack(spacing: 12) {
+                                SymbolTile(systemName: subject.symbol)
+                                Text(subject.name)
+                            }
+                        }
+                    } else {
                         HStack(spacing: 12) {
-                            SymbolTile(systemName: subject.symbol)
-                            Text(subject.name)
+                            SymbolTile(systemName: subject.symbol).grayscale(1).opacity(0.6)
+                            Text(subject.name).foregroundStyle(.secondary)
+                            Spacer()
+                            ComingSoonTag()
                         }
                     }
                 }
@@ -273,7 +282,8 @@ struct SearchView: View {
 
     private var unitHits: [UnitHit] {
         guard trimmed.count >= 2 else { return [] }
-        return content.subjects.flatMap { subject in
+        // Units are the old outline of subjects that aren't built yet, so they stay out of results.
+        return content.subjects.filter { $0.isAvailable }.flatMap { subject in
             subject.units
                 .filter { $0.title.localizedCaseInsensitiveContains(trimmed) }
                 .map { UnitHit(subject: subject, unit: $0) }

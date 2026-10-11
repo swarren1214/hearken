@@ -277,6 +277,26 @@ struct PathCapstone: Decodable, Hashable {
     let rubric: [String]
 }
 
+// MARK: - Built or coming soon
+
+extension PathCourse {
+    /// Built in the current format: every module opens with an article and ends with a quiz and
+    /// essay. Courses still in the old outline format show as Coming Soon and can't be opened.
+    var isBuilt: Bool {
+        !modules.isEmpty && modules.allSatisfy { module in module.items.contains { $0.kind == .article } }
+    }
+}
+
+extension PathStage {
+    /// Every course in the stage is built, so its advancement exam can open.
+    var isBuilt: Bool { !courses.isEmpty && courses.allSatisfy(\.isBuilt) }
+}
+
+extension Subject {
+    /// Subjects with a Scholar Path. The rest show as Coming Soon.
+    var isAvailable: Bool { PathCatalog.shared.path(for: id) != nil }
+}
+
 // MARK: - Catalog
 
 /// Every bundled path, by subject ID.

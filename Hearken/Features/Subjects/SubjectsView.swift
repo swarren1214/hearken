@@ -21,7 +21,13 @@ struct SubjectDetailView: View {
         if let path = PathCatalog.shared.path(for: subject.id) {
             SubjectPathView(subject: subject, path: path)
         } else {
-            legacy
+            // Links elsewhere (notifications, search history) can still land here.
+            ContentUnavailableView {
+                Label(subject.name, systemImage: subject.symbol)
+            } description: {
+                Text("Coming Soon. \(subject.summary)")
+            }
+            .navigationTitle(subject.name)
         }
     }
 

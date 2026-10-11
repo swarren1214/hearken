@@ -219,14 +219,20 @@ struct TodayView: View {
             Text("Subjects").font(.title2.bold())
             VStack(spacing: 0) {
                 ForEach(content.subjects) { subject in
-                    NavigationLink {
-                        SubjectDetailView(subject: subject)
-                    } label: {
-                        SubjectRow(subject: subject, mastery: mastery.subjectMastery(subject, content: content, snapshot: snapshot))
+                    if subject.isAvailable {
+                        NavigationLink {
+                            SubjectDetailView(subject: subject)
+                        } label: {
+                            SubjectRow(subject: subject, mastery: mastery.subjectMastery(subject, content: content, snapshot: snapshot))
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 12)
+                        }
+                        .buttonStyle(.plain)
+                    } else {
+                        SubjectRow(subject: subject, mastery: 0, comingSoon: true)
                             .padding(.horizontal, 16)
                             .padding(.vertical, 12)
                     }
-                    .buttonStyle(.plain)
                     if subject.id != content.subjects.last?.id {
                         Divider().padding(.leading, 62)
                     }
@@ -256,21 +262,31 @@ struct SubjectRow: View {
     let mastery: Double
     /// Off inside a List, where NavigationLink already draws the chevron.
     var showsChevron = true
+    /// Not built yet: grayed out, with a Coming Soon tag instead of mastery.
+    var comingSoon = false
 
     var body: some View {
         HStack(spacing: 12) {
             SymbolTile(systemName: subject.symbol)
-            VStack(alignment: .leading, spacing: 6) {
-                HStack(alignment: .firstTextBaseline) {
-                    Text(subject.name).font(.body).lineLimit(1)
-                    Spacer()
-                    Text(mastery.formatted(.percent.precision(.fractionLength(0))))
-                        .font(.subheadline.monospacedDigit())
-                        .foregroundStyle(.secondary)
+                .grayscale(comingSoon ? 1 : 0)
+                .opacity(comingSoon ? 0.6 : 1)
+            if comingSoon {
+                Text(subject.name).font(.body).foregroundStyle(.secondary).lineLimit(1)
+                Spacer()
+                ComingSoonTag()
+            } else {
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack(alignment: .firstTextBaseline) {
+                        Text(subject.name).font(.body).lineLimit(1)
+                        Spacer()
+                        Text(mastery.formatted(.percent.precision(.fractionLength(0))))
+                            .font(.subheadline.monospacedDigit())
+                            .foregroundStyle(.secondary)
+                    }
+                    MasteryBar(value: mastery)
                 }
-                MasteryBar(value: mastery)
             }
-            if showsChevron {
+            if showsChevron && !comingSoon {
                 Image(systemName: "chevron.right").font(.footnote.weight(.semibold)).foregroundStyle(.tertiary)
             }
         }

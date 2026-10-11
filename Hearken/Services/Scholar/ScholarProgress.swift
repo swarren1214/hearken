@@ -92,6 +92,8 @@ struct ScholarProgress {
     /// The course can be started: every earlier course in the path is complete, and so is
     /// the previous stage's advancement check.
     func isUnlocked(_ course: PathCourse) -> Bool {
+        // Courses that aren't built yet stay closed, even with the debug unlock on.
+        guard course.isBuilt else { return false }
         if ScholarDebug.unlockAll { return true }
         for stage in path.publishedStages {
             for other in stage.courses {
@@ -121,7 +123,7 @@ struct ScholarProgress {
     func coursesComplete(in stage: PathStage) -> Int { stage.courses.filter { status(of: $0).isComplete }.count }
 
     /// Every course complete, so the advancement check is open.
-    func isAdvancementOpen(_ stage: PathStage) -> Bool { ScholarDebug.unlockAll || allCoursesComplete(stage) }
+    func isAdvancementOpen(_ stage: PathStage) -> Bool { stage.isBuilt && (ScholarDebug.unlockAll || allCoursesComplete(stage)) }
 
     private func allCoursesComplete(_ stage: PathStage) -> Bool { coursesComplete(in: stage) == stage.courses.count }
 

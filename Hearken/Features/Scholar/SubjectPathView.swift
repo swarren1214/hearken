@@ -169,23 +169,36 @@ private struct SubjectPathContent: View {
                     Label("Complete", systemImage: "checkmark")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(Feedback.correct)
+                } else if !stage.isBuilt {
+                    ComingSoonTag()
                 } else if let rank = ScholarRank(rawValue: stage.number) {
                     Text("After \(rank.name)").font(.caption).foregroundStyle(.secondary)
                 }
             }
             ForEach(stage.courses) { course in
-                NavigationLink {
-                    CourseView(path: path, course: course)
-                } label: {
-                    HStack {
-                        Text(course.title).font(.subheadline).foregroundStyle(.primary).multilineTextAlignment(.leading)
-                        Spacer(minLength: 4)
-                        Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(.tertiary)
+                if course.isBuilt {
+                    NavigationLink {
+                        CourseView(path: path, course: course)
+                    } label: {
+                        HStack {
+                            Text(course.title).font(.subheadline).foregroundStyle(.primary).multilineTextAlignment(.leading)
+                            Spacer(minLength: 4)
+                            Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(.tertiary)
+                        }
+                        .contentShape(.rect)
                     }
-                    .contentShape(.rect)
+                    .buttonStyle(.plain)
+                    .disabled(!progress.isUnlocked(course))
+                } else {
+                    HStack {
+                        Text(course.title).font(.subheadline).foregroundStyle(.secondary).multilineTextAlignment(.leading)
+                        Spacer(minLength: 4)
+                        // The stage header already says Coming Soon when the whole stage is.
+                        if stage.isBuilt == false && stage.courses.contains(where: \.isBuilt) { ComingSoonTag() }
+                    }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel("\(course.title), coming soon")
                 }
-                .buttonStyle(.plain)
-                .disabled(!progress.isUnlocked(course))
             }
             if complete, let check = stage.advancementCheck, let best = progress.best(check) {
                 Text("Advancement check \(best.points)/\(best.maxPoints)").font(.footnote).foregroundStyle(.secondary)
@@ -255,6 +268,7 @@ private struct SubjectPathContent: View {
     private func advancementDetail(_ check: PathAssessment, stage: PathStage, open: Bool, passed: Bool) -> String {
         let shape = check.quiz.map { "\($0.questionCount) questions and an essay, \($0.passCount) to pass" } ?? "\(check.questionCount) questions, \(check.passPercent)% to pass"
         if passed { return "Passed · " + shape }
+        if !stage.isBuilt { return "Coming soon" }
         if !check.isReady { return "Questions coming soon · " + shape }
         if !open { return "Opens when both courses are done · " + shape }
         return shape + " · no XP; it opens the next rank"
@@ -271,29 +285,45 @@ private struct RankHeader: View {
     let path: ScholarPathFile
     let progress: ScholarProgress
 
-    @AppStorage("scholarRankCardExpanded") private var expanded = false
+    /// Saved so the card reopens the way it was left. The view animates from `expanded`, a plain
+    /// @State: changes to @AppStorage don't carry the animation transaction with them.
+    @AppStorage("scholarRankCardExpanded") private var savedExpanded = false
+    @State private var expanded = false
     @Namespace private var space
 
     var body: some View {
         let rank = progress.rank
         let palette = (rank ?? .novice).palette
         VStack(alignment: .leading, spacing: 0) {
-            if expanded { expandedCard } else { compactCard }
+            if expanded {
+                expandedCard
+                    .transition(.asymmetric(insertion: .opacity.combined(with: .scale(scale: 0.97, anchor: .top)).animation(.easeOut(duration: 0.3).delay(0.08)),
+                                            removal: .opacity.animation(.easeIn(duration: 0.15))))
+            } else {
+                compactCard
+                    .transition(.asymmetric(insertion: .opacity.animation(.easeOut(duration: 0.25).delay(0.1)),
+                                            removal: .opacity.animation(.easeIn(duration: 0.12))))
+            }
         }
         .foregroundStyle(.white)
         .padding(expanded ? 18 : 16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(LinearGradient(colors: [palette.top, palette.bottom], startPoint: .topLeading, endPoint: .bottomTrailing), in: .rect(cornerRadius: 26))
+        // Keep content inside the card while its height animates.
+        .clipShape(.rect(cornerRadius: 26))
         .shadow(color: palette.bottom.opacity(0.25), radius: 15, y: 10)
         .contentShape(.rect(cornerRadius: 26))
         .onTapGesture(perform: toggle)
         .sensoryFeedback(.selection, trigger: expanded)
+        .animation(.spring(duration: 0.45, bounce: 0.12), value: expanded)
+        .onAppear { expanded = savedExpanded }
         .accessibilityElement(children: .contain)
         .accessibilityAction(named: expanded ? "Show less" : "Show more", toggle)
     }
 
     private func toggle() {
         withAnimation(.spring(duration: 0.45, bounce: 0.12)) { expanded.toggle() }
+        savedExpanded = expanded
     }
 
     // MARK: Compact
@@ -334,7 +364,6 @@ private struct RankHeader: View {
                 .padding(.top, 8)
             }
         }
-        .transition(.opacity)
     }
 
     private var compactSubtitle: String {
@@ -428,7 +457,6 @@ private struct RankHeader: View {
             .buttonStyle(.plain)
             .padding(.top, 18)
         }
-        .transition(.opacity)
     }
 
     private var chevron: some View {
@@ -589,9 +617,34 @@ struct CourseCard: View {
     let progress: ScholarProgress
 
     var body: some View {
+        if course.isBuilt { builtCard } else { comingSoonCard }
+    }
+
+    /// A course that isn't built yet: grayed out, can't be opened.
+    private var comingSoonCard: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "hourglass")
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .frame(width: 40, height: 40)
+                .background(Color(.tertiarySystemFill), in: Circle())
+            VStack(alignment: .leading, spacing: 4) {
+                Text(course.title).font(.subheadline.weight(.semibold)).foregroundStyle(.secondary).multilineTextAlignment(.leading)
+                ComingSoonTag()
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(12)
+        .background(Color(.tertiarySystemGroupedBackground), in: .rect(cornerRadius: 16))
+        .opacity(0.75)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(course.title), coming soon")
+    }
+
+    private var builtCard: some View {
         let status = progress.status(of: course)
         let unlocked = progress.isUnlocked(course)
-        NavigationLink {
+        return NavigationLink {
             CourseView(path: path, course: course)
         } label: {
             HStack(spacing: 12) {
@@ -630,6 +683,20 @@ struct CourseCard: View {
         if !checkpoint.isReady { return "Checkpoint questions coming soon" }
         if !status.requiredComplete { return "Checkpoint opens after \(status.requiredTotal - status.requiredDone) more items" }
         return "Checkpoint ready · +\(checkpoint.xp) XP"
+    }
+}
+
+// MARK: - Coming soon
+
+/// The capsule on courses and subjects that aren't built yet.
+struct ComingSoonTag: View {
+    var body: some View {
+        Text("Coming Soon")
+            .font(.caption2.weight(.bold))
+            .foregroundStyle(.secondary)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 3)
+            .background(Color(.tertiarySystemFill), in: Capsule())
     }
 }
 
