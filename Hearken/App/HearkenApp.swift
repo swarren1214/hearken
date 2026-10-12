@@ -80,6 +80,8 @@ struct AppRoot: View {
                 if phase == .active {
                     applyAppearance(appearance)
                     Task { await account.refresh() }
+                    // Untitled parts of imported books get titles while the app is open.
+                    BookRefiner.shared.refineAll()
                 }
             }
     }

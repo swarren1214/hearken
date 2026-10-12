@@ -239,8 +239,8 @@ final class NotebookBuilder {
     }
 
     static func reference(chapterID: String, start: Int, end: Int, content: ContentService) -> String {
-        // Imported books number paragraphs, not verses.
-        if ImportedLibrary.isImported(chapterID) {
+        // Imported books prepared before verses number paragraphs.
+        if ImportedLibrary.isImported(chapterID), !ImportedLibrary.shared.hasVerses(chapterID) {
             let title = content.title(forChapter: chapterID)
             return end > start ? "\(title) ¶\(start)–\(end)" : "\(title) ¶\(start)"
         }

@@ -62,10 +62,11 @@ nonisolated enum EPUBParser {
         )
     }
 
-    static func content(of url: URL, progress: @Sendable (Double) -> Void) throws -> ImportedContent {
+    /// The book's text as chapters of paragraphs, in reading order (BookStructurer adds verses).
+    static func chapters(of url: URL, progress: @Sendable (Double) -> Void) throws -> [RawChapter] {
         let package = try open(url)
         let toc = tableOfContents(package)
-        var chapters: [ImportedChapter] = []
+        var chapters: [RawChapter] = []
         let readable = package.spine.filter { $0.mediaType.contains("html") && $0.id != package.navItem?.id }
 
         for (index, item) in readable.enumerated() {
@@ -98,22 +99,28 @@ nonisolated enum EPUBParser {
                 // One file, several chapters.
                 if let firstStart = splits.first?.start, firstStart > 0 {
                     let lead = Array(paragraphs[0..<firstStart])
-                    chapters.append(chapter(wholeFileTitle ?? heading ?? untitled(chapters), lead))
+                    chapters.append(raw(wholeFileTitle, heading, lead))
                 }
                 for (i, split) in splits.enumerated() {
                     let end = i + 1 < splits.count ? splits[i + 1].start : paragraphs.count
                     guard split.start < end else { continue }
-                    chapters.append(chapter(split.title, Array(paragraphs[split.start..<end])))
+                    chapters.append(RawChapter(title: split.title, titleSource: .file, paragraphs: Array(paragraphs[split.start..<end])))
                 }
             } else {
-                let title = wholeFileTitle ?? entries.first?.title ?? heading ?? untitled(chapters)
-                chapters.append(chapter(title, paragraphs))
+                chapters.append(raw(wholeFileTitle ?? entries.first?.title, heading, paragraphs))
             }
         }
         progress(1)
         let nonEmpty = chapters.filter { !$0.paragraphs.isEmpty }
         guard !nonEmpty.isEmpty else { throw ParseError.noText }
-        return ImportedContent(chapters: nonEmpty)
+        return nonEmpty
+    }
+
+    /// A chapter titled by the table of contents, else by its first heading, else untitled.
+    private static func raw(_ tocTitle: String?, _ heading: String?, _ paragraphs: [String]) -> RawChapter {
+        if let tocTitle { return RawChapter(title: tocTitle, titleSource: .file, paragraphs: paragraphs) }
+        if let heading { return RawChapter(title: heading, titleSource: .heading, paragraphs: paragraphs) }
+        return RawChapter(title: nil, titleSource: .generic, paragraphs: paragraphs)
     }
 
     // MARK: Package
@@ -208,20 +215,6 @@ nonisolated enum EPUBParser {
     }
 
     // MARK: Helpers
-
-    private static func chapter(_ title: String, _ paragraphs: [String]) -> ImportedChapter {
-        var paragraphs = paragraphs
-        // The header shows the chapter's title; don't repeat it as the first paragraph.
-        if let first = paragraphs.first, first.compare(title, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame
-            || first.replacingOccurrences(of: "\n", with: " ").compare(title, options: .caseInsensitive) == .orderedSame {
-            paragraphs.removeFirst()
-        }
-        return ImportedChapter(title: title, paragraphs: paragraphs)
-    }
-
-    private static func untitled(_ chapters: [ImportedChapter]) -> String {
-        "Section \(chapters.count + 1)"
-    }
 
     private static func directory(of path: String) -> String {
         guard let slash = path.lastIndex(of: "/") else { return "" }

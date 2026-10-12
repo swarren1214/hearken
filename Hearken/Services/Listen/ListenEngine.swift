@@ -545,10 +545,12 @@ final class ListenEngine: NSObject {
     private func speak(from start: Int) {
         stopSpeech()
         guard verses.indices.contains(start) else { return }
+        // Imported books: numbers are read only when the book printed them.
+        let readsNumbers = readsVerseNumbers && chapterID.map { ImportedLibrary.shared.readsVerseNumbers($0) } ?? true
         if let natural = naturalVoiceID {
             let items = (start..<verses.count).map { position in
                 let verse = verses[position]
-                let text = (readsVerseNumbers ? "Verse \(verse.number). " : "") + verse.text
+                let text = (readsNumbers ? "Verse \(verse.number). " : "") + verse.text
                 // Prepared (cleaned, names marked) by the player as it reaches each one, so a
                 // long imported chapter doesn't do all of that up front.
                 return NeuralSpeechPlayer.Item(index: position, text: text)
@@ -560,7 +562,7 @@ final class ListenEngine: NSObject {
         for position in start..<verses.count {
             let utterance = SpeechText.utterance(
                 for: verses[position],
-                readsNumber: readsVerseNumbers,
+                readsNumber: readsNumbers,
                 voice: voice,
                 speed: speed,
                 pause: versePause,

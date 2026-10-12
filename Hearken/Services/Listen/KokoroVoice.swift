@@ -305,6 +305,8 @@ nonisolated final class KokoroSynth: @unchecked Sendable {
     private var idleUnload: DispatchWorkItem?
 
     private init() {
+        // Start watching the app's state now, before any GPU work.
+        _ = GPUGate.shared
         // Give the memory back when iOS asks for it; the next verse reloads the model.
         NotificationCenter.default.addObserver(
             // UIApplication.didReceiveMemoryWarningNotification, by name: this class isn't on the main actor.
@@ -378,7 +380,11 @@ nonisolated final class KokoroSynth: @unchecked Sendable {
     private func speak(_ chunk: String, tts: KokoroTTS, style: MLXArray, language: Language, pace: Float, gpu: Bool) throws -> [Float] {
         do {
             let run = { try tts.generateAudio(voice: style, language: language, text: chunk, speed: pace).0 }
-            return gpu ? try run() : try Device.withDefaultDevice(.cpu, run)
+            // The GPU only while the app is active: iOS ends an app that sends GPU work from
+            // the background (the crash a moment after locking the screen). The gate is
+            // checked per chunk, so a verse that started on the GPU finishes on the CPU.
+            if gpu, let samples = try GPUGate.shared.run(run) { return samples }
+            return try Device.withDefaultDevice(.cpu, run)
         } catch KokoroTTS.KokoroTTSError.tooManyTokens {
             let halves = KokoroText.halves(chunk)
             guard halves.count == 2 else { throw KokoroTTS.KokoroTTSError.tooManyTokens }
@@ -394,7 +400,9 @@ nonisolated final class KokoroSynth: @unchecked Sendable {
         MLX.GPU.set(cacheLimit: Self.gpuCacheLimit)
         // If loading crashes the app, the flag is still set next launch and natural voices turn off.
         KokoroModel.markLoading(true)
-        let loaded = KokoroTTS(modelPath: url, g2p: .misaki)
+        // Reloading after a memory warning can happen with the screen locked: keep it off the GPU then.
+        let make = { KokoroTTS(modelPath: url, g2p: .misaki) }
+        let loaded = GPUGate.shared.run(make) ?? Device.withDefaultDevice(.cpu, make)
         KokoroModel.markLoading(false)
         tts = loaded
         return loaded
@@ -456,6 +464,58 @@ nonisolated final class KokoroSynth: @unchecked Sendable {
         let average = sum.map { $0 / Float(voices.count) }
         averageProsody = average
         return average
+    }
+}
+
+/// Whether Kokoro may use the GPU: only while the app is active. iOS doesn't allow GPU work
+/// from the background, and ends the app if a command buffer is sent after it leaves the
+/// foreground. When the app is about to go inactive (locking the screen, switching apps),
+/// the gate closes and waits for any GPU chunk in flight to finish, so nothing is running on
+/// the GPU by the time the app reaches the background. Kokoro carries on on the CPU.
+nonisolated final class GPUGate: @unchecked Sendable {
+    static let shared = GPUGate()
+
+    private let state = NSLock()
+    private var isOpen = true
+    /// Held while a chunk runs on the GPU.
+    private let inFlight = NSLock()
+    private var observers: [any NSObjectProtocol] = []
+
+    private init() {
+        let center = NotificationCenter.default
+        // By name: this class isn't on the main actor. Delivered on the posting (main) thread.
+        for name in ["UIApplicationWillResignActiveNotification", "UIApplicationDidEnterBackgroundNotification"] {
+            observers.append(center.addObserver(forName: Notification.Name(name), object: nil, queue: nil) { [weak self] _ in
+                self?.close()
+            })
+        }
+        observers.append(center.addObserver(forName: Notification.Name("UIApplicationDidBecomeActiveNotification"), object: nil, queue: nil) { [weak self] _ in
+            self?.open()
+        })
+        // Launched straight into the background (Siri, a Shortcut): start closed.
+        DispatchQueue.main.async { [weak self] in
+            MainActor.assumeIsolated {
+                if UIApplication.shared.applicationState != .active { self?.close() }
+            }
+        }
+    }
+
+    private func open() {
+        state.withLock { isOpen = true }
+    }
+
+    private func close() {
+        state.withLock { isOpen = false }
+        // Let a chunk already on the GPU finish (a fraction of a second) before the app moves on.
+        if inFlight.lock(before: Date(timeIntervalSinceNow: 2)) { inFlight.unlock() }
+    }
+
+    /// Runs `body` with the GPU allowed, or returns nil when the app isn't active.
+    func run<T>(_ body: () throws -> T) rethrows -> T? {
+        inFlight.lock()
+        defer { inFlight.unlock() }
+        guard state.withLock({ isOpen }) else { return nil }
+        return try body()
     }
 }
 

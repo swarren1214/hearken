@@ -15,6 +15,7 @@ struct RootTabView: View {
     @State private var selection: AppTab = .today
     @State private var todayPath = NavigationPath()
     @State private var playPath = NavigationPath()
+    @State private var libraryPath = NavigationPath()
     @State private var navigator = AppNavigator.shared
     @State private var groups = GroupStore.shared
     @State private var tour = TourController.shared
@@ -54,7 +55,7 @@ struct RootTabView: View {
             }
 
             Tab(value: AppTab.scriptures) {
-                NavigationStack { LibraryView() }
+                NavigationStack(path: $libraryPath) { LibraryView() }
             } label: {
                 Image(systemName: "books.vertical.fill").accessibilityLabel("Library")
             }
@@ -117,10 +118,18 @@ struct RootTabView: View {
         .sheet(item: Binding(get: { importer.batch }, set: { value in
             if value == nil, let batch = importer.batch { importer.cancel(batch) }
         })) { batch in
-            AddToLibrarySheet(batch: batch)
+            AddToLibrarySheet(batchID: batch.id)
         }
         .onChange(of: importer.addedToken) {
             selection = .scriptures
+        }
+        // A "book is ready" notification: open the book.
+        .onChange(of: navigator.pendingBookID, initial: true) { _, bookID in
+            guard let bookID else { return }
+            selection = .scriptures
+            libraryPath = NavigationPath()
+            libraryPath.append(ImportedBookRoute(bookID: bookID))
+            navigator.pendingBookID = nil
         }
         .alert("Couldn't Import", isPresented: Binding(get: { importer.failureMessage != nil }, set: { if !$0 { importer.failureMessage = nil } })) {
             Button("OK", role: .cancel) {}
@@ -132,7 +141,7 @@ struct RootTabView: View {
                 VStack(spacing: 10) {
                     ProgressView()
                         .controlSize(.large)
-                    Text("Reading the book…")
+                    Text("Copying the file…")
                         .font(.subheadline.weight(.medium))
                 }
                 .padding(24)

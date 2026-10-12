@@ -159,3 +159,52 @@ enum CoverImageCache {
         return image
     }
 }
+
+/// The line under a cover while its book is being prepared: the stage, then how far along.
+/// Hidden once the book is ready.
+struct BookStatusCaption: View {
+    let book: ImportedBook
+
+    @State private var library = ImportedLibrary.shared
+
+    var body: some View {
+        if let status = status {
+            VStack(alignment: .leading, spacing: 1) {
+                Text(status.title)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.primary)
+                Text(status.detail)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .monospacedDigit()
+                    .contentTransition(.numericText())
+            }
+            .lineLimit(1)
+            .frame(width: 120, alignment: .leading)
+            .accessibilityElement(children: .combine)
+            .animation(.snappy, value: status.detail)
+        }
+    }
+
+    private var status: (title: String, detail: String)? {
+        switch book.status {
+        case .preparing:
+            guard let progress = library.progress[book.id] else {
+                // Imported on another device: the text arrives through iCloud.
+                return ("Waiting for iCloud", "Preparing elsewhere")
+            }
+            let stage = library.stage[book.id] ?? .reading
+            if stage == .reading, book.format == .pdf, book.pageCount > 0 {
+                // Reading is the first 80% of the bar.
+                let page = min(book.pageCount, max(1, Int((progress / 0.8 * Double(book.pageCount)).rounded())))
+                return (stage.title(for: book.format), "\(page) of \(book.pageCount)")
+            }
+            return (stage.title(for: book.format), "\(Int((progress * 100).rounded()))%")
+        case .failed:
+            return ("Couldn't read", "Tap to try again")
+        case .ready:
+            if library.stage[book.id] == .naming { return ("Naming parts", "Ready to read") }
+            return nil
+        }
+    }
+}

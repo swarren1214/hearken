@@ -210,10 +210,10 @@ struct BookmarksSheet: View {
                 .tint(.gray)
         }
         .contextMenu {
-            Button("Go to Bookmark", systemImage: "arrow.right") { onGo(bookmark.target) }
-            Button("Rename", systemImage: "pencil") { path.append(.edit(bookmark)) }
+            Button("Go to Bookmark", menuIcon: "arrow.right") { onGo(bookmark.target) }
+            Button("Rename", menuIcon: "pencil") { path.append(.edit(bookmark)) }
             if let current, current != bookmark.target {
-                Button("Move Here", systemImage: "arrow.down.to.line") {
+                Button("Move Here", menuIcon: "arrow.down.to.line") {
                     bookmark.chapterID = current.chapterID
                     bookmark.verse = current.verse
                     bookmark.updatedAt = .now

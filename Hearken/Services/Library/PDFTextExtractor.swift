@@ -20,8 +20,6 @@ nonisolated enum PDFTextExtractor {
         }
     }
 
-    static let pagesPerSection = 10
-
     static func details(of url: URL) throws -> BookDetails {
         guard let document = PDFDocument(url: url) else { throw ExtractError.unreadable }
         if document.isLocked { throw ExtractError.locked }
@@ -34,12 +32,15 @@ nonisolated enum PDFTextExtractor {
             title: usableTitle(title) ?? url.deletingPathExtension().lastPathComponent,
             author: author,
             coverData: document.page(at: 0).flatMap { pageImage($0, longSide: 900) }.flatMap { ImageTools.jpeg($0) },
-            chapterCount: sections.isEmpty ? Int((Double(document.pageCount) / Double(pagesPerSection)).rounded(.up)) : sections.count,
+            chapterCount: sections.count,
             pageCount: document.pageCount
         )
     }
 
-    static func content(of url: URL, progress: @Sendable (Double) -> Void) throws -> ImportedContent {
+    /// The text as chapters of paragraphs (BookStructurer adds verses and parts): one chapter
+    /// per outline entry, or the whole text as one run when the PDF has no outline. Each
+    /// paragraph keeps the page it starts on.
+    static func chapters(of url: URL, progress: @Sendable (Double) -> Void) throws -> [RawChapter] {
         guard let document = PDFDocument(url: url) else { throw ExtractError.unreadable }
         if document.isLocked { throw ExtractError.locked }
         let pageCount = document.pageCount
@@ -49,7 +50,7 @@ nonisolated enum PDFTextExtractor {
         var pages: [[String]] = []
         pages.reserveCapacity(pageCount)
         for index in 0..<pageCount {
-            progress(Double(index) / Double(pageCount) * 0.95)
+            progress(Double(index) / Double(pageCount))
             guard let page = document.page(at: index) else {
                 pages.append([])
                 continue
@@ -63,32 +64,32 @@ nonisolated enum PDFTextExtractor {
         }
         let cleaned = removingRunningHeads(pages)
 
-        var sections = outlineSections(document)
+        var sections: [(title: String?, page: Int)] = outlineSections(document).map { (title: $0.title, page: $0.page) }
         if sections.isEmpty {
-            sections = stride(from: 0, to: pageCount, by: pagesPerSection).map { start in
-                let end = min(start + pagesPerSection, pageCount)
-                return (title: start + 1 == end ? "Page \(end)" : "Pages \(start + 1)–\(end)", page: start)
-            }
+            sections = [(title: nil, page: 0)]
         } else if sections[0].page > 0 {
             // Front matter before the first outline entry.
             sections.insert((title: "Opening Pages", page: 0), at: 0)
         }
 
-        var chapters: [ImportedChapter] = []
+        var chapters: [RawChapter] = []
         for (i, section) in sections.enumerated() {
             let end = i + 1 < sections.count ? sections[i + 1].page : pageCount
             guard section.page < end else { continue }
-            let lines = cleaned[section.page..<end].flatMap { $0 + [""] }
-            var paragraphs = rebuildParagraphs(lines)
-            if let first = paragraphs.first, first.compare(section.title, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame {
-                paragraphs.removeFirst()
-            }
+            // Lines run on across pages, so a paragraph broken by a page turn stays whole.
+            let lines = (section.page..<end).flatMap { page in cleaned[page].map { (text: $0, page: page + 1) } }
+            let paragraphs = rebuildParagraphs(lines)
             guard !paragraphs.isEmpty else { continue }
-            chapters.append(ImportedChapter(title: section.title, paragraphs: paragraphs, startPage: section.page + 1))
+            chapters.append(RawChapter(
+                title: section.title,
+                titleSource: section.title == nil ? .generic : .file,
+                paragraphs: paragraphs.map(\.text),
+                pages: paragraphs.map(\.page)
+            ))
         }
         progress(1)
         guard !chapters.isEmpty else { throw ExtractError.noText }
-        return ImportedContent(chapters: chapters)
+        return chapters
     }
 
     /// The page as an image, `longSide` pixels on its long side.
@@ -198,28 +199,31 @@ nonisolated enum PDFTextExtractor {
         return !trimmed.isEmpty && trimmed.count <= 6 && trimmed.lowercased().allSatisfy { roman.contains($0) }
     }
 
-    /// Joins printed lines into paragraphs. A paragraph ends at a blank line, or where a line
-    /// that ends a sentence is clearly shorter than the lines around it. Words hyphenated
-    /// across a line break are rejoined.
-    static func rebuildParagraphs(_ lines: [String]) -> [String] {
-        let lengths = lines.map(\.count).filter { $0 > 20 }.sorted()
+    /// Joins printed lines into paragraphs, each with the page it starts on. A paragraph ends
+    /// at a blank line, or where a line that ends a sentence is clearly shorter than the lines
+    /// around it. Words hyphenated across a line break are rejoined.
+    static func rebuildParagraphs(_ lines: [(text: String, page: Int)]) -> [(text: String, page: Int)] {
+        let lengths = lines.map(\.text.count).filter { $0 > 20 }.sorted()
         let typical = lengths.isEmpty ? 60 : lengths[lengths.count * 3 / 4]
-        var paragraphs: [String] = []
+        var paragraphs: [(text: String, page: Int)] = []
         var current = ""
+        var currentPage = lines.first?.page ?? 1
 
         func flush() {
             let text = MarkupText.collapse(current)
-            if !text.isEmpty { paragraphs.append(text) }
+            if !text.isEmpty { paragraphs.append((text, currentPage)) }
             current = ""
         }
 
-        for (index, line) in lines.enumerated() {
+        for (index, entry) in lines.enumerated() {
+            let line = entry.text
             if line.isEmpty {
                 flush()
                 continue
             }
             if current.isEmpty {
                 current = line
+                currentPage = entry.page
             } else if current.hasSuffix("-"), let last = current.dropLast().last, last.isLetter,
                       let next = line.first, next.isLowercase {
                 current.removeLast()
@@ -230,7 +234,7 @@ nonisolated enum PDFTextExtractor {
 
             let endsSentence = line.last.map { ".!?:;\"'”’)".contains($0) } ?? false
             let isShort = line.count < Int(Double(typical) * 0.72)
-            let nextLine = index + 1 < lines.count ? lines[index + 1] : ""
+            let nextLine = index + 1 < lines.count ? lines[index + 1].text : ""
             let nextStartsNew = nextLine.first.map { $0.isUppercase || $0.isNumber || "\"“‘(".contains($0) } ?? true
             if endsSentence && isShort && nextStartsNew {
                 flush()

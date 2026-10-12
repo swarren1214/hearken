@@ -392,13 +392,13 @@ private struct ChapterGrid: View {
                 .contextMenu {
                     let isRead = progress.read.contains(id)
                     Button(isRead ? "Mark as Unread" : "Mark as Read",
-                           systemImage: isRead ? "arrow.uturn.backward.circle" : "checkmark.circle") {
+                           menuIcon: isRead ? "arrow.uturn.backward.circle" : "checkmark.circle") {
                         setRead(!isRead, chapterID: id)
                     }
-                    Button("Listen", systemImage: "headphones") {
+                    Button("Listen", menuIcon: "headphones") {
                         ListenEngine.shared.start(chapterID: id)
                     }
-                    Button("Show in Notebook", systemImage: "note.text") {
+                    Button("Show in Notebook", menuIcon: "note.text") {
                         onShowNotebook(book.id)
                     }
                 }

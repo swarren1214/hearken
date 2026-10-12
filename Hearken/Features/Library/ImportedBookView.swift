@@ -28,13 +28,15 @@ struct ImportedBookView: View {
             if let book = matches.first {
                 if book.status == .ready, let content = library.content(bookID) {
                     contents(book, content)
+                } else if book.status == .preparing {
+                    preparing(book)
                 } else {
                     ContentUnavailableView {
-                        Label(book.status == .failed ? "Couldn't Read This Book" : "Preparing…", systemImage: book.status == .failed ? "exclamationmark.triangle" : "hourglass")
+                        Label("Couldn't Read This Book", systemImage: "exclamationmark.triangle")
                     } description: {
-                        Text(book.status == .failed
-                             ? "Hearken couldn't find readable text in this file."
-                             : "The chapters will be ready in a moment.")
+                        Text("Hearken couldn't find readable text in this file.")
+                    } actions: {
+                        Button("Try Again") { BookImporter.shared.retry(book) }
                     }
                 }
             } else {
@@ -60,7 +62,7 @@ struct ImportedBookView: View {
         .fullScreenCover(item: $originalPages) { pages in
             PDFPagesView(url: pages.url, title: pages.title, startPage: pages.startPage)
         }
-        .confirmationDialog("Remove “\(matches.first?.title ?? "")”?", isPresented: $confirmingRemove, titleVisibility: .visible) {
+        .alert("Remove “\(matches.first?.title ?? "")”?", isPresented: $confirmingRemove) {
             Button("Remove", role: .destructive) {
                 if let book = matches.first {
                     dismiss()
@@ -72,6 +74,35 @@ struct ImportedBookView: View {
             Text(LibraryStore.studySummary(forBooks: [bookID], in: modelContext).map { "This also deletes your \($0) in it, on all your devices." }
                  ?? "It's removed from the Library on all your devices.")
         }
+    }
+
+    // MARK: Preparing
+
+    /// The stage and how far along, while the chapters are prepared.
+    private func preparing(_ book: ImportedBook) -> some View {
+        let progress = library.progress[book.id]
+        let stage = library.stage[book.id] ?? .reading
+        return VStack(spacing: 18) {
+            ImportedBookCover(book: book, size: CGSize(width: 150, height: 225))
+            VStack(spacing: 6) {
+                Text(progress == nil ? "Waiting for iCloud" : stage.title(for: book.format))
+                    .font(.headline)
+                Text(progress == nil
+                     ? "This book is being prepared on the device it was added on."
+                     : "\(book.title) will be ready in a moment.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            if let progress {
+                ProgressView(value: progress)
+                    .frame(maxWidth: 240)
+                    .accessibilityValue("\(Int(progress * 100)) percent")
+            }
+        }
+        .padding(32)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .animation(.snappy, value: stage)
     }
 
     // MARK: Contents
@@ -125,7 +156,7 @@ struct ImportedBookView: View {
                         ReaderView(chapterID: id)
                     } label: {
                         HStack(spacing: 12) {
-                            Text("\(index + 1)")
+                            Text("\(chapter.number ?? index + 1)")
                                 .font(.footnote)
                                 .foregroundStyle(.secondary)
                                 .monospacedDigit()

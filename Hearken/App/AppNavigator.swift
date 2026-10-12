@@ -13,6 +13,8 @@ final class AppNavigator {
     var pendingChapterID: String?
     /// A subject's Scholar Path to open on the Play tab (after earning a badge).
     var pendingSubjectID: String?
+    /// An imported book to open on the Library tab (its "ready" notification was tapped).
+    var pendingBookID: String?
 
     func open(chapterID: String) {
         pendingChapterID = chapterID
@@ -57,7 +59,9 @@ final class NotificationRouter: NSObject, UNUserNotificationCenterDelegate, @unc
 
     nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
         let info = response.notification.request.content.userInfo
-        if let groupID = info["groupID"] as? String {
+        if let bookID = info["bookID"] as? String {
+            await MainActor.run { AppNavigator.shared.pendingBookID = bookID }
+        } else if let groupID = info["groupID"] as? String {
             await MainActor.run { GroupStore.shared.openGroupID = groupID }
         } else if let chapterID = info["chapterID"] as? String {
             await MainActor.run { AppNavigator.shared.open(chapterID: chapterID) }

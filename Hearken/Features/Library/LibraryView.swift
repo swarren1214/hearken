@@ -32,10 +32,19 @@ struct LibraryView: View {
     }
 
     var body: some View {
+        // Split into parts so the compiler can type-check each one quickly.
+        syncing(dialogs(importing(destinations(
+            shelvesList
+                .navigationTitle("Library")
+                .toolbar { libraryToolbar }
+        ))))
+    }
+
+    private var shelvesList: some View {
         let progress = LibraryProgress(progress: progressRecords, highlights: highlights)
         let shelves = LibraryStore.layout(shelves: shelfRecords, placements: placements, books: books)
 
-        ScrollView {
+        return ScrollView {
             VStack(alignment: .leading, spacing: 32) {
                 ForEach(shelves) { shelf in
                     shelfRow(shelf, progress: progress)
@@ -54,8 +63,10 @@ struct LibraryView: View {
                     .allowsHitTesting(false)
             }
         }
-        .navigationTitle("Library")
-        .toolbar {
+    }
+
+    @ToolbarContentBuilder
+    private var libraryToolbar: some ToolbarContent {
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
                     Button("Import a Book…", systemImage: "square.and.arrow.down") { importBook(toShelf: nil) }
@@ -85,62 +96,86 @@ struct LibraryView: View {
                 }
                 .tint(Color.primary)
             }
-        }
-        .navigationDestination(for: LibraryRoute.self) { route in
-            if let work = LibraryCatalog.work(route.workID) {
-                LibraryBookView(work: work)
-                    .navigationTransition(.zoom(sourceID: work.id, in: covers))
+    }
+
+    private func destinations(_ content: some View) -> some View {
+        content
+            .navigationDestination(for: LibraryRoute.self) { route in
+                if let work = LibraryCatalog.work(route.workID) {
+                    LibraryBookView(work: work)
+                        .navigationTransition(.zoom(sourceID: work.id, in: covers))
+                }
             }
-        }
-        .navigationDestination(for: ImportedBookRoute.self) { route in
-            ImportedBookView(bookID: route.bookID)
-                .navigationTransition(.zoom(sourceID: ImportedLibrary.workID(forBook: route.bookID), in: covers))
-        }
-        .fileImporter(isPresented: $pickingFiles, allowedContentTypes: BookImporter.contentTypes, allowsMultipleSelection: true) { result in
-            if case .success(let urls) = result {
-                importer.inspect(urls, shelfID: importShelfID)
+            .navigationDestination(for: ImportedBookRoute.self) { route in
+                ImportedBookView(bookID: route.bookID)
+                    .navigationTransition(.zoom(sourceID: ImportedLibrary.workID(forBook: route.bookID), in: covers))
             }
-        }
-        // iPad: drop EPUB and PDF files anywhere on the Library.
-        .onDrop(of: BookImporter.contentTypes, isTargeted: $dropTargeted) { providers in
-            importer.inspect(providers: providers)
-        }
-        .sheet(isPresented: $editingShelves) {
-            ShelfEditorView()
-        }
-        .sheet(item: $editingBook) { book in
-            BookDetailsSheet(book: book)
-        }
-        .alert("New Shelf", isPresented: $namingShelf) {
-            TextField("Name", text: $newShelfName)
-            Button("Cancel", role: .cancel) {}
-            Button("Add") {
-                withAnimation(.snappy) { _ = LibraryStore.addShelf(named: newShelfName, in: modelContext) }
+    }
+
+    private func importing(_ content: some View) -> some View {
+        content
+            .fileImporter(isPresented: $pickingFiles, allowedContentTypes: BookImporter.contentTypes, allowsMultipleSelection: true) { result in
+                if case .success(let urls) = result {
+                    importer.inspect(urls, shelfID: importShelfID)
+                }
             }
-        } message: {
-            Text("Name the shelf, like “Apocryphal Texts”.")
-        }
-        .confirmationDialog(
-            removal?.title ?? "",
-            isPresented: Binding(get: { removal != nil }, set: { if !$0 { removal = nil } }),
-            titleVisibility: .visible,
-            presenting: removal
-        ) { removal in
-            Button("Remove", role: .destructive) {
-                withAnimation(.snappy) { LibraryStore.remove(removal.item, in: modelContext) }
+            // iPad: drop EPUB and PDF files anywhere on the Library.
+            .onDrop(of: BookImporter.contentTypes, isTargeted: $dropTargeted) { providers in
+                importer.inspect(providers: providers)
             }
-            Button("Cancel", role: .cancel) {}
-        } message: { removal in
-            Text(removal.message)
-        }
-        .task {
-            LibraryStore.prepare(modelContext)
-            ImportedLibrary.shared.refresh()
-        }
-        // Shelves and books arriving from another device.
-        .onChange(of: shelfRecords.count) { LibraryStore.tidy(modelContext) }
-        .onChange(of: placements.count) { LibraryStore.tidy(modelContext) }
-        .onChange(of: books.map(\.updatedAt)) { ImportedLibrary.shared.refresh() }
+    }
+
+    private func dialogs(_ content: some View) -> some View {
+        content
+            .sheet(isPresented: $editingShelves) {
+                ShelfEditorView()
+            }
+            .sheet(item: $editingBook) { book in
+                BookDetailsSheet(book: book)
+            }
+            .alert("New Shelf", isPresented: $namingShelf) {
+                TextField("Name", text: $newShelfName)
+                Button("Cancel", role: .cancel) {}
+                Button("Add") {
+                    withAnimation(.snappy) { _ = LibraryStore.addShelf(named: newShelfName, in: modelContext) }
+                }
+            } message: {
+                Text("Name the shelf, like “Apocryphal Texts”.")
+            }
+            // A standard alert to confirm removing a book.
+            .alert(
+                removal?.title ?? "",
+                isPresented: Binding(get: { removal != nil }, set: { if !$0 { removal = nil } }),
+                presenting: removal
+            ) { removal in
+                Button("Remove", role: .destructive) {
+                    withAnimation(.snappy) { LibraryStore.remove(removal.item, in: modelContext) }
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: { removal in
+                Text(removal.message)
+            }
+    }
+
+    /// How many imported books are ready, for the haptic when one finishes.
+    private var readyCount: Int {
+        books.filter { $0.status == .ready }.count
+    }
+
+    private func syncing(_ content: some View) -> some View {
+        content
+            // A book finishing while you watch.
+            .sensoryFeedback(trigger: readyCount) { (old: Int, new: Int) -> SensoryFeedback? in
+                new > old ? .success : nil
+            }
+            .task {
+                LibraryStore.prepare(modelContext)
+                ImportedLibrary.shared.refresh()
+            }
+            // Shelves and books arriving from another device.
+            .onChange(of: shelfRecords.count) { LibraryStore.tidy(modelContext) }
+            .onChange(of: placements.count) { LibraryStore.tidy(modelContext) }
+            .onChange(of: books.map(\.updatedAt)) { ImportedLibrary.shared.refresh() }
     }
 
     // MARK: Shelves
@@ -159,13 +194,17 @@ struct LibraryView: View {
             .padding(.horizontal, 20)
 
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(alignment: .bottom, spacing: 14) {
+                // Top-aligned: a preparing book's stage line hangs below its cover.
+                HStack(alignment: .top, spacing: 14) {
                     ForEach(shelf.items) { item in
                         switch item {
                         case .work(let work):
                             workCover(work, on: shelf, progress: progress)
                         case .book(let book):
-                            bookCover(book, on: shelf, progress: progress)
+                            VStack(alignment: .leading, spacing: 8) {
+                                bookCover(book, on: shelf, progress: progress)
+                                BookStatusCaption(book: book)
+                            }
                         }
                     }
                     if shelf.items.isEmpty && !shelf.isLocked {
@@ -280,9 +319,9 @@ struct LibraryView: View {
         }
         .contextMenu {
             if book.status == .failed {
-                Button("Try Again", systemImage: "arrow.clockwise") { BookImporter.shared.retry(book) }
+                Button("Try Again", menuIcon: "arrow.clockwise") { BookImporter.shared.retry(book) }
             }
-            Button("Edit Details", systemImage: "pencil") { editingBook = book }
+            Button("Edit Details", menuIcon: "pencil") { editingBook = book }
             moveMenu(.book(book), currentShelf: shelf.id)
             Button("Remove from Library", systemImage: "trash", role: .destructive) {
                 let summary = LibraryStore.studySummary(forBooks: [book.id], in: modelContext)
@@ -306,7 +345,7 @@ struct LibraryView: View {
             .filter { !$0.isRemoved && !$0.isLocked && $0.id != currentShelf }
             .sorted { $0.order < $1.order }
         if !targets.isEmpty {
-            Menu("Move to Shelf", systemImage: "books.vertical") {
+            Menu("Move to Shelf", menuIcon: "books.vertical") {
                 ForEach(targets) { shelf in
                     Button(shelf.name) {
                         withAnimation(.snappy) { LibraryStore.move(item, to: shelf.id, in: modelContext) }

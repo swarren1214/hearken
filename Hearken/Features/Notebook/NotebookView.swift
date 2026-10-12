@@ -355,12 +355,12 @@ struct NotebookView: View {
             }
         }
         .contextMenu {
-            Button("Open in Reader", systemImage: "book") { openTarget = entry.target }
-            Button("Copy", systemImage: "doc.on.doc") {
+            Button("Open in Reader", menuIcon: "book") { openTarget = entry.target }
+            Button("Copy", menuIcon: "doc.on.doc") {
                 UIPasteboard.general.string = NotebookExport.text(for: entry, legend: legend, format: .plain)
             }
             ShareLink(item: NotebookExport.text(for: entry, legend: legend, format: .plain)) {
-                Label("Share", systemImage: "square.and.arrow.up")
+                Label { Text("Share") } icon: { Image.menuIcon("square.and.arrow.up") }
             }
             Divider()
             if let highlight = entry.highlight {

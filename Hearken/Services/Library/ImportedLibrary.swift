@@ -16,6 +16,26 @@ final class ImportedLibrary {
 
     /// Preparing books' progress, 0...1, by book ID.
     var progress: [String: Double] = [:]
+    /// What each book being prepared (or titled) is doing now, by book ID.
+    var stage: [String: PrepStage] = [:]
+
+    /// The steps of preparing a book, shown under its cover.
+    nonisolated enum PrepStage: Equatable, Sendable {
+        case reading
+        case chapters
+        case verses
+        /// The on-device model is titling untitled parts; the book is already readable.
+        case naming
+
+        func title(for format: ImportedBook.Format) -> String {
+            switch self {
+            case .reading: format == .pdf ? "Reading pages" : "Reading file"
+            case .chapters: "Finding chapters"
+            case .verses: "Adding verses"
+            case .naming: "Naming parts"
+            }
+        }
+    }
 
     @ObservationIgnored private var container: ModelContainer?
     @ObservationIgnored private var books: [String: BookInfo] = [:]
@@ -38,6 +58,9 @@ final class ImportedLibrary {
         self.container = container
         refresh()
     }
+
+    /// The app's main context, for services that look up books.
+    var modelContext: ModelContext? { container?.mainContext }
 
     // MARK: IDs
 
@@ -147,8 +170,11 @@ final class ImportedLibrary {
               loaded.chapters.indices.contains(parsed.number - 1) else { return nil }
         let number = parsed.number
         let source = loaded.chapters[number - 1]
+        // Printed verse numbers when the book has them, else 1, 2, 3.
+        let printed = source.verseNumbers.flatMap { $0.count == source.paragraphs.count ? $0 : nil }
         let verses = source.paragraphs.enumerated().map { index, text in
-            Verse(id: "\(id).\(index + 1)", number: index + 1, text: text)
+            let verse = printed?[index] ?? index + 1
+            return Verse(id: "\(id).\(verse)", number: verse, text: text)
         }
         let chapter = Chapter(id: id, number: number, heading: source.title, verses: verses)
         chapters[id] = chapter
@@ -173,15 +199,66 @@ final class ImportedLibrary {
         Self.parse(id).flatMap { book($0.bookID) }?.title ?? ""
     }
 
-    /// "The Book of Enoch · 3"
-    func title(forChapter id: String) -> String {
-        guard let parsed = Self.parse(id), let info = book(parsed.bookID) else { return "" }
-        return "\(info.title) · \(parsed.number)"
+    /// A chapter's unnumbered opening text (a summary before verse 1), when it has one.
+    func chapterSummary(_ id: String) -> String? {
+        guard let parsed = Self.parse(id), let loaded = self.content(parsed.bookID),
+              loaded.chapters.indices.contains(parsed.number - 1) else { return nil }
+        return loaded.chapters[parsed.number - 1].summary
     }
 
-    /// "The Book of Enoch · 3 ¶12"
+    /// Whether the book has real verses (version 2): numbers show and references use "3:7".
+    /// Books prepared before verses existed show paragraphs, numbers hidden, until upgraded.
+    func hasVerses(_ chapterID: String) -> Bool {
+        guard let parsed = Self.parse(chapterID) else { return true }
+        return content(parsed.bookID)?.hasVerses ?? false
+    }
+
+    /// Listen reads verse numbers aloud only when the book printed them.
+    func readsVerseNumbers(_ chapterID: String) -> Bool {
+        guard let parsed = Self.parse(chapterID) else { return true }
+        return content(parsed.bookID)?.numbering == .printed
+    }
+
+    /// The number references use: the book's printed chapter number, or its position.
+    func displayNumber(_ id: String) -> Int? {
+        guard let parsed = Self.parse(id) else { return nil }
+        guard let loaded = content(parsed.bookID), loaded.chapters.indices.contains(parsed.number - 1) else { return parsed.number }
+        return loaded.chapters[parsed.number - 1].number ?? parsed.number
+    }
+
+    /// "Enoch 6" (or, for a book prepared before verses, "The Book of Enoch · 6").
+    func title(forChapter id: String) -> String {
+        guard let parsed = Self.parse(id), let info = book(parsed.bookID) else { return "" }
+        guard hasVerses(id) else { return "\(info.title) · \(parsed.number)" }
+        return "\(Self.shortTitle(info.title)) \(displayNumber(id) ?? parsed.number)"
+    }
+
+    /// "Enoch 6:3" (older books: "The Book of Enoch · 6 ¶3").
     func reference(chapterID: String, verse: Int) -> String {
-        "\(title(forChapter: chapterID)) ¶\(verse)"
+        hasVerses(chapterID)
+            ? "\(title(forChapter: chapterID)):\(verse)"
+            : "\(title(forChapter: chapterID)) ¶\(verse)"
+    }
+
+    /// A book's title cut down for references: "The Book of Enoch" → "Enoch",
+    /// "The Wisdom of Solomon" → "Wisdom of Solomon", at most 3 words.
+    nonisolated static func shortTitle(_ title: String) -> String {
+        var words = title.split(separator: " ").map(String.init)
+        for lead in [["The", "Book", "of"], ["Book", "of"], ["The"]] where words.count > lead.count {
+            if zip(words, lead).allSatisfy({ $0.caseInsensitiveCompare($1) == .orderedSame }) {
+                words.removeFirst(lead.count)
+                break
+            }
+        }
+        if words.count > 3 {
+            words = Array(words.prefix(3))
+            while let last = words.last, ["of", "the", "and", "a", "an", "to"].contains(last.lowercased()), words.count > 1 {
+                words.removeLast()
+            }
+        }
+        // Drop a subtitle after a colon.
+        let short = words.joined(separator: " ").split(separator: ":").first.map(String.init) ?? title
+        return short.isEmpty ? title : short
     }
 
     // MARK: Files
@@ -208,6 +285,7 @@ final class ImportedLibrary {
         books[bookID] = nil
         contents[bookID] = nil
         progress[bookID] = nil
+        stage[bookID] = nil
         chapters = chapters.filter { !$0.key.hasPrefix(Self.workID(forBook: bookID) + ".") }
         try? FileManager.default.removeItem(at: Self.folder(forBook: bookID))
     }

@@ -344,8 +344,9 @@ struct ReaderPage: View {
 
     @AppStorage(SettingsKey.scriptureTextSize) private var textSize: Double = 20
     @AppStorage(SettingsKey.showVerseNumbers) private var showVerseNumbers = true
-    /// Imported books' paragraphs stand in for verses; their numbers are never shown.
-    private var showsNumbers: Bool { showVerseNumbers && !ImportedLibrary.isImported(chapterID) }
+    /// Imported books show verse numbers once they have real verses; books prepared before
+    /// that show paragraphs, unnumbered, until they're upgraded.
+    private var showsNumbers: Bool { showVerseNumbers && ImportedLibrary.shared.hasVerses(chapterID) }
     @AppStorage(SettingsKey.onboardingDone) private var onboardingDone = false
     @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
     @State private var pencilPalette = PencilPalettePresence.shared
@@ -763,9 +764,11 @@ struct ReaderPage: View {
         .accessibilityElement(children: .combine)
     }
 
-    /// An imported book's chapter: the book's name small, the chapter's own title large.
+    /// An imported book's chapter: the book's name small, the chapter's title large, and any
+    /// summary the book prints before verse 1 in italics, like a scripture chapter heading.
     private func importedHeader(_ chapter: Chapter, book: String) -> some View {
-        VStack(spacing: 6) {
+        let summary = ImportedLibrary.shared.chapterSummary(chapter.id)
+        return VStack(spacing: 6) {
             Text(book.uppercased())
                 .font(.footnote.weight(.semibold))
                 .tracking(2)
@@ -773,6 +776,12 @@ struct ReaderPage: View {
             Text(chapter.heading ?? "Chapter \(chapter.number)")
                 .font(.scripture(size: 28, weight: .bold))
                 .padding(.horizontal, 8)
+            if let summary {
+                Text(summary)
+                    .font(.scripture(size: 16).italic())
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 12)
+            }
         }
         .multilineTextAlignment(.center)
         .frame(maxWidth: .infinity)

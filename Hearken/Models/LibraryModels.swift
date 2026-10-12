@@ -119,17 +119,75 @@ final class ImportedBook {
     var workID: String { ImportedLibrary.workID(forBook: id) }
 }
 
-/// An imported book's text, prepared for the reader: chapters of paragraphs. Paragraphs
-/// play the part of verses (numbered from 1, numbers hidden), so highlights, notes,
-/// bookmarks, Listen and Explain work as they do in scripture.
+/// An imported book's text, prepared for the reader: chapters of verses.
+///
+/// Version 1 (the first imports) stored source paragraphs as verses, numbers hidden.
+/// Version 2 stores real verses: the book's own printed verse numbers when it has them,
+/// otherwise generated ones (a paragraph, or 2 or 3 sentences of a long one); see
+/// BookStructurer. Highlights, notes and bookmarks point at verse numbers, as in scripture.
 nonisolated struct ImportedContent: Codable, Sendable {
+    enum Numbering: String, Codable, Sendable {
+        /// Verse numbers printed in the book.
+        case printed
+        /// Verses the app made, numbered 1, 2, 3 in each chapter.
+        case generated
+    }
+
+    static let currentVersion = 2
+
     var version = 1
+    var numbering: Numbering?
     var chapters: [ImportedChapter]
+    /// Set once the on-device model has had its chance to title untitled parts.
+    var titlesRefined: Bool?
+
+    init(version: Int = ImportedContent.currentVersion, numbering: Numbering? = nil, chapters: [ImportedChapter]) {
+        self.version = version
+        self.numbering = numbering
+        self.chapters = chapters
+    }
+
+    var hasVerses: Bool { version >= 2 }
 }
 
 nonisolated struct ImportedChapter: Codable, Sendable, Hashable {
+    enum TitleSource: String, Codable, Sendable {
+        /// The book's table of contents or PDF outline.
+        case file
+        /// A heading found in the text.
+        case heading
+        /// Written by the on-device model for an untitled part.
+        case model
+        /// "Part 3": no title found yet.
+        case generic
+    }
+
     var title: String
+    /// The verses' text (version 1: source paragraphs). Named for the first format, so old
+    /// books still decode.
     var paragraphs: [String]
     /// PDFs: the page (from 1) the chapter starts on.
     var startPage: Int?
+    /// The chapter number printed in the book ("Chapter 6"), when it has one.
+    var number: Int?
+    var titleSource: TitleSource?
+    /// Printed verse numbers, one per verse, when the book numbers its verses.
+    var verseNumbers: [Int]?
+    /// Unnumbered text before the first printed verse (a chapter summary).
+    var summary: String?
+
+    init(
+        title: String, paragraphs: [String], startPage: Int? = nil, number: Int? = nil,
+        titleSource: TitleSource? = nil, verseNumbers: [Int]? = nil, summary: String? = nil
+    ) {
+        self.title = title
+        self.paragraphs = paragraphs
+        self.startPage = startPage
+        self.number = number
+        self.titleSource = titleSource
+        self.verseNumbers = verseNumbers
+        self.summary = summary
+    }
+
+    var verses: [String] { paragraphs }
 }

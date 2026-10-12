@@ -92,9 +92,9 @@ struct ListenMiniPlayer: View {
         .padding(.leading, 14)
         .padding(.trailing, 8)
         .contextMenu {
-            Button("Open Player", systemImage: "headphones") { engine.showsPlayer = true }
+            Button("Open Player", menuIcon: "headphones") { engine.showsPlayer = true }
             if let chapterID = engine.chapterID {
-                Button("Show in Reader", systemImage: "book") { AppNavigator.shared.open(chapterID: chapterID) }
+                Button("Show in Reader", menuIcon: "book") { AppNavigator.shared.open(chapterID: chapterID) }
             }
             Button("Stop Listening", systemImage: "xmark", role: .destructive) { engine.stop() }
         }
