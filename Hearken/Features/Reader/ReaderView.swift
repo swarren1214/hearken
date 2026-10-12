@@ -60,6 +60,7 @@ struct ReaderView: View {
     @AppStorage(SettingsKey.onboardingDone) private var onboardingDone = false
     @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
     @State private var listen = ListenEngine.shared
+    @State private var originalPages: OriginalPages?
 
     /// Opens `chapterID`, scrolled (or paged) to `verse` when given.
     init(chapterID: String, verse: Int? = nil) {
@@ -98,6 +99,15 @@ struct ReaderView: View {
                     .popoverTip(HighlightTip(), arrowEdge: .top)
                 }
                 .sharedBackgroundVisibility(.hidden)
+
+                if let pages = originalPagesHere {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        // An imported PDF: its printed pages, for figures, facsimiles and tables.
+                        Button("Original Pages", systemImage: "doc.richtext") { originalPages = pages }
+                            .tint(Color.primary)
+                            .accessibilityHint("Shows the PDF's printed pages.")
+                    }
+                }
 
                 ToolbarItem(placement: .topBarTrailing) {
                     // Tap: listen from here (or pause and resume). Touch and hold for more.
@@ -224,6 +234,9 @@ struct ReaderView: View {
             }
             .sensoryFeedback(.selection, trigger: chapterID)
             .sensoryFeedback(.success, trigger: quickAdd?.id) { _, new in new != nil }
+            .fullScreenCover(item: $originalPages) { pages in
+                PDFPagesView(url: pages.url, title: pages.title, startPage: pages.startPage)
+            }
             // Listen mode moved on to the next chapter: turn the reader with it.
             .onChange(of: listen.chapterID) { old, new in
                 guard let new, old == chapterID, new != chapterID else { return }
@@ -231,6 +244,20 @@ struct ReaderView: View {
                 targetVerse = nil
                 chapterID = new
             }
+    }
+
+    // MARK: Original pages
+
+    /// An imported PDF's file and the page this chapter starts on, when this device has the file.
+    private var originalPagesHere: OriginalPages? {
+        guard let parsed = ImportedLibrary.parse(chapterID),
+              ImportedLibrary.shared.book(parsed.bookID)?.format == .pdf,
+              let url = ImportedLibrary.shared.originalFile(forBook: parsed.bookID) else { return nil }
+        return OriginalPages(
+            url: url,
+            title: ImportedLibrary.shared.bookTitle(forChapter: chapterID),
+            startPage: ImportedLibrary.shared.startPage(chapterID) ?? 1
+        )
     }
 
     // MARK: Listen
@@ -316,6 +343,8 @@ struct ReaderPage: View {
 
     @AppStorage(SettingsKey.scriptureTextSize) private var textSize: Double = 20
     @AppStorage(SettingsKey.showVerseNumbers) private var showVerseNumbers = true
+    /// Imported books' paragraphs stand in for verses; their numbers are never shown.
+    private var showsNumbers: Bool { showVerseNumbers && !ImportedLibrary.isImported(chapterID) }
     @AppStorage(SettingsKey.onboardingDone) private var onboardingDone = false
     @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
     @State private var pencilPalette = PencilPalettePresence.shared
@@ -519,7 +548,7 @@ struct ReaderPage: View {
         key.combine(verses.count)
         key.combine(interactive)
         key.combine(fontSize)
-        key.combine(showVerseNumbers)
+        key.combine(showsNumbers)
         key.combine(accent)
         if interactive {
             for highlight in highlights {
@@ -540,7 +569,7 @@ struct ReaderPage: View {
         ChapterTextLayout(
             verses: verses,
             fontSize: fontSize,
-            showNumbers: showVerseNumbers,
+            showNumbers: showsNumbers,
             tint: UIColor(accent.color),
             highlights: interactive ? highlights : [],
             noteVerses: interactive ? Set(notes.map(\.verse)) : [],
@@ -660,7 +689,8 @@ struct ReaderPage: View {
             },
             onClose: closeSelection,
             onExplain: ExplainEngine.shared.isOffered ? { explain(selection) } : nil,
-            onShareToGroup: GroupStore.shared.groups.isEmpty ? nil : { prepareGroupShare(selection) },
+            // Group members don't have the user's imported books.
+            onShareToGroup: GroupStore.shared.groups.isEmpty || ImportedLibrary.isImported(chapterID) ? nil : { prepareGroupShare(selection) },
             showsChrome: false
         )
     }
@@ -690,8 +720,17 @@ struct ReaderPage: View {
 
     /// The chapter's title page, centered. A book's first chapter
     /// opens with the book's name large; later chapters lead with the chapter number.
+    @ViewBuilder
     fileprivate func header(_ chapter: Chapter) -> some View {
         let book = content.bookTitle(forChapter: chapter.id)
+        if ImportedLibrary.isImported(chapter.id) {
+            importedHeader(chapter, book: book)
+        } else {
+            scriptureHeader(chapter, book: book)
+        }
+    }
+
+    private func scriptureHeader(_ chapter: Chapter, book: String) -> some View {
         let opensBook = chapter.number == 1
         return VStack(spacing: 6) {
             Text(opensBook ? "CHAPTER 1" : book.uppercased())
@@ -706,6 +745,24 @@ struct ReaderPage: View {
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 12)
             }
+        }
+        .multilineTextAlignment(.center)
+        .frame(maxWidth: .infinity)
+        .padding(.top, 12)
+        .padding(.bottom, 16)
+        .accessibilityElement(children: .combine)
+    }
+
+    /// An imported book's chapter: the book's name small, the chapter's own title large.
+    private func importedHeader(_ chapter: Chapter, book: String) -> some View {
+        VStack(spacing: 6) {
+            Text(book.uppercased())
+                .font(.footnote.weight(.semibold))
+                .tracking(2)
+                .foregroundStyle(.secondary)
+            Text(chapter.heading ?? "Chapter \(chapter.number)")
+                .font(.scripture(size: 28, weight: .bold))
+                .padding(.horizontal, 8)
         }
         .multilineTextAlignment(.center)
         .frame(maxWidth: .infinity)
@@ -788,7 +845,8 @@ struct ReaderPage: View {
             onRemove: { removeHighlights(in: selection) },
             onClose: closeSelection,
             onExplain: ExplainEngine.shared.isOffered ? { explain(selection) } : nil,
-            onShareToGroup: GroupStore.shared.groups.isEmpty ? nil : { prepareGroupShare(selection) }
+            // Group members don't have the user's imported books.
+            onShareToGroup: GroupStore.shared.groups.isEmpty || ImportedLibrary.isImported(chapterID) ? nil : { prepareGroupShare(selection) }
         )
     }
 
@@ -1156,7 +1214,7 @@ extension ReaderPage {
     private func pagination(for chapter: Chapter, layout built: ChapterTextLayout, size: CGSize, interactive: Bool) -> PagedChapterText {
         let key = PaginationKey(
             chapterID: chapter.id, width: size.width, height: size.height, textSize: textSize,
-            showNumbers: showVerseNumbers, dynamicType: environment.dynamicTypeSize,
+            showNumbers: showsNumbers, dynamicType: environment.dynamicTypeSize,
             noteVerses: interactive ? notes.map(\.verse).sorted() : [],
             bookmarkVerses: interactive ? bookmarks.map(\.verse).sorted() : [],
             groupVerses: interactive ? groupVerses.sorted() : [],
@@ -1249,4 +1307,12 @@ struct VerseRow: View {
 final class PencilPalettePresence {
     static let shared = PencilPalettePresence()
     var isShown = false
+}
+
+/// An imported PDF's printed pages, opened from the reader.
+struct OriginalPages: Identifiable {
+    let url: URL
+    let title: String
+    let startPage: Int
+    var id: String { "\(url.path())#\(startPage)" }
 }

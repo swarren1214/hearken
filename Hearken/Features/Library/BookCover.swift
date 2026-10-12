@@ -63,7 +63,7 @@ struct BookCover: View {
         .frame(width: size.width, height: size.height)
         .overlay(alignment: .topTrailing) {
             if showsRibbon {
-                Ribbon()
+                CoverRibbon()
                     .fill(.tint)
                     .frame(width: 10 * scale, height: 40 * scale)
                     .offset(x: -14 * scale, y: -2)
@@ -82,7 +82,7 @@ struct BookCover: View {
 }
 
 /// A bookmark ribbon with a notched tail.
-private struct Ribbon: Shape {
+struct CoverRibbon: Shape {
     func path(in rect: CGRect) -> Path {
         Path { p in
             p.move(to: CGPoint(x: rect.minX, y: rect.minY))

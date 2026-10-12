@@ -91,7 +91,10 @@ struct ReaderLocationPanel: View {
             }
         case .book(let id):
             if case let (work, volume, book)? = findBook(id) {
-                list.append(.init(id: work.id, title: work.title) { level = .work(work.id) })
+                // An imported book is its own work; one crumb is enough.
+                if work.id != book.id {
+                    list.append(.init(id: work.id, title: work.title) { level = .work(work.id) })
+                }
                 if work.hasVolumeLevel {
                     list.append(.init(id: volume.id, title: volume.title) { level = .volume(volume.id) })
                 }
@@ -107,7 +110,7 @@ struct ReaderLocationPanel: View {
     private var levelContent: some View {
         switch level {
         case .library:
-            rows(LibraryCatalog.shelves.flatMap(\.works).filter(\.isAvailable)) { work in
+            rows(LibraryCatalog.allWorks.filter(\.isAvailable)) { work in
                 row(title: work.title, detail: work.summary, isCurrent: work.id == location?.work.id) {
                     level = .work(work.id)
                 }
@@ -204,14 +207,14 @@ struct ReaderLocationPanel: View {
     // MARK: Lookups
 
     private func findVolume(_ id: String) -> (LibraryWork, LibraryVolume)? {
-        for work in LibraryCatalog.shelves.flatMap(\.works) {
+        for work in LibraryCatalog.allWorks {
             if let volume = work.volumes.first(where: { $0.id == id }) { return (work, volume) }
         }
         return nil
     }
 
     private func findBook(_ id: String) -> (LibraryWork, LibraryVolume, LibraryBook)? {
-        for work in LibraryCatalog.shelves.flatMap(\.works) {
+        for work in LibraryCatalog.allWorks {
             for volume in work.volumes {
                 if let book = volume.books.first(where: { $0.id == id }) { return (work, volume, book) }
             }

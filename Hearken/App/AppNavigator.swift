@@ -29,6 +29,11 @@ final class AppNavigator {
     }
 
     func handle(_ url: URL) {
+        // An EPUB or PDF opened in Hearken from the Share sheet or Files: add it to the Library.
+        if url.isFileURL {
+            BookImporter.shared.inspect([url])
+            return
+        }
         guard url.scheme == "hearken", let host = url.host(), host == "read" || host == "listen" else { return }
         let chapterID = url.lastPathComponent
         guard !chapterID.isEmpty, chapterID != "/" else { return }

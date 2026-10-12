@@ -22,6 +22,10 @@ struct HearkenApp: App {
         UNUserNotificationCenter.current().delegate = NotificationRouter.shared
         // Listen mode marks chapters read when heard to the end, even when Siri started it in the background.
         ListenEngine.shared.attach(container: container)
+        // Imported books: served to the reader, and any left half-prepared carry on.
+        ImportedLibrary.shared.attach(container: container)
+        BookImporter.shared.attach(container: container)
+        BookImporter.shared.resumeUnfinished()
         // The reader's one-time tips.
         ReaderTips.configure()
     }

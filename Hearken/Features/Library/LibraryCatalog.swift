@@ -116,7 +116,15 @@ enum LibraryCatalog {
     ]
 
     static func work(_ id: String) -> LibraryWork? {
-        shelves.flatMap(\.works).first { $0.id == id }
+        if ImportedLibrary.isImported(id) {
+            return ImportedLibrary.bookID(fromWorkOrChapter: id).flatMap { ImportedLibrary.shared.work(forBook: $0) }
+        }
+        return shelves.flatMap(\.works).first { $0.id == id }
+    }
+
+    /// Hearken's works and every imported book that's ready to read.
+    static var allWorks: [LibraryWork] {
+        shelves.flatMap(\.works) + ImportedLibrary.shared.works
     }
 
     /// The chapter `offset` places away within the same work (Genesis 50 → Exodus 1,
@@ -174,6 +182,12 @@ enum LibraryCatalog {
 
     /// Where a chapter sits in the library, e.g. Holy Bible › Old Testament › Exodus › 4.
     static func location(ofChapter id: String) -> LibraryLocation? {
+        // An imported book: one volume, one book, its chapters numbered from 1.
+        if let parsed = ImportedLibrary.parse(id) {
+            guard let work = ImportedLibrary.shared.work(forBook: parsed.bookID),
+                  let volume = work.volumes.first, let book = volume.books.first else { return nil }
+            return LibraryLocation(work: work, volume: volume, book: book, number: parsed.number)
+        }
         for work in shelves.flatMap(\.works) {
             for volume in work.volumes {
                 for book in volume.books where book.contains(chapterID: id) {

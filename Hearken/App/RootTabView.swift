@@ -18,6 +18,7 @@ struct RootTabView: View {
     @State private var navigator = AppNavigator.shared
     @State private var groups = GroupStore.shared
     @State private var tour = TourController.shared
+    @State private var importer = BookImporter.shared
     @Environment(ContentService.self) private var content
 
     var body: some View {
@@ -112,5 +113,34 @@ struct RootTabView: View {
             }
         }
         .overlay { TourOverlay() }
+        // Importing books: every way in (Files, Share sheet, drag and drop) lands on one sheet.
+        .sheet(item: Binding(get: { importer.batch }, set: { value in
+            if value == nil, let batch = importer.batch { importer.cancel(batch) }
+        })) { batch in
+            AddToLibrarySheet(batch: batch)
+        }
+        .onChange(of: importer.addedToken) {
+            selection = .scriptures
+        }
+        .alert("Couldn't Import", isPresented: Binding(get: { importer.failureMessage != nil }, set: { if !$0 { importer.failureMessage = nil } })) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(importer.failureMessage ?? "")
+        }
+        .overlay {
+            if importer.isReading {
+                VStack(spacing: 10) {
+                    ProgressView()
+                        .controlSize(.large)
+                    Text("Reading the book…")
+                        .font(.subheadline.weight(.medium))
+                }
+                .padding(24)
+                .glassEffect(.regular, in: .rect(cornerRadius: 24))
+                .transition(.scale(scale: 0.9).combined(with: .opacity))
+                .accessibilityElement(children: .combine)
+            }
+        }
+        .animation(.snappy, value: importer.isReading)
     }
 }

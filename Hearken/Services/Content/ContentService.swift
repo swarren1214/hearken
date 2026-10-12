@@ -86,6 +86,8 @@ final class ContentService {
 
     func chapter(_ id: String) -> Chapter? {
         if let chapter = chapters[id] { return chapter }
+        // "user.<book>.<n>": a book the user imported.
+        if ImportedLibrary.isImported(id) { return ImportedLibrary.shared.chapter(id) }
         // "bofm.alma.32" lives in volume "bofm".
         let volumeID = String(id.prefix { $0 != "." })
         guard Self.volumeIDs.contains(volumeID) else { return nil }
@@ -95,18 +97,21 @@ final class ContentService {
 
     /// "Alma 32"
     func title(forChapter id: String) -> String {
+        if ImportedLibrary.isImported(id) { return ImportedLibrary.shared.title(forChapter: id) }
         guard let chapter = chapter(id), let book = bookTitles[id] else { return "" }
         return "\(book) \(chapter.number)"
     }
 
     func bookTitle(forChapter id: String) -> String {
+        if ImportedLibrary.isImported(id) { return ImportedLibrary.shared.bookTitle(forChapter: id) }
         _ = chapter(id)
         return bookTitles[id] ?? ""
     }
 
     /// "Alma 32:27"
     func reference(chapterID: String, verse: Int) -> String {
-        "\(title(forChapter: chapterID)):\(verse)"
+        if ImportedLibrary.isImported(chapterID) { return ImportedLibrary.shared.reference(chapterID: chapterID, verse: verse) }
+        return "\(title(forChapter: chapterID)):\(verse)"
     }
 
     /// Verses containing `text`, scanning every volume off the main thread.
