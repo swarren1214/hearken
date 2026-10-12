@@ -116,6 +116,8 @@ struct ImportedBookCover: View {
     }
 }
 
+// SwiftData models aren't main-actor isolated; these build main-actor UI values.
+@MainActor
 extension ImportedBook {
     /// The generated cloth cover's description, as one of the Library's works.
     var coverWork: LibraryWork {

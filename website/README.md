@@ -4,6 +4,9 @@ A standalone, static landing page. It has no build step or package dependencies;
 the contents of this directory to a static web host. The app icon is included in `assets/` and
 is used for the site branding, favicon, and Apple touch icon.
 
+The landing page uses illustrated interface previews, not app screenshots. It links to features
+and support rather than advertising an App Store download before a release URL is available.
+
 ## GitHub Pages
 
 The [deployment workflow](../.github/workflows/website.yml) publishes only the contents of

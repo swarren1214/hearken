@@ -549,7 +549,9 @@ final class ListenEngine: NSObject {
             let items = (start..<verses.count).map { position in
                 let verse = verses[position]
                 let text = (readsVerseNumbers ? "Verse \(verse.number). " : "") + verse.text
-                return NeuralSpeechPlayer.Item(index: position, text: KokoroText.prepare(text))
+                // Prepared (cleaned, names marked) by the player as it reaches each one, so a
+                // long imported chapter doesn't do all of that up front.
+                return NeuralSpeechPlayer.Item(index: position, text: text)
             }
             neural.start(items, voice: natural, tuning: tuning, speed: speed, pause: versePause.seconds)
             return

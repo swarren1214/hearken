@@ -337,13 +337,13 @@ final class BookImporter {
     // MARK: Covers
 
     /// Cloth colors for generated covers, in the library's palette.
-    static let coverPalette: [Int] = [
+    nonisolated static let coverPalette: [Int] = [
         0x5B2E4A, 0x2F5A4C, 0x3B2A22, 0x1F3466, 0x5A3A2A, 0x2E3F5C, 0x4D3B2E, 0x2F4A4A,
         0x3D3557, 0x6B3A2E, 0x334E3A, 0x4A2F3F, 0x284A5E, 0x5C4A26, 0x3F2E52, 0x5E2B2B,
     ]
 
     /// A color picked from the title, the same on every device.
-    static func coverColor(for title: String) -> Int {
+    nonisolated static func coverColor(for title: String) -> Int {
         let sum = title.unicodeScalars.reduce(0) { ($0 &* 31 &+ Int($1.value)) & 0x7FFF_FFFF }
         return coverPalette[sum % coverPalette.count]
     }

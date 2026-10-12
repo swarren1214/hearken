@@ -174,6 +174,7 @@ struct LibraryView: View {
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 22) // headroom for the lift
+                .padding(.bottom, 6) // a little air between the covers and the shelf
             }
             .scrollClipDisabled()
 

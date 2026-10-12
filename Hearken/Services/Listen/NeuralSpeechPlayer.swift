@@ -1,8 +1,14 @@
 import AVFoundation
 import UIKit
 
-/// Plays Kokoro speech verse by verse: generates a few verses ahead, schedules each as its own
-/// buffer, and reports when each verse starts and finishes so the reader can follow along.
+/// Plays Kokoro speech verse by verse, and reports when each verse starts and finishes so the
+/// reader can follow along.
+///
+/// Each verse (or an imported book's paragraph, which can run to several minutes) is split into
+/// sentence groups of a few hundred characters. Each group is generated and scheduled as its own
+/// buffer, so playback starts after the first sentence or two rather than the whole paragraph,
+/// and it stays only about half a minute of audio ahead, which keeps memory and GPU work small
+/// however long a paragraph is.
 ///
 /// Speed is applied on playback (a time-pitch unit), so changing it is instant and keeps the
 /// voice's pitch. While the app is in the foreground it generates further ahead on the GPU;
@@ -11,7 +17,16 @@ import UIKit
 final class NeuralSpeechPlayer {
     struct Item {
         let index: Int
+        /// The verse's text, as read aloud; the player prepares it for Kokoro.
         let text: String
+    }
+
+    /// A scheduled buffer: one sentence group of a verse.
+    private struct Segment {
+        let index: Int
+        let isFirst: Bool
+        let isLast: Bool
+        let seconds: Double
     }
 
     var onStart: (Int) -> Void = { _ in }
@@ -33,8 +48,9 @@ final class NeuralSpeechPlayer {
     private var generation = 0
     private var sampleGeneration = 0
     private var producer: Task<Void, Never>?
-    /// Verses scheduled and not yet finished, in play order.
-    private var scheduled: [Int] = []
+    /// Segments scheduled and not yet played, in play order.
+    private var scheduled: [Segment] = []
+    /// The verse last reported as started.
     private var playing: Int?
 
     init() {
@@ -132,42 +148,59 @@ final class NeuralSpeechPlayer {
 
     private var isForeground: Bool { UIApplication.shared.applicationState != .background }
 
-    /// How many verses to keep ready: a few while the GPU is available, a couple in the
-    /// background. Generating far ahead only holds more memory; one verse takes well under
-    /// its own playing time to generate.
-    private var lookahead: Int { isForeground ? 4 : 2 }
+    /// How much audio to keep generated ahead of what's playing: enough to ride out a slow
+    /// sentence, without holding minutes of samples. Less in the background, where only the
+    /// CPU is available.
+    private var secondsAhead: Double { isForeground ? 30 : 15 }
+    private static let maxSegmentsAhead = 12
+    /// The breath between sentence groups inside one verse or paragraph.
+    private static let segmentGap = 0.12
+
+    private var scheduledSeconds: Double { scheduled.reduce(0) { $0 + $1.seconds } }
 
     private func produce(_ items: [Item], voice: String, tuning: VoiceTuning, pause: Double, generation current: Int) async {
         for (position, item) in items.enumerated() {
-            while scheduled.count >= lookahead {
-                try? await Task.sleep(for: .milliseconds(150))
-                guard !Task.isCancelled, current == generation else { return }
-            }
-            let samples: [Float]
-            do {
-                samples = try await KokoroSynth.shared.synthesize(item.text, voice: voice, tuning: tuning, gpu: isForeground)
-            } catch {
-                guard current == generation else { return }
-                onError(item.index, error.localizedDescription)
-                return
-            }
             guard !Task.isCancelled, current == generation else { return }
-            let isLast = position == items.count - 1
-            guard let buffer = makeBuffer(samples, trailingSilence: isLast ? 0 : pause) else { continue }
-            onDuration(item.index, Double(samples.count) / KokoroSynth.sampleRate + (isLast ? 0 : pause))
-            schedule(buffer, index: item.index, generation: current)
+            let pieces = KokoroText.chunks(KokoroText.prepare(item.text))
+                .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                .filter { !$0.isEmpty }
+            guard !pieces.isEmpty else { continue }
+            let isLastItem = position == items.count - 1
+            var itemSeconds = 0.0
+
+            for (number, piece) in pieces.enumerated() {
+                // Wait while enough is already queued.
+                while !scheduled.isEmpty, scheduledSeconds >= secondsAhead || scheduled.count >= Self.maxSegmentsAhead {
+                    try? await Task.sleep(for: .milliseconds(150))
+                    guard !Task.isCancelled, current == generation else { return }
+                }
+                let samples: [Float]
+                do {
+                    samples = try await KokoroSynth.shared.synthesize(piece, voice: voice, tuning: tuning, gpu: isForeground)
+                } catch {
+                    guard current == generation else { return }
+                    onError(item.index, error.localizedDescription)
+                    return
+                }
+                guard !Task.isCancelled, current == generation else { return }
+
+                let isLastPiece = number == pieces.count - 1
+                let silence = isLastPiece ? (isLastItem ? 0 : pause) : Self.segmentGap
+                guard let buffer = makeBuffer(samples, trailingSilence: silence) else { continue }
+                let seconds = Double(samples.count) / KokoroSynth.sampleRate + silence
+                itemSeconds += seconds
+                if isLastPiece { onDuration(item.index, itemSeconds) }
+                schedule(buffer, segment: Segment(index: item.index, isFirst: number == 0, isLast: isLastPiece, seconds: seconds), generation: current)
+            }
         }
     }
 
-    private func schedule(_ buffer: AVAudioPCMBuffer, index: Int, generation current: Int) {
-        scheduled.append(index)
-        if playing == nil {
-            playing = index
-            onStart(index)
-        }
+    private func schedule(_ buffer: AVAudioPCMBuffer, segment: Segment, generation current: Int) {
+        scheduled.append(segment)
+        if scheduled.count == 1 { begin(segment.index) }
         player.scheduleBuffer(buffer, completionCallbackType: .dataPlayedBack) { [weak self] _ in
             guard let self else { return }
-            Task { @MainActor in self.played(index, generation: current) }
+            Task { @MainActor in self.played(generation: current) }
         }
         if !isPaused, !player.isPlaying {
             startEngine()
@@ -175,12 +208,18 @@ final class NeuralSpeechPlayer {
         }
     }
 
-    private func played(_ index: Int, generation current: Int) {
-        guard current == generation, let first = scheduled.first, first == index else { return }
-        scheduled.removeFirst()
-        onFinish(index)
-        playing = scheduled.first
-        if let next = playing { onStart(next) }
+    private func played(generation current: Int) {
+        guard current == generation, !scheduled.isEmpty else { return }
+        let finished = scheduled.removeFirst()
+        if finished.isLast { onFinish(finished.index) }
+        if let next = scheduled.first { begin(next.index) }
+    }
+
+    /// Reports a verse as started once, however many segments it has.
+    private func begin(_ index: Int) {
+        guard playing != index else { return }
+        playing = index
+        onStart(index)
     }
 
     private func makeBuffer(_ samples: [Float], trailingSilence: Double) -> AVAudioPCMBuffer? {
