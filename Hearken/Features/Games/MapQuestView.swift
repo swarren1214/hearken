@@ -94,7 +94,7 @@ struct MapQuestView: View {
         }
         .sensoryFeedback(.selection, trigger: index)
         .onAppear { prepareChoices() }
-        // The chevrons, back and map style icons follow the app's accent color.
+        // The Check button follows the app's accent; the chevrons, back and map style icons use the text color.
         .tint(accent.color)
     }
 
@@ -155,7 +155,7 @@ struct MapQuestView: View {
         Button(action: action) {
             Image(systemName: symbol)
                 .font(.title3.weight(.semibold))
-                .foregroundStyle(enabled ? AnyShapeStyle(.tint) : AnyShapeStyle(Color.secondary.opacity(0.4)))
+                .foregroundStyle(enabled ? AnyShapeStyle(Color.primary) : AnyShapeStyle(Color.secondary.opacity(0.4)))
                 .frame(width: 32, height: 44)
                 .contentShape(.rect)
         }
@@ -203,7 +203,7 @@ struct MapQuestView: View {
             } label: {
                 Image(systemName: "chevron.left")
                     .font(.title3.weight(.semibold))
-                    .foregroundStyle(.tint)
+                    .foregroundStyle(Color.primary)
                     .frame(width: 30, height: 30)
             }
             .buttonStyle(.glass)
@@ -252,7 +252,7 @@ struct MapQuestView: View {
         }) {
             Image(systemName: "map")
                 .font(.title3.weight(.semibold))
-                .foregroundStyle(.tint)
+                .foregroundStyle(Color.primary)
                 .frame(width: 30, height: 30)
         }
         .buttonStyle(.glass)

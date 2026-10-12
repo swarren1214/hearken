@@ -335,6 +335,7 @@ struct ReaderPage: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.self) private var environment
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     @Query private var highlights: [Highlight]
     @Query private var notes: [Note]
@@ -454,7 +455,7 @@ struct ReaderPage: View {
         .overlay(alignment: .bottom) { backToListeningPill }
         .animation(.snappy, value: followsListening)
         .animation(.snappy, value: pencilOn)
-        .animation(.snappy, value: UIDevice.isPad ? selection?.start : nil)
+        .animation(.snappy, value: usesWideBar ? selection?.start : nil)
         .sensoryFeedback(.selection, trigger: selection?.start)
         .onChange(of: selection?.start.verse, initial: true) { _, verse in
             probe?.selectedVerse = verse
@@ -479,7 +480,7 @@ struct ReaderPage: View {
         }
         .sheet(item: $explainRequest) { request in
             ExplainSheet(request: request, onOpenPassage: onOpenPassage, onSaveNote: saveExplanation)
-                .presentationDetents(UIDevice.isPad ? [.large] : [.medium, .large])
+                .presentationDetents(horizontalSizeClass == .regular ? [.large] : [.medium, .large])
                 .presentationSizing(.form)
         }
         .confirmationDialog(
@@ -622,12 +623,19 @@ struct ReaderPage: View {
         withAnimation(.snappy) { pencilPalette.isShown = true }
     }
 
-    /// Which iPad bar is showing. The bar morphs between them rather than swapping.
+    /// The wide highlight bar (reference, colors, note, copy, Explain in one row) wherever
+    /// there's room for it: iPad, and iPhone Duo open. Decided by the size class, not the
+    /// device, so an iPad in a narrow Split View gets the iPhone bar.
+    private var usesWideBar: Bool { horizontalSizeClass == .regular }
+
+    /// Which wide bar is showing. The bar morphs between them rather than swapping.
     private enum IPadBar: Equatable { case selection, palette }
 
     private var iPadBar: IPadBar? {
-        guard UIDevice.isPad else { return nil }
-        if selection != nil && !isAdjustingSelection { return .selection }
+        let selecting = selection != nil && !isAdjustingSelection
+        if selecting && usesWideBar { return .selection }
+        // Narrow: a selection uses the iPhone bar, so the Pencil palette steps aside.
+        if selecting { return nil }
         return pencilOn ? .palette : nil
     }
 
@@ -661,10 +669,12 @@ struct ReaderPage: View {
             .frostedGlass()
             .shadow(color: .black.opacity(0.12), radius: 14, y: 6)
             .animation(.spring(duration: 0.42, bounce: 0.14), value: bar)
+            // Room at the sides, so the bar measures itself against the width it really has.
+            .padding(.horizontal, 12)
             .padding(.bottom, 12)
             .transition(.move(edge: .bottom).combined(with: .opacity))
-        } else if !UIDevice.isPad, let selection, !isAdjustingSelection {
-            // iPhone: the highlight bar sits at the bottom. Hidden while a selection handle is
+        } else if !usesWideBar, let selection, !isAdjustingSelection {
+            // Narrow screens: the iPhone highlight bar sits at the bottom. Hidden while a selection handle is
             // dragged, so the text stays visible; back on release.
             toolbar(for: selection)
                 .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -1093,7 +1103,7 @@ extension ReaderPage {
 
     /// Two pages side by side: a large iPad screen in landscape, with the page curl.
     private func showsSpread(in size: CGSize) -> Bool {
-        UIDevice.isPad && !reduceMotion && size.width > size.height && size.width >= 1000
+        horizontalSizeClass == .regular && !reduceMotion && size.width > size.height && size.width >= 1000
     }
 
     func pagedBody(_ chapter: Chapter) -> some View {

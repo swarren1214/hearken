@@ -139,17 +139,41 @@ struct IPadSelectionBar: View {
 
     @State private var copied = false
 
+    /// How much fits: everything; the less-used actions in a More menu; or every action but
+    /// Done in the menu. The bar picks the first that fits the width it's given, so it's
+    /// complete on iPad and still whole on narrower regular-width screens (iPhone Duo open
+    /// in portrait, iPad Split View).
+    private enum Fit { case full, compact, tight }
+
     var body: some View {
-        HStack(spacing: 14) {
-            VStack(alignment: .leading, spacing: 1) {
-                Text(selectedHue.map(name) ?? "Highlight")
-                    .font(.subheadline.weight(.semibold))
-                Text(reference)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+        ViewThatFits(in: .horizontal) {
+            bar(.full)
+            bar(.compact)
+            bar(.tight)
+        }
+        .padding(.leading, 12)
+        .padding(.trailing, 8)
+        .padding(.vertical, 8)
+        .barChrome(showsChrome)
+        .sensoryFeedback(.success, trigger: copied) { _, new in new }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Highlight options for \(reference)")
+    }
+
+    private func bar(_ fit: Fit) -> some View {
+        HStack(spacing: fit == .full ? 14 : 10) {
+            if fit == .full {
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(selectedHue.map(name) ?? "Highlight")
+                        .font(.subheadline.weight(.semibold))
+                    Text(reference)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .lineLimit(1)
+                .frame(minWidth: 96, alignment: .leading)
+                .padding(.leading, 6)
             }
-            .lineLimit(1)
-            .frame(minWidth: 96, alignment: .leading)
 
             HStack(spacing: 2) {
                 styleButton(.fill)
@@ -160,57 +184,94 @@ struct IPadSelectionBar: View {
 
             Divider().frame(height: 28)
 
-            HStack(spacing: 10) {
+            HStack(spacing: fit == .full ? 10 : 4) {
                 ForEach(entries) { entry in
-                    let selected = entry.hue == selectedHue
-                    Button {
-                        onPick(entry.hue)
-                    } label: {
-                        Circle()
-                            .fill(entry.hue.color)
-                            .frame(width: selected ? 32 : 28, height: selected ? 32 : 28)
-                            .overlay {
-                                if selected {
-                                    Image(systemName: "checkmark")
-                                        .font(.caption.weight(.bold))
-                                        .foregroundStyle(.black.opacity(0.7))
-                                }
-                            }
-                            .frame(width: 36, height: 36)
-                            .contentShape(Circle())
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel(name(entry.hue))
-                    .accessibilityAddTraits(selected ? .isSelected : [])
+                    swatch(entry)
                 }
             }
 
             Divider().frame(height: 28)
 
+            // A menu with a single item in it is just a slower button: show it as one.
+            let more = moreItems(fit)
+            let showsMenu = more.count > 1
             HStack(spacing: 4) {
-                if let onExplain {
-                    iconButton("Explain", "sparkles", action: onExplain)
+                if fit == .full || (fit == .compact && !showsMenu) {
+                    if let onExplain {
+                        iconButton("Explain", "sparkles", action: onExplain)
+                    }
+                    if let onShareToGroup {
+                        iconButton("Share to Group", "person.2", action: onShareToGroup)
+                    }
                 }
-                if let onShareToGroup {
-                    iconButton("Share to Group", "person.2", action: onShareToGroup)
+                if fit != .tight {
+                    iconButton("Note", "square.and.pencil", action: onNote)
+                    iconButton(copied ? "Copied" : "Copy", copied ? "checkmark" : "doc.on.doc", action: copy)
+                    iconButton("Remove Highlight", "trash", tint: .red, action: onRemove)
                 }
-                iconButton("Note", "square.and.pencil", action: onNote)
-                iconButton(copied ? "Copied" : "Copy", copied ? "checkmark" : "doc.on.doc") {
-                    onCopy()
-                    copied = true
+                if showsMenu {
+                    CheckMenu(more) {
+                        Image(systemName: "ellipsis")
+                            .font(.title3)
+                            .foregroundStyle(.primary)
+                            .frame(width: 40, height: 40)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("More")
                 }
-                iconButton("Remove Highlight", "trash", tint: .red, action: onRemove)
                 doneButton("Done", action: onClose)
                     .padding(.leading, 4)
             }
         }
-        .padding(.leading, 18)
-        .padding(.trailing, 8)
-        .padding(.vertical, 8)
-        .barChrome(showsChrome)
-        .sensoryFeedback(.success, trigger: copied) { _, new in new }
-        .accessibilityElement(children: .contain)
-        .accessibilityLabel("Highlight options for \(reference)")
+        .fixedSize()
+    }
+
+    /// What the More menu holds when the bar is narrower than everything.
+    private func moreItems(_ fit: Fit) -> [CheckMenuItem] {
+        guard fit != .full else { return [] }
+        var items: [CheckMenuItem] = []
+        if let onExplain {
+            items.append(CheckMenuItem.button("Explain", systemImage: "sparkles", action: onExplain))
+        }
+        if let onShareToGroup {
+            items.append(CheckMenuItem.button("Share to Group", systemImage: "person.2", action: onShareToGroup))
+        }
+        if fit == .tight {
+            items.append(CheckMenuItem.button("Note", systemImage: "square.and.pencil", action: onNote))
+            items.append(CheckMenuItem.button("Copy", systemImage: "doc.on.doc", action: copy))
+            items.append(CheckMenuItem.divider)
+            items.append(CheckMenuItem.button("Remove Highlight", systemImage: "trash", role: .destructive, action: onRemove))
+        }
+        return items
+    }
+
+    private func copy() {
+        onCopy()
+        copied = true
+    }
+
+    private func swatch(_ entry: HighlightLegend.Entry) -> some View {
+        let selected = entry.hue == selectedHue
+        return Button {
+            onPick(entry.hue)
+        } label: {
+            Circle()
+                .fill(entry.hue.color)
+                .frame(width: selected ? 32 : 28, height: selected ? 32 : 28)
+                .overlay {
+                    if selected {
+                        Image(systemName: "checkmark")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(.black.opacity(0.7))
+                    }
+                }
+                .frame(width: 36, height: 36)
+                .contentShape(Circle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(name(entry.hue))
+        .accessibilityAddTraits(selected ? .isSelected : [])
     }
 
     /// The round checkmark that closes a bar.

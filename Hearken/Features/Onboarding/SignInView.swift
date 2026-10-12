@@ -9,15 +9,23 @@ struct SignInView: View {
     @Environment(AccountService.self) private var account
     @State private var signedIn = false
     @State private var errorMessage: String?
+    /// The screen's height, to fit short screens (iPhone Duo's outer display, iPhone SE).
+    @State private var height: CGFloat = 900
+
+    /// Short screens: a smaller icon, less padding, and the fine print scrolls with the
+    /// content so the pinned buttons don't cover the features.
+    private var isShort: Bool { height < 760 }
+    /// Wide screens (iPhone Duo's inner display, iPad) keep a readable column.
+    private static let columnWidth: CGFloat = 460
 
     var body: some View {
         VStack(spacing: 0) {
             ScrollView {
-                VStack(spacing: 14) {
-                    AppIconBadge(size: 92)
+                VStack(spacing: isShort ? 10 : 14) {
+                    AppIconBadge(size: isShort ? 64 : 92)
                     Text("Hearken")
                         .font(.largeTitle.bold())
-                        .padding(.top, 6)
+                        .padding(.top, isShort ? 2 : 6)
                     Text("Study the scriptures and remember what you learn.")
                         .font(.body)
                         .foregroundStyle(.secondary)
@@ -28,13 +36,20 @@ struct SignInView: View {
                         signedInConfirmation
                     } else {
                         features
+                        if isShort {
+                            finePrint
+                                .padding(.top, 20)
+                        }
                     }
                 }
                 .padding(.horizontal, 28)
-                .padding(.top, 64)
-                .padding(.bottom, 32)
+                .padding(.top, isShort ? 24 : 64)
+                .padding(.bottom, isShort ? 16 : 32)
+                .frame(maxWidth: Self.columnWidth)
+                .frame(maxWidth: .infinity)
             }
             .scrollBounceBehavior(.basedOnSize)
+            .scrollEdgeEffectStyle(.soft, for: .bottom)
 
             Group {
                 if signedIn {
@@ -49,7 +64,12 @@ struct SignInView: View {
             }
             .padding(.horizontal, 28)
             .padding(.bottom, 12)
+            .frame(maxWidth: Self.columnWidth)
         }
+        .frame(maxWidth: .infinity)
+        // Centered on the screen even where one side's inset is larger (iPhone Duo).
+        .symmetricSafeArea()
+        .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { height = $0 }
         .alert("Couldn't sign in", isPresented: Binding(get: { errorMessage != nil }, set: { if !$0 { errorMessage = nil } })) {
             Button("OK", role: .cancel) {}
         } message: {
@@ -63,7 +83,7 @@ struct SignInView: View {
             FeatureRow(symbol: "gamecontroller.fill", title: "Learn by playing", detail: "Games and mastery meters across seven subjects.")
             FeatureRow(symbol: "icloud.fill", title: "Private by design", detail: "Your notes and progress live in your own iCloud. No ads, no tracking.")
         }
-        .padding(.top, 32)
+        .padding(.top, isShort ? 20 : 32)
     }
 
     private var signedInConfirmation: some View {
@@ -79,7 +99,7 @@ struct SignInView: View {
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
         }
-        .padding(.top, 40)
+        .padding(.top, isShort ? 20 : 40)
     }
 
     private var signInControls: some View {
@@ -103,6 +123,12 @@ struct SignInView: View {
             Button("Not now", action: onFinish)
                 .frame(minHeight: 44)
 
+            if !isShort { finePrint }
+        }
+    }
+
+    private var finePrint: some View {
+        VStack(spacing: 6) {
             Text("Optional. Signing in adds your name and photo. Everything else works, and syncs with iCloud, without it.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
