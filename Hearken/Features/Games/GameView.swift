@@ -37,8 +37,25 @@ struct GameView: View {
     @State private var showConfetti = false
     @State private var ringProgress = 0.0
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     private let mastery = MasteryService()
+
+    /// Scroll target for the explanation card that appears after answering.
+    private let feedbackID = "feedback"
+
+    /// Side-by-side rows stack vertically at accessibility text sizes so nothing is squeezed off screen.
+    private var feedbackHeaderLayout: AnyLayout {
+        dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 6))
+            : AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: 8))
+    }
+
+    private var actionButtonLayout: AnyLayout {
+        dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(spacing: 8))
+            : AnyLayout(HStackLayout(spacing: 8))
+    }
 
     init(request: GameRequest) {
         self.request = request
@@ -49,19 +66,25 @@ struct GameView: View {
     private var score: Int { results.filter { $0 }.count }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 22) {
-            header
+        Group {
             if finished {
                 resultsView
             } else if let current {
                 questionView(current)
+                    .id(index) // Fresh scroll position for each question.
             } else {
                 ContentUnavailableView("No questions yet", systemImage: "questionmark.circle", description: Text("Questions for this subject are coming soon."))
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.top, 8)
-        .padding(.bottom, 16)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        // The header (Close + progress) stays pinned so it's always reachable, whatever the text size.
+        .safeAreaInset(edge: .top, spacing: 0) {
+            header
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+                .padding(.bottom, 12)
+                .background(Color(.systemGroupedBackground))
+        }
         .background(Color(.systemGroupedBackground))
         .sensoryFeedback(trigger: picked) { _, newValue in
             guard let newValue, let current else { return nil }
@@ -114,8 +137,11 @@ struct GameView: View {
                 .font(.subheadline.weight(.bold).monospacedDigit())
                 .contentTransition(.numericText())
                 .foregroundStyle(.tint)
+                .lineLimit(1)
+                .fixedSize()
                 .padding(.horizontal, 10)
-                .frame(height: 32)
+                .padding(.vertical, 4)
+                .frame(minHeight: 32)
                 .background(.tint.opacity(0.15), in: Capsule())
         }
     }
@@ -136,31 +162,56 @@ struct GameView: View {
 
     // MARK: Question
 
+    /// Scrolls, so large accessibility text never pushes the answers or explanation off screen.
+    /// After answering, Continue/Read are pinned to the bottom edge and the explanation scrolls into view.
     private func questionView(_ question: Question) -> some View {
-        VStack(alignment: .leading, spacing: 22) {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("\(request.title.uppercased()) · \(index + 1) OF \(questions.count)")
-                    .font(.footnote.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                Text(question.prompt)
-                    .font(.title2.bold())
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
-            VStack(spacing: 10) {
-                ForEach(question.options.indices, id: \.self) { option in
-                    AnswerButton(text: question.options[option], state: answerState(option, question: question)) {
-                        choose(option, question: question)
+        ScrollViewReader { proxy in
+            ScrollView {
+                VStack(alignment: .leading, spacing: 22) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("\(request.title.uppercased()) · \(index + 1) OF \(questions.count)")
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                        Text(question.prompt)
+                            .font(.title2.bold())
+                            .fixedSize(horizontal: false, vertical: true)
                     }
-                    .disabled(picked != nil)
+
+                    VStack(spacing: 10) {
+                        ForEach(question.options.indices, id: \.self) { option in
+                            AnswerButton(text: question.options[option], state: answerState(option, question: question)) {
+                                choose(option, question: question)
+                            }
+                            .disabled(picked != nil)
+                        }
+                    }
+
+                    if let picked {
+                        feedbackCard(correct: picked == question.answer, question: question)
+                            .id(feedbackID)
+                            .transition(.move(edge: .bottom).combined(with: .opacity))
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+                .padding(.bottom, 16)
+            }
+            .scrollBounceBehavior(.basedOnSize)
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                if picked != nil {
+                    actionBar(question)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
-
-            Spacer(minLength: 0)
-
-            if let picked {
-                feedbackCard(correct: picked == question.answer, question: question)
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            .onChange(of: picked) { _, newValue in
+                guard newValue != nil else { return }
+                // Wait a beat for the card to lay out, then bring it into view.
+                Task { @MainActor in
+                    try? await Task.sleep(for: .milliseconds(80))
+                    withAnimation(reduceMotion ? nil : .snappy) {
+                        proxy.scrollTo(feedbackID, anchor: .top)
+                    }
+                }
             }
         }
         .animation(.snappy, value: picked)
@@ -182,35 +233,51 @@ struct GameView: View {
 
     private func feedbackCard(correct: Bool, question: Question) -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack(alignment: .firstTextBaseline) {
+            feedbackHeaderLayout {
                 Label(correct ? "Correct" : "Not quite", systemImage: correct ? Feedback.correctSymbol : Feedback.incorrectSymbol)
                     .font(.title3.bold())
                     .foregroundStyle(correct ? Feedback.correct : Feedback.incorrect)
                     .symbolEffect(.bounce, value: picked)
-                Spacer()
-                Text(question.reference).font(.footnote).foregroundStyle(.secondary)
+                if !dynamicTypeSize.isAccessibilitySize { Spacer(minLength: 8) }
+                Text(question.reference)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
+                    .truncationMode(.middle)
             }
             Text(question.explanation)
                 .font(.subheadline)
                 .fixedSize(horizontal: false, vertical: true)
-            HStack(spacing: 8) {
-                if let chapterID = question.chapterID {
-                    Button("Read") { readerLink = ReaderLink(chapterID: chapterID) }
-                        .buttonStyle(.glass)
-                        .controlSize(.large)
-                }
-                Button {
-                    advance()
-                } label: {
-                    Text(index == questions.count - 1 ? "See Results" : "Continue")
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.glassProminent)
-                .controlSize(.large)
-            }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(18)
         .background(Color(.secondarySystemGroupedBackground), in: .rect(cornerRadius: 26))
+    }
+
+    /// Read / Continue, pinned to the bottom of the screen once a question is answered.
+    private func actionBar(_ question: Question) -> some View {
+        actionButtonLayout {
+            if let chapterID = question.chapterID {
+                Button { readerLink = ReaderLink(chapterID: chapterID) } label: {
+                    Text("Read")
+                        .frame(maxWidth: dynamicTypeSize.isAccessibilitySize ? .infinity : nil)
+                }
+                .buttonStyle(.glass)
+                .controlSize(.large)
+            }
+            Button {
+                advance()
+            } label: {
+                Text(index == questions.count - 1 ? "See Results" : "Continue")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.glassProminent)
+            .controlSize(.large)
+        }
+        .padding(.horizontal, 16)
+        .padding(.top, 12)
+        .padding(.bottom, 8)
+        .background(Color(.systemGroupedBackground).ignoresSafeArea(edges: .bottom))
     }
 
     private func advance() {
@@ -264,10 +331,39 @@ struct GameView: View {
     // MARK: Results
 
     private var resultsView: some View {
+        ScrollView {
+            resultsContent
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+                .padding(.bottom, 16)
+        }
+        .scrollBounceBehavior(.basedOnSize)
+        // Done / Play Again stay pinned and reachable at any text size.
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            VStack(spacing: 10) {
+                Button { dismiss() } label: { Text("Done").frame(maxWidth: .infinity) }
+                    .buttonStyle(.glassProminent)
+                    .controlSize(.large)
+                Button { restart() } label: { Text("Play Again").frame(maxWidth: .infinity) }
+                    .buttonStyle(.glass)
+                    .controlSize(.large)
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 12)
+            .padding(.bottom, 8)
+            .background(Color(.systemGroupedBackground).ignoresSafeArea(edges: .bottom))
+        }
+    }
+
+    private var resultsContent: some View {
         VStack(spacing: 20) {
             VStack(spacing: 10) {
                 ProgressRing(progress: ringProgress, lineWidth: 16) {
-                    Text("\(score)/\(questions.count)").font(.largeTitle.bold().monospacedDigit())
+                    Text("\(score)/\(questions.count)")
+                        .font(.largeTitle.bold().monospacedDigit())
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.4)
+                        .padding(.horizontal, 20)
                 }
                 .frame(width: 150, height: 150)
                 .onAppear {
@@ -301,19 +397,9 @@ struct GameView: View {
                 Divider()
                 ResultStat(value: "\(questions.count - score)", label: "To review")
             }
-            .frame(height: 64)
+            .padding(.vertical, 10)
+            .frame(minHeight: 64)
             .background(Color(.secondarySystemGroupedBackground), in: .rect(cornerRadius: 22))
-
-            Spacer()
-
-            VStack(spacing: 10) {
-                Button { dismiss() } label: { Text("Done").frame(maxWidth: .infinity) }
-                    .buttonStyle(.glassProminent)
-                    .controlSize(.large)
-                Button { restart() } label: { Text("Play Again").frame(maxWidth: .infinity) }
-                    .buttonStyle(.glass)
-                    .controlSize(.large)
-            }
         }
     }
 }
@@ -382,6 +468,7 @@ private struct AnswerButton: View {
                 }
             }
             .padding(.horizontal, 18)
+            .padding(.vertical, 12)
             .frame(minHeight: 58)
             .background(background, in: .rect(cornerRadius: 18))
             .overlay {
