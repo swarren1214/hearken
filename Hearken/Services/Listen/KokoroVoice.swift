@@ -92,9 +92,60 @@ final class KokoroModel: NSObject {
     /// Roughly 330 MB; shown before downloading.
     static let approximateSize = "330 MB"
 
+    /// The App Group every one of Steve Warren's apps that speaks with Kokoro belongs to. The
+    /// model lives in the group's shared folder, so it's downloaded once per iPhone and every
+    /// app uses the same file. (Memory isn't shared: each app loads it while it speaks.)
+    nonisolated static let sharedGroupID = "group.com.stephenwarren.voice"
+
+    /// The shared folder, or this app's own folder if the App Group isn't set up.
+    nonisolated static var folder: URL {
+        if let shared = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: sharedGroupID) {
+            return shared.appending(path: "Library/Application Support/Kokoro", directoryHint: .isDirectory)
+        }
+        return privateFolder
+    }
+
+    nonisolated private static var privateFolder: URL {
+        URL.applicationSupportDirectory.appending(path: "Kokoro", directoryHint: .isDirectory)
+    }
+
     nonisolated static var localURL: URL {
-        let folder = URL.applicationSupportDirectory.appending(path: "Kokoro", directoryHint: .isDirectory)
-        return folder.appending(path: "kokoro-v1_0.safetensors")
+        folder.appending(path: "kokoro-v1_0.safetensors")
+    }
+
+    /// Before the shared folder, the model lived in each app's own storage. Move it over (or
+    /// drop it, if another app already put one there), so nothing is downloaded twice.
+    nonisolated private static func moveIntoSharedFolderIfNeeded() {
+        let manager = FileManager.default
+        let old = privateFolder.appending(path: "kokoro-v1_0.safetensors")
+        let new = localURL
+        guard old != new, manager.fileExists(atPath: old.path(percentEncoded: false)) else { return }
+        if manager.fileExists(atPath: new.path(percentEncoded: false)) {
+            try? manager.removeItem(at: old)
+            return
+        }
+        do {
+            try manager.createDirectory(at: folder, withIntermediateDirectories: true)
+            var values = URLResourceValues()
+            values.isExcludedFromBackup = true
+            var shared = folder
+            try? shared.setResourceValues(values)
+            try manager.moveItem(at: old, to: new)
+        } catch {
+            // Leave it where it is; the app downloads again only if the shared copy is missing.
+        }
+    }
+
+    /// Another app may have downloaded (or removed) the model since this one last looked.
+    func refresh() {
+        #if !targetEnvironment(simulator)
+        let exists = FileManager.default.fileExists(atPath: Self.localURL.path(percentEncoded: false))
+        switch state {
+        case .notDownloaded where exists: state = .ready
+        case .ready where !exists: state = .notDownloaded
+        default: break
+        }
+        #endif
     }
 
     nonisolated private enum Keys {
@@ -123,10 +174,15 @@ final class KokoroModel: NSObject {
             defaults.set(false, forKey: Keys.loading)
             defaults.set(true, forKey: Keys.broken)
         }
+        Self.moveIntoSharedFolderIfNeeded()
         if defaults.bool(forKey: Keys.broken) {
             state = .failed("The natural voice couldn't load on this device.")
         } else if FileManager.default.fileExists(atPath: Self.localURL.path(percentEncoded: false)) {
             state = .ready
+        }
+        // Coming back to the app: pick up a download another app finished meanwhile.
+        NotificationCenter.default.addObserver(forName: Notification.Name("UIApplicationDidBecomeActiveNotification"), object: nil, queue: .main) { _ in
+            MainActor.assumeIsolated { KokoroModel.shared.refresh() }
         }
         #endif
     }
@@ -135,6 +191,8 @@ final class KokoroModel: NSObject {
 
     /// Starts the download. `wifiOnly` keeps it off cellular (used when it starts on its own).
     func download(wifiOnly: Bool = false) {
+        // Another of the apps may already have it.
+        refresh()
         switch state {
         case .notDownloaded, .failed: break
         default: return
@@ -178,7 +236,8 @@ final class KokoroModel: NSObject {
         state = .notDownloaded
     }
 
-    /// Frees the space; Listen falls back to the system voices.
+    /// Frees the space; Listen falls back to the system voices. The model is shared, so this
+    /// removes it for the other apps too.
     func remove() {
         cancelDownload()
         KokoroSynth.shared.unload()
