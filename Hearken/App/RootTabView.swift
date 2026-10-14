@@ -27,6 +27,7 @@ struct RootTabView: View {
             Tab(value: AppTab.today) {
                 NavigationStack(path: $todayPath) {
                     TodayView()
+                        .screenshotDestinations()
                         .navigationDestination(for: ReaderRoute.self) { route in
                             ReaderView(chapterID: route.chapterID)
                         }
@@ -45,6 +46,7 @@ struct RootTabView: View {
             Tab(value: AppTab.play) {
                 NavigationStack(path: $playPath) {
                     PlayView()
+                        .screenshotDestinations()
                         .navigationDestination(for: SubjectRoute.self) { route in
                             if let subject = content.subject(route.subjectID) { SubjectDetailView(subject: subject) }
                         }
@@ -55,7 +57,7 @@ struct RootTabView: View {
             }
 
             Tab(value: AppTab.scriptures) {
-                NavigationStack(path: $libraryPath) { LibraryView() }
+                NavigationStack(path: $libraryPath) { LibraryView().screenshotDestinations() }
             } label: {
                 Image(systemName: "books.vertical.fill").accessibilityLabel("Library")
             }
@@ -67,6 +69,8 @@ struct RootTabView: View {
             }
         }
         .tabBarMinimizeBehavior(.onScrollDown)
+        // Debug: marketing screenshots (scripts/screenshots.sh). Does nothing otherwise.
+        .screenshotStage(selection: $selection, todayPath: $todayPath, playPath: $playPath, libraryPath: $libraryPath)
         // Scholar Path: the unlock celebration for each newly earned rank.
         .scholarCelebrations()
         .onChange(of: navigator.pendingSubjectID) { _, subjectID in

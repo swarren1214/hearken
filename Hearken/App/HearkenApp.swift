@@ -12,9 +12,11 @@ struct HearkenApp: App {
     @State private var account = AccountService()
     @State private var legend = HighlightLegend()
     @State private var sync = SyncService()
-    private let container = Persistence.makeContainer()
+    // Screenshot mode (Debug only) runs on an in-memory store of demo content.
+    private let container = Persistence.makeContainer(inMemory: ScreenshotMode.isOn)
 
     init() {
+        ScreenshotMode.prepareLaunch()
         // Alerts and confirmation dialogs use the system label color (black in Light Mode,
         // white in Dark Mode) rather than the app's accent. Destructive buttons stay red.
         UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = .label

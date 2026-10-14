@@ -14,3 +14,6 @@ build/
 
 # macOS
 .DS_Store
+
+# Marketing screenshots, full size (scripts/screenshots.sh). The website copies are committed.
+/screenshots/

@@ -100,6 +100,16 @@ struct GameView: View {
             .animation(.easeOut(duration: 0.4), value: showConfetti)
         }
         .sensoryFeedback(.success, trigger: showConfetti) { _, new in new }
+        // Screenshot mode (Debug): two answered right, the third answered right and explained.
+        .task {
+            guard ScreenshotMode.isOn, index == 0, picked == nil, questions.count > 2 else { return }
+            try? await Task.sleep(for: .milliseconds(300))
+            results = [true, true]
+            xpEarned = 2 * MasteryConfig.standard.xpPerCorrect
+            index = 2
+            try? await Task.sleep(for: .milliseconds(500))
+            if let current { choose(current.answer, question: current) }
+        }
         .sheet(item: $readerLink) { link in
             NavigationStack {
                 ReaderView(chapterID: link.chapterID)

@@ -246,7 +246,7 @@ final class ListenEngine: NSObject {
         guard loaded else { return }
         play()
         // Natural voices download on their own over Wi-Fi the first time someone listens.
-        if KokoroModel.shared.state == .notDownloaded { KokoroModel.shared.download(wifiOnly: true) }
+        if KokoroModel.shared.state == .notDownloaded, !ScreenshotMode.isOn { KokoroModel.shared.download(wifiOnly: true) }
     }
 
     /// Listen to one chapter (from the reader or the Library), continuing through the book.

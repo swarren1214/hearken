@@ -4,8 +4,11 @@ A standalone, static landing page. It has no build step or package dependencies;
 the contents of this directory to a static web host. The app icon is included in `assets/` and
 is used for the site branding, favicon, and Apple touch icon.
 
-The landing page uses illustrated interface previews, not app screenshots. It links to features
-and support rather than advertising an App Store download before a release URL is available.
+The hero uses an illustrated interface preview. The "Inside the app" gallery uses real screenshots
+from `assets/screens/`, made by `scripts/screenshots.sh` (run it from the repository root on a Mac
+with Xcode); any screenshot that's missing is left out, and the section hides itself if none are
+there. The page links to features and support rather than advertising an App Store download
+before a release URL is available.
 
 ## GitHub Pages
 

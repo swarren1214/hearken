@@ -67,6 +67,13 @@ final class AccountService {
                 UserDefaults.standard.set(data, forKey: Keys.avatar)
             }
         }
+        // Screenshot mode: the demo reader, signed in.
+        if ScreenshotMode.isOn {
+            status = .signedIn
+            displayName = ScreenshotMode.demoName
+            email = nil
+            avatarData = nil
+        }
     }
 
     /// Initials for the monogram avatar, e.g. "SW".
@@ -92,6 +99,11 @@ final class AccountService {
 
     /// Re-checks the Apple ID credential and iCloud status. Call on launch and when returning to the foreground.
     func refresh() async {
+        if ScreenshotMode.isOn {
+            status = .signedIn
+            iCloudAvailable = true
+            return
+        }
         guard let userID = KeychainStore.read(Keys.userID) else {
             log.info("refresh: no saved Apple user ID, signed out")
             status = .signedOut

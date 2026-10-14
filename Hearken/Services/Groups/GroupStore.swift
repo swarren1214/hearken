@@ -141,6 +141,11 @@ final class GroupStore {
     /// Reloads every group. `notify` (from a silent push) posts activity notifications for
     /// anything new from other members.
     func refresh(notify: Bool = false) async {
+        // Screenshot mode (Debug): demo groups, never CloudKit.
+        if ScreenshotMode.isOn {
+            loadDemo()
+            return
+        }
         guard AppConfig.cloudSyncEnabled else { return }
         if notify { notifyPending = true }
         if let refreshing {
@@ -409,6 +414,20 @@ final class GroupStore {
         let previousDone = group.members.first { $0.userID == me }?.lastDoneDay
         let lastDone = progress.doneToday ? Calendar.current.startOfDay(for: .now) : previousDone
         record["lastDoneDay"] = lastDone
+        // Screenshot mode (Debug): show my real progress in the demo group without saving it.
+        if ScreenshotMode.isOn {
+            update(group.id) { group in
+                let member = Member(userID: me, name: name, initials: initials, weekStart: progress.weekStart,
+                                    weekRead: progress.weekRead, weekTotal: progress.weekTotal, lastDoneDay: lastDone,
+                                    chaptersRead: progress.chaptersRead, streak: progress.streak)
+                if let index = group.members.firstIndex(where: { $0.userID == me }) {
+                    group.members[index] = member
+                } else {
+                    group.members.insert(member, at: 0)
+                }
+            }
+            return
+        }
         do {
             _ = try await database(for: group).modifyRecords(saving: [record], deleting: [], savePolicy: .allKeys)
             update(group.id) { group in
@@ -579,7 +598,7 @@ final class GroupStore {
     /// Silent pushes when anything in the private or shared database changes.
     func ensureSubscriptions() async {
         let key = "groups.subscriptions.v1"
-        guard AppConfig.cloudSyncEnabled, !UserDefaults.standard.bool(forKey: key) else { return }
+        guard !ScreenshotMode.isOn, AppConfig.cloudSyncEnabled, !UserDefaults.standard.bool(forKey: key) else { return }
         do {
             for (database, id) in [(container.privateCloudDatabase, "groups-private"), (container.sharedCloudDatabase, "groups-shared")] {
                 let subscription = CKDatabaseSubscription(subscriptionID: id)
@@ -687,5 +706,87 @@ enum GroupActivityNotifier {
 
     private static func firstName(_ name: String) -> String {
         name.split(separator: " ").first.map(String.init) ?? name
+    }
+}
+
+// MARK: - Screenshot mode
+
+extension GroupStore {
+    private static let demoFamilyZone = CKRecordZone.ID(zoneName: "group-screenshots-family", ownerName: CKCurrentUserDefaultName)
+    private static let demoClubZone = CKRecordZone.ID(zoneName: "group-screenshots-club", ownerName: "_screenshots-owner")
+
+    /// The family group, for the group screenshot.
+    static var demoGroupID: String { demoFamilyZone.zoneName + "|" + demoFamilyZone.ownerName }
+
+    /// Two demo groups: a family reading the same plan as the demo reader (whose own row comes
+    /// from their real progress, through `publish`), and a ward book club they joined.
+    fileprivate func loadDemo() {
+        guard !hasLoaded else { return }
+        let content = ListenEngine.shared.scripture
+        let calendar = Calendar.current
+        let now = Date.now
+        let today = calendar.startOfDay(for: now)
+        let yesterday = calendar.date(byAdding: .day, value: -1, to: today) ?? today
+        myUserID = ScreenshotMode.demoUserID
+
+        func verse(_ chapterID: String, _ number: Int) -> String {
+            content.chapter(chapterID)?.verses.first { $0.number == number }?.text ?? ""
+        }
+
+        var family = StudyGroup(zoneID: Self.demoFamilyZone, isOwner: true, name: "Jensen Family", symbol: "house.fill",
+                                planID: "bofm-90",
+                                startDate: calendar.date(byAdding: .day, value: -ScreenshotSeed.planStartDaysAgo, to: today) ?? today,
+                                ownerName: ScreenshotMode.demoName)
+        let days = GroupSchedule.days(for: family, content: content)
+        let week = GroupSchedule.week(days)
+        let weekStart = week.start
+        let weekTotal = max(week.days.flatMap(\.chapterIDs).count, 1)
+        let throughToday = week.days.filter { $0.date <= today }.flatMap(\.chapterIDs).count
+        let beforeToday = week.days.filter { $0.date < today }.flatMap(\.chapterIDs).count
+        let todayChapters = days.first { $0.date == today }?.chapterIDs ?? []
+
+        func member(_ id: String, _ name: String, _ initials: String, read: Int, doneToday: Bool, chapters: Int, streak: Int) -> Member {
+            Member(userID: id, name: name, initials: initials, weekStart: weekStart, weekRead: min(max(read, 0), weekTotal),
+                   weekTotal: weekTotal, lastDoneDay: doneToday ? today : yesterday, chaptersRead: chapters, streak: streak)
+        }
+        family.members = [
+            member("screenshots-david", "David Jensen", "DJ", read: throughToday, doneToday: true, chapters: 134, streak: 51),
+            member("screenshots-lily", "Lily Jensen", "LJ", read: throughToday, doneToday: true, chapters: 131, streak: 23),
+            member("screenshots-ben", "Ben Jensen", "BJ", read: beforeToday - 2, doneToday: false, chapters: 118, streak: 0),
+        ]
+        family.items = [
+            SharedItem(id: "screenshots-reflection", kind: .reflection, chapterID: todayChapters.first ?? "", startVerse: 0, endVerse: 0,
+                       text: PlanFormat.range(todayChapters),
+                       note: "I love that Amulek tells us to pray over our crops and our flocks. Nothing is too ordinary to pray about.",
+                       authorID: "screenshots-lily", authorName: "Lily Jensen", createdAt: now.addingTimeInterval(-25 * 60)),
+            SharedItem(id: "screenshots-highlight-1", kind: .highlight, chapterID: "bofm.alma.34", startVerse: 32, endVerse: 32,
+                       text: verse("bofm.alma.34", 32), note: "This life is the time. Not someday.",
+                       authorID: "screenshots-david", authorName: "David Jensen", createdAt: now.addingTimeInterval(-3 * 3600)),
+            SharedItem(id: "screenshots-highlight-2", kind: .highlight, chapterID: "bofm.alma.32", startVerse: 21, endVerse: 21,
+                       text: verse("bofm.alma.32", 21), note: "",
+                       authorID: ScreenshotMode.demoUserID, authorName: ScreenshotMode.demoName,
+                       createdAt: yesterday.addingTimeInterval(20 * 3600)),
+        ]
+        family.reactions = [
+            Reaction(recordName: "screenshots-r1", itemID: "screenshots-reflection", kind: .heart, authorID: ScreenshotMode.demoUserID),
+            Reaction(recordName: "screenshots-r2", itemID: "screenshots-reflection", kind: .heart, authorID: "screenshots-david"),
+            Reaction(recordName: "screenshots-r3", itemID: "screenshots-highlight-1", kind: .insight, authorID: "screenshots-lily"),
+            Reaction(recordName: "screenshots-r4", itemID: "screenshots-highlight-1", kind: .heart, authorID: ScreenshotMode.demoUserID),
+            Reaction(recordName: "screenshots-r5", itemID: "screenshots-highlight-2", kind: .heart, authorID: "screenshots-lily"),
+        ]
+
+        var club = StudyGroup(zoneID: Self.demoClubZone, isOwner: false, name: "Maple Grove Book Club", symbol: "book.closed.fill",
+                              planID: "nt-180", startDate: calendar.date(byAdding: .day, value: -30, to: today) ?? today,
+                              ownerName: "Mark Reyes")
+        club.members = [
+            member("screenshots-mark", "Mark Reyes", "MR", read: 5, doneToday: true, chapters: 41, streak: 30),
+            member("screenshots-ana", "Ana Reyes", "AR", read: 5, doneToday: true, chapters: 40, streak: 12),
+            member("screenshots-tom", "Tom Okafor", "TO", read: 4, doneToday: false, chapters: 36, streak: 0),
+            member(ScreenshotMode.demoUserID, ScreenshotMode.demoName, "SJ", read: 5, doneToday: true, chapters: 39, streak: 51),
+            member("screenshots-grace", "Grace Lin", "GL", read: 3, doneToday: false, chapters: 33, streak: 0),
+        ]
+
+        groups = [family, club]
+        hasLoaded = true
     }
 }
