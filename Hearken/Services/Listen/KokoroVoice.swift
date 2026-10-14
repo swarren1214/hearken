@@ -459,9 +459,12 @@ nonisolated final class KokoroSynth: @unchecked Sendable {
         MLX.GPU.set(cacheLimit: Self.gpuCacheLimit)
         // If loading crashes the app, the flag is still set next launch and natural voices turn off.
         KokoroModel.markLoading(true)
-        // Reloading after a memory warning can happen with the screen locked: keep it off the GPU then.
+        // Always load on the CPU. Loading is the longest piece of GPU work Kokoro does (seconds,
+        // not a fraction of one), so if the screen locked part way through, the gate's short wait
+        // could run out with work still on the GPU, and iOS ends the app (crash, build 15). The
+        // model's weights are shared memory, so speech still runs on the GPU afterwards.
         let make = { KokoroTTS(modelPath: url, g2p: .misaki) }
-        let loaded = GPUGate.shared.run(make) ?? Device.withDefaultDevice(.cpu, make)
+        let loaded = Device.withDefaultDevice(.cpu, make)
         KokoroModel.markLoading(false)
         tts = loaded
         return loaded
@@ -535,7 +538,9 @@ nonisolated final class GPUGate: @unchecked Sendable {
     static let shared = GPUGate()
 
     private let state = NSLock()
-    private var isOpen = true
+    /// Starts closed and opens once the app is confirmed active (below), so work that starts
+    /// before that check, such as Siri launching Listen in the background, never touches the GPU.
+    private var isOpen = false
     /// Held while a chunk runs on the GPU.
     private let inFlight = NSLock()
     private var observers: [any NSObjectProtocol] = []
@@ -551,10 +556,11 @@ nonisolated final class GPUGate: @unchecked Sendable {
         observers.append(center.addObserver(forName: Notification.Name("UIApplicationDidBecomeActiveNotification"), object: nil, queue: nil) { [weak self] _ in
             self?.open()
         })
-        // Launched straight into the background (Siri, a Shortcut): start closed.
+        // Open only if the app is actually active. Launched straight into the background (Siri,
+        // a Shortcut), it stays closed until the app comes to the foreground.
         DispatchQueue.main.async { [weak self] in
             MainActor.assumeIsolated {
-                if UIApplication.shared.applicationState != .active { self?.close() }
+                if UIApplication.shared.applicationState == .active { self?.open() }
             }
         }
     }

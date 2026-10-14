@@ -110,25 +110,31 @@ struct ReaderView: View {
                 }
 
                 ToolbarItem(placement: .topBarTrailing) {
-                    // Tap: listen from here (or pause and resume). Touch and hold for more.
+                    // Tap: listen from here, or (already listening to this chapter) turn Listen off.
+                    // Touch and hold for more, including pause and resume.
                     Menu {
+                        if listeningHere {
+                            Button(listen.isPlaying ? "Pause" : "Resume", systemImage: listen.isPlaying ? "pause" : "play") { listen.toggle() }
+                        }
                         Button("Listen from Here", systemImage: "headphones") { startListening(fromStart: false) }
                         Button("Listen from the Beginning", systemImage: "backward.end") { startListening(fromStart: true) }
                         if listen.isActive {
                             Button("Stop Listening", systemImage: "xmark", role: .destructive) { listen.stop() }
                         }
                     } label: {
-                        Label(listeningHere && listen.isPlaying ? "Pause Listening" : "Listen", systemImage: "headphones")
+                        Label(listeningHere ? "Stop Listening" : "Listen", systemImage: "headphones")
                             .symbolEffect(.pulse, isActive: listeningHere && listen.isPlaying)
                     } primaryAction: {
                         if listeningHere {
-                            listen.toggle()
+                            listen.stop()
                         } else {
                             startListening(fromStart: false)
                         }
                     }
                     .tint(listeningHere ? accent.color : Color.primary)
-                    .accessibilityHint("Reads the chapter aloud. Touch and hold for more options.")
+                    .accessibilityHint(listeningHere
+                        ? "Turns Listen off. Touch and hold to pause instead."
+                        : "Reads the chapter aloud. Touch and hold for more options.")
                     // From the second chapter opened: Listen, with Try It.
                     .popoverTip(ListenTip(), arrowEdge: .top) { action in
                         if action.id == ListenTip.tryIt { startListening(fromStart: true) }

@@ -99,6 +99,11 @@ final class WeightLoader {
       }
     }
 
+    // The transposes above are lazy: they run on whatever device is the default when the
+    // weights are first used, not now. Evaluate them here, on the loading device, so no
+    // part of the model is left queued for a device the app may not be allowed to use later
+    // (iOS ends an app that sends GPU work from the background).
+    eval(Array(sanitizedWeights.values))
     return sanitizedWeights
   }
 

@@ -53,7 +53,18 @@ final class NeuralSpeechPlayer {
     /// The verse last reported as started.
     private var playing: Int?
 
-    init() {
+    /// Whether the nodes are attached and connected. Done on first use, not in init: touching
+    /// `mainMixerNode` stands up the audio I/O unit and waits on the system audio server, and
+    /// ListenEngine is created during launch. When the Watch or Siri launches Hearken in the
+    /// background, that wait blocked launch long enough for iOS to suspend the app mid-launch
+    /// and kill it (0xdead10cc, build 21).
+    private var graphReady = false
+
+    init() {}
+
+    private func buildGraphIfNeeded() {
+        guard !graphReady else { return }
+        graphReady = true
         engine.attach(player)
         engine.attach(timePitch)
         engine.attach(samplePlayer)
@@ -94,7 +105,8 @@ final class NeuralSpeechPlayer {
         generation += 1
         producer?.cancel()
         producer = nil
-        player.stop()
+        // Nothing to stop before the graph exists (stop() runs at the top of every start()).
+        if graphReady { player.stop() }
         scheduled = []
         playing = nil
         isRunning = false
@@ -113,7 +125,7 @@ final class NeuralSpeechPlayer {
     ) {
         sampleGeneration += 1
         let current = sampleGeneration
-        samplePlayer.stop()
+        if graphReady { samplePlayer.stop() }
         Task {
             let samples: [Float]
             do {
@@ -141,7 +153,7 @@ final class NeuralSpeechPlayer {
 
     func stopSample() {
         sampleGeneration += 1
-        samplePlayer.stop()
+        if graphReady { samplePlayer.stop() }
     }
 
     // MARK: Generating
@@ -236,6 +248,7 @@ final class NeuralSpeechPlayer {
     }
 
     private func startEngine() {
+        buildGraphIfNeeded()
         guard !engine.isRunning else { return }
         engine.prepare()
         try? engine.start()

@@ -14,12 +14,24 @@ final class EnglishFallbackNetwork {
   private let british: Bool
     
   init(british: Bool) {    
-    configuration = EnglishFallbackNetwork.loadConfig(british: british)!
-    modelWeights = EnglishFallbackNetwork.loadWeights(british: british)!
+    let config = EnglishFallbackNetwork.loadConfig(british: british)!
+    let weights = EnglishFallbackNetwork.loadWeights(british: british)!
+    configuration = config
+    modelWeights = weights
     
     self.british = british
     
-    self.model = BARTModel(config: configuration, weights: modelWeights)
+    // Build and evaluate the model on the CPU, whatever device the caller has as default.
+    // Kokoro creates this lazily, the first time a language is set, which can be inside a
+    // chunk running on the GPU. Arrays the layers create in init (LayerNorm's defaults and
+    // the like) are lazy, and would stay queued for the GPU; the first CPU evaluation after
+    // the app went to the background would then send that GPU work, and iOS ends an app
+    // that does (crash in BARTModel.generate, build 22). Evaluating here leaves nothing queued.
+    self.model = Device.withDefaultDevice(.cpu) { () -> BARTModel in
+      let model = BARTModel(config: config, weights: weights)
+      eval(model)
+      return model
+    }
     
     var graphemeDict: [Character: Int] = [:]
     for (index, grapheme) in configuration.graphemeChars.enumerated() {
