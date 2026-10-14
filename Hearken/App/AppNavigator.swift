@@ -59,6 +59,22 @@ final class NotificationRouter: NSObject, UNUserNotificationCenterDelegate, @unc
 
     nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
         let info = response.notification.request.content.userInfo
+        // An answer button on a review question (Settings › Review Questions), on iPhone or Apple Watch.
+        if let questionID = info[ReviewNotifications.Key.questionID] as? String {
+            let action = response.actionIdentifier
+            guard action.hasPrefix(ReviewNotifications.actionPrefix),
+                  let picked = Int(action.dropFirst(ReviewNotifications.actionPrefix.count))
+            else { return } // Tapped rather than answered: just open the app.
+            let correctIndex = info[ReviewNotifications.Key.answer] as? Int ?? -1
+            let options = info[ReviewNotifications.Key.options] as? [String] ?? []
+            let explanation = info[ReviewNotifications.Key.explanation] as? String ?? ""
+            let reference = info[ReviewNotifications.Key.reference] as? String ?? ""
+            await ReviewNotifications.answer(
+                questionID: questionID, picked: picked, correctIndex: correctIndex,
+                options: options, explanation: explanation, reference: reference
+            )
+            return
+        }
         if let bookID = info["bookID"] as? String {
             await MainActor.run { AppNavigator.shared.pendingBookID = bookID }
         } else if let groupID = info["groupID"] as? String {
@@ -100,7 +116,10 @@ struct PlanSideEffects: ViewModifier {
         let active = PlanReading.active(enrollments)
         let state = active.flatMap { PlanEngine.shared.state(for: $0, content: scripture, read: PlanReading.readSet(progress)) }
         let streak = MasteryMath.streak(activityDates: xpEvents.map(\.createdAt), now: .now)
-        PlanSnapshotStore.save(state.map { PlanSnapshot(state: $0, streak: streak) })
+        let snapshot = state.map { PlanSnapshot(state: $0, streak: streak) }
+        PlanSnapshotStore.save(snapshot)
+        // The Apple Watch's Smart Stack widget and Today page.
+        WatchBridge.shared.send(plan: snapshot)
         await PlanReminders.update(state: state, enabled: active?.reminderEnabled ?? false, minutes: active?.reminderMinutes ?? 420)
     }
 }

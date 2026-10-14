@@ -12,6 +12,10 @@
 		D832485B3079D80E002B3903 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D832485A3079D80E002B3903 /* WidgetKit.framework */; };
 		D832485D3079D80E002B3903 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D832485C3079D80E002B3903 /* SwiftUI.framework */; };
 		D83248683079D810002B3903 /* HearkenWidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D83248583079D80E002B3903 /* HearkenWidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		D86641C5307F523200935968 /* HearkenWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = D86641A7307F522F00935968 /* HearkenWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		D86641DF307F52CF00935968 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D832485A3079D80E002B3903 /* WidgetKit.framework */; };
+		D86641E0307F52CF00935968 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D832485C3079D80E002B3903 /* SwiftUI.framework */; };
+		D86641EB307F52D100935968 /* HearkenWatchWidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D86641DE307F52CF00935968 /* HearkenWatchWidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,6 +33,20 @@
 			remoteGlobalIDString = D83248573079D80E002B3903;
 			remoteInfo = HearkenWidgetsExtension;
 		};
+		D86641C3307F523200935968 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4E4B00000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D86641A6307F522F00935968;
+			remoteInfo = "HearkenWatch Watch App";
+		};
+		D86641E9307F52D100935968 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4E4B00000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D86641DD307F52CF00935968;
+			remoteInfo = HearkenWatchWidgetsExtension;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -39,6 +57,28 @@
 			dstSubfolderSpec = 13;
 			files = (
 				D83248683079D810002B3903 /* HearkenWidgetsExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D86641C9307F523200935968 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				D86641C5307F523200935968 /* HearkenWatch Watch App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D86641F0307F52D100935968 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				D86641EB307F52D100935968 /* HearkenWatchWidgetsExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -54,6 +94,9 @@
 		D832485A3079D80E002B3903 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		D832485C3079D80E002B3903 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		D83248703079D87A002B3903 /* HearkenWidgetsExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HearkenWidgetsExtension.entitlements; sourceTree = "<group>"; };
+		D86641A7307F522F00935968 /* HearkenWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "HearkenWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D86641DE307F52CF00935968 /* HearkenWatchWidgetsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = HearkenWatchWidgetsExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		D86641F5307F534F00935968 /* HearkenWatchWidgetsExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HearkenWatchWidgetsExtension.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -63,6 +106,13 @@
 				Info.plist,
 			);
 			target = D83248573079D80E002B3903 /* HearkenWidgetsExtension */;
+		};
+		D86641EC307F52D100935968 /* Exceptions for "HearkenWatchWidgets" folder in "HearkenWatchWidgetsExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = D86641DD307F52CF00935968 /* HearkenWatchWidgetsExtension */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -83,6 +133,29 @@
 				D83248693079D810002B3903 /* Exceptions for "HearkenWidgets" folder in "HearkenWidgetsExtension" target */,
 			);
 			path = HearkenWidgets;
+			sourceTree = "<group>";
+		};
+		D86641A8307F522F00935968 /* HearkenWatch Watch App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "HearkenWatch Watch App";
+			sourceTree = "<group>";
+		};
+		D86641B6307F523200935968 /* HearkenWatch Watch AppTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "HearkenWatch Watch AppTests";
+			sourceTree = "<group>";
+		};
+		D86641C0307F523200935968 /* HearkenWatch Watch AppUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "HearkenWatch Watch AppUITests";
+			sourceTree = "<group>";
+		};
+		D86641E1307F52CF00935968 /* HearkenWatchWidgets */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D86641EC307F52D100935968 /* Exceptions for "HearkenWatchWidgets" folder in "HearkenWatchWidgetsExtension" target */,
+			);
+			path = HearkenWatchWidgets;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -113,18 +186,39 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D86641A4307F522F00935968 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D86641DB307F52CF00935968 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D86641E0307F52CF00935968 /* SwiftUI.framework in Frameworks */,
+				D86641DF307F52CF00935968 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		4E4B00000000000000000002 = {
 			isa = PBXGroup;
 			children = (
+				D86641F5307F534F00935968 /* HearkenWatchWidgetsExtension.entitlements */,
 				D83248703079D87A002B3903 /* HearkenWidgetsExtension.entitlements */,
 				4E4B0000000000000000001C /* README.md */,
 				4E4B0000000000000000001B /* Hearken.entitlements */,
 				4E4B00000000000000000004 /* Hearken */,
 				4E4B00000000000000000005 /* HearkenTests */,
 				D832485E3079D80E002B3903 /* HearkenWidgets */,
+				D86641A8307F522F00935968 /* HearkenWatch Watch App */,
+				D86641B6307F523200935968 /* HearkenWatch Watch AppTests */,
+				D86641C0307F523200935968 /* HearkenWatch Watch AppUITests */,
+				D86641E1307F52CF00935968 /* HearkenWatchWidgets */,
 				D83248593079D80E002B3903 /* Frameworks */,
 				4E4B00000000000000000003 /* Products */,
 			);
@@ -136,6 +230,8 @@
 				4E4B00000000000000000006 /* Hearken.app */,
 				4E4B00000000000000000007 /* HearkenTests.xctest */,
 				D83248583079D80E002B3903 /* HearkenWidgetsExtension.appex */,
+				D86641A7307F522F00935968 /* HearkenWatch Watch App.app */,
+				D86641DE307F52CF00935968 /* HearkenWatchWidgetsExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -160,11 +256,13 @@
 				4E4B0000000000000000000B /* Frameworks */,
 				4E4B0000000000000000000C /* Resources */,
 				D832486D3079D810002B3903 /* Embed Foundation Extensions */,
+				D86641C9307F523200935968 /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				D83248673079D810002B3903 /* PBXTargetDependency */,
+				D86641C4307F523200935968 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				4E4B00000000000000000004 /* Hearken */,
@@ -223,6 +321,52 @@
 			productReference = D83248583079D80E002B3903 /* HearkenWidgetsExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		D86641A6307F522F00935968 /* HearkenWatch Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D86641C6307F523200935968 /* Build configuration list for PBXNativeTarget "HearkenWatch Watch App" */;
+			buildPhases = (
+				D86641A3307F522F00935968 /* Sources */,
+				D86641A4307F522F00935968 /* Frameworks */,
+				D86641A5307F522F00935968 /* Resources */,
+				D86641F0307F52D100935968 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D86641EA307F52D100935968 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				D86641A8307F522F00935968 /* HearkenWatch Watch App */,
+			);
+			name = "HearkenWatch Watch App";
+			packageProductDependencies = (
+			);
+			productName = "HearkenWatch Watch App";
+			productReference = D86641A7307F522F00935968 /* HearkenWatch Watch App.app */;
+			productType = "com.apple.product-type.application";
+		};
+		D86641DD307F52CF00935968 /* HearkenWatchWidgetsExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D86641ED307F52D100935968 /* Build configuration list for PBXNativeTarget "HearkenWatchWidgetsExtension" */;
+			buildPhases = (
+				D86641DA307F52CF00935968 /* Sources */,
+				D86641DB307F52CF00935968 /* Frameworks */,
+				D86641DC307F52CF00935968 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				D86641E1307F52CF00935968 /* HearkenWatchWidgets */,
+			);
+			name = HearkenWatchWidgetsExtension;
+			packageProductDependencies = (
+			);
+			productName = HearkenWatchWidgetsExtension;
+			productReference = D86641DE307F52CF00935968 /* HearkenWatchWidgetsExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -230,7 +374,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 2700;
+				LastSwiftUpdateCheck = 2710;
 				LastUpgradeCheck = 2600;
 				TargetAttributes = {
 					4E4B00000000000000000008 = {
@@ -242,6 +386,12 @@
 					};
 					D83248573079D80E002B3903 = {
 						CreatedOnToolsVersion = 27.0;
+					};
+					D86641A6307F522F00935968 = {
+						CreatedOnToolsVersion = 27.1;
+					};
+					D86641DD307F52CF00935968 = {
+						CreatedOnToolsVersion = 27.1;
 					};
 				};
 			};
@@ -266,6 +416,8 @@
 				4E4B00000000000000000008 /* Hearken */,
 				4E4B00000000000000000009 /* HearkenTests */,
 				D83248573079D80E002B3903 /* HearkenWidgetsExtension */,
+				D86641A6307F522F00935968 /* HearkenWatch Watch App */,
+				D86641DD307F52CF00935968 /* HearkenWatchWidgetsExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -286,6 +438,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D83248563079D80E002B3903 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D86641A5307F522F00935968 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D86641DC307F52CF00935968 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -316,6 +482,20 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D86641A3307F522F00935968 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D86641DA307F52CF00935968 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -328,6 +508,16 @@
 			isa = PBXTargetDependency;
 			target = D83248573079D80E002B3903 /* HearkenWidgetsExtension */;
 			targetProxy = D83248663079D810002B3903 /* PBXContainerItemProxy */;
+		};
+		D86641C4307F523200935968 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D86641A6307F522F00935968 /* HearkenWatch Watch App */;
+			targetProxy = D86641C3307F523200935968 /* PBXContainerItemProxy */;
+		};
+		D86641EA307F52D100935968 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D86641DD307F52CF00935968 /* HearkenWatchWidgetsExtension */;
+			targetProxy = D86641E9307F52D100935968 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -629,6 +819,266 @@
 			};
 			name = Release;
 		};
+		D86641C7307F523200935968 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = "HearkenWatch Watch App/HearkenWatch Watch App.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = BH8R3BX5WF;
+				ENABLE_PREVIEWS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = HearkenWatch;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.stephenwarren.hearken;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.stephenwarren.hearken.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 27.0;
+			};
+			name = Debug;
+		};
+		D86641C8307F523200935968 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = "HearkenWatch Watch App/HearkenWatch Watch App.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = BH8R3BX5WF;
+				ENABLE_PREVIEWS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = HearkenWatch;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.stephenwarren.hearken;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.stephenwarren.hearken.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 27.0;
+			};
+			name = Release;
+		};
+		D86641EE307F52D100935968 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = HearkenWatchWidgetsExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = BH8R3BX5WF;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = HearkenWatchWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = HearkenWatchWidgets;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.stephenwarren.hearken.watchkitapp.HearkenWatchWidgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 27.0;
+			};
+			name = Debug;
+		};
+		D86641EF307F52D100935968 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = HearkenWatchWidgetsExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = BH8R3BX5WF;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = HearkenWatchWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = HearkenWatchWidgets;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.stephenwarren.hearken.watchkitapp.HearkenWatchWidgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 27.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -664,6 +1114,24 @@
 			buildConfigurations = (
 				D832486B3079D810002B3903 /* Debug */,
 				D832486C3079D810002B3903 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D86641C6307F523200935968 /* Build configuration list for PBXNativeTarget "HearkenWatch Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D86641C7307F523200935968 /* Debug */,
+				D86641C8307F523200935968 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D86641ED307F52D100935968 /* Build configuration list for PBXNativeTarget "HearkenWatchWidgetsExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D86641EE307F52D100935968 /* Debug */,
+				D86641EF307F52D100935968 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -22,6 +22,10 @@ struct HearkenApp: App {
         UNUserNotificationCenter.current().delegate = NotificationRouter.shared
         // Listen mode marks chapters read when heard to the end, even when Siri started it in the background.
         ListenEngine.shared.attach(container: container)
+        // Review questions can be answered from a notification while Hearken is in the background.
+        ReviewNotifications.attach(container: container)
+        // The Apple Watch app: plan snapshot and Listen state out, Listen commands in.
+        WatchBridge.shared.activate(container: container)
         // Imported books: served to the reader, and any left half-prepared carry on.
         ImportedLibrary.shared.attach(container: container)
         BookImporter.shared.attach(container: container)
@@ -71,6 +75,7 @@ struct AppRoot: View {
                 #endif
             }
             .modifier(PlanSideEffects())
+            .modifier(ReviewSideEffects())
             .modifier(GroupSideEffects())
             .modifier(ListenSideEffects())
             .onChange(of: appearance, initial: true) { _, option in

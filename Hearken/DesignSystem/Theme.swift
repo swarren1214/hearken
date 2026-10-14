@@ -13,6 +13,9 @@ enum SettingsKey {
     static let pencilStyle = "settings.pencilStyle"
     static let dailyGoalMinutes = "settings.dailyGoalMinutes"
     static let studyReminder = "settings.studyReminder"
+    /// Settings › Review Questions: a daily Spaced Review question answered from the notification.
+    static let reviewNotifications = "settings.reviewNotifications"
+    static let reviewNotificationMinutes = "settings.reviewNotificationMinutes"
     static let onboardingDone = "onboarding.done"
     /// The first-run tour has been finished or skipped.
     static let tourDone = "tour.done"

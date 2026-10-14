@@ -19,6 +19,8 @@ struct SettingsView: View {
     @AppStorage(SettingsKey.readerLayout) private var readerLayout: ReaderLayout = .scroll
     @AppStorage(SettingsKey.dailyGoalMinutes) private var dailyGoal = 15
     @AppStorage(SettingsKey.studyReminder) private var studyReminder = false
+    @AppStorage(SettingsKey.reviewNotifications) private var reviewNotifications = false
+    @AppStorage(SettingsKey.reviewNotificationMinutes) private var reviewMinutes = ReviewNotifications.defaultMinutes
 
     @State private var confirmDelete = false
     @State private var avatarItem: PhotosPickerItem?
@@ -113,6 +115,15 @@ struct SettingsView: View {
                     LabeledContent("Daily Goal", value: "\(dailyGoal) min")
                 }
                 Toggle("Study Reminder", isOn: reminderBinding)
+            }
+
+            Section {
+                Toggle("Review Questions", isOn: reviewBinding)
+                if reviewNotifications {
+                    DatePicker("Time", selection: reviewTimeBinding, displayedComponents: .hourAndMinute)
+                }
+            } footer: {
+                Text("A daily Spaced Review question you can answer right from the notification, on iPhone or Apple Watch.")
             }
 
             #if DEBUG
@@ -417,6 +428,32 @@ struct SettingsView: View {
     }
 
     // MARK: Reminder
+
+    private var reviewBinding: Binding<Bool> {
+        Binding(
+            get: { reviewNotifications },
+            set: { newValue in
+                reviewNotifications = newValue
+                guard newValue else { return }
+                Task {
+                    let granted = await ReviewNotifications.requestPermission()
+                    if !granted { reviewNotifications = false }
+                }
+            }
+        )
+    }
+
+    private var reviewTimeBinding: Binding<Date> {
+        Binding(
+            get: {
+                Calendar.current.date(bySettingHour: reviewMinutes / 60, minute: reviewMinutes % 60, second: 0, of: .now) ?? .now
+            },
+            set: { date in
+                let parts = Calendar.current.dateComponents([.hour, .minute], from: date)
+                reviewMinutes = (parts.hour ?? 12) * 60 + (parts.minute ?? 30)
+            }
+        )
+    }
 
     private var reminderBinding: Binding<Bool> {
         Binding(
