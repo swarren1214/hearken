@@ -6,16 +6,14 @@
     {
       "layers" : [
         {
-          "image-name" : "Property 1=hearken.svg",
-          "name" : "Property 1=hearken",
-          "opacity" : 0.7,
-          "position" : {
-            "scale" : 1,
-            "translation-in-points" : [
-              0,
-              0
-            ]
-          }
+          "image-name" : "hearken-icon-02.svg",
+          "name" : "hearken-icon-02",
+          "opacity" : 0.9
+        },
+        {
+          "image-name" : "hearken-icon-01.svg",
+          "name" : "hearken-icon-01",
+          "opacity" : 0.9
         }
       ],
       "shadow" : {
