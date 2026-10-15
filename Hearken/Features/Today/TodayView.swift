@@ -44,6 +44,9 @@ struct TodayView: View {
                         .tourTarget(.today)
                     subjectsSection(snapshot: snapshot)
                 }
+                // Exactly the screen's width (less the margins): a row that comes out too wide for
+                // very large text can't widen the page and push every other section off its edges.
+                .containerRelativeFrame(.horizontal, alignment: .leading) { width, _ in max(width - 32, 0) }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 24)
             }
@@ -118,7 +121,7 @@ struct TodayView: View {
                         .font(.subheadline)
                         .opacity(0.9)
                 }
-                HStack {
+                AdaptiveStack(spacing: 12) {
                     Text("Picked from what you're most likely to forget")
                         .font(.footnote)
                         .opacity(0.9)
@@ -146,7 +149,7 @@ struct TodayView: View {
         return Button {
             activeGame = GameRequest(title: "Daily Challenge", kind: .daily, subjectID: nil, questions: questions)
         } label: {
-            HStack(spacing: 14) {
+            AdaptiveStack(spacing: 14) {
                 SymbolTile(systemName: "sun.max.fill", size: 46)
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Daily Challenge").font(.headline)
@@ -177,7 +180,7 @@ struct TodayView: View {
         return VStack(alignment: .leading, spacing: 8) {
             Text("Progress").font(.title2.bold())
             Card {
-                HStack(spacing: 18) {
+                AdaptiveStack(spacing: 18) {
                     if let best {
                         ScholarBadge(rank: best, size: 88)
                     } else {
@@ -191,7 +194,7 @@ struct TodayView: View {
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
                         }
-                        HStack(spacing: 16) {
+                        AdaptiveStack(spacing: 16) {
                             Stat(value: highlights.count, label: "Marked")
                             Stat(value: notes.count, label: "Notes")
                             Stat(value: sessions.count, label: "Games")
@@ -281,19 +284,24 @@ struct SubjectRow: View {
     /// Not built yet: grayed out, with a Coming Soon tag instead of mastery.
     var comingSoon = false
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    /// One line at ordinary sizes; long names wrap at accessibility sizes instead of being cut off.
+    private var nameLines: Int? { dynamicTypeSize.isAccessibilitySize ? nil : 1 }
+
     var body: some View {
         HStack(spacing: 12) {
             SymbolTile(systemName: subject.symbol)
                 .grayscale(comingSoon ? 1 : 0)
                 .opacity(comingSoon ? 0.6 : 1)
             if comingSoon {
-                Text(subject.name).font(.body).foregroundStyle(.secondary).lineLimit(1)
+                Text(subject.name).font(.body).foregroundStyle(.secondary).lineLimit(nameLines)
                 Spacer()
                 ComingSoonTag()
             } else {
                 VStack(alignment: .leading, spacing: 6) {
                     HStack(alignment: .firstTextBaseline) {
-                        Text(subject.name).font(.body).lineLimit(1)
+                        Text(subject.name).font(.body).lineLimit(nameLines)
                         Spacer()
                         Text(mastery.formatted(.percent.precision(.fractionLength(0))))
                             .font(.subheadline.monospacedDigit())

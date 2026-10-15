@@ -679,13 +679,15 @@ struct PlanTodayCard: View {
     let enrollment: PlanEnrollment
 
     @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
         let day = state.currentDay
         let todayDone = day.map(state.isDone) ?? true
 
         VStack(alignment: .leading, spacing: 14) {
-            HStack(alignment: .top) {
+            // At accessibility sizes the ring moves under the plan's name, so the name keeps the width.
+            AdaptiveStack(alignment: .top, spacing: 10) {
                 VStack(alignment: .leading, spacing: 3) {
                     Text(state.plan.title.uppercased())
                         .font(.caption.weight(.bold))
@@ -710,8 +712,10 @@ struct PlanTodayCard: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(state.isFinished ? "Plan complete" : (todayDone && state.isReadingDayToday ? "Done for today" : PlanFormat.range(day?.chapterIDs ?? [])))
                     .font(.scripture(size: 30, weight: .bold))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
+                    // One line, shrinking a little, at ordinary sizes; wrapped at accessibility sizes.
+                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
+                    .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.7)
+                    .fixedSize(horizontal: false, vertical: dynamicTypeSize.isAccessibilitySize)
                 Text(detailLine(day, todayDone: todayDone))
                     .font(.subheadline)
                     .opacity(0.9)
@@ -728,9 +732,17 @@ struct PlanTodayCard: View {
                 .accessibilityHidden(true)
             }
 
-            ViewThatFits(in: .horizontal) {
-                actionRow(todayDone: todayDone, listenTitle: true)
-                actionRow(todayDone: todayDone, listenTitle: false)
+            // Read, Listen and View Plan in a row if they fit, then without Listen's title, and
+            // otherwise one under another. (With nothing that fits, ViewThatFits shows the last
+            // choice anyway, so the last one must never be wider than the card.)
+            if dynamicTypeSize.isAccessibilitySize {
+                actionColumn(todayDone: todayDone)
+            } else {
+                ViewThatFits(in: .horizontal) {
+                    actionRow(todayDone: todayDone, listenTitle: true)
+                    actionRow(todayDone: todayDone, listenTitle: false)
+                    actionColumn(todayDone: todayDone)
+                }
             }
         }
         .foregroundStyle(.white)
@@ -742,46 +754,71 @@ struct PlanTodayCard: View {
     private func actionRow(todayDone: Bool, listenTitle: Bool) -> some View {
         HStack(spacing: 10) {
             if let next = state.nextChapterID, !state.isFinished {
-                NavigationLink {
-                    ReaderView(chapterID: next)
-                } label: {
-                    Label(buttonTitle(todayDone: todayDone), systemImage: "book.fill")
-                        .font(.subheadline.weight(.semibold))
-                        .padding(.horizontal, 16)
-                        .frame(height: 40)
-                        .background(.white, in: Capsule())
-                        .foregroundStyle(accent.color)
-                }
-                .buttonStyle(.plain)
-                .fixedSize()
-
-                Button(action: listenToday) {
-                    Label(isListening && ListenEngine.shared.isPlaying ? "Listening" : "Listen", systemImage: "headphones")
-                        .labelStyle(ListenLabelStyle(showsTitle: listenTitle))
-                        .font(.subheadline.weight(.semibold))
-                        .symbolEffect(.pulse, isActive: isListening && ListenEngine.shared.isPlaying)
-                        .padding(.horizontal, listenTitle ? 16 : 0)
-                        .frame(minWidth: 40)
-                        .frame(height: 40)
-                        .background(.white.opacity(0.2), in: Capsule())
-                }
-                .buttonStyle(.plain)
-                .fixedSize()
-                .accessibilityLabel(isListening ? "Open the player" : "Listen to today's reading")
+                readButton(next, todayDone: todayDone, fills: false)
+                listenButton(showsTitle: listenTitle, fills: false)
             }
             Spacer(minLength: 0)
-            NavigationLink {
-                PlanDetailView(enrollment: enrollment)
-            } label: {
-                Text("View Plan")
-                    .font(.subheadline.weight(.semibold))
-                    .padding(.horizontal, 14)
-                    .frame(height: 40)
-                    .background(.white.opacity(0.2), in: Capsule())
-            }
-            .buttonStyle(.plain)
-            .fixedSize()
+            viewPlanButton(fills: false)
         }
+    }
+
+    /// The same buttons one under another, each the card's width, for when a row won't fit.
+    private func actionColumn(todayDone: Bool) -> some View {
+        VStack(spacing: 10) {
+            if let next = state.nextChapterID, !state.isFinished {
+                readButton(next, todayDone: todayDone, fills: true)
+                listenButton(showsTitle: true, fills: true)
+            }
+            viewPlanButton(fills: true)
+        }
+    }
+
+    /// `fills`: as wide as the card, with the title free to wrap; otherwise its own width.
+    private func readButton(_ next: String, todayDone: Bool, fills: Bool) -> some View {
+        NavigationLink {
+            ReaderView(chapterID: next)
+        } label: {
+            Label(buttonTitle(todayDone: todayDone), systemImage: "book.fill")
+                .font(.subheadline.weight(.semibold))
+                .padding(.horizontal, 16)
+                .padding(.vertical, fills ? 8 : 0)
+                .frame(maxWidth: fills ? .infinity : nil, minHeight: 40)
+                .background(.white, in: Capsule())
+                .foregroundStyle(accent.color)
+        }
+        .buttonStyle(.plain)
+        .fixedSize(horizontal: !fills, vertical: false)
+    }
+
+    private func listenButton(showsTitle: Bool, fills: Bool) -> some View {
+        Button(action: listenToday) {
+            Label(isListening && ListenEngine.shared.isPlaying ? "Listening" : "Listen", systemImage: "headphones")
+                .labelStyle(ListenLabelStyle(showsTitle: showsTitle))
+                .font(.subheadline.weight(.semibold))
+                .symbolEffect(.pulse, isActive: isListening && ListenEngine.shared.isPlaying)
+                .padding(.horizontal, showsTitle ? 16 : 0)
+                .padding(.vertical, fills ? 8 : 0)
+                .frame(minWidth: 40, maxWidth: fills ? .infinity : nil, minHeight: 40)
+                .background(.white.opacity(0.2), in: Capsule())
+        }
+        .buttonStyle(.plain)
+        .fixedSize(horizontal: !fills, vertical: false)
+        .accessibilityLabel(isListening ? "Open the player" : "Listen to today's reading")
+    }
+
+    private func viewPlanButton(fills: Bool) -> some View {
+        NavigationLink {
+            PlanDetailView(enrollment: enrollment)
+        } label: {
+            Text("View Plan")
+                .font(.subheadline.weight(.semibold))
+                .padding(.horizontal, 14)
+                .padding(.vertical, fills ? 8 : 0)
+                .frame(maxWidth: fills ? .infinity : nil, minHeight: 40)
+                .background(.white.opacity(0.2), in: Capsule())
+        }
+        .buttonStyle(.plain)
+        .fixedSize(horizontal: !fills, vertical: false)
     }
 
     // MARK: Listen

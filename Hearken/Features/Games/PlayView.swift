@@ -15,6 +15,8 @@ struct PlayView: View {
     @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
     @State private var activeGame: GameRequest?
     @State private var mapQuest: MapQuestCategory?
+    /// Quick Play cards grow with the text size, up to most of the screen's width.
+    @ScaledMetric(relativeTo: .subheadline) private var quickPlayWidth: CGFloat = 140
 
     private let mastery = MasteryService()
     private static let reviewLimit = 10
@@ -27,7 +29,8 @@ struct PlayView: View {
 
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
-                HStack(alignment: .top, spacing: 12) {
+                // Side by side, or one above the other at accessibility text sizes.
+                AdaptiveStack(alignment: .top, spacing: 12) {
                     dailyCard(snapshot: snapshot)
                     reviewCard(snapshot: snapshot)
                 }
@@ -38,6 +41,9 @@ struct PlayView: View {
                 mapQuestSection
                 subjectsGrid(snapshot: snapshot)
             }
+            // Exactly the screen's width (less the margins), so nothing too wide for very large
+            // text can widen the page. (Quick Play scrolls sideways inside it, as before.)
+            .containerRelativeFrame(.horizontal, alignment: .leading) { width, _ in max(width - 32, 0) }
             .padding(.horizontal, 16)
             .padding(.bottom, 24)
         }
@@ -67,7 +73,7 @@ struct PlayView: View {
     private var mapQuestSection: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Map Quest").font(.title2.bold())
-            HStack(alignment: .top, spacing: 12) {
+            AdaptiveStack(alignment: .top, spacing: 12) {
                 ForEach(MapQuestCatalog.all) { category in
                     mapQuestCard(category)
                 }
@@ -246,7 +252,7 @@ struct PlayView: View {
                                 }
                             }
                             .padding(14)
-                            .frame(width: 140, alignment: .leading)
+                            .frame(width: min(quickPlayWidth, 260), alignment: .leading)
                             .background(Color(.secondarySystemGroupedBackground), in: .rect(cornerRadius: 20))
                             .opacity(mode.available ? 1 : 0.6)
                         }
@@ -305,7 +311,8 @@ private struct PathSubjectCard: View {
     var body: some View {
         let rank = progress.rank
         let next = progress.nextRank
-        HStack(spacing: 12) {
+        // At accessibility sizes the medal, the name and Start stack, so Start never covers the name.
+        AdaptiveStack(spacing: 12) {
             ScholarBadge(rank: rank ?? .novice, size: 72, status: rank == nil ? .locked : .earned,
                          progress: rank == nil || next == nil ? nil : progress.xpFraction,
                          tint: progress.xpReached ? Optional(Feedback.correct) : next?.palette.mid)
