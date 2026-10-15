@@ -26,6 +26,9 @@ struct SettingsView: View {
     @State private var avatarItem: PhotosPickerItem?
     @State private var errorMessage: String?
     @State private var tipsReset = false
+    /// The sign-in another Hearth app shared, offered as "Continue as <name>".
+    @State private var sharedSignIn: HearthSharedAppleID?
+    private var hearth: HearthLink { HearthLink.shared }
 
     var body: some View {
         Form {
@@ -195,7 +198,8 @@ struct SettingsView: View {
             if account.isSignedIn {
                 HStack(spacing: 14) {
                     PhotosPicker(selection: $avatarItem, matching: .images) {
-                        AccountAvatar(initials: account.initials, imageData: account.avatarData, size: 56)
+                        // Another Hearth app's photo of them until they pick one here.
+                        AccountAvatar(initials: account.initials, imageData: account.avatarData ?? hearth.sharedAvatar, size: 56)
                             .overlay(alignment: .bottomTrailing) {
                                 Image(systemName: "camera.fill")
                                     .font(.system(size: 10, weight: .semibold))
@@ -257,24 +261,38 @@ struct SettingsView: View {
 
         if !account.isSignedIn {
             Section {
-                SignInWithAppleButton(.signIn) { request in
-                    request.requestedScopes = [.fullName, .email]
-                } onCompletion: { result in
-                    do {
-                        try account.completeSignIn(result)
-                    } catch let error as ASAuthorizationError where error.code == .canceled {
-                    } catch {
-                        errorMessage = error.localizedDescription
+                if let shared = sharedSignIn {
+                    SharedSignInButton(shared: shared) {
+                        sharedSignIn = nil
+                    } onFailed: { message in
+                        sharedSignIn = nil
+                        errorMessage = message
                     }
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 6)
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
+                } else {
+                    SignInWithAppleButton(.signIn) { request in
+                        request.requestedScopes = [.fullName, .email]
+                    } onCompletion: { result in
+                        do {
+                            try account.completeSignIn(result)
+                        } catch let error as ASAuthorizationError where error.code == .canceled {
+                        } catch {
+                            errorMessage = error.localizedDescription
+                        }
+                    }
+                    .signInWithAppleButtonStyle(colorScheme == .dark ? .white : .black)
+                    .frame(height: 50)
+                    .clipShape(Capsule())
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
                 }
-                .signInWithAppleButtonStyle(colorScheme == .dark ? .white : .black)
-                .frame(height: 50)
-                .clipShape(Capsule())
-                .listRowInsets(EdgeInsets())
-                .listRowBackground(Color.clear)
             } footer: {
                 Text("Optional. Signing in adds your name and photo to your profile and study groups. Every feature works without it.")
             }
+            .task { sharedSignIn = await account.sharedSignInToOffer() }
         }
 
         Section {
@@ -282,7 +300,8 @@ struct SettingsView: View {
                 if account.isSignedIn {
                     // Primary: filled with the accent color, white text and icon.
                     Button {
-                        account.signOut()
+                        // Also signs out of the other Hearth apps on this iPhone (one shared sign-in).
+                        account.signOutEverywhere()
                     } label: {
                         Label("Sign Out", systemImage: "rectangle.portrait.and.arrow.right")
                             // Inside a Form the icon would pick up the accent; keep it white like the text.
@@ -312,6 +331,10 @@ struct SettingsView: View {
             .padding(.vertical, 6)
             .listRowInsets(EdgeInsets())
             .listRowBackground(Color.clear)
+        } footer: {
+            if account.isSignedIn {
+                Text("Signing out also signs you out of your other Hearth apps on this iPhone.")
+            }
         }
     }
 

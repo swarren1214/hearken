@@ -7,6 +7,11 @@ import SwiftData
 
 /// Sign in with Apple is the only way to sign in. The Apple user ID is kept in the
 /// Keychain; the user's data itself lives in their own iCloud (see AppConfig).
+///
+/// The sign-in is shared with the other Hearth apps on this device (`HearthAccounts.appleID()`;
+/// Apple's user ID is the same in every app from the same team): Hearken can continue as the
+/// person another app signed in, a new sign-in here is shared with them, and Sign Out here signs
+/// out of all of them, as signing out everywhere in another app signs out of Hearken.
 @Observable
 final class AccountService {
     enum Status: Equatable {
@@ -16,11 +21,13 @@ final class AccountService {
     enum AccountError: LocalizedError {
         case unexpectedCredential
         case couldNotSave
+        case sharedSignInExpired
 
         var errorDescription: String? {
             switch self {
             case .unexpectedCredential: "Sign in with Apple returned an unexpected credential."
             case .couldNotSave: "Your sign-in couldn't be saved on this device. Please try again."
+            case .sharedSignInExpired: "That sign-in is no longer valid. Please sign in with Apple instead."
             }
         }
     }
@@ -44,6 +51,9 @@ final class AccountService {
         static let displayName = "account.displayName"
         static let email = "account.email"
         static let avatar = "account.avatar"
+        /// Hearken's sign-in is the one shared with the other Hearth apps, so when it disappears
+        /// from there, another app signed out everywhere.
+        static let sharedSignIn = "account.hearthSharedSignIn"
     }
 
     @ObservationIgnored private var avatarObserver: NSObjectProtocol?
@@ -65,6 +75,7 @@ final class AccountService {
                 let data = NSUbiquitousKeyValueStore.default.data(forKey: Keys.avatar)
                 self.avatarData = data
                 UserDefaults.standard.set(data, forKey: Keys.avatar)
+                HearthLink.shared.update()
             }
         }
         // Screenshot mode: the demo reader, signed in.
@@ -95,6 +106,7 @@ final class AccountService {
             NSUbiquitousKeyValueStore.default.removeObject(forKey: Keys.avatar)
         }
         NSUbiquitousKeyValueStore.default.synchronize()
+        HearthLink.shared.update()
     }
 
     /// Re-checks the Apple ID credential and iCloud status. Call on launch and when returning to the foreground.
@@ -104,9 +116,11 @@ final class AccountService {
             iCloudAvailable = true
             return
         }
+        HearthLink.shared.start(account: self)
         guard let userID = KeychainStore.read(Keys.userID) else {
             log.info("refresh: no saved Apple user ID, signed out")
             status = .signedOut
+            HearthLink.shared.update()
             await refreshICloudStatus()
             return
         }
@@ -135,6 +149,8 @@ final class AccountService {
             status = .signedIn
         }
         #endif
+        followSharedSignIn()
+        HearthLink.shared.update()
         await refreshICloudStatus()
     }
 
@@ -168,14 +184,114 @@ final class AccountService {
             email = address
             UserDefaults.standard.set(address, forKey: Keys.email)
         }
+        var gotName = false
         if let name = credential.fullName {
             let formatted = name.formatted()
             if !formatted.isEmpty {
                 displayName = formatted
                 UserDefaults.standard.set(formatted, forKey: Keys.displayName)
+                gotName = true
+            }
+        }
+        // Apple only sends those to the first app that asks; another Hearth app may have them.
+        if let shared = HearthAccounts.appleID(), shared.userID == credential.user {
+            if !gotName, let name = shared.fullName, !name.isEmpty {
+                displayName = name
+                UserDefaults.standard.set(name, forKey: Keys.displayName)
+            }
+            if email == nil, let address = shared.email, !address.isEmpty {
+                email = address
+                UserDefaults.standard.set(address, forKey: Keys.email)
             }
         }
         status = .signedIn
+        shareSignIn(userID: credential.user)
+        HearthLink.shared.update()
+    }
+
+    // MARK: One sign-in for the Hearth apps
+
+    /// The sign-in another Hearth app shared, to offer as "Continue as <name>": only with a
+    /// name, and only when Apple says it's still good.
+    func sharedSignInToOffer() async -> HearthSharedAppleID? {
+        guard !ScreenshotMode.isOn, !isSignedIn,
+              let shared = HearthAccounts.appleID(),
+              let name = shared.fullName, !name.isEmpty else { return nil }
+        return await isAuthorized(shared.userID) ? shared : nil
+    }
+
+    /// Signs in as the person another Hearth app signed in with Apple, without asking Apple
+    /// for the sign-in again (Apple is still asked whether it's valid).
+    func continueWithSharedSignIn(_ shared: HearthSharedAppleID) async throws {
+        guard await isAuthorized(shared.userID) else {
+            throw AccountError.sharedSignInExpired
+        }
+        guard KeychainStore.save(shared.userID, for: Keys.userID) else {
+            log.error("continueWithSharedSignIn: Keychain refused to save the Apple user ID")
+            throw AccountError.couldNotSave
+        }
+        log.info("continueWithSharedSignIn: signed in with the shared Apple user ID")
+        if let name = shared.fullName, !name.isEmpty {
+            displayName = name
+            UserDefaults.standard.set(name, forKey: Keys.displayName)
+        }
+        if let address = shared.email, !address.isEmpty {
+            email = address
+            UserDefaults.standard.set(address, forKey: Keys.email)
+        }
+        UserDefaults.standard.set(true, forKey: Keys.sharedSignIn)
+        status = .signedIn
+        HearthLink.shared.update()
+    }
+
+    /// Keeps Hearken's sign-in and the shared one together: shares a sign-in made before the
+    /// apps shared one, picks up a name only another app got from Apple, and signs out here
+    /// when another Hearth app signed out everywhere. Runs on launch, on returning to the
+    /// foreground and whenever another app writes.
+    func followSharedSignIn() {
+        guard !ScreenshotMode.isOn, isSignedIn, let userID = KeychainStore.read(Keys.userID) else { return }
+        let wasShared = UserDefaults.standard.bool(forKey: Keys.sharedSignIn)
+        switch HearthAccounts.appleID() {
+        case let shared? where shared.userID == userID:
+            if !wasShared { UserDefaults.standard.set(true, forKey: Keys.sharedSignIn) }
+            if displayName == nil, let name = shared.fullName, !name.isEmpty {
+                displayName = name
+                UserDefaults.standard.set(name, forKey: Keys.displayName)
+                HearthLink.shared.update()
+            }
+        case nil where wasShared:
+            log.info("followSharedSignIn: another Hearth app signed out everywhere")
+            signOut()
+        case nil:
+            // Signed in before the apps shared a sign-in.
+            shareSignIn(userID: userID)
+        default:
+            // Another Apple Account is signed in to the other apps; leave Hearken's alone.
+            break
+        }
+    }
+
+    /// Shares this sign-in with the other Hearth apps. Only remembered as shared once it's
+    /// really there (it isn't when the app group is missing from the entitlements).
+    private func shareSignIn(userID: String) {
+        HearthAccounts.saveAppleID(HearthSharedAppleID(userID: userID, fullName: displayName, email: email, updatedBy: .hearken))
+        if HearthAccounts.appleID()?.userID == userID {
+            UserDefaults.standard.set(true, forKey: Keys.sharedSignIn)
+        }
+    }
+
+    private func isAuthorized(_ userID: String) async -> Bool {
+        #if targetEnvironment(simulator)
+        // As in `refresh()`: the Simulator can't answer credential-state checks reliably.
+        return true
+        #else
+        do {
+            return try await ASAuthorizationAppleIDProvider().credentialState(forUserID: userID) == .authorized
+        } catch {
+            log.error("isAuthorized: credential check failed: \(error.localizedDescription, privacy: .public)")
+            return false
+        }
+        #endif
     }
 
     /// Previews only: shows signed-in UI without a real Apple ID.
@@ -183,10 +299,21 @@ final class AccountService {
         status = .signedIn
     }
 
+    /// Signs out of Hearken only: Apple revoked the sign-in, or another Hearth app signed out
+    /// everywhere. Notes and progress stay.
     func signOut() {
         log.info("signOut")
         KeychainStore.delete(Keys.userID)
+        UserDefaults.standard.removeObject(forKey: Keys.sharedSignIn)
         status = .signedOut
+        HearthLink.shared.update()
+    }
+
+    /// Sign Out in Settings: signs out of Hearken and of the other Hearth apps on this device
+    /// (BigTable, Suffice, Sated, Caloma), which share one sign-in. Notes and progress stay.
+    func signOutEverywhere() {
+        signOut()
+        HearthAccounts.signOutEverywhere()
     }
 
     /// Deletes everything the app stores for this user and signs out.
@@ -200,6 +327,6 @@ final class AccountService {
         displayName = nil
         email = nil
         setAvatar(nil)
-        signOut()
+        if isSignedIn { signOutEverywhere() } else { signOut() }
     }
 }

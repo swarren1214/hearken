@@ -54,6 +54,25 @@ The highlight color legend already syncs with iCloud key-value storage.
   levels and streaks, all computed from records (see Services/Mastery).
 - **Tests** — Swift Testing for the mastery math and content integrity (⌘U).
 
+## Other Hearth apps
+
+Hearken shares with Steve's other apps on the same device (BigTable, Suffice, Sated, Caloma)
+through the app group `group.com.stephenwarren.hearth`, added to `Hearken.entitlements` (main
+app only). `Services/Hearth/HearthShared.swift` is synced from `~/Developer/hearthkit`; don't
+edit it here. Hearken's side is `Services/Hearth/HearthLink.swift`.
+
+- **One Sign in with Apple.** Apple's user ID is the same in every app from the team, and Apple
+  only gives the name and email to the first app that asks, so the sign-in is kept in the shared
+  Keychain (`HearthAccounts.appleID()`). When another app already signed in, the sign-in screen
+  (and Settings, signed out) shows **Continue as <name>** instead of the Apple button; Apple is
+  still asked that the sign-in is valid. A normal sign-in is shared with the others, and uses the
+  shared name when Apple sends none. **Sign Out signs out of the other Hearth apps too**
+  (`HearthAccounts.signOutEverywhere()`), and signing out everywhere in another app signs
+  Hearken out; notes and progress stay either way.
+- **Photos.** While signed in with a name, Hearken shares the reader as a one-person family
+  (`me`) with their photo, on launch and whenever the name or photo changes, and takes it back
+  on sign-out. Without a photo in Hearken, Settings shows another app's photo of them.
+
 ## Content
 
 Content ships as JSON in `Hearken/Resources/Content`:

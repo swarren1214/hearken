@@ -2,13 +2,16 @@ import AuthenticationServices
 import SwiftUI
 
 /// First-launch screen. Sign in with Apple is the only sign-in option; "Not now" lets people
-/// read and practice without an account (App Review guideline 5.1.1).
+/// read and practice without an account (App Review guideline 5.1.1). When another Hearth app
+/// on this device already signed in with Apple, it offers "Continue as <name>" instead.
 struct SignInView: View {
     var onFinish: () -> Void
 
     @Environment(AccountService.self) private var account
     @State private var signedIn = false
     @State private var errorMessage: String?
+    /// The sign-in another Hearth app shared, once Apple says it's still good.
+    @State private var sharedSignIn: HearthSharedAppleID?
     /// The screen's height, to fit short screens (iPhone Duo's outer display, iPhone SE).
     @State private var height: CGFloat = 900
 
@@ -75,6 +78,7 @@ struct SignInView: View {
         } message: {
             Text(errorMessage ?? "")
         }
+        .task { sharedSignIn = await account.sharedSignInToOffer() }
     }
 
     private var features: some View {
@@ -104,21 +108,30 @@ struct SignInView: View {
 
     private var signInControls: some View {
         VStack(spacing: 6) {
-            SignInWithAppleButton(.signIn) { request in
-                request.requestedScopes = [.fullName, .email]
-            } onCompletion: { result in
-                do {
-                    try account.completeSignIn(result)
+            if let shared = sharedSignIn {
+                SharedSignInButton(shared: shared) {
                     withAnimation { signedIn = true }
-                } catch let error as ASAuthorizationError where error.code == .canceled {
-                    // The person closed the sheet; nothing to report.
-                } catch {
-                    errorMessage = error.localizedDescription
+                } onFailed: { message in
+                    sharedSignIn = nil
+                    errorMessage = message
                 }
+            } else {
+                SignInWithAppleButton(.signIn) { request in
+                    request.requestedScopes = [.fullName, .email]
+                } onCompletion: { result in
+                    do {
+                        try account.completeSignIn(result)
+                        withAnimation { signedIn = true }
+                    } catch let error as ASAuthorizationError where error.code == .canceled {
+                        // The person closed the sheet; nothing to report.
+                    } catch {
+                        errorMessage = error.localizedDescription
+                    }
+                }
+                .modifier(AdaptiveSignInStyle())
+                .frame(height: 52)
+                .clipShape(Capsule())
             }
-            .modifier(AdaptiveSignInStyle())
-            .frame(height: 52)
-            .clipShape(Capsule())
 
             Button("Not now", action: onFinish)
                 .frame(minHeight: 44)
@@ -136,6 +149,54 @@ struct SignInView: View {
 
             LegalFooter()
                 .padding(.top, 4)
+        }
+    }
+}
+
+/// "Continue as Steve": signs in with the Apple sign-in another Hearth app on this device shared
+/// (`HearthAccounts.appleID()`), so nobody signs in to each app separately. Apple is still asked
+/// whether the sign-in is valid. Shown in place of Sign in with Apple.
+struct SharedSignInButton: View {
+    let shared: HearthSharedAppleID
+    var onSignedIn: () -> Void
+    var onFailed: (String) -> Void
+
+    @Environment(AccountService.self) private var account
+    @State private var photo: Data?
+    @State private var working = false
+
+    private var firstName: String {
+        shared.fullName?.split(whereSeparator: \.isWhitespace).first.map(String.init) ?? "You"
+    }
+
+    var body: some View {
+        Button {
+            guard !working else { return }
+            working = true
+            Task {
+                do {
+                    try await account.continueWithSharedSignIn(shared)
+                    onSignedIn()
+                } catch {
+                    onFailed(error.localizedDescription)
+                }
+                working = false
+            }
+        } label: {
+            HStack(spacing: 10) {
+                AccountAvatar(initials: firstName.first.map { String($0).uppercased() }, imageData: photo, size: 30)
+                Text("Continue as \(firstName)")
+                    .font(.headline)
+                    .lineLimit(1)
+            }
+            .frame(maxWidth: .infinity, minHeight: 36)
+        }
+        .buttonStyle(.glassProminent)
+        .controlSize(.large)
+        .disabled(working)
+        .accessibilityHint("Uses the Apple sign-in from your other Hearth apps")
+        .task(id: shared.userID) {
+            photo = shared.fullName.flatMap { Hearth.sharedPhoto(forName: $0, excluding: .hearken) }
         }
     }
 }
