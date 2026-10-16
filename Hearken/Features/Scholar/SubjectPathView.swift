@@ -30,7 +30,6 @@ private struct SubjectPathContent: View {
     let progress: ScholarProgress
 
     @Environment(\.colorScheme) private var colorScheme
-    @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
     @State private var check: AssessmentRequest?
 
     var body: some View {
@@ -61,6 +60,7 @@ private struct SubjectPathContent: View {
             .padding(.bottom, 32)
         }
         .background(Color(.systemGroupedBackground))
+        .refreshable { await CloudRefresh.refresh() }
         .navigationTitle(subject.name)
         .fullScreenCover(item: $check) { AssessmentView(request: $0) }
     }

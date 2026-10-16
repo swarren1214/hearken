@@ -27,7 +27,6 @@ struct MapQuestView: View {
     /// VoiceOver: name choices instead of a pin, since a map can't be tapped by place.
     @State private var choices: [MapQuestPlace] = []
     @AppStorage("mapquest.style") private var style: MapQuestMapStyle = .satellite
-    @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
 
     private let mastery = MasteryService()
 
@@ -95,7 +94,7 @@ struct MapQuestView: View {
         .sensoryFeedback(.selection, trigger: index)
         .onAppear { prepareChoices() }
         // The Check button follows the app's accent; the chevrons, back and map style icons use the text color.
-        .tint(accent.color)
+        .tint(Accent.color)
     }
 
     // MARK: Top

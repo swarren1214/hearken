@@ -57,6 +57,7 @@ struct MarkedListView: View {
                 }
             }
         }
+        .refreshable { await CloudRefresh.refresh() }
         .navigationTitle("Notes and Highlights")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {

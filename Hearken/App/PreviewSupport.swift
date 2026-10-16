@@ -23,7 +23,7 @@ private struct PreviewEnvironment: ViewModifier {
             .environment(legend)
             .environment(sync)
             .modelContainer(container)
-            .tint(AccentOption.blue.color)
+            .tint(Accent.color)
             .onAppear {
                 if signedIn { account.markSignedInForPreview() }
             }

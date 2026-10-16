@@ -144,6 +144,7 @@ private struct CourseContent: View {
                 }
             }
         }
+        .refreshable { await CloudRefresh.refresh() }
         .navigationTitle("Course \(course.number)")
         .navigationBarTitleDisplayMode(.inline)
         .fullScreenCover(item: $check) { AssessmentView(request: $0) }

@@ -105,14 +105,14 @@ struct HighlightToolbar: View {
 
     private var actionsMenu: some View {
         Menu {
-            Button("Add Note", systemImage: "square.and.pencil", action: onNote)
+            Button("Add Note", menuIcon: "square.and.pencil", action: onNote)
             if let onExplain {
-                Button("Explain", systemImage: "sparkles", action: onExplain)
+                Button("Explain", menuIcon: "sparkles", action: onExplain)
             }
             if let onShareToGroup {
-                Button("Share to Group", systemImage: "person.2", action: onShareToGroup)
+                Button("Share to Group", menuIcon: "person.2", action: onShareToGroup)
             }
-            Button(copied ? "Copied" : "Copy", systemImage: copied ? "checkmark" : "doc.on.doc") {
+            Button(copied ? "Copied" : "Copy", menuIcon: copied ? "checkmark" : "doc.on.doc") {
                 onCopy()
                 copied = true
                 Task {

@@ -44,6 +44,7 @@ struct BadgesView: View {
             .padding(.bottom, 24)
         }
         .background(Color(.systemGroupedBackground))
+        .refreshable { await CloudRefresh.refresh() }
         .navigationTitle("Badges")
     }
 

@@ -48,7 +48,7 @@ The highlight color legend already syncs with iCloud key-value storage.
   awards reading XP only once.
 - **Notes and Highlights** — everything marked, filterable by color.
 - **Search** — scripture text and subjects.
-- **Settings** — account, appearance, accent color, Highlight Colors legend, text size,
+- **Settings** — account, appearance, Highlight Colors legend, text size,
   daily goal, study reminder, legal links.
 - **Mastery** — spaced repetition recall per question, unit and subject mastery, tiers, XP,
   levels and streaks, all computed from records (see Services/Mastery).

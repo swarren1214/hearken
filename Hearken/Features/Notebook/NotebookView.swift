@@ -61,7 +61,6 @@ struct NotebookView: View {
     @Environment(HighlightLegend.self) private var legend
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
     @AppStorage(SettingsKey.notebookGrouping) private var grouping: NotebookGrouping = .book
     @Query(sort: \Highlight.updatedAt, order: .reverse) private var highlights: [Highlight]
     @Query(sort: \Note.updatedAt, order: .reverse) private var notes: [Note]
@@ -120,6 +119,7 @@ struct NotebookView: View {
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
         .background(Color(.systemGroupedBackground))
+        .refreshable { await CloudRefresh.refresh() }
         .navigationTitle("Notebook")
         .navigationSubtitle(summary(all))
         .toolbar {
@@ -149,10 +149,10 @@ struct NotebookView: View {
             ToolbarItem(placement: .bottomBar) {
                 Menu {
                     ShareLink(item: NotebookExport.text(sections, legend: legend, format: .plain)) {
-                        Label("Share as Text", systemImage: "doc.plaintext")
+                        Label { Text("Share as Text") } icon: { Image.menuIcon("doc.plaintext") }
                     }
                     ShareLink(item: NotebookExport.text(sections, legend: legend, format: .markdown)) {
-                        Label("Share as Markdown", systemImage: "number")
+                        Label { Text("Share as Markdown") } icon: { Image.menuIcon("number") }
                     }
                 } label: {
                     Label("Share", systemImage: "square.and.arrow.up")
@@ -333,7 +333,7 @@ struct NotebookView: View {
 
     private func row(_ entry: NotebookEntry) -> some View {
         Button { selected = entry } label: {
-            NotebookCard(entry: entry, meaning: entry.hue.map { legend.name(for: $0) }, accent: accent.color)
+            NotebookCard(entry: entry, meaning: entry.hue.map { legend.name(for: $0) }, accent: Accent.color)
         }
         .buttonStyle(.plain)
         .listRowBackground(Color.clear)

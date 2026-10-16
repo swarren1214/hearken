@@ -63,6 +63,7 @@ struct ReadingPlansView: View {
             }
         }
         .listStyle(.insetGrouped)
+        .refreshable { await CloudRefresh.refresh() }
         .navigationTitle("Reading Plans")
         .sheet(item: $starting) { plan in
             PlanStartSheet(plan: plan, replacing: active)
@@ -159,7 +160,6 @@ struct PlanStartSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Environment(ContentService.self) private var content
-    @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
 
     @State private var startDate = Calendar.current.startOfDay(for: .now)
     @State private var weekdaysOnly = false
@@ -283,7 +283,7 @@ struct PlanStartSheet: View {
                 lastBookID = workBooks.last?.id ?? ""
             }
         }
-        .tint(accent.color)
+        .tint(Accent.color)
     }
 
     private var footer: String {
@@ -367,6 +367,7 @@ struct PlanDetailView: View {
                     .padding(.bottom, 24)
                 }
                 .background(Color(.systemGroupedBackground))
+                .refreshable { await CloudRefresh.refresh() }
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
                         CheckMenu([
@@ -390,11 +391,12 @@ struct PlanDetailView: View {
         .sheet(isPresented: $creatingGroup) {
             CreateGroupSheet(defaultPlanID: enrollment.planID, customPlan: ReadingPlanCatalog.plan(for: enrollment).flatMap { $0.isCustom ? $0 : nil })
         }
-        .confirmationDialog("End this plan?", isPresented: $confirmEnd, titleVisibility: .visible) {
+        .alert("End this plan?", isPresented: $confirmEnd) {
             Button("End Plan", role: .destructive) {
                 enrollment.endedAt = .now
                 dismiss()
             }
+            Button("Cancel", role: .cancel) {}
         } message: {
             Text("Your reading progress stays. You can start a new plan any time.")
         }
@@ -678,7 +680,6 @@ struct PlanTodayCard: View {
     let state: PlanState
     let enrollment: PlanEnrollment
 
-    @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
@@ -747,7 +748,7 @@ struct PlanTodayCard: View {
         }
         .foregroundStyle(.white)
         .padding(18)
-        .background(accent.color.gradient, in: .rect(cornerRadius: 26))
+        .background(Accent.color.gradient, in: .rect(cornerRadius: 26))
     }
 
     /// Read, Listen and View Plan. Listen drops its title when the row is tight.
@@ -784,7 +785,7 @@ struct PlanTodayCard: View {
                 .padding(.vertical, fills ? 8 : 0)
                 .frame(maxWidth: fills ? .infinity : nil, minHeight: 40)
                 .background(.white, in: Capsule())
-                .foregroundStyle(accent.color)
+                .foregroundStyle(Accent.color)
         }
         .buttonStyle(.plain)
         .fixedSize(horizontal: !fills, vertical: false)

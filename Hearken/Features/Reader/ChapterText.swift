@@ -556,7 +556,7 @@ struct ChapterTextView: UIViewRepresentable {
                 let rects = textView.selectionRects(for: textRange).map(\.rect).filter { !$0.isEmpty }
                 let bounds = rects.dropFirst().reduce(rects.first ?? textView.firstRect(for: textRange)) { $0.union($1) }
                 let inWindow = textView.convert(bounds, to: nil)
-                let screenHeight = textView.window?.bounds.height ?? UIScreen.main.bounds.height
+                let screenHeight = textView.window?.bounds.height ?? textView.bounds.height
                 let text = (textView.attributedText.string as NSString).substring(with: range)
                 next = VerseSelection(
                     start: start,

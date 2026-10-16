@@ -14,7 +14,6 @@ struct TodayView: View {
     @Query private var grants: [RankGrant]
     @State private var showSettings = false
     @State private var activeGame: GameRequest?
-    @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
 
     private let mastery = MasteryService()
 
@@ -29,6 +28,7 @@ struct TodayView: View {
         ScrollViewReader { proxy in
             ScrollView {
                 VStack(alignment: .leading, spacing: 22) {
+                    HeaderTitle("Today")
                     if let plan, let planState {
                         // A running plan leads; the Daily Challenge steps down to a row.
                         PlanTodayCard(state: planState, enrollment: plan)
@@ -50,8 +50,8 @@ struct TodayView: View {
                 .padding(.horizontal, 16)
                 .padding(.bottom, 24)
             }
-            .background(Color(.systemGroupedBackground))
-            .navigationTitle("Today")
+            .refreshable { await CloudRefresh.refresh() }
+            .colorHeader("Today")
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     HStack(spacing: 4) {
@@ -61,7 +61,7 @@ struct TodayView: View {
                             .contentTransition(.numericText())
                     }
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(.white)
                     .padding(.horizontal, 8)
                     .fixedSize()
                     .accessibilityElement(children: .ignore)
@@ -69,7 +69,7 @@ struct TodayView: View {
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Profile and settings", systemImage: "person.crop.circle") { showSettings = true }
-                        .tint(Color.primary)
+                        .tint(.white)
                 }
             }
             .sheet(isPresented: $showSettings) {
@@ -136,7 +136,7 @@ struct TodayView: View {
             }
             .foregroundStyle(.white)
             .padding(20)
-            .background(accent.color.gradient, in: .rect(cornerRadius: 26))
+            .background(Accent.color.gradient, in: .rect(cornerRadius: 26))
         }
         .buttonStyle(.plain)
         .disabled(questions.isEmpty)
@@ -163,7 +163,7 @@ struct TodayView: View {
                     .foregroundStyle(.white)
                     .padding(.horizontal, 16)
                     .frame(height: 34)
-                    .background(accent.color, in: Capsule())
+                    .background(Accent.color, in: Capsule())
             }
             .padding(16)
             .background(Color(.secondarySystemGroupedBackground), in: .rect(cornerRadius: 22))

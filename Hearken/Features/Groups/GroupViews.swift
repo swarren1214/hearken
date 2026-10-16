@@ -204,7 +204,6 @@ struct CreateGroupSheet: View {
 
     @Environment(\.dismiss) private var dismiss
     @Environment(AccountService.self) private var account
-    @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
     @Query(sort: \PlanEnrollment.createdAt, order: .reverse) private var enrollments: [PlanEnrollment]
     @State private var name = ""
     @State private var symbol = "house.fill"
@@ -233,13 +232,13 @@ struct CreateGroupSheet: View {
                 }
                 if createdID == nil {
                     ToolbarItem(placement: .confirmationAction) {
-                        Button("Create", systemImage: "checkmark", role: .confirm) { Task { await create() } }
+                        SheetDoneButton("Create") { Task { await create() } }
                             .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty || working)
                     }
                 }
             }
         }
-        .tint(accent.color)
+        .tint(Accent.color)
         .onAppear {
             if let defaultPlanID, defaultPlanID == ReadingPlan.customID ? customPlan != nil : ReadingPlanCatalog.plans.contains(where: { $0.id == defaultPlanID }) {
                 planID = defaultPlanID
@@ -357,7 +356,6 @@ struct JoinGroupSheet: View {
     let metadata: CKShare.Metadata
 
     @Environment(\.dismiss) private var dismiss
-    @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
     @State private var joining = false
     @State private var errorMessage: String?
 
@@ -415,7 +413,7 @@ struct JoinGroupSheet: View {
         }
         .padding(20)
         .background(Color(.systemGroupedBackground))
-        .tint(accent.color)
+        .tint(Accent.color)
         .presentationDetents([.large])
     }
 
@@ -506,7 +504,7 @@ struct GroupDetailView: View {
             .padding(.bottom, 24)
         }
         .background(Color(.systemGroupedBackground))
-        .refreshable { await GroupStore.shared.refresh() }
+        .refreshable { await CloudRefresh.refresh() }
         .safeAreaInset(edge: .bottom) { composer(group, today: today) }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -532,7 +530,7 @@ struct GroupDetailView: View {
                 .tint(Color.primary)
             }
         }
-        .confirmationDialog(group.isOwner ? "Delete \(group.name)?" : "Leave \(group.name)?", isPresented: $confirmLeave, titleVisibility: .visible) {
+        .alert(group.isOwner ? "Delete \(group.name)?" : "Leave \(group.name)?", isPresented: $confirmLeave) {
             Button(group.isOwner ? "Delete Group" : "Leave Group", role: .destructive) {
                 Task {
                     do {
@@ -543,6 +541,7 @@ struct GroupDetailView: View {
                     }
                 }
             }
+            Button("Cancel", role: .cancel) {}
         } message: {
             Text(group.isOwner
                  ? "This removes the group and everything shared in it for every member."
@@ -798,6 +797,7 @@ private struct GroupMembersSheet: View {
                     Section { Text(errorMessage).foregroundStyle(.red) }
                 }
             }
+            .refreshable { await load() }
             .navigationTitle("Members")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -853,7 +853,6 @@ struct GroupVerseSheet: View {
     let reference: String
 
     @Environment(\.dismiss) private var dismiss
-    @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
 
     var body: some View {
         let store = GroupStore.shared
@@ -911,6 +910,6 @@ struct GroupVerseSheet: View {
                 }
             }
         }
-        .tint(accent.color)
+        .tint(Accent.color)
     }
 }

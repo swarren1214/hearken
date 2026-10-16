@@ -35,7 +35,8 @@ struct LibraryView: View {
         // Split into parts so the compiler can type-check each one quickly.
         syncing(dialogs(importing(destinations(
             shelvesList
-                .navigationTitle("Library")
+                .refreshable { await CloudRefresh.refresh() }
+                .colorHeader("Library")
                 .toolbar { libraryToolbar }
         ))))
     }
@@ -46,15 +47,17 @@ struct LibraryView: View {
 
         return ScrollView {
             VStack(alignment: .leading, spacing: 32) {
+                HeaderTitle("Library")
+                    .padding(.horizontal, 16)
                 ForEach(shelves) { shelf in
                     shelfRow(shelf, progress: progress)
                         .tourTarget(.library, isEnabled: shelf.id == shelves.first?.id)
                 }
             }
-            .padding(.top, 8)
+            .padding(.top, 4)
             .padding(.bottom, 24)
         }
-        .background(Color(.systemGroupedBackground))
+        // The color header and gray background come from `body`.
         .overlay {
             if dropTargeted {
                 RoundedRectangle(cornerRadius: 24)
@@ -69,16 +72,16 @@ struct LibraryView: View {
     private var libraryToolbar: some ToolbarContent {
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
-                    Button("Import a Book…", systemImage: "square.and.arrow.down") { importBook(toShelf: nil) }
-                    Button("New Shelf…", systemImage: "plus.rectangle.on.rectangle") {
+                    Button("Import a Book…", menuIcon: "square.and.arrow.down") { importBook(toShelf: nil) }
+                    Button("New Shelf…", menuIcon: "plus.rectangle.on.rectangle") {
                         newShelfName = ""
                         namingShelf = true
                     }
-                    Button("Edit Shelves", systemImage: "pencil") { editingShelves = true }
+                    Button("Edit Shelves", menuIcon: "pencil") { editingShelves = true }
                 } label: {
                     Label("Add to Library", systemImage: "plus")
                 }
-                .tint(Color.primary)
+                .tint(.white)
             }
             ToolbarItem(placement: .topBarTrailing) {
                 NavigationLink {
@@ -86,7 +89,7 @@ struct LibraryView: View {
                 } label: {
                     Label("Notebook", systemImage: "note.text")
                 }
-                .tint(Color.primary)
+                .tint(.white)
             }
             ToolbarItem(placement: .topBarTrailing) {
                 NavigationLink {
@@ -94,7 +97,7 @@ struct LibraryView: View {
                 } label: {
                     Label("Reading Plans", systemImage: "calendar")
                 }
-                .tint(Color.primary)
+                .tint(.white)
             }
     }
 
@@ -283,7 +286,7 @@ struct LibraryView: View {
         .contextMenu {
             if movable {
                 moveMenu(.work(work), currentShelf: shelf.id)
-                Button("Remove from Library", systemImage: "minus.circle", role: .destructive) {
+                Button("Remove from Library", menuIcon: "minus.circle", role: .destructive) {
                     removal = Removal(
                         item: .work(work),
                         title: "Remove “\(work.title)”?",
@@ -323,7 +326,7 @@ struct LibraryView: View {
             }
             Button("Edit Details", menuIcon: "pencil") { editingBook = book }
             moveMenu(.book(book), currentShelf: shelf.id)
-            Button("Remove from Library", systemImage: "trash", role: .destructive) {
+            Button("Remove from Library", menuIcon: "trash", role: .destructive) {
                 let summary = LibraryStore.studySummary(forBooks: [book.id], in: modelContext)
                 removal = Removal(
                     item: .book(book),

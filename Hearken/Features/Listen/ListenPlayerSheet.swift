@@ -5,7 +5,6 @@ import SwiftUI
 struct ListenPlayerSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(ContentService.self) private var content
-    @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
     @State private var engine = ListenEngine.shared
     /// The verse under the scrubber's thumb while it's being dragged.
     @State private var scrubbing: Double?
@@ -24,7 +23,7 @@ struct ListenPlayerSheet: View {
             }
             .background {
                 LinearGradient(
-                    colors: [accent.color.opacity(0.16), Color(.systemGroupedBackground)],
+                    colors: [Accent.color.opacity(0.16), Color(.systemGroupedBackground)],
                     startPoint: .top, endPoint: .center
                 )
                 .ignoresSafeArea()
@@ -62,12 +61,12 @@ struct ListenPlayerSheet: View {
             Spacer(minLength: 0)
             Menu {
                 if let chapterID = engine.chapterID {
-                    Button("Show in Reader", systemImage: "book") {
+                    Button("Show in Reader", menuIcon: "book") {
                         dismiss()
                         AppNavigator.shared.open(chapterID: chapterID)
                     }
                 }
-                Button("Stop Listening", systemImage: "xmark", role: .destructive) { engine.stop() }
+                Button("Stop Listening", menuIcon: "stop", role: .destructive) { engine.stop() }
             } label: {
                 Label("More", systemImage: "ellipsis")
                     .labelStyle(.iconOnly)

@@ -13,7 +13,6 @@ struct NotebookEntrySheet: View {
     @Environment(HighlightLegend.self) private var legend
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
     @Query private var chapterNotes: [Note]
 
     @State private var highlight: Highlight?
@@ -109,7 +108,7 @@ struct NotebookEntrySheet: View {
                 }
             }
         }
-        .tint(accent.color)
+        .tint(Accent.color)
         .presentationDetents([.medium, .large])
         .sensoryFeedback(.selection, trigger: highlight?.hueRaw)
     }
@@ -136,7 +135,7 @@ struct NotebookEntrySheet: View {
         for (index, verse) in verses.enumerated() {
             var number = AttributedString("\(verse.number) ")
             number.swiftUI.font = .system(size: 12, weight: .bold)
-            number.swiftUI.foregroundColor = accent.color
+            number.swiftUI.foregroundColor = Accent.color
             number.swiftUI.baselineOffset = 5
             if index > 0 { result += AttributedString(" ") }
             result += number

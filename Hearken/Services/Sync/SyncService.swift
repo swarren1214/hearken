@@ -1,3 +1,4 @@
+import CloudKit
 import CoreData
 import Foundation
 import Observation
@@ -22,6 +23,8 @@ final class SyncService {
     /// Syncing right now, by Sync Now or on its own.
     var isActive: Bool { isSyncing || isCloudKitBusy }
     private(set) var lastError: String?
+    /// The CloudKit error code behind `lastError`, when there is one, so Settings can explain it.
+    private(set) var lastErrorCode: CKError.Code?
 
     private let log = Logger(subsystem: "com.stephenwarren.hearken", category: "sync")
     private let defaults: UserDefaults
@@ -29,7 +32,7 @@ final class SyncService {
 
     /// CloudKit work that has started but not finished.
     @ObservationIgnored private var activeEvents: Set<UUID> = []
-    @ObservationIgnored private var lastFailure: (date: Date, message: String)?
+    @ObservationIgnored private var lastFailure: (date: Date, message: String, code: CKError.Code?)?
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
@@ -47,8 +50,9 @@ final class SyncService {
             let endDate = event.endDate
             let succeeded = event.succeeded
             let message = event.error?.localizedDescription
+            let code = event.error.flatMap { SyncService.cloudKitCode(of: $0) }
             MainActor.assumeIsolated {
-                self?.handle(id: id, endDate: endDate, succeeded: succeeded, error: message)
+                self?.handle(id: id, endDate: endDate, succeeded: succeeded, error: message, code: code)
             }
         }
     }
@@ -58,6 +62,7 @@ final class SyncService {
         guard !isSyncing else { return }
         isSyncing = true
         lastError = nil
+        lastErrorCode = nil
         defer { isSyncing = false }
         let started = Date.now
 
@@ -79,6 +84,7 @@ final class SyncService {
             }
             if let lastFailure, lastFailure.date >= started {
                 lastError = lastFailure.message
+                lastErrorCode = lastFailure.code
                 return
             }
         }
@@ -87,7 +93,7 @@ final class SyncService {
         log.info("sync: finished")
     }
 
-    private func handle(id: UUID, endDate: Date?, succeeded: Bool, error: String?) {
+    private func handle(id: UUID, endDate: Date?, succeeded: Bool, error: String?, code: CKError.Code?) {
         guard let endDate else {
             activeEvents.insert(id)
             isCloudKitBusy = true
@@ -99,8 +105,11 @@ final class SyncService {
             markSynced(endDate)
         } else if let error {
             log.error("sync: CloudKit event failed: \(error, privacy: .public)")
-            lastFailure = (endDate, error)
-            if !isSyncing { lastError = error }
+            lastFailure = (endDate, error, code)
+            if !isSyncing {
+                lastError = error
+                lastErrorCode = code
+            }
         }
     }
 
@@ -108,6 +117,26 @@ final class SyncService {
         guard date > (lastSynced ?? .distantPast) else { return }
         lastSynced = date
         lastError = nil
+        lastErrorCode = nil
         defaults.set(date, forKey: Self.lastSyncedKey)
+    }
+
+    /// The CloudKit error code behind a sync error. SwiftData's mirroring often wraps it (in a
+    /// Core Data error, or a partial failure with one error per record), so this looks inside;
+    /// URL errors count as network failures. Nil when it isn't a CloudKit or network error.
+    nonisolated static func cloudKitCode(of error: Error) -> CKError.Code? {
+        let nsError = error as NSError
+        if nsError.domain == NSURLErrorDomain { return .networkFailure }
+        guard nsError.domain == CKErrorDomain else {
+            guard let underlying = nsError.userInfo[NSUnderlyingErrorKey] as? Error else { return nil }
+            return cloudKitCode(of: underlying)
+        }
+        let code = CKError.Code(rawValue: nsError.code)
+        if code == .partialFailure,
+           let partial = nsError.userInfo[CKPartialErrorsByItemIDKey] as? [AnyHashable: Error] {
+            let codes = partial.values.compactMap { cloudKitCode(of: $0) }
+            return codes.first(where: { $0 != .batchRequestFailed }) ?? codes.first ?? code
+        }
+        return code
     }
 }

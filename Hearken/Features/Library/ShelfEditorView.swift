@@ -157,7 +157,6 @@ struct DeleteShelfSheet: View {
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-    @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
     @Query private var books: [ImportedBook]
     @Query private var placements: [ShelfPlacement]
     @State private var choice: LibraryStore.BooksChoice = .remove
@@ -260,7 +259,7 @@ struct DeleteShelfSheet: View {
                 Spacer(minLength: 12)
                 Image(systemName: "checkmark")
                     .font(.body.weight(.semibold))
-                    .foregroundStyle(accent.color)
+                    .foregroundStyle(Accent.color)
                     .opacity(selected ? 1 : 0)
                     .accessibilityHidden(true)
             }

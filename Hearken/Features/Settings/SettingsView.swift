@@ -1,4 +1,5 @@
 import AuthenticationServices
+import CloudKit
 import PhotosUI
 import SwiftData
 import SwiftUI
@@ -12,7 +13,6 @@ struct SettingsView: View {
     @Environment(SyncService.self) private var sync
 
     @AppStorage(ScholarDebug.unlockAllKey) private var unlockAllCourses = false
-    @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
     @AppStorage(SettingsKey.appearance) private var appearance: AppearanceOption = .system
     @AppStorage(SettingsKey.scriptureTextSize) private var textSize: Double = 20
     @AppStorage(SettingsKey.showVerseNumbers) private var showVerseNumbers = true
@@ -23,6 +23,7 @@ struct SettingsView: View {
     @AppStorage(SettingsKey.reviewNotificationMinutes) private var reviewMinutes = ReviewNotifications.defaultMinutes
 
     @State private var confirmDelete = false
+    @State private var confirmSignOut = false
     @State private var avatarItem: PhotosPickerItem?
     @State private var errorMessage: String?
     @State private var tipsReset = false
@@ -40,14 +41,6 @@ struct SettingsView: View {
                 Text("Appearance")
             } footer: {
                 Text("System follows your iPhone's Light and Dark setting, including scheduled switching.")
-            }
-
-            Section {
-                accentPicker
-            } header: {
-                Text("Accent Color")
-            } footer: {
-                Text("Used for buttons, progress rings and mastery meters. Highlight colors are set separately.")
             }
 
             Section {
@@ -186,10 +179,18 @@ struct SettingsView: View {
                 Button("Done", systemImage: "checkmark") { dismiss() }
             }
         }
-        .confirmationDialog(account.isSignedIn ? "Delete your Hearken account?" : "Delete all your Hearken data?", isPresented: $confirmDelete, titleVisibility: .visible) {
+        .alert(account.isSignedIn ? "Delete your Hearken account?" : "Delete all your Hearken data?", isPresented: $confirmDelete) {
             Button(account.isSignedIn ? "Delete Account and Data" : "Delete All Data", role: .destructive) { deleteAccount() }
+            Button("Cancel", role: .cancel) {}
         } message: {
             Text("This removes your notes, highlights, plans and progress from this device and from iCloud, deletes the study groups you created and leaves the ones you joined. It can't be undone.")
+        }
+        .alert("Sign out of Hearken?", isPresented: $confirmSignOut) {
+            // Also signs out of the other Hearth apps on this iPhone (one shared sign-in).
+            Button("Sign Out", role: .destructive) { account.signOutEverywhere() }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This also signs you out of your other Hearth apps on this iPhone. Your notes, highlights and progress stay on this device and in iCloud.")
         }
         .alert("Something went wrong", isPresented: Binding(get: { errorMessage != nil }, set: { if !$0 { errorMessage = nil } })) {
             Button("OK", role: .cancel) {}
@@ -203,72 +204,13 @@ struct SettingsView: View {
     @ViewBuilder
     private var accountSection: some View {
         Section {
-            if account.isSignedIn {
-                HStack(spacing: 14) {
-                    PhotosPicker(selection: $avatarItem, matching: .images) {
-                        // Another Hearth app's photo of them until they pick one here.
-                        AccountAvatar(initials: account.initials, imageData: account.avatarData ?? hearth.sharedAvatar, size: 56)
-                            .overlay(alignment: .bottomTrailing) {
-                                Image(systemName: "camera.fill")
-                                    .font(.system(size: 10, weight: .semibold))
-                                    .foregroundStyle(.white)
-                                    .frame(width: 22, height: 22)
-                                    .background(.tint, in: Circle())
-                                    .overlay(Circle().stroke(Color(.secondarySystemGroupedBackground), lineWidth: 2))
-                                    .offset(x: 2, y: 2)
-                            }
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel(account.avatarData == nil ? "Add profile photo" : "Change profile photo")
-                    .contextMenu {
-                        if account.avatarData != nil {
-                            Button("Remove Photo", systemImage: "trash", role: .destructive) { account.setAvatar(nil) }
-                        }
-                    }
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(account.displayName ?? "Signed in").font(.headline)
-                        Text(account.email ?? "Signed in with Apple")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
-                            .truncationMode(.middle)
-                    }
-                }
-                .fullWidthSeparator()
-                .onChange(of: avatarItem) { _, item in
-                    guard let item else { return }
-                    Task {
-                        if let data = try? await item.loadTransferable(type: Data.self),
-                           let jpeg = AccountAvatar.thumbnail(from: data) {
-                            account.setAvatar(jpeg)
-                        }
-                        avatarItem = nil
-                    }
-                }
-            }
-            HStack {
-                Text("iCloud")
-                Spacer()
-                iCloudStatus
-            }
-            .fullWidthSeparator()
-            syncRow
-                .fullWidthSeparator()
-        } header: {
-            Text("Account")
-        } footer: {
-            if account.iCloudAvailable == false {
-                Text("Your study stays on this iPhone. Sign in to iCloud in the Settings app to sync across your devices and read with others.")
-            } else if let error = sync.lastError {
-                Text("Couldn't sync: \(error)")
-                    .foregroundStyle(.red)
-            } else {
-                Text("Your notes, highlights, bookmarks, plans and progress sync through your iCloud account.")
-            }
-        }
-
-        if !account.isSignedIn {
-            Section {
+            HearthAccountSection(
+                app: .hearken,
+                profile: account.isSignedIn
+                    ? HearthAccountProfile(name: account.displayName, email: account.email, photo: account.avatarData ?? hearth.sharedAvatar)
+                    : nil,
+                pitch: "Optional: signing in adds your name and photo to your profile and study groups, and your other Hearth apps recognize you. Every feature works without it."
+            ) {
                 if let shared = sharedSignIn {
                     SharedSignInButton(shared: shared) {
                         sharedSignIn = nil
@@ -276,10 +218,6 @@ struct SettingsView: View {
                         sharedSignIn = nil
                         errorMessage = message
                     }
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 6)
-                    .listRowInsets(EdgeInsets())
-                    .listRowBackground(Color.clear)
                 } else {
                     SignInWithAppleButton(.signIn) { request in
                         request.requestedScopes = [.fullName, .email]
@@ -292,123 +230,142 @@ struct SettingsView: View {
                         }
                     }
                     .signInWithAppleButtonStyle(colorScheme == .dark ? .white : .black)
-                    .frame(height: 50)
-                    .clipShape(Capsule())
-                    .listRowInsets(EdgeInsets())
-                    .listRowBackground(Color.clear)
                 }
-            } footer: {
-                Text("Optional. Signing in adds your name and photo to your profile and study groups. Every feature works without it.")
+            } rows: {
+                PhotosPicker(selection: $avatarItem, matching: .images) {
+                    HearthAccountRow(account.avatarData == nil ? "Add Profile Photo" : "Change Profile Photo", systemImage: "camera", showsChevron: false)
+                }
+                .buttonStyle(.plain)
+                if account.avatarData != nil {
+                    Button(role: .destructive) {
+                        account.setAvatar(nil)
+                    } label: {
+                        HearthAccountRow("Remove Photo", systemImage: "trash", showsChevron: false)
+                    }
+                    .buttonStyle(.plain)
+                }
+            } onSignOut: {
+                confirmSignOut = true
+            } onDeleteAccount: {
+                confirmDelete = true
             }
-            .task { sharedSignIn = await account.sharedSignInToOffer() }
+            .hearthAccountSectionRow()
+            .task(id: account.isSignedIn) {
+                sharedSignIn = account.isSignedIn ? nil : await account.sharedSignInToOffer()
+            }
+            .onChange(of: avatarItem) { _, item in
+                guard let item else { return }
+                Task {
+                    if let data = try? await item.loadTransferable(type: Data.self),
+                       let jpeg = AccountAvatar.thumbnail(from: data) {
+                        account.setAvatar(jpeg)
+                    }
+                    avatarItem = nil
+                }
+            }
+        } header: {
+            Text("Account")
         }
 
-        Section {
-            VStack(spacing: 10) {
-                if account.isSignedIn {
-                    // Primary: filled with the accent color, white text and icon.
-                    Button {
-                        // Also signs out of the other Hearth apps on this iPhone (one shared sign-in).
-                        account.signOutEverywhere()
-                    } label: {
-                        Label("Sign Out", systemImage: "rectangle.portrait.and.arrow.right")
-                            // Inside a Form the icon would pick up the accent; keep it white like the text.
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.glassProminent)
-                }
+        Section("iCloud") {
+            HearthSyncCard(
+                app: .hearken,
+                snapshot: syncSnapshot,
+                summary: "Your highlights, notes and progress",
+                sharing: syncSharing
+            ) {
+                await sync.syncNow(context: modelContext)
+                await CloudRefresh.refresh()
+            }
+            .hearthSyncCardRow()
+        }
 
-                // Destructive: filled red, white text and icon.
+        // Signed in, Delete Account is in the account section; signed out, the data can still go.
+        if !account.isSignedIn {
+            Section {
                 Button(role: .destructive) {
                     confirmDelete = true
                 } label: {
-                    Label(account.isSignedIn ? "Delete Account" : "Delete All Data", systemImage: "trash")
+                    Label("Delete All Data", systemImage: "trash")
                         // Inside a Form the icon would pick up the accent; keep it white like the text.
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.glassProminent)
                 .tint(.red)
-            }
-            .controlSize(.large)
-            .buttonBorderShape(.capsule)
-            // The row clips its content, and glass draws slightly past its frame (and grows
-            // when pressed), so leave a little room or the capsule's round ends get cut flat.
-            .padding(.horizontal, 6)
-            .padding(.vertical, 6)
-            .listRowInsets(EdgeInsets())
-            .listRowBackground(Color.clear)
-        } footer: {
-            if account.isSignedIn {
-                Text("Signing out also signs you out of your other Hearth apps on this iPhone.")
+                .controlSize(.large)
+                .buttonBorderShape(.capsule)
+                // The row clips its content, and glass draws slightly past its frame (and grows
+                // when pressed), so leave a little room or the capsule's round ends get cut flat.
+                .padding(.horizontal, 6)
+                .padding(.vertical, 6)
+                .listRowInsets(EdgeInsets())
+                .listRowBackground(Color.clear)
             }
         }
     }
 
-    /// Last synced time and a Sync Now button. The time refreshes every 30 seconds.
-    private var syncRow: some View {
-        HStack(spacing: 12) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Last Synced")
-                TimelineView(.periodic(from: .now, by: 30)) { context in
-                    Text(lastSyncedText(now: context.date))
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                        .contentTransition(.numericText())
-                }
-            }
-            Spacer()
-            Button {
-                Task { await sync.syncNow(context: modelContext) }
-            } label: {
-                Label(sync.isSyncing ? "Syncing" : "Sync Now", systemImage: "arrow.triangle.2.circlepath")
-                    .symbolEffect(.rotate, options: .repeat(.continuous), isActive: sync.isSyncing)
-                    .contentTransition(.interpolate)
-            }
-            .buttonStyle(.glass)
-            .tint(Color.primary)
-            .disabled(sync.isSyncing || account.iCloudAvailable != true)
-            .accessibilityHint("Saves your highlights, notes and progress to iCloud now.")
-        }
-        .animation(.snappy, value: sync.isSyncing)
-        .sensoryFeedback(.success, trigger: sync.lastSynced)
-        .sensoryFeedback(.error, trigger: sync.lastError) { _, error in error != nil }
-    }
+    // MARK: iCloud
 
-    private func lastSyncedText(now: Date) -> String {
-        if sync.isActive { return "Syncing…" }
-        guard let date = sync.lastSynced else { return "Not yet synced" }
-        let elapsed = now.timeIntervalSince(date)
-        if elapsed < 60 { return "Just now" }
-        if elapsed < 60 * 60 { return date.formatted(.relative(presentation: .named)) }
-        if Calendar.current.isDateInToday(date) { return "Today at \(date.formatted(date: .omitted, time: .shortened))" }
-        if Calendar.current.isDateInYesterday(date) { return "Yesterday at \(date.formatted(date: .omitted, time: .shortened))" }
-        return date.formatted(date: .abbreviated, time: .shortened)
-    }
-
-    @ViewBuilder
-    private var iCloudStatus: some View {
+    /// What the iCloud Sync card shows, from the iCloud account and SyncService.
+    private var syncSnapshot: HearthSyncSnapshot {
+        let state: HearthSyncSnapshot.Account
         switch account.iCloudAvailable {
-        case .some(true) where !AppConfig.cloudSyncEnabled:
-            Label("Available", systemImage: "checkmark.icloud")
-                .foregroundStyle(.green)
-        case .some(true) where sync.isActive:
-            Label("Syncing", systemImage: "arrow.triangle.2.circlepath.icloud")
-                .foregroundStyle(.secondary)
-                .symbolEffect(.pulse, options: .repeat(.continuous))
-        case .some(true) where sync.lastError != nil:
-            Label("Not Synced", systemImage: "exclamationmark.icloud")
-                .foregroundStyle(.orange)
-        case .some(true):
-            Label("Synced", systemImage: "checkmark.icloud")
-                .foregroundStyle(.green)
-        case .some(false):
-            Label("Off", systemImage: "xmark.icloud")
-                .foregroundStyle(.secondary)
-        case .none:
-            ProgressView()
+        case nil:
+            state = .checking
+        case false?:
+            state = .unavailable("Sign in to iCloud in Settings to keep your highlights, notes and progress on all your devices.")
+        case true? where !AppConfig.cloudSyncEnabled:
+            state = .unavailable("iCloud sync is turned off in this build.")
+        case true?:
+            state = .available
         }
+        return HearthSyncSnapshot(
+            account: state,
+            // Sync Now running, or CloudKit uploading or downloading on its own.
+            isSyncing: sync.isActive,
+            lastSynced: sync.lastSynced,
+            pendingChanges: nil,
+            errorMessage: syncErrorMessage
+        )
+    }
+
+    /// The last sync error in words a person can act on. Network trouble isn't shown (the card
+    /// says "Waiting to sync" when offline and CloudKit retries on its own), and neither is a
+    /// signed-out account (the card shows iCloud as off).
+    private var syncErrorMessage: String? {
+        guard sync.lastError != nil else { return nil }
+        switch sync.lastErrorCode {
+        case .quotaExceeded?:
+            return "iCloud storage is full, so new changes can’t be saved there. Free up space in Settings › [your name] › iCloud."
+        case .networkUnavailable?, .networkFailure?, .notAuthenticated?:
+            return nil
+        default:
+            return "iCloud couldn’t sync right now. Hearken will try again on its own."
+        }
+    }
+
+    /// The study groups this person is in, with up to three of the other members.
+    private var syncSharing: HearthSyncSharing? {
+        let store = GroupStore.shared
+        let groups = store.groups
+        guard !groups.isEmpty else { return nil }
+        var seen: Set<String> = []
+        var people: [HearthSyncSharing.Person] = []
+        for member in groups.flatMap(\.members) where member.userID != store.myUserID {
+            guard people.count < 3, seen.insert(member.userID).inserted else { continue }
+            let initial = String((member.initials.isEmpty ? member.name : member.initials).prefix(1)).uppercased()
+            guard !initial.isEmpty else { continue }
+            people.append(HearthSyncSharing.Person(id: member.userID, initial: initial, colorHex: Self.memberColor(member.name)))
+        }
+        return HearthSyncSharing(label: groups.count == 1 ? "1 study group" : "\(groups.count) study groups", people: people)
+    }
+
+    /// The same color MemberAvatar gives this name in Study Groups.
+    private static func memberColor(_ name: String) -> UInt32 {
+        let palette: [UInt32] = [0x5E5CE6, 0xE0244A, 0x24A148, 0xE68600, 0x0E8A8A, 0x8E44C9]
+        let seed = name.unicodeScalars.reduce(0) { ($0 &* 31 &+ Int($1.value)) & 0xFFFF }
+        return palette[seed % palette.count]
     }
 
     private func deleteAccount() {
@@ -421,41 +378,6 @@ struct SettingsView: View {
                 errorMessage = error.localizedDescription
             }
         }
-    }
-
-    // MARK: Accent
-
-    private var accentPicker: some View {
-        HStack {
-            ForEach(AccentOption.allCases) { option in
-                Button {
-                    accent = option
-                } label: {
-                    Circle()
-                        .fill(option.color)
-                        .frame(width: 30, height: 30)
-                        .overlay {
-                            if option == accent {
-                                Image(systemName: "checkmark")
-                                    .font(.caption.weight(.bold))
-                                    .foregroundStyle(.white)
-                            }
-                        }
-                        .padding(3)
-                        .overlay {
-                            if option == accent {
-                                Circle().strokeBorder(option.color, lineWidth: 2)
-                            }
-                        }
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel(option.name)
-                .accessibilityAddTraits(option == accent ? .isSelected : [])
-            }
-        }
-        .padding(.vertical, 4)
-        .sensoryFeedback(.selection, trigger: accent)
     }
 
     // MARK: Reminder

@@ -96,7 +96,7 @@ struct ListenMiniPlayer: View {
             if let chapterID = engine.chapterID {
                 Button("Show in Reader", menuIcon: "book") { AppNavigator.shared.open(chapterID: chapterID) }
             }
-            Button("Stop Listening", systemImage: "xmark", role: .destructive) { engine.stop() }
+            Button("Stop Listening", menuIcon: "stop", role: .destructive) { engine.stop() }
         }
         .sensoryFeedback(.impact(weight: .light), trigger: engine.isPlaying)
     }

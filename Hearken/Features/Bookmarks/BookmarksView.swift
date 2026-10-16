@@ -49,7 +49,6 @@ struct BookmarksSheet: View {
     @Environment(ContentService.self) private var content
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
     @Query(sort: \Bookmark.updatedAt, order: .reverse) private var bookmarks: [Bookmark]
     @State private var path: [BookmarkRoute]
     @State private var scope: Scope
@@ -137,6 +136,7 @@ struct BookmarksSheet: View {
                     .padding(.bottom, 8)
                 }
             }
+            .refreshable { await CloudRefresh.refresh() }
             .navigationTitle("Bookmarks")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -155,7 +155,7 @@ struct BookmarksSheet: View {
                 BookmarkEditor(route: route, current: current, onGo: onGo)
             }
         }
-        .tint(accent.color)
+        .tint(Accent.color)
         .sensoryFeedback(trigger: bookmarks.count) { old, new in
             new > old ? .success : .impact(weight: .light)
         }
@@ -176,7 +176,7 @@ struct BookmarksSheet: View {
             HStack(spacing: 12) {
                 Image(systemName: "bookmark.fill")
                     .font(.title3)
-                    .foregroundStyle(accent.color)
+                    .foregroundStyle(Accent.color)
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 6) {
                         Text(bookmark.displayName(in: content))
@@ -185,10 +185,10 @@ struct BookmarksSheet: View {
                         if here {
                             Text("HERE")
                                 .font(.caption2.weight(.bold))
-                                .foregroundStyle(accent.color)
+                                .foregroundStyle(Accent.color)
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 2)
-                                .background(accent.color.opacity(0.15), in: Capsule())
+                                .background(Accent.color.opacity(0.15), in: Capsule())
                         }
                     }
                     Text(detail)

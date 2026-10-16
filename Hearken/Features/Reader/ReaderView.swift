@@ -58,7 +58,6 @@ struct ReaderView: View {
     @AppStorage(SettingsKey.scriptureTextSize) private var textSize: Double = 20
     @State private var pencilPalette = PencilPalettePresence.shared
     @AppStorage(SettingsKey.onboardingDone) private var onboardingDone = false
-    @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
     @State private var listen = ListenEngine.shared
     @State private var originalPages: OriginalPages?
 
@@ -114,12 +113,12 @@ struct ReaderView: View {
                     // Touch and hold for more, including pause and resume.
                     Menu {
                         if listeningHere {
-                            Button(listen.isPlaying ? "Pause" : "Resume", systemImage: listen.isPlaying ? "pause" : "play") { listen.toggle() }
+                            Button(listen.isPlaying ? "Pause" : "Resume", menuIcon: listen.isPlaying ? "pause" : "play") { listen.toggle() }
                         }
-                        Button("Listen from Here", systemImage: "headphones") { startListening(fromStart: false) }
-                        Button("Listen from the Beginning", systemImage: "backward.end") { startListening(fromStart: true) }
+                        Button("Listen from Here", menuIcon: "headphones") { startListening(fromStart: false) }
+                        Button("Listen from the Beginning", menuIcon: "backward.end") { startListening(fromStart: true) }
                         if listen.isActive {
-                            Button("Stop Listening", systemImage: "xmark", role: .destructive) { listen.stop() }
+                            Button("Stop Listening", menuIcon: "stop", role: .destructive) { listen.stop() }
                         }
                     } label: {
                         Label(listeningHere ? "Stop Listening" : "Listen", systemImage: "headphones")
@@ -131,7 +130,7 @@ struct ReaderView: View {
                             startListening(fromStart: false)
                         }
                     }
-                    .tint(listeningHere ? accent.color : Color.primary)
+                    .tint(listeningHere ? Accent.color : Color.primary)
                     .accessibilityHint(listeningHere
                         ? "Turns Listen off. Touch and hold to pause instead."
                         : "Reads the chapter aloud. Touch and hold for more options.")
@@ -144,8 +143,8 @@ struct ReaderView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     // Tap: the bookmarks list. Touch and hold: add one here straight away.
                     Menu {
-                        Button("Add Bookmark Here", systemImage: "plus", action: addBookmarkHere)
-                        Button("Show Bookmarks", systemImage: "list.bullet") { openBookmarks() }
+                        Button("Add Bookmark Here", menuIcon: "plus", action: addBookmarkHere)
+                        Button("Show Bookmarks", menuIcon: "list.bullet") { openBookmarks() }
                     } label: {
                         Label("Bookmarks", systemImage: chapterHasBookmark ? "bookmark.fill" : "bookmark")
                             .contentTransition(.symbolEffect(.replace))
@@ -354,7 +353,6 @@ struct ReaderPage: View {
     /// that show paragraphs, unnumbered, until they're upgraded.
     private var showsNumbers: Bool { showVerseNumbers && ImportedLibrary.shared.hasVerses(chapterID) }
     @AppStorage(SettingsKey.onboardingDone) private var onboardingDone = false
-    @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
     @State private var pencilPalette = PencilPalettePresence.shared
     @AppStorage(SettingsKey.pencilHue) private var pencilHue: HighlightHue = .yellow
     @AppStorage(SettingsKey.pencilStyle) private var pencilStyle: HighlightStyle = .fill
@@ -490,10 +488,9 @@ struct ReaderPage: View {
                 .presentationDetents(horizontalSizeClass == .regular ? [.large] : [.medium, .large])
                 .presentationSizing(.form)
         }
-        .confirmationDialog(
+        .alert(
             groupShare.map { "Share \($0.reference)?" } ?? "",
             isPresented: Binding(get: { groupShare != nil }, set: { if !$0 { groupShare = nil } }),
-            titleVisibility: .visible,
             presenting: groupShare
         ) { draft in
             ForEach(GroupStore.shared.groups) { group in
@@ -557,7 +554,6 @@ struct ReaderPage: View {
         key.combine(interactive)
         key.combine(fontSize)
         key.combine(showsNumbers)
-        key.combine(accent)
         if interactive {
             for highlight in highlights {
                 key.combine(highlight.startVerse); key.combine(highlight.startOffset)
@@ -578,7 +574,7 @@ struct ReaderPage: View {
             verses: verses,
             fontSize: fontSize,
             showNumbers: showsNumbers,
-            tint: UIColor(accent.color),
+            tint: UIColor(Accent.color),
             highlights: interactive ? highlights : [],
             noteVerses: interactive ? Set(notes.map(\.verse)) : [],
             bookmarkVerses: interactive ? Set(bookmarks.map(\.verse)) : [],

@@ -51,6 +51,7 @@ struct LibraryBookView: View {
             .onAppear { restorePosition(progress: progress, proxy: proxy) }
         }
         .background(Color(.systemGroupedBackground))
+        .refreshable { await CloudRefresh.refresh() }
         .navigationTitle(work.title)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -69,7 +70,7 @@ struct LibraryBookView: View {
             }
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
-                    Button("Collapse All", systemImage: "rectangle.compress.vertical") { collapseAll() }
+                    Button("Collapse All", menuIcon: "rectangle.compress.vertical") { collapseAll() }
                 } label: {
                     Label("Book Options", systemImage: "ellipsis")
                 }

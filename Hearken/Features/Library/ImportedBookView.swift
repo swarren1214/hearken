@@ -44,6 +44,7 @@ struct ImportedBookView: View {
             }
         }
         .background(Color(.systemGroupedBackground))
+        .refreshable { await CloudRefresh.refresh() }
         .navigationTitle(matches.first?.title ?? "")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

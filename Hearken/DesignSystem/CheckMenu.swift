@@ -164,7 +164,6 @@ struct CheckMenuList: View {
     let items: [CheckMenuItem]
     let dismiss: () -> Void
 
-    @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
     @State private var contentHeight: CGFloat = 0
 
     private static let maxHeight: CGFloat = 460
@@ -186,7 +185,7 @@ struct CheckMenuList: View {
         .frame(height: min(max(contentHeight, 44), Self.maxHeight))
         .fixedSize(horizontal: true, vertical: false)
         // The checkmark uses the app's accent, even where the menu's button is tinted gray.
-        .tint(accent.color)
+        .tint(Accent.color)
         .presentationCompactAdaptation(.popover)
     }
 

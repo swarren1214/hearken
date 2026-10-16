@@ -17,6 +17,8 @@ struct HearkenApp: App {
 
     init() {
         ScreenshotMode.prepareLaunch()
+        // Text size, reader layout and other settings follow the user through iCloud.
+        SettingsSync.shared.start()
         // Alerts and confirmation dialogs use the system label color (black in Light Mode,
         // white in Dark Mode) rather than the app's accent. Destructive buttons stay red.
         UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = .label
@@ -50,24 +52,23 @@ struct HearkenApp: App {
     }
 }
 
-/// Applies the user's accent and appearance, gates first launch on sign-in, and re-checks the account.
+/// Applies the tint and appearance, gates first launch on sign-in, and re-checks the account.
 struct AppRoot: View {
     @Environment(AccountService.self) private var account
     @Environment(\.scenePhase) private var scenePhase
-    @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
     @AppStorage(SettingsKey.appearance) private var appearance: AppearanceOption = .system
     @AppStorage(SettingsKey.onboardingDone) private var onboardingDone = false
 
     var body: some View {
         RootTabView()
-            .tint(accent.color)
+            .tint(Accent.color)
             .fullScreenCover(isPresented: showOnboarding) {
                 SignInView {
                     onboardingDone = true
                     // A new install: show them around once the sign-in screen is gone.
                     TourController.shared.startAfterSignIn()
                 }
-                .tint(accent.color)
+                .tint(Accent.color)
             }
             .task {
                 await account.refresh()

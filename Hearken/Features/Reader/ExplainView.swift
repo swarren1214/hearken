@@ -12,7 +12,6 @@ struct ExplainSheet: View {
     var onSaveNote: (String) -> Bool
 
     @Environment(\.dismiss) private var dismiss
-    @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
     @State private var model: ExplainModel
     @State private var question = ""
     @State private var asking = false
@@ -70,7 +69,7 @@ struct ExplainSheet: View {
                 }
             }
         }
-        .tint(accent.color)
+        .tint(Accent.color)
         .task { await model.start() }
         .sensoryFeedback(.success, trigger: saved) { _, new in new }
         .sensoryFeedback(.success, trigger: copied) { _, new in new }
@@ -263,7 +262,7 @@ struct ExplainSheet: View {
                             .font(.headline)
                             .foregroundStyle(.white)
                             .frame(width: 44, height: 44)
-                            .background(accent.color, in: Circle())
+                            .background(Accent.color, in: Circle())
                             .disabled(question.trimmingCharacters(in: .whitespaces).isEmpty || model.isAnswering)
                     }
                 } else {
@@ -278,7 +277,7 @@ struct ExplainSheet: View {
                         }
                         // Primary action: filled with the app's accent color.
                         .buttonStyle(.glassProminent)
-                        .tint(accent.color)
+                        .tint(Accent.color)
                         .disabled(saved)
                         Button {
                             asking = true

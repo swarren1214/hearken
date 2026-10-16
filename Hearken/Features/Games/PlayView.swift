@@ -12,7 +12,6 @@ struct PlayView: View {
     @Query(sort: \GameSession.playedAt, order: .reverse) private var sessions: [GameSession]
     @Query private var awards: [SubjectAward]
     @Query private var grants: [RankGrant]
-    @AppStorage(SettingsKey.accent) private var accent: AccentOption = .blue
     @State private var activeGame: GameRequest?
     @State private var mapQuest: MapQuestCategory?
     /// Quick Play cards grow with the text size, up to most of the screen's width.
@@ -29,6 +28,7 @@ struct PlayView: View {
 
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
+                HeaderTitle("Play", subtitle: "\(accountXP.formatted()) XP · \(badges) badge\(badges == 1 ? "" : "s")")
                 // Side by side, or one above the other at accessibility text sizes.
                 AdaptiveStack(alignment: .top, spacing: 12) {
                     dailyCard(snapshot: snapshot)
@@ -47,9 +47,8 @@ struct PlayView: View {
             .padding(.horizontal, 16)
             .padding(.bottom, 24)
         }
-        .background(Color(.systemGroupedBackground))
-        .navigationTitle("Play")
-        .navigationSubtitle("\(accountXP.formatted()) XP · \(badges) badge\(badges == 1 ? "" : "s")")
+        .refreshable { await CloudRefresh.refresh() }
+        .colorHeader("Play")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 HStack(spacing: 4) {
@@ -57,6 +56,7 @@ struct PlayView: View {
                     Text("\(streak)").monospacedDigit()
                 }
                 .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.white)
                 .padding(.horizontal, 8)
                 .fixedSize()
                 .accessibilityElement(children: .ignore)
@@ -157,12 +157,12 @@ struct PlayView: View {
                     .padding(.horizontal, 14)
                     .frame(height: 36)
                     .background(.white, in: Capsule())
-                    .foregroundStyle(accent.color)
+                    .foregroundStyle(Accent.color)
             }
             .foregroundStyle(.white)
             .padding(16)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .background(accent.color.gradient, in: .rect(cornerRadius: 24))
+            .background(Accent.color.gradient, in: .rect(cornerRadius: 24))
         }
         .buttonStyle(.plain)
         .disabled(questions.isEmpty)
