@@ -158,6 +158,14 @@ struct SettingsView: View {
                      : "Reader tips reappear the next time you reach each feature.")
             }
 
+            Section {
+                NavigationLink {
+                    HearthAppsView(current: .hearken)
+                } label: {
+                    HearthAppsRowLabel(current: .hearken)
+                }
+            }
+
             Section("About") {
                 LabeledContent("Version", value: Bundle.main.appVersion)
                 Link("Terms of Use", destination: AppConfig.termsURL)

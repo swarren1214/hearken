@@ -48,6 +48,13 @@
 	<array>
 		<string>com.stephenwarren.hearken.prepare.*</string>
 	</array>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>bigtable</string>
+		<string>suffice</string>
+		<string>sated</string>
+		<string>caloma</string>
+	</array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
