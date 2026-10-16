@@ -10,7 +10,8 @@ enum AppTab: Hashable {
 }
 
 /// The Liquid Glass tab bar: Today, Play (subjects and games together), Library, and the
-/// system search tab. Icon-only.
+/// system search tab. Icon-only on iPhone; on iPad a top tab bar, with names, that can open
+/// into a sidebar pinned to the left.
 struct RootTabView: View {
     @State private var selection: AppTab = .today
     @State private var todayPath = NavigationPath()
@@ -21,6 +22,10 @@ struct RootTabView: View {
     @State private var tour = TourController.shared
     @State private var importer = BookImporter.shared
     @Environment(ContentService.self) private var content
+    @Environment(\.horizontalSizeClass) private var sizeClass
+
+    /// iPad (regular width): names show in the top tab bar and the sidebar.
+    private var showsTitles: Bool { sizeClass == .regular }
 
     var body: some View {
         TabView(selection: $selection) {
@@ -40,7 +45,7 @@ struct RootTabView: View {
                         .scholarDestinations()
                 }
             } label: {
-                Image(systemName: "house.fill").accessibilityLabel("Today")
+                TabIcon("Today", systemImage: "house.fill", showsTitle: showsTitles)
             }
 
             Tab(value: AppTab.play) {
@@ -53,21 +58,23 @@ struct RootTabView: View {
                         .scholarDestinations()
                 }
             } label: {
-                Image(systemName: "gamecontroller.fill").accessibilityLabel("Play")
+                TabIcon("Play", systemImage: "gamecontroller.fill", showsTitle: showsTitles)
             }
 
             Tab(value: AppTab.scriptures) {
                 NavigationStack(path: $libraryPath) { LibraryView().screenshotDestinations() }
             } label: {
-                Image(systemName: "books.vertical.fill").accessibilityLabel("Library")
+                TabIcon("Library", systemImage: "books.vertical.fill", showsTitle: showsTitles)
             }
 
             Tab(value: AppTab.search, role: .search) {
                 SearchTab()
             } label: {
-                Image(systemName: "magnifyingglass").accessibilityLabel("Search")
+                TabIcon("Search", systemImage: "magnifyingglass", showsTitle: showsTitles)
             }
         }
+        // iPad: a top tab bar that opens into a sidebar on the left. iPhone: the usual bottom tab bar.
+        .tabViewStyle(.sidebarAdaptable)
         .tabBarMinimizeBehavior(.onScrollDown)
         // Debug: marketing screenshots (scripts/screenshots.sh). Does nothing otherwise.
         .screenshotStage(selection: $selection, todayPath: $todayPath, playPath: $playPath, libraryPath: $libraryPath)
@@ -155,5 +162,30 @@ struct RootTabView: View {
             }
         }
         .animation(.snappy, value: importer.isReading)
+    }
+}
+
+/// A tab's label: just its symbol on iPhone (the title is still read by VoiceOver), and the
+/// symbol with its name on iPad.
+private struct TabIcon: View {
+    var title: String
+    var systemImage: String
+    var showsTitle: Bool
+
+    init(_ title: String, systemImage: String, showsTitle: Bool) {
+        self.title = title
+        self.systemImage = systemImage
+        self.showsTitle = showsTitle
+    }
+
+    var body: some View {
+        if showsTitle {
+            // The sidebar tints tab icons with the app's color; keep each icon the color of its
+            // name instead (black in Light Mode, white in Dark Mode). See AGENT.md.
+            Label { Text(title) } icon: { Image.menuIcon(systemImage) }
+        } else {
+            Label(title, systemImage: systemImage)
+                .labelStyle(.iconOnly)
+        }
     }
 }
