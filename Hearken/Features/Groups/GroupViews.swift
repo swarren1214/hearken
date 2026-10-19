@@ -1,4 +1,4 @@
-import CloudKit
+import AuthenticationServices
 import SwiftData
 import SwiftUI
 
@@ -48,6 +48,25 @@ enum GroupSchedule {
     }
 }
 
+extension GroupStore.StudyGroup {
+    /// The group's plan. Custom plans travel with the group, since members don't have them.
+    @MainActor var plan: ReadingPlan? {
+        if planID == ReadingPlan.customID {
+            guard let customPlan, !customPlan.chapterIDs.isEmpty else { return nil }
+            return ReadingPlan(id: ReadingPlan.customID, title: customPlan.title.isEmpty ? "Custom Plan" : customPlan.title,
+                               subtitle: PlanFormat.range(customPlan.chapterIDs), days: max(customPlan.days, 1),
+                               coverHex: 0x5A5A63, chapterIDs: customPlan.chapterIDs)
+        }
+        return ReadingPlanCatalog.plans.first { $0.id == planID }
+    }
+
+    /// The weekly question waiting for my answer.
+    func questionWaiting(for me: String?) -> Bool {
+        guard let question, question.isPosted, !question.isClosed else { return false }
+        return question.myAnswer == nil && !(me.map(question.answeredUserIDs.contains) ?? false)
+    }
+}
+
 /// Keeps groups loaded and my progress published: on launch, on returning to the app, at
 /// the start of a new day, and whenever I finish a chapter.
 struct GroupSideEffects: ViewModifier {
@@ -59,10 +78,12 @@ struct GroupSideEffects: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .task(id: "\(account.iCloudAvailable == true)|\(scenePhase == .active)") {
-                guard account.iCloudAvailable == true, scenePhase == .active else { return }
+            .task(id: "\(account.isSignedIn)|\(scenePhase == .active)") {
+                guard scenePhase == .active else { return }
+                GroupStore.shared.profile = (account.displayName ?? "Member", account.initials ?? "")
+                await HearthConnection.shared.update()
                 await GroupStore.shared.refresh()
-                await GroupStore.shared.ensureSubscriptions()
+                await GroupStore.shared.didConnect()
             }
             .task(id: publishKey) { await publish() }
     }
@@ -76,7 +97,8 @@ struct GroupSideEffects: ViewModifier {
 
     private func publish() async {
         let store = GroupStore.shared
-        guard account.iCloudAvailable == true, !store.groups.isEmpty else { return }
+        store.profile = (account.displayName ?? "Member", account.initials ?? "")
+        guard !store.groups.isEmpty else { return }
         let read = PlanReading.readSet(progress)
         let streak = MasteryMath.streak(activityDates: xpEvents.map(\.createdAt), now: .now)
         for group in store.groups {
@@ -106,56 +128,90 @@ struct MemberAvatar: View {
     }
 }
 
+// MARK: - Signing in
+
+/// Sign in with Apple for the Hearth account study groups need. Also records the Apple sign-in
+/// in Hearken when there isn't one yet.
+struct HearthSignInButton: View {
+    var label: SignInWithAppleButton.Label = .continue
+
+    @Environment(AccountService.self) private var account
+    @Environment(\.colorScheme) private var colorScheme
+    @State private var nonce: String?
+
+    var body: some View {
+        let connection = HearthConnection.shared
+        VStack(spacing: 8) {
+            SignInWithAppleButton(label) { request in
+                request.requestedScopes = [.fullName, .email]
+                nonce = HearthAPI.prepareAppleRequest(request)
+            } onCompletion: { result in
+                guard case .success(let authorization) = result,
+                      let credential = authorization.credential as? ASAuthorizationAppleIDCredential else { return }
+                if !account.isSignedIn { try? account.completeSignIn(result) }
+                Task { await connection.connect(credential: credential, nonce: nonce) }
+            }
+            .signInWithAppleButtonStyle(colorScheme == .dark ? .white : .black)
+            .frame(height: 48)
+            .disabled(connection.isConnecting)
+            .overlay { if connection.isConnecting { ProgressView() } }
+            if let message = connection.errorMessage {
+                Text(message).font(.footnote).foregroundStyle(.red).multilineTextAlignment(.center)
+            }
+        }
+    }
+}
+
 // MARK: - Today
 
-/// Today's Study Groups section: each group with who has read today, or a way to start one.
+/// Today's Study Groups section: each group with who has read today, or a way to start or join one.
 struct GroupsSection: View {
     var defaultPlanID: String?
     var customPlan: ReadingPlan?
 
-    @Environment(AccountService.self) private var account
     @State private var creating = false
+    @State private var joining = false
 
     var body: some View {
         let store = GroupStore.shared
-        if account.iCloudAvailable == true, AppConfig.cloudSyncEnabled {
+        let connection = HearthConnection.shared
+        if connection.hasChecked || !store.groups.isEmpty {
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     Text("Study Groups").font(.title2.bold())
                     Spacer()
-                    if !store.groups.isEmpty {
-                        Button("New Group", systemImage: "plus") { creating = true }
-                            .labelStyle(.iconOnly)
-                            .font(.headline)
-                            .tint(Color.primary)
+                    if !store.needsAccount, !store.groups.isEmpty {
+                        Menu {
+                            Button("New Group", menuIcon: "plus") { creating = true }
+                            Button("Join with Code", menuIcon: "ticket") { joining = true }
+                        } label: {
+                            Label("Add Group", systemImage: "plus")
+                                .labelStyle(.iconOnly)
+                                .font(.headline)
+                        }
+                        .tint(Color.primary)
                     }
                 }
-                if store.groups.isEmpty {
-                    Button { creating = true } label: {
-                        HStack(spacing: 14) {
-                            SymbolTile(systemName: "person.3.fill", size: 46)
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Read with others").font(.headline)
-                                Text("Start a group and invite family or friends").font(.footnote).foregroundStyle(.secondary)
-                            }
-                            Spacer()
-                            Image(systemName: "plus.circle.fill").font(.title2).foregroundStyle(.tint)
-                        }
-                        .padding(16)
-                        .background(Color(.secondarySystemGroupedBackground), in: .rect(cornerRadius: 22))
-                        .contentShape(.rect)
-                    }
-                    .buttonStyle(.plain)
+                if store.needsAccount {
+                    signInCard(waiting: store.waitingGroups)
+                } else if store.groups.isEmpty, store.waitingGroups.isEmpty {
+                    emptyCard
                 } else {
                     VStack(spacing: 0) {
                         ForEach(store.groups) { group in
                             NavigationLink(value: GroupRoute(id: group.id)) {
-                                GroupRow(group: group)
+                                GroupRow(group: group, me: store.myUserID)
                                     .padding(.horizontal, 16)
                                     .padding(.vertical, 12)
                             }
                             .buttonStyle(.plain)
-                            if group.id != store.groups.last?.id { Divider().padding(.leading, 74) }
+                            if group.id != store.groups.last?.id || !store.waitingGroups.isEmpty { Divider().padding(.leading, 74) }
+                        }
+                        ForEach(store.waitingGroups) { waiting in
+                            WaitingGroupRow(group: waiting)
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 12)
+                            if waiting.id != store.waitingGroups.last?.id { Divider().padding(.leading, 74) }
                         }
                     }
                     .background(Color(.secondarySystemGroupedBackground), in: .rect(cornerRadius: 22))
@@ -164,24 +220,89 @@ struct GroupsSection: View {
             .sheet(isPresented: $creating) {
                 CreateGroupSheet(defaultPlanID: defaultPlanID, customPlan: customPlan)
             }
+            .sheet(isPresented: $joining) {
+                JoinGroupSheet(code: nil)
+            }
         }
+    }
+
+    private var emptyCard: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(spacing: 14) {
+                SymbolTile(systemName: "person.3.fill", size: 46)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Read with others").font(.headline)
+                    Text("Start a group and invite family or friends").font(.footnote).foregroundStyle(.secondary)
+                }
+            }
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 10) { startButton; joinButton }
+                VStack(spacing: 10) { startButton; joinButton }
+            }
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(.secondarySystemGroupedBackground), in: .rect(cornerRadius: 22))
+    }
+
+    private var startButton: some View {
+        Button { creating = true } label: {
+            Label("Start a Group", systemImage: "plus").font(.subheadline.weight(.semibold)).frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.glassProminent)
+    }
+
+    private var joinButton: some View {
+        Button { joining = true } label: {
+            Label("Join with Code", systemImage: "ticket").font(.subheadline.weight(.semibold)).frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.glass)
+        .tint(Color.primary)
+    }
+
+    private func signInCard(waiting: [GroupStore.WaitingGroup]) -> some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(spacing: 14) {
+                SymbolTile(systemName: "person.3.fill", size: 46)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(waiting.isEmpty ? "Read with others" : "Your study groups have moved").font(.headline)
+                    Text(waiting.isEmpty
+                         ? "Study groups use your Hearth account. Sign in with Apple to start or join one."
+                         : "\(ListFormatter.localizedString(byJoining: waiting.map(\.name))) now use Hearth accounts. Sign in with Apple to keep reading together.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            HearthSignInButton()
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(.secondarySystemGroupedBackground), in: .rect(cornerRadius: 22))
     }
 }
 
 private struct GroupRow: View {
     let group: GroupStore.StudyGroup
+    let me: String?
 
     var body: some View {
-        let readToday = group.members.filter { $0.lastDoneDay.map(Calendar.current.isDateInToday) ?? false }.count
+        let readToday = group.members.filter(\.doneToday).count
         HStack(spacing: 14) {
             SymbolTile(systemName: group.symbol, size: 46)
             VStack(alignment: .leading, spacing: 2) {
                 Text(group.name).font(.headline)
-                Text(group.members.isEmpty ? (group.plan?.title ?? "") : "\(readToday) of \(group.members.count) read today")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+                if group.questionWaiting(for: me) {
+                    Label("This week's question is waiting", systemImage: "questionmark.bubble.fill")
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(.tint)
+                } else {
+                    Text(group.members.count <= 1 ? (group.plan?.title ?? "") : "\(readToday) of \(group.members.count) read today")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
             }
-            Spacer()
+            Spacer(minLength: 8)
             HStack(spacing: -8) {
                 ForEach(group.members.prefix(4)) { member in
                     MemberAvatar(name: member.name, initials: member.initials, size: 28)
@@ -191,6 +312,26 @@ private struct GroupRow: View {
             Image(systemName: "chevron.right").font(.footnote.weight(.semibold)).foregroundStyle(.tertiary)
         }
         .contentShape(.rect)
+        .accessibilityElement(children: .combine)
+    }
+}
+
+private struct WaitingGroupRow: View {
+    let group: GroupStore.WaitingGroup
+
+    var body: some View {
+        HStack(spacing: 14) {
+            SymbolTile(systemName: "hourglass", size: 46)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(group.name).font(.headline)
+                Text(group.ownerName.isEmpty
+                     ? "Moves here when the group's owner updates Hearken"
+                     : "Moves here when \(group.ownerName.split(separator: " ").first.map(String.init) ?? group.ownerName) updates Hearken")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer(minLength: 0)
+        }
         .accessibilityElement(children: .combine)
     }
 }
@@ -218,7 +359,7 @@ struct CreateGroupSheet: View {
         NavigationStack {
             Group {
                 if let createdID, let group = GroupStore.shared.group(createdID) {
-                    invite(group)
+                    GroupInviteView(group: group)
                 } else {
                     form
                 }
@@ -226,15 +367,14 @@ struct CreateGroupSheet: View {
             .navigationTitle(createdID == nil ? "New Study Group" : "")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button(createdID == nil ? "Cancel" : "Done", systemImage: createdID == nil ? "xmark" : "checkmark", role: .close) { dismiss() }
-                        .tint(Color.primary)
-                }
                 if createdID == nil {
+                    ToolbarItem(placement: .cancellationAction) { SheetCancelButton { dismiss() } }
                     ToolbarItem(placement: .confirmationAction) {
                         SheetDoneButton("Create") { Task { await create() } }
                             .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty || working)
                     }
+                } else {
+                    ToolbarItem(placement: .confirmationAction) { SheetDoneButton { dismiss() } }
                 }
             }
         }
@@ -253,7 +393,7 @@ struct CreateGroupSheet: View {
                     .submitLabel(.done)
             }
             Section("Icon") {
-                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 4), spacing: 12) {
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 52), spacing: 12)], spacing: 12) {
                     ForEach(Self.symbols, id: \.self) { item in
                         Button { symbol = item } label: {
                             Image(systemName: item)
@@ -276,7 +416,7 @@ struct CreateGroupSheet: View {
                         + ReadingPlanCatalog.plans.map { CheckPickerOption(value: $0.id, title: $0.title) }
                 )
             } footer: {
-                Text("Everyone follows the same schedule, starting \(startDate == Calendar.current.startOfDay(for: .now) ? "today" : PlanFormat.shortDate(startDate)). Members see only your progress on this plan and what you choose to share.")
+                Text("Everyone follows the same schedule, starting \(startDate == Calendar.current.startOfDay(for: .now) ? "today" : PlanFormat.shortDate(startDate)). Members see your progress on this plan and what you choose to share, kept on Hearth's servers so the group can see it.")
             }
             if let errorMessage {
                 Section { Text(errorMessage).foregroundStyle(.red) }
@@ -290,36 +430,6 @@ struct CreateGroupSheet: View {
     /// Match the creator's own plan dates when they're already following this plan.
     private var startDate: Date {
         PlanReading.active(enrollments).flatMap { $0.planID == planID ? $0.startDate : nil } ?? Calendar.current.startOfDay(for: .now)
-    }
-
-    private func invite(_ group: GroupStore.StudyGroup) -> some View {
-        VStack(spacing: 18) {
-            Spacer()
-            SymbolTile(systemName: group.symbol, size: 84)
-            VStack(spacing: 6) {
-                Text("\(group.name) is ready").font(.title2.bold())
-                Text("Send the invite link to the people you want to read with. Anyone with the link can join, and you can remove people later.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-            }
-            if let url = group.shareURL {
-                ShareLink(item: url, subject: Text("Join \(group.name) on Hearken"),
-                          message: Text("Read \(group.plan?.title ?? "the scriptures") with me in Hearken.")) {
-                    Label("Invite People", systemImage: "person.badge.plus")
-                        .font(.headline)
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.glassProminent)
-                .controlSize(.large)
-            } else {
-                ProgressView("Getting the invite link…")
-            }
-            Spacer()
-            Spacer()
-        }
-        .padding(24)
     }
 
     private func create() async {
@@ -338,10 +448,6 @@ struct CreateGroupSheet: View {
                 startDate: startDate,
                 ownerName: account.displayName ?? ""
             )
-            guard GroupStore.shared.group(id) != nil else {
-                errorMessage = "The group was created, but it couldn't be opened. It will appear on Today shortly."
-                return
-            }
             withAnimation(.snappy) { createdID = id }
             _ = await PlanReminders.requestPermission()
         } catch {
@@ -350,27 +456,182 @@ struct CreateGroupSheet: View {
     }
 }
 
+/// The invite: a link to send, and the code for people who'd rather type it.
+struct GroupInviteView: View {
+    let group: GroupStore.StudyGroup
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 18) {
+                SymbolTile(systemName: group.symbol, size: 84)
+                    .padding(.top, 24)
+                VStack(spacing: 6) {
+                    Text("\(group.name) is ready").font(.title2.bold()).multilineTextAlignment(.center)
+                    Text("Send the invite link to the people you want to read with, or give them the code. You can remove people later.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                InviteCodeView(code: group.inviteCode)
+                if let url = group.inviteURL {
+                    ShareLink(item: url, subject: Text("Join \(group.name) on Hearken"),
+                              message: Text("Read \(group.plan?.title ?? "the scriptures") with me in Hearken. Open the link, or enter code \(group.inviteCode) under Study Groups › Join with Code.")) {
+                        Label("Invite People", systemImage: "person.badge.plus")
+                            .font(.headline)
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.glassProminent)
+                    .controlSize(.large)
+                }
+            }
+            .padding(24)
+        }
+    }
+}
+
+/// An invite code in large, spaced letters, copied on tap.
+struct InviteCodeView: View {
+    let code: String
+    @State private var copied = 0
+
+    var body: some View {
+        Button {
+            UIPasteboard.general.string = code
+            copied += 1
+        } label: {
+            VStack(spacing: 4) {
+                Text(spaced(code))
+                    .font(.system(.title, design: .monospaced, weight: .semibold))
+                    .foregroundStyle(.primary)
+                Text(copied > 0 ? "Copied" : "Invite code · tap to copy")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.vertical, 12)
+            .frame(maxWidth: .infinity)
+            .background(Color(.secondarySystemGroupedBackground), in: .rect(cornerRadius: 18))
+        }
+        .buttonStyle(.plain)
+        .sensoryFeedback(.success, trigger: copied)
+        .accessibilityLabel("Invite code \(code.map(String.init).joined(separator: " "))")
+        .accessibilityHint("Copies the code")
+    }
+
+    private func spaced(_ code: String) -> String {
+        code.count == 8 ? "\(code.prefix(4)) \(code.suffix(4))" : code
+    }
+}
+
 // MARK: - Join
 
+/// Joining: what the invite is for and what the group will see, then Join. Opened from an
+/// invite link, or from Join with Code (`code` nil asks for one).
 struct JoinGroupSheet: View {
-    let metadata: CKShare.Metadata
+    let code: String?
 
     @Environment(\.dismiss) private var dismiss
+    @State private var typed = ""
+    @State private var preview: GroupStore.InvitePreview?
+    @State private var looking = false
     @State private var joining = false
     @State private var errorMessage: String?
 
-    private var title: String { metadata.share[CKShare.SystemFieldKey.title] as? String ?? "Study Group" }
-    private var owner: String {
-        metadata.ownerIdentity.nameComponents.map { PersonNameComponentsFormatter.localizedString(from: $0, style: .default) } ?? "Someone"
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 16) {
+                    if HearthConnection.shared.hasChecked && !HearthConnection.shared.isConnected {
+                        signIn
+                    } else if let preview {
+                        details(preview)
+                    } else if code == nil {
+                        entry
+                    } else {
+                        ProgressView().padding(.top, 60)
+                    }
+                    if let errorMessage {
+                        Text(errorMessage).font(.footnote).foregroundStyle(.red).multilineTextAlignment(.center)
+                    }
+                }
+                .padding(20)
+            }
+            .background(Color(.systemGroupedBackground))
+            .navigationTitle(preview == nil ? "Join a Group" : "")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    SheetCancelButton {
+                        GroupStore.shared.pendingInviteCode = nil
+                        dismiss()
+                    }
+                }
+            }
+            .safeAreaInset(edge: .bottom) {
+                if let preview, HearthConnection.shared.isConnected {
+                    joinButton(preview).padding(20)
+                }
+            }
+        }
+        .tint(Accent.color)
+        .task(id: "\(code ?? "")|\(HearthConnection.shared.isConnected)") {
+            if let code, HearthConnection.shared.isConnected { await look(up: code) }
+        }
     }
 
-    var body: some View {
+    private var signIn: some View {
         VStack(spacing: 16) {
-            SymbolTile(systemName: "person.3.fill", size: 72)
-                .padding(.top, 28)
+            SymbolTile(systemName: "person.3.fill", size: 72).padding(.top, 20)
+            Text("Sign in to join").font(.title2.bold())
+            Text("Study groups use your Hearth account, so the group knows it's you. Sign in with Apple to continue.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+            HearthSignInButton()
+        }
+    }
+
+    private var entry: some View {
+        VStack(spacing: 16) {
+            SymbolTile(systemName: "ticket.fill", size: 72).padding(.top, 20)
+            Text("Enter the 8-letter code from your invite, or paste the invite link.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+            TextField("ABCD 2345", text: $typed)
+                .font(.system(.title2, design: .monospaced, weight: .semibold))
+                .multilineTextAlignment(.center)
+                .textInputAutocapitalization(.characters)
+                .autocorrectionDisabled()
+                .padding(.vertical, 14)
+                .background(Color(.secondarySystemGroupedBackground), in: .rect(cornerRadius: 18))
+                .submitLabel(.go)
+                .onSubmit { Task { await lookUpTyped() } }
+                .accessibilityLabel("Invite code")
+            Button {
+                Task { await lookUpTyped() }
+            } label: {
+                Group { if looking { ProgressView().tint(.white) } else { Text("Continue") } }
+                    .font(.headline)
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.glassProminent)
+            .controlSize(.large)
+            .disabled(GroupStore.inviteCode(from: typed) == nil || looking)
+        }
+    }
+
+    private func details(_ preview: GroupStore.InvitePreview) -> some View {
+        VStack(spacing: 16) {
+            SymbolTile(systemName: preview.symbol, size: 72)
+                .padding(.top, 12)
             VStack(spacing: 4) {
-                Text("\(owner) invited you to").font(.subheadline).foregroundStyle(.secondary)
-                Text(title).font(.title.bold()).multilineTextAlignment(.center)
+                Text(preview.ownerName.isEmpty ? "You're invited to" : "\(preview.ownerName) invited you to")
+                    .font(.subheadline).foregroundStyle(.secondary)
+                Text(preview.name).font(.title.bold()).multilineTextAlignment(.center)
+                Text("\(preview.memberCount) \(preview.memberCount == 1 ? "member" : "members") · \(ReadingPlanCatalog.plans.first { $0.id == preview.planId }?.title ?? "Reading plan")")
+                    .font(.subheadline).foregroundStyle(.secondary)
             }
             VStack(alignment: .leading, spacing: 0) {
                 Text("WHAT THE GROUP SEES")
@@ -379,42 +640,34 @@ struct JoinGroupSheet: View {
                     .padding(.horizontal, 16)
                     .padding(.top, 12)
                     .padding(.bottom, 4)
-                seeRow("Your progress on the group's reading plan", symbol: "checkmark", tint: .green)
+                seeRow("Your name and progress on the group's reading plan", symbol: "checkmark", tint: .green)
                 Divider().padding(.leading, 48)
-                seeRow("Highlights and reflections you choose to share", symbol: "checkmark", tint: .green)
+                seeRow("Highlights, reflections, replies and answers you choose to share", symbol: "checkmark", tint: .green)
                 Divider().padding(.leading, 48)
                 seeRow("Your other notes, highlights and bookmarks stay private", symbol: "xmark", tint: .secondary)
             }
             .background(Color(.secondarySystemGroupedBackground), in: .rect(cornerRadius: 20))
+            Text("What you share is kept on Hearth's servers so the group can see it.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+        }
+    }
 
-            if let errorMessage {
-                Text(errorMessage).font(.footnote).foregroundStyle(.red)
-            }
-            Spacer(minLength: 0)
-            Button {
-                Task { await join() }
-            } label: {
-                Group {
-                    if joining { ProgressView().tint(.white) } else { Text("Join Group") }
-                }
-                .font(.headline)
-                .foregroundStyle(.white)
-                .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.glassProminent)
-            .controlSize(.large)
-            .disabled(joining)
-            Button("Not Now") {
-                GroupStore.shared.pendingInvite = nil
-                dismiss()
+    private func joinButton(_ preview: GroupStore.InvitePreview) -> some View {
+        Button {
+            Task { await join(preview) }
+        } label: {
+            Group {
+                if joining { ProgressView().tint(.white) } else { Text(preview.isMember ? "Open Group" : "Join Group") }
             }
             .font(.headline)
-            .tint(Color.primary)
+            .foregroundStyle(.white)
+            .frame(maxWidth: .infinity)
         }
-        .padding(20)
-        .background(Color(.systemGroupedBackground))
-        .tint(Accent.color)
-        .presentationDetents([.large])
+        .buttonStyle(.glassProminent)
+        .controlSize(.large)
+        .disabled(joining)
     }
 
     private func seeRow(_ text: String, symbol: String, tint: Color) -> some View {
@@ -427,12 +680,34 @@ struct JoinGroupSheet: View {
         .padding(.vertical, 12)
     }
 
-    private func join() async {
+    private func lookUpTyped() async {
+        guard let code = GroupStore.inviteCode(from: typed) else { return }
+        await look(up: code)
+    }
+
+    private func look(up code: String) async {
+        looking = true
+        defer { looking = false }
+        do {
+            preview = try await GroupStore.shared.preview(code: code)
+            errorMessage = nil
+        } catch {
+            errorMessage = GroupStore.describe(error)
+        }
+    }
+
+    private func join(_ preview: GroupStore.InvitePreview) async {
+        guard let code = code ?? GroupStore.inviteCode(from: typed) else { return }
         joining = true
         defer { joining = false }
         do {
-            try await GroupStore.shared.accept(metadata)
-            _ = await PlanReminders.requestPermission()
+            if preview.isMember {
+                GroupStore.shared.openGroupID = preview.groupId
+                GroupStore.shared.pendingInviteCode = nil
+            } else {
+                try await GroupStore.shared.join(code: code)
+                _ = await PlanReminders.requestPermission()
+            }
             dismiss()
         } catch {
             errorMessage = GroupStore.describe(error)
@@ -445,20 +720,19 @@ struct JoinGroupSheet: View {
 struct GroupDetailView: View {
     let groupID: String
 
-    init(groupID: String) {
-        self.groupID = groupID
-        _notify = AppStorage(wrappedValue: true, "groups.notify.\(groupID)")
-    }
-
-    @AppStorage private var notify: Bool
-
     @Environment(ContentService.self) private var content
     @Environment(AccountService.self) private var account
     @Environment(\.dismiss) private var dismiss
     @State private var reflection = ""
     @State private var sending = false
     @State private var confirmLeave = false
+    @State private var confirmDelete = false
     @State private var showMembers = false
+    @State private var showNotifications = false
+    @State private var asking = false
+    @State private var answering: GroupStore.Question?
+    @State private var showQuestion = false
+    @State private var showEarlier = false
     @State private var errorMessage: String?
     @FocusState private var composing: Bool
 
@@ -480,6 +754,7 @@ struct GroupDetailView: View {
         return ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 header(group)
+                questionArea(group, days: days)
                 week(group, days: days, me: me)
                 HStack(alignment: .firstTextBaseline) {
                     Text("Shared").font(.title2.bold())
@@ -504,59 +779,82 @@ struct GroupDetailView: View {
             .padding(.bottom, 24)
         }
         .background(Color(.systemGroupedBackground))
-        .refreshable { await CloudRefresh.refresh() }
+        .refreshable { await GroupStore.shared.reload(group.id) }
         .safeAreaInset(edge: .bottom) { composer(group, today: today) }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            if let url = group.shareURL {
+            if let url = group.inviteURL {
                 ToolbarItem(placement: .topBarTrailing) {
                     ShareLink(item: url, subject: Text("Join \(group.name) on Hearken"),
-                              message: Text("Read \(group.plan?.title ?? "the scriptures") with me in Hearken.")) {
+                              message: Text("Read \(group.plan?.title ?? "the scriptures") with me in Hearken. Open the link, or enter code \(group.inviteCode) under Study Groups › Join with Code.")) {
                         Label("Invite", systemImage: "person.badge.plus")
                     }
                     .tint(Color.primary)
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
-                CheckMenu([
-                    CheckMenuItem.toggle("Activity Notifications", systemImage: "bell", isOn: $notify),
-                ] + (group.isOwner ? [CheckMenuItem.button("Members", systemImage: "person.2") { showMembers = true }] : []) + [
-                    CheckMenuItem.button(group.isOwner ? "Delete Group" : "Leave Group", systemImage: group.isOwner ? "trash" : "rectangle.portrait.and.arrow.right", role: .destructive) {
-                        confirmLeave = true
-                    },
-                ]) {
+                CheckMenu(menuItems(group)) {
                     Label("Group Options", systemImage: "ellipsis")
                 }
                 .tint(Color.primary)
             }
         }
-        .alert(group.isOwner ? "Delete \(group.name)?" : "Leave \(group.name)?", isPresented: $confirmLeave) {
-            Button(group.isOwner ? "Delete Group" : "Leave Group", role: .destructive) {
-                Task {
-                    do {
-                        try await GroupStore.shared.leave(group)
-                        dismiss()
-                    } catch {
-                        errorMessage = GroupStore.describe(error)
-                    }
-                }
-            }
+        .navigationDestination(isPresented: $showQuestion) {
+            QuestionDetailView(groupID: group.id)
+        }
+        .navigationDestination(isPresented: $showEarlier) {
+            EarlierQuestionsView(groupID: group.id)
+        }
+        .alert("Leave \(group.name)?", isPresented: $confirmLeave) {
+            Button("Leave Group", role: .destructive) { Task { await leave(group, deleting: false) } }
             Button("Cancel", role: .cancel) {}
         } message: {
             Text(group.isOwner
-                 ? "This removes the group and everything shared in it for every member."
+                 ? "The group stays for everyone else, and a leader (or whoever has been in it longest) becomes its owner. Members will no longer see your progress."
                  : "You'll stop seeing the group, and members will no longer see your progress.")
         }
-        .sheet(isPresented: $showMembers) { GroupMembersSheet(group: group) }
+        .alert("Delete \(group.name)?", isPresented: $confirmDelete) {
+            Button("Delete Group", role: .destructive) { Task { await leave(group, deleting: true) } }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This removes the group and everything shared in it for every member.")
+        }
+        .sheet(isPresented: $showMembers) { GroupMembersSheet(groupID: group.id) }
+        .sheet(isPresented: $showNotifications) { GroupNotificationSheet(groupID: group.id) }
+        .sheet(isPresented: $asking) { AskQuestionSheet(groupID: group.id) }
+        .sheet(item: $answering) { question in
+            AnswerSheet(groupID: group.id, question: question) { showQuestion = true }
+        }
         .alert("Something went wrong", isPresented: Binding(get: { errorMessage != nil }, set: { if !$0 { errorMessage = nil } })) {
             Button("OK", role: .cancel) {}
         } message: {
             Text(errorMessage ?? "")
         }
+        .onChange(of: GroupStore.shared.openQuestionGroupID, initial: true) { _, id in
+            guard id == group.id else { return }
+            GroupStore.shared.openQuestionGroupID = nil
+            showQuestion = true
+        }
+    }
+
+    private func menuItems(_ group: GroupStore.StudyGroup) -> [CheckMenuItem] {
+        var items: [CheckMenuItem] = [
+            .button("Notifications", systemImage: "bell") { showNotifications = true },
+            .button("Members", systemImage: "person.2") { showMembers = true },
+        ]
+        if group.canModerate {
+            items.append(.button(group.question?.isClosed == false ? "New Weekly Question" : "Ask Weekly Question", systemImage: "questionmark.bubble") { asking = true })
+        }
+        items.append(.button("Earlier Questions", systemImage: "clock.arrow.circlepath") { showEarlier = true })
+        items.append(.button("Leave Group", systemImage: "rectangle.portrait.and.arrow.right", role: .destructive) { confirmLeave = true })
+        if group.isOwner {
+            items.append(.button("Delete Group", systemImage: "trash", role: .destructive) { confirmDelete = true })
+        }
+        return items
     }
 
     private func header(_ group: GroupStore.StudyGroup) -> some View {
-        HStack(spacing: 14) {
+        AdaptiveStack(spacing: 14) {
             SymbolTile(systemName: group.symbol, size: 56)
             VStack(alignment: .leading, spacing: 2) {
                 Text(group.name).font(.title.bold())
@@ -569,34 +867,50 @@ struct GroupDetailView: View {
         .padding(.top, 4)
     }
 
+    @ViewBuilder
+    private func questionArea(_ group: GroupStore.StudyGroup, days: [PlanDay]) -> some View {
+        if let question = group.question, question.isPosted, !question.isClosed {
+            QuestionCard(group: group, question: question) {
+                answering = question
+            } onOpen: {
+                showQuestion = true
+            }
+        } else if group.canModerate, group.scheduledQuestion == nil {
+            AskQuestionPrompt { asking = true }
+        }
+        if let scheduled = group.scheduledQuestion {
+            ScheduledQuestionCard(group: group, question: scheduled)
+        }
+    }
+
     private func week(_ group: GroupStore.StudyGroup, days: [PlanDay], me: String?) -> some View {
         let week = GroupSchedule.week(days)
-        let readToday = group.members.filter { $0.lastDoneDay.map(Calendar.current.isDateInToday) ?? false }.count
+        let readToday = group.members.filter(\.doneToday).count
         return VStack(alignment: .leading, spacing: 14) {
-            HStack(alignment: .firstTextBaseline) {
+            AdaptiveStack(alignment: .firstTextBaseline) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("THIS WEEK").font(.caption.weight(.bold)).foregroundStyle(.secondary)
                     Text(week.days.isEmpty ? "No reading this week" : PlanFormat.range(week.days.flatMap(\.chapterIDs)))
                         .font(.scripture(size: 22, weight: .bold))
                 }
-                Spacer()
+                Spacer(minLength: 8)
                 Text("\(readToday) of \(group.members.count) read today")
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(.tint)
             }
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 4), spacing: 14) {
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 72), spacing: 8)], spacing: 14) {
                 ForEach(group.members) { member in
                     let current = member.weekStart.map { Calendar.current.isDate($0, inSameDayAs: week.start) } ?? false
                     let read = current ? member.weekRead : 0
                     let total = max(current ? member.weekTotal : week.days.flatMap(\.chapterIDs).count, 1)
-                    let doneToday = member.lastDoneDay.map(Calendar.current.isDateInToday) ?? false
                     VStack(spacing: 6) {
                         ZStack(alignment: .bottomTrailing) {
                             ProgressRing(progress: Double(read) / Double(total), lineWidth: 4) {
                                 MemberAvatar(name: member.name, initials: member.initials, size: 46)
                             }
                             .frame(width: 60, height: 60)
-                            if doneToday {
+                            .opacity(member.pending ? 0.5 : 1)
+                            if member.doneToday {
                                 Image(systemName: "checkmark.circle.fill")
                                     .font(.system(size: 20))
                                     .symbolRenderingMode(.palette)
@@ -604,15 +918,15 @@ struct GroupDetailView: View {
                                     .background(Circle().fill(Color(.secondarySystemGroupedBackground)).padding(-2))
                             }
                         }
-                        Text(member.userID == me ? "You" : member.name.components(separatedBy: " ").first ?? member.name)
+                        Text(member.userID == me ? "You" : member.firstName)
                             .font(.footnote.weight(.semibold))
                             .lineLimit(1)
-                        Text("\(read) of \(total)")
+                        Text(member.pending ? "Updating" : "\(read) of \(total)")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
                     .accessibilityElement(children: .ignore)
-                    .accessibilityLabel("\(member.userID == me ? "You" : member.name): \(read) of \(total) chapters this week\(doneToday ? ", read today" : "")")
+                    .accessibilityLabel("\(member.userID == me ? "You" : member.name): \(read) of \(total) chapters this week\(member.doneToday ? ", read today" : "")")
                 }
             }
         }
@@ -651,19 +965,32 @@ struct GroupDetailView: View {
         defer { sending = false }
         do {
             try await GroupStore.shared.share(kind: .reflection, chapterID: today?.chapterIDs.first ?? "", startVerse: 0, endVerse: 0,
-                                              text: range, note: text, to: group, authorName: account.displayName ?? "Member")
+                                              text: range, note: text, reference: range, to: group, authorName: account.displayName ?? "Member")
             reflection = ""
             composing = false
         } catch {
-            errorMessage = GroupStore.describe(error)
+            errorMessage = GroupStore.describe(error, action: "share that")
+        }
+    }
+
+    private func leave(_ group: GroupStore.StudyGroup, deleting: Bool) async {
+        do {
+            if deleting { try await GroupStore.shared.leave(group) } else { try await GroupStore.shared.leaveKeepingGroup(group) }
+            dismiss()
+        } catch {
+            errorMessage = GroupStore.describe(error, action: deleting ? "delete the group" : "leave the group")
         }
     }
 }
 
-private struct GroupItemCard: View {
+// MARK: - Shared posts
+
+struct GroupItemCard: View {
     let item: GroupStore.SharedItem
     let group: GroupStore.StudyGroup
     let me: String?
+    /// The thread shows the post without its reply preview.
+    var showsReplies = true
 
     @Environment(ContentService.self) private var content
 
@@ -671,7 +998,7 @@ private struct GroupItemCard: View {
         let mine = item.authorID == me
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 10) {
-                MemberAvatar(name: item.authorName, initials: initials(item.authorName))
+                MemberAvatar(name: item.authorName, initials: groupInitials(item.authorName))
                 (Text(mine ? "You" : item.authorName).fontWeight(.semibold) + Text(" \(action) · \(item.createdAt.formatted(.relative(presentation: .named)))").foregroundStyle(.secondary))
                     .font(.subheadline)
                     .lineLimit(2)
@@ -685,26 +1012,38 @@ private struct GroupItemCard: View {
             if !item.note.isEmpty {
                 Text(item.note).font(.body)
             }
-            HStack(spacing: 8) {
-                reaction(.heart, symbol: "heart", filledSymbol: "heart.fill", color: .pink)
-                reaction(.insight, symbol: "lightbulb", filledSymbol: "lightbulb.fill", color: .orange)
-                Spacer()
-                if !item.chapterID.isEmpty {
-                    NavigationLink {
-                        ReaderView(chapterID: item.chapterID, verse: item.startVerse > 0 ? item.startVerse : nil)
-                    } label: {
-                        Label("Open", systemImage: "book")
-                            .font(.footnote.weight(.semibold))
-                    }
-                    .buttonStyle(.borderless)
-                    .tint(Color.primary)
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 8) { reactions; replyChip; Spacer(minLength: 0); openLink }
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(spacing: 8) { reactions; replyChip }
+                    openLink
                 }
+            }
+            if showsReplies, let latest = item.latestComment {
+                Divider().padding(.vertical, 2)
+                NavigationLink(value: ThreadRoute(groupID: group.id, target: .item, targetID: item.id)) {
+                    HStack(alignment: .top, spacing: 10) {
+                        MemberAvatar(name: latest.authorName, initials: groupInitials(latest.authorName), size: 24)
+                        VStack(alignment: .leading, spacing: 4) {
+                            (Text(latest.authorID == me ? "You" : groupFirstName(latest.authorName)).fontWeight(.semibold) + Text(" ") + Text(latest.body))
+                                .font(.subheadline)
+                                .lineLimit(3)
+                                .multilineTextAlignment(.leading)
+                            Text(item.commentCount == 1 ? "View reply" : "View all \(item.commentCount) replies")
+                                .font(.footnote.weight(.semibold))
+                                .foregroundStyle(.tint)
+                        }
+                        Spacer(minLength: 0)
+                    }
+                    .contentShape(.rect)
+                }
+                .buttonStyle(.plain)
             }
         }
         .padding(16)
         .background(Color(.secondarySystemGroupedBackground), in: .rect(cornerRadius: 20))
         .contextMenu {
-            if mine {
+            if mine || group.canModerate {
                 Button(role: .destructive) {
                     Task { await GroupStore.shared.delete(item, from: group) }
                 } label: {
@@ -715,7 +1054,51 @@ private struct GroupItemCard: View {
         .tint(Color.primary)
     }
 
+    private var reactions: some View {
+        HStack(spacing: 8) {
+            ReactionChip(kind: .heart, reactions: item.reactions, me: me) {
+                Task { await GroupStore.shared.toggle(.heart, on: item, in: group) }
+            }
+            ReactionChip(kind: .insight, reactions: item.reactions, me: me) {
+                Task { await GroupStore.shared.toggle(.insight, on: item, in: group) }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var replyChip: some View {
+        if showsReplies {
+            NavigationLink(value: ThreadRoute(groupID: group.id, target: .item, targetID: item.id)) {
+                HStack(spacing: 5) {
+                    Image(systemName: "bubble.left")
+                    Text(item.commentCount > 0 ? "\(item.commentCount)" : "Reply").monospacedDigit()
+                }
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(item.commentCount > 0 ? AnyShapeStyle(Accent.color) : AnyShapeStyle(.secondary))
+                .padding(.horizontal, 10)
+                .frame(minHeight: 30)
+                .background(item.commentCount > 0 ? AnyShapeStyle(Accent.color.opacity(0.12)) : AnyShapeStyle(.quaternary.opacity(0.6)), in: Capsule())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(item.commentCount == 0 ? "Reply" : "\(item.commentCount) replies")
+        }
+    }
+
+    @ViewBuilder
+    private var openLink: some View {
+        if !item.chapterID.isEmpty {
+            NavigationLink {
+                ReaderView(chapterID: item.chapterID, verse: item.startVerse > 0 ? item.startVerse : nil)
+            } label: {
+                Label("Open", systemImage: "book")
+                    .font(.footnote.weight(.semibold))
+            }
+            .buttonStyle(.borderless)
+        }
+    }
+
     private var reference: String {
+        if !item.reference.isEmpty { return item.reference }
         guard !item.chapterID.isEmpty else { return "" }
         guard item.startVerse > 0 else { return content.title(forChapter: item.chapterID) }
         let base = content.reference(chapterID: item.chapterID, verse: item.startVerse)
@@ -728,27 +1111,32 @@ private struct GroupItemCard: View {
         case .reflection: item.text.isEmpty ? "shared a reflection" : "on \(item.text)"
         }
     }
+}
 
-    private func initials(_ name: String) -> String {
-        name.split(separator: " ").prefix(2).compactMap(\.first).map(String.init).joined().uppercased()
-    }
+/// A heart or insight button with its count, filled when it's mine.
+struct ReactionChip: View {
+    let kind: GroupStore.Reaction.Kind
+    let reactions: [GroupStore.Reaction]
+    let me: String?
+    var compact = false
+    let action: () -> Void
 
-    private func reaction(_ kind: GroupStore.Reaction.Kind, symbol: String, filledSymbol: String, color: Color) -> some View {
-        let all = group.reactions.filter { $0.itemID == item.id && $0.kind == kind }
-        let mine = all.contains { $0.authorID == me }
-        return Button {
-            Task { await GroupStore.shared.toggle(kind, on: item, in: group) }
-        } label: {
+    var body: some View {
+        let all = reactions.filter { $0.kind == kind }
+        let mine = all.contains { $0.userID == me }
+        let color: Color = kind == .heart ? .pink : .orange
+        let symbol = kind == .heart ? "heart" : "lightbulb"
+        Button(action: action) {
             HStack(spacing: 5) {
-                Image(systemName: mine ? filledSymbol : symbol)
+                Image(systemName: mine ? symbol + ".fill" : symbol)
                     .foregroundStyle(mine ? color : .secondary)
                 if !all.isEmpty { Text("\(all.count)").monospacedDigit() }
             }
             .font(.footnote.weight(.semibold))
             .foregroundStyle(.secondary)
-            .padding(.horizontal, 10)
-            .frame(height: 30)
-            .background(mine ? AnyShapeStyle(color.opacity(0.14)) : AnyShapeStyle(.quaternary.opacity(0.6)), in: Capsule())
+            .padding(.horizontal, compact ? 4 : 10)
+            .frame(minHeight: compact ? 28 : 30)
+            .background(compact ? AnyShapeStyle(.clear) : (mine ? AnyShapeStyle(color.opacity(0.14)) : AnyShapeStyle(.quaternary.opacity(0.6))), in: Capsule())
         }
         .buttonStyle(.plain)
         .sensoryFeedback(.selection, trigger: mine)
@@ -758,82 +1146,174 @@ private struct GroupItemCard: View {
     }
 }
 
-// MARK: - Members (owner)
+func groupInitials(_ name: String) -> String {
+    name.split(separator: " ").prefix(2).compactMap(\.first).map(String.init).joined().uppercased()
+}
+
+func groupFirstName(_ name: String) -> String {
+    name.split(separator: " ").first.map(String.init) ?? name
+}
+
+// MARK: - Members
 
 private struct GroupMembersSheet: View {
-    let group: GroupStore.StudyGroup
+    let groupID: String
 
     @Environment(\.dismiss) private var dismiss
-    @State private var participants: [CKShare.Participant] = []
-    @State private var loading = true
     @State private var errorMessage: String?
+    @State private var confirmReset = false
+    @State private var removing: GroupStore.Member?
 
     var body: some View {
+        let store = GroupStore.shared
         NavigationStack {
             List {
-                Section {
-                    if loading {
-                        ProgressView()
-                    } else if participants.isEmpty {
-                        Text("No one has joined yet. Use Invite to send the link.").foregroundStyle(.secondary)
-                    }
-                    ForEach(participants, id: \.self) { participant in
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(name(of: participant)).font(.body)
-                            Text(participant.acceptanceStatus == .accepted ? "Member" : "Invited")
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
+                if let group = store.group(groupID) {
+                    Section {
+                        ForEach(group.members) { member in
+                            row(member, in: group, me: store.myUserID)
                         }
-                        .swipeActions {
-                            Button("Remove", systemImage: "person.badge.minus", role: .destructive) {
-                                Task { await remove(participant) }
+                    } footer: {
+                        Text(group.canModerate
+                             ? "Swipe a name to remove someone. Removing someone stops them seeing the group."
+                             : "The owner and leaders can remove people.")
+                    }
+                    Section {
+                        InviteCodeView(code: group.inviteCode)
+                            .listRowInsets(EdgeInsets())
+                            .listRowBackground(Color.clear)
+                        if let url = group.inviteURL {
+                            ShareLink(item: url, subject: Text("Join \(group.name) on Hearken"),
+                                      message: Text("Open the link, or enter code \(group.inviteCode) under Study Groups › Join with Code.")) {
+                                Label { Text("Send Invite Link") } icon: { Image.menuIcon("square.and.arrow.up") }
                             }
+                            .tint(Color.primary)
                         }
+                        if group.canModerate {
+                            Button {
+                                confirmReset = true
+                            } label: {
+                                Label { Text("Reset Invite Code") } icon: { Image.menuIcon("arrow.clockwise") }
+                            }
+                            .tint(Color.primary)
+                        }
+                    } header: {
+                        Text("Invite")
+                    } footer: {
+                        Text("Anyone with the code or link can join. Resetting makes old invites stop working.")
                     }
-                } footer: {
-                    Text("Removing someone stops them seeing the group. Swipe a name to remove it.")
-                }
-                if let errorMessage {
-                    Section { Text(errorMessage).foregroundStyle(.red) }
+                    if let errorMessage {
+                        Section { Text(errorMessage).foregroundStyle(.red) }
+                    }
                 }
             }
-            .refreshable { await load() }
+            .refreshable { await store.reload(groupID) }
             .navigationTitle("Members")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Close", systemImage: "xmark", role: .close) { dismiss() }
-                        .tint(Color.primary)
+                ToolbarItem(placement: .confirmationAction) { SheetDoneButton { dismiss() } }
+            }
+            .alert("Reset the invite code?", isPresented: $confirmReset) {
+                Button("Reset", role: .destructive) { Task { await resetInvite() } }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("Links and codes you've already sent will stop working.")
+            }
+            .alert("Remove \(removing?.name ?? "")?", isPresented: Binding(get: { removing != nil }, set: { if !$0 { removing = nil } })) {
+                Button("Remove", role: .destructive) {
+                    if let member = removing { Task { await remove(member) } }
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("They'll stop seeing the group. What they shared stays.")
+            }
+        }
+        .tint(Accent.color)
+    }
+
+    @ViewBuilder
+    private func row(_ member: GroupStore.Member, in group: GroupStore.StudyGroup, me: String?) -> some View {
+        let canRemove = member.userID != me && member.role != .owner && (group.isOwner || (group.canModerate && member.role == .member))
+        HStack(spacing: 12) {
+            MemberAvatar(name: member.name, initials: member.initials, size: 36)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(member.userID == me ? "\(member.name) (You)" : member.name)
+                Text(member.pending ? "Still on the iCloud version" : member.role.title)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer(minLength: 0)
+            if group.isOwner, member.userID != me, !member.pending {
+                Menu {
+                    if member.role == .leader {
+                        Button("Make Member", menuIcon: "person") { Task { await setRole(.member, member) } }
+                    } else {
+                        Button("Make Leader", menuIcon: "star") { Task { await setRole(.leader, member) } }
+                    }
+                    Button("Make Owner", menuIcon: "crown") { Task { await setRole(.owner, member) } }
+                } label: {
+                    Label("Role", systemImage: "ellipsis.circle").labelStyle(.iconOnly)
+                }
+                .tint(Color.primary)
+            }
+        }
+        .accessibilityElement(children: .combine)
+        .swipeActions {
+            if canRemove {
+                Button("Remove", systemImage: "person.badge.minus", role: .destructive) { removing = member }
+            }
+        }
+    }
+
+    private func setRole(_ role: GroupStore.Role, _ member: GroupStore.Member) async {
+        guard let group = GroupStore.shared.group(groupID) else { return }
+        do { try await GroupStore.shared.setRole(role, for: member, in: group) } catch { errorMessage = GroupStore.describe(error, action: "change that") }
+    }
+
+    private func remove(_ member: GroupStore.Member) async {
+        guard let group = GroupStore.shared.group(groupID) else { return }
+        do { try await GroupStore.shared.remove(member, from: group) } catch { errorMessage = GroupStore.describe(error, action: "remove them") }
+        removing = nil
+    }
+
+    private func resetInvite() async {
+        guard let group = GroupStore.shared.group(groupID) else { return }
+        do { try await GroupStore.shared.resetInvite(for: group) } catch { errorMessage = GroupStore.describe(error, action: "reset the code") }
+    }
+}
+
+// MARK: - Notifications
+
+private struct GroupNotificationSheet: View {
+    let groupID: String
+
+    @Environment(\.dismiss) private var dismiss
+    @State private var prefs = GroupStore.NotifyPrefs()
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    Toggle("Replies to what I share", isOn: $prefs.replies)
+                    Toggle("Mentions", isOn: $prefs.mentions)
+                    Toggle("Every reply in the group", isOn: $prefs.allReplies)
+                    Toggle("Weekly question", isOn: $prefs.question)
+                    Toggle("Daily reading activity", isOn: $prefs.activity)
+                } footer: {
+                    Text("Choose what \(GroupStore.shared.group(groupID)?.name ?? "this group") sends you. Your other groups keep their own settings.")
                 }
             }
-            .task { await load() }
+            .navigationTitle("Notifications")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) { SheetDoneButton { dismiss() } }
+            }
         }
-    }
-
-    private func name(of participant: CKShare.Participant) -> String {
-        if let components = participant.userIdentity.nameComponents {
-            let formatted = PersonNameComponentsFormatter.localizedString(from: components, style: .default)
-            if !formatted.isEmpty { return formatted }
-        }
-        return participant.userIdentity.lookupInfo?.emailAddress ?? "Someone with the link"
-    }
-
-    private func load() async {
-        loading = true
-        defer { loading = false }
-        do {
-            participants = try await GroupStore.shared.participants(of: group)
-        } catch {
-            errorMessage = GroupStore.describe(error)
-        }
-    }
-
-    private func remove(_ participant: CKShare.Participant) async {
-        do {
-            try await GroupStore.shared.remove(participant, from: group)
-            participants.removeAll { $0 == participant }
-        } catch {
-            errorMessage = GroupStore.describe(error)
+        .tint(Accent.color)
+        .onAppear { prefs = GroupStore.shared.group(groupID)?.notifications ?? GroupStore.NotifyPrefs() }
+        .onChange(of: prefs) { _, value in
+            guard let group = GroupStore.shared.group(groupID), group.notifications != value else { return }
+            Task { await GroupStore.shared.setNotifications(value, for: group) }
         }
     }
 }
@@ -868,7 +1348,7 @@ struct GroupVerseSheet: View {
                     ForEach(entries) { entry in
                         VStack(alignment: .leading, spacing: 10) {
                             HStack(spacing: 10) {
-                                MemberAvatar(name: entry.item.authorName, initials: "")
+                                MemberAvatar(name: entry.item.authorName, initials: groupInitials(entry.item.authorName))
                                 VStack(alignment: .leading, spacing: 1) {
                                     Text(entry.item.authorID == store.myUserID ? "You" : entry.item.authorName)
                                         .font(.subheadline.weight(.semibold))
@@ -884,9 +1364,16 @@ struct GroupVerseSheet: View {
                             if !entry.item.note.isEmpty {
                                 Text(entry.item.note)
                             }
-                            NavigationLink(value: GroupRoute(id: entry.group.id)) {
-                                Label("Open \(entry.group.name)", systemImage: "person.3")
-                                    .font(.footnote.weight(.semibold))
+                            HStack(spacing: 16) {
+                                NavigationLink(value: ThreadRoute(groupID: entry.group.id, target: .item, targetID: entry.item.id)) {
+                                    Label(entry.item.commentCount == 0 ? "Reply" : "\(entry.item.commentCount) \(entry.item.commentCount == 1 ? "Reply" : "Replies")",
+                                          systemImage: "bubble.left")
+                                        .font(.footnote.weight(.semibold))
+                                }
+                                NavigationLink(value: GroupRoute(id: entry.group.id)) {
+                                    Label("Open \(entry.group.name)", systemImage: "person.3")
+                                        .font(.footnote.weight(.semibold))
+                                }
                             }
                             .buttonStyle(.borderless)
                         }
@@ -903,11 +1390,11 @@ struct GroupVerseSheet: View {
             .navigationDestination(for: GroupRoute.self) { route in
                 GroupDetailView(groupID: route.id)
             }
+            .navigationDestination(for: ThreadRoute.self) { route in
+                GroupThreadView(route: route)
+            }
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Close", systemImage: "xmark", role: .close) { dismiss() }
-                        .tint(Color.primary)
-                }
+                ToolbarItem(placement: .confirmationAction) { SheetDoneButton { dismiss() } }
             }
         }
         .tint(Accent.color)

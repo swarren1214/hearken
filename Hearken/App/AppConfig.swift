@@ -8,6 +8,12 @@ enum AppConfig {
     static let cloudSyncEnabled = true
     static let cloudKitContainerID = "iCloud.com.stephenwarren.hearken"
 
+    /// The shared Hearth API (study groups) and the Hearth Supabase project it signs in with.
+    /// The publishable key is meant to ship in apps; it only reaches Supabase's sign-in.
+    nonisolated static let apiBaseURL = URL(string: "https://api.hearthapps.com")!
+    nonisolated static let supabaseURL = URL(string: "https://kvhvsztvfpydhfpzicyy.supabase.co")!
+    nonisolated static let supabasePublishableKey = "sb_publishable_j0eyoaQiN3fogFINKooaDA_V0yjXkgY"
+
     static let termsURL = URL(string: "http://hearkenstudy.com/terms.html")!
     static let privacyURL = URL(string: "http://hearkenstudy.com/privacy.html")!
     static let supportURL = URL(string: "http://hearkenstudy.com/support.html")!

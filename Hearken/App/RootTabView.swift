@@ -39,6 +39,9 @@ struct RootTabView: View {
                         .navigationDestination(for: GroupRoute.self) { route in
                             GroupDetailView(groupID: route.id)
                         }
+                        .navigationDestination(for: ThreadRoute.self) { route in
+                            GroupThreadView(route: route)
+                        }
                         .navigationDestination(for: SubjectRoute.self) { route in
                             if let subject = content.subject(route.subjectID) { SubjectDetailView(subject: subject) }
                         }
@@ -99,16 +102,19 @@ struct RootTabView: View {
             navigator.pendingChapterID = nil
         }
         // A study-group invite link: show who's inviting and what's shared before joining.
-        .sheet(isPresented: Binding(get: { groups.pendingInvite != nil }, set: { if !$0 { groups.pendingInvite = nil } })) {
-            if let metadata = groups.pendingInvite {
-                JoinGroupSheet(metadata: metadata)
+        .sheet(isPresented: Binding(get: { groups.pendingInviteCode != nil }, set: { if !$0 { groups.pendingInviteCode = nil } })) {
+            if let code = groups.pendingInviteCode {
+                JoinGroupSheet(code: code)
             }
         }
-        .onChange(of: groups.openGroupID) { _, id in
+        .onChange(of: groups.openGroupID, initial: true) { _, id in
             guard let id else { return }
             selection = .today
             todayPath = NavigationPath()
             todayPath.append(GroupRoute(id: id))
+            // A reply notification opens its thread on top of the group.
+            if let thread = groups.openThread, thread.groupID == id { todayPath.append(thread) }
+            groups.openThread = nil
             groups.openGroupID = nil
         }
         // The first-run tour: the Welcome sheet, then each step shows its tab at its top level.

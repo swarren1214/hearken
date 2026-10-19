@@ -77,6 +77,19 @@ struct AppRoot: View {
                 if AppConfig.cloudSyncEnabled { await GroupStore.shared.initializeSchemaIfNeeded() }
                 #endif
             }
+            // The Hearth household: invitations land here, and the reader is one of its people.
+            .hearthHouseholdInvitations()
+            // Every Hearth app works inside a household; after onboarding, the household step
+            // if there's none yet.
+            .hearthHouseholdRequired(isActive: onboardingDone && !ScreenshotMode.isOn, accent: Accent.color)
+            .task {
+                guard !ScreenshotMode.isOn else { return }
+                HearthHouseholdStore.shared.start(app: .hearken)
+                HearthLink.shared.claimReaderIfNeeded()
+            }
+            .onChange(of: HearthHouseholdStore.shared.snapshot) { _, _ in
+                HearthLink.shared.claimReaderIfNeeded()
+            }
             .modifier(PlanSideEffects())
             .modifier(ReviewSideEffects())
             .modifier(GroupSideEffects())

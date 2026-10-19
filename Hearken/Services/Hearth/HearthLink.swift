@@ -39,6 +39,23 @@ final class HearthLink {
     private func otherAppChanged() {
         account?.followSharedSignIn()
         reloadSharedAvatar()
+        claimReaderIfNeeded()
+    }
+
+    /// With a Hearth household, the reader is one of its people. When this device hasn't said
+    /// which yet, the one person whose name matches the reader's is them.
+    func claimReaderIfNeeded() {
+        defer { Self.republishIfReaderChanged() }
+        let store = HearthHouseholdStore.shared
+        guard !ScreenshotMode.isOn, store.exists, store.me == nil, let account, account.isSignedIn,
+              let name = account.displayName.map(HearthNames.normalized), !name.isEmpty else { return }
+        let first = name.split(separator: " ").first.map(String.init) ?? name
+        var matches = store.people.filter { HearthNames.normalized($0.name) == name }
+        if matches.isEmpty {
+            matches = store.parents.filter { HearthNames.normalized($0.firstName) == first }
+        }
+        guard matches.count == 1, let reader = matches.first else { return }
+        store.claim(reader.id)
     }
 
     /// Shares the reader and their photo while signed in with a name, and takes them back
@@ -61,6 +78,55 @@ final class HearthLink {
             lastSharedPhoto = nil
         }
         reloadSharedAvatar()
+    }
+
+    /// The reading last shared, so a change of reader can be shared without the plan.
+    private static var lastReading: HearthReading?
+
+    /// Shares the last reading again when the household's reader is someone else now.
+    static func republishIfReaderChanged() {
+        guard var reading = lastReading else { return }
+        let readerID = HearthHouseholdStore.shared.me?.id
+        guard reading.readerID != readerID else { return }
+        reading.readerID = readerID
+        lastReading = reading
+        Hearth.publish(reading, from: .hearken)
+    }
+
+    /// Shares the active plan's reading from yesterday through the next two weeks, with whether
+    /// each day is done and the reminder time, for Caloma's calendar. No plan clears it.
+    static func publishReading(state: PlanState?, enrollment: PlanEnrollment?, now: Date = .now) {
+        guard !ScreenshotMode.isOn else { return }
+        guard let state, let enrollment, !state.isFinished else {
+            lastReading = nil
+            Hearth.remove(HearthReading.self, from: .hearken)
+            return
+        }
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: now)
+        let first = calendar.date(byAdding: .day, value: -1, to: today) ?? today
+        let last = calendar.date(byAdding: .day, value: 14, to: today) ?? today
+        let days = state.days
+            .filter { $0.date >= first && $0.date <= last && !$0.chapterIDs.isEmpty }
+            .map { day in
+                HearthReading.Day(
+                    date: HearthDay.string(from: day.date, calendar: calendar),
+                    readings: [HearthReading.Reading(
+                        id: enrollment.planID,
+                        title: PlanFormat.range(day.chapterIDs),
+                        planName: state.plan.title,
+                        isDone: state.isDone(day),
+                        link: day.chapterIDs.first.map { AppNavigator.readURL($0).absoluteString }
+                    )]
+                )
+            }
+        let reading = HearthReading(
+            reminderMinutes: enrollment.reminderEnabled ? enrollment.reminderMinutes : nil,
+            days: days,
+            readerID: HearthHouseholdStore.shared.me?.id
+        )
+        lastReading = reading
+        Hearth.publish(reading, from: .hearken)
     }
 
     /// Looks for another app's photo of the reader, by name, only when Hearken has none.

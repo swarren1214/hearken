@@ -36,6 +36,12 @@ final class AppNavigator {
             BookImporter.shared.inspect([url])
             return
         }
+        // A study group invite: https://api.hearthapps.com/hearken/join/ABCD2345 (a universal
+        // link) or hearken://join/ABCD2345.
+        if (url.scheme == "hearken" && url.host() == "join") || (url.scheme == "https" && url.path().hasPrefix("/hearken/join/")) {
+            if let code = GroupStore.inviteCode(from: url.lastPathComponent) { GroupStore.shared.pendingInviteCode = code }
+            return
+        }
         guard url.scheme == "hearken", let host = url.host(), host == "read" || host == "listen" else { return }
         let chapterID = url.lastPathComponent
         guard !chapterID.isEmpty, chapterID != "/" else { return }
@@ -77,6 +83,12 @@ final class NotificationRouter: NSObject, UNUserNotificationCenterDelegate, @unc
         }
         if let bookID = info["bookID"] as? String {
             await MainActor.run { AppNavigator.shared.pendingBookID = bookID }
+        } else if let hearken = info["hearken"] as? [String: Any], let groupID = hearken["groupId"] as? String {
+            // A study group notification (from the Hearth API): open what it's about.
+            let kind = hearken["kind"] as? String
+            let targetType = hearken["targetType"] as? String
+            let targetID = hearken["targetId"] as? String
+            await MainActor.run { GroupStore.shared.open(groupID: groupID, kind: kind, targetType: targetType, targetID: targetID) }
         } else if let groupID = info["groupID"] as? String {
             await MainActor.run { GroupStore.shared.openGroupID = groupID }
         } else if let chapterID = info["chapterID"] as? String {
@@ -85,7 +97,11 @@ final class NotificationRouter: NSObject, UNUserNotificationCenterDelegate, @unc
     }
 
     nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification) async -> UNNotificationPresentationOptions {
-        [.banner, .sound]
+        // A study group notification while Hearken is open: bring the group up to date too.
+        if notification.request.content.userInfo["hearken"] != nil {
+            await GroupStore.shared.refresh()
+        }
+        return [.banner, .sound]
     }
 }
 
@@ -120,6 +136,8 @@ struct PlanSideEffects: ViewModifier {
         PlanSnapshotStore.save(snapshot)
         // The Apple Watch's Smart Stack widget and Today page.
         WatchBridge.shared.send(plan: snapshot)
+        // Caloma shows each day's reading on the family calendar.
+        HearthLink.publishReading(state: state, enrollment: active)
         await PlanReminders.update(state: state, enabled: active?.reminderEnabled ?? false, minutes: active?.reminderMinutes ?? 420)
     }
 }

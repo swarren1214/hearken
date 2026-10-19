@@ -24,6 +24,8 @@ struct SettingsView: View {
 
     @State private var confirmDelete = false
     @State private var confirmSignOut = false
+    /// The nonce for the Sign in with Apple request, which also signs in to the Hearth API.
+    @State private var appleNonce: String?
     @State private var avatarItem: PhotosPickerItem?
     @State private var errorMessage: String?
     @State private var tipsReset = false
@@ -153,6 +155,18 @@ struct SettingsView: View {
 
             Section {
                 NavigationLink {
+                    HearthHouseholdView(accent: Accent.color)
+                } label: {
+                    Label(HearthHouseholdStore.shared.exists ? "Family" : "Set Up Hearth Household", systemImage: "house.lodge")
+                }
+            } header: {
+                Text("Household")
+            } footer: {
+                Text("Your family, the same in every Hearth app. Caloma shows whose reading is whose on the family calendar.")
+            }
+
+            Section {
+                NavigationLink {
                     HearthAppsView(current: .hearken)
                 } label: {
                     HearthAppsRowLabel(current: .hearken)
@@ -221,9 +235,16 @@ struct SettingsView: View {
                 } else {
                     SignInWithAppleButton(.signIn) { request in
                         request.requestedScopes = [.fullName, .email]
+                        // The same sign-in also signs in to the Hearth API (study groups).
+                        appleNonce = HearthAPI.prepareAppleRequest(request)
                     } onCompletion: { result in
                         do {
                             try account.completeSignIn(result)
+                            if case .success(let authorization) = result,
+                               let credential = authorization.credential as? ASAuthorizationAppleIDCredential {
+                                let nonce = appleNonce
+                                Task { await HearthConnection.shared.connect(credential: credential, nonce: nonce) }
+                            }
                         } catch let error as ASAuthorizationError where error.code == .canceled {
                         } catch {
                             errorMessage = error.localizedDescription

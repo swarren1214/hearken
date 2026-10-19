@@ -2,8 +2,8 @@ import CloudKit
 import CoreData
 import UIKit
 
-/// App and scene delegates for what SwiftUI doesn't cover: accepting a study-group invite
-/// (a CloudKit share link) and silent pushes when a group changes.
+/// App and scene delegates for what SwiftUI doesn't cover: push notifications for study groups,
+/// and CloudKit share links (the Hearth household, and study-group invites from Hearken 1.x).
 final class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         StoreSetupGuard.begin(application)
@@ -15,9 +15,14 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         return true
     }
 
+    /// Study group notifications come from the Hearth API, which needs this device's token.
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        Task { @MainActor in await GroupStore.shared.updatePushToken(deviceToken) }
+    }
+
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any]) async -> UIBackgroundFetchResult {
         guard GroupStore.isGroupNotification(userInfo) else { return .noData }
-        await GroupStore.shared.refresh(notify: true)
+        await GroupStore.shared.refresh()
         return .newData
     }
 
@@ -32,13 +37,32 @@ final class SceneDelegate: NSObject, UIWindowSceneDelegate {
     /// Launched by tapping an invite link.
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         if let metadata = connectionOptions.cloudKitShareMetadata {
-            GroupStore.shared.pendingInvite = metadata
+            if HearthHouseholdStore.handles(metadata) {
+                HearthHouseholdStore.shared.receive(metadata)
+            } else {
+                Self.acceptLegacyGroupInvite(metadata)
+            }
         }
     }
 
     /// Tapped an invite link while Hearken was already running.
     func windowScene(_ windowScene: UIWindowScene, userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
-        GroupStore.shared.pendingInvite = cloudKitShareMetadata
+        if HearthHouseholdStore.handles(cloudKitShareMetadata) {
+            HearthHouseholdStore.shared.receive(cloudKitShareMetadata)
+        } else {
+            Self.acceptLegacyGroupInvite(cloudKitShareMetadata)
+        }
+    }
+
+    /// An invite link to a study group from Hearken 1.x (a CloudKit share). Accepting it puts the
+    /// old zone in this person's shared database, where the move to the Hearth API finds it and
+    /// claims a seat in the group, once its owner has moved it.
+    private static func acceptLegacyGroupInvite(_ metadata: CKShare.Metadata) {
+        Task { @MainActor in
+            _ = try? await CKContainer(identifier: metadata.containerIdentifier).accept(metadata)
+            GroupMigration.reset()
+            await GroupStore.shared.refresh()
+        }
     }
 }
 

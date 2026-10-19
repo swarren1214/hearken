@@ -986,7 +986,8 @@ struct ReaderPage: View {
     private func shareToGroup(_ draft: GroupShareDraft, group: GroupStore.StudyGroup) async {
         do {
             try await GroupStore.shared.share(kind: .highlight, chapterID: chapterID, startVerse: draft.startVerse, endVerse: draft.endVerse,
-                                              text: draft.text, note: "", to: group, authorName: account.displayName ?? "Member")
+                                              text: draft.text, note: "", reference: draft.reference, to: group,
+                                              authorName: account.displayName ?? "Member")
             sharedToGroup += 1
         } catch {
             // Nothing to undo; the item simply isn't shared. The group page reports problems on refresh.

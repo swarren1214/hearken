@@ -66,6 +66,9 @@ native does the job, and match the system's look and behavior when you do.
   / SwiftData's CloudKit sync) so other devices update without the user doing anything.
 - Every screen that shows data that lives in iCloud supports pull to refresh (`.refreshable`),
   which fetches the latest changes from iCloud before it finishes.
+- **Study groups are the exception:** they live on the Hearth API (`api.hearthapps.com`,
+  `/v1/hearken/*`), not in iCloud, so people can read together across Apple Accounts. See
+  "Study groups" below.
 
 ## Confirmations
 
@@ -74,8 +77,68 @@ alert (`.alert` with a `role: .destructive` button and a Cancel button) rather t
 popup or popover (`.confirmationDialog`, action sheet, `.popover`), unless explicitly told
 otherwise.
 
+## Hearth household
+
+The family (people, photos, birthdays, allergies, diets, likes and dislikes) is the **Hearth
+household**: one record set in the family's iCloud (container `iCloud.com.stephenwarren.hearth`,
+zone `Household`), shared with the family by a CKShare. `HearthHouseholdStore.shared` reads and
+edits it, and every Hearth app on the device sees changes at once through the app group.
+`HearthHouseholdView`, `HearthPersonView`, `HearthPersonEditor` and `HearthInviteSheet` are the
+screens for it; don't build app-specific versions.
+
+- **Privacy rules (never break these):**
+  - Family profiles never go to a Hearth server. The server may hold membership (who's in a
+    household, a seat id and a name where a feature needs one), nothing more.
+  - Birthdays, allergies, diets, likes, dislikes and household restrictions are stored in
+    CloudKit `encryptedValues`. A new sensitive field goes there too.
+  - An AI request gets only `store.aiContext()` (`HearthAIContext`): ages, roles and food rules,
+    no names, no photos, no birthdays, for that one request. Nothing is logged or saved.
+  - Never put household data in analytics, logs (`privacy: .public`), crash reports or
+    notifications' text beyond a first name.
+- **Allergies are hard rules.** Anything that suggests food must never suggest one.
+- **Until a household exists, the app works exactly as it did.** Everything household-related
+  is behind `HearthHouseholdStore.shared.exists`.
+- **The app's own people mirror the household.** Keep the app's model (Caloma's `Member`, etc.)
+  and link it by Hearth id: `store.localID(of:app:among:)` to find a person's record here,
+  `store.linkHere(_:app:localID:)` to link one (shared link when the app's data is the family's,
+  per-device link otherwise), `store.member(app:appID:)` to go back. Only add people when
+  `store.canEditEveryone`, so two phones don't both create one.
+- **Edits go through the household.** For a linked person, edit with `HearthPersonEditor`; the
+  mirror copies the change into the app.
+- Invitations: the root view has `.hearthHouseholdInvitations()`, and the scene delegate hands
+  CKShare metadata for the Hearth container to `HearthHouseholdStore.shared.receive` (see
+  `HearthHouseholdStore.handles`).
+- **In Hearken:** the reader is the household's `me` (claimed by name in `HearthLink.claimReaderIfNeeded`, or picked on the Household screen). Shared readings carry `readerID` so Caloma can say whose reading it is. Settings › Household opens the shared screens.
+
 ## Shared Hearth code
 
-`Services/Hearth/HearthShared.swift`, `Services/Hearth/HearthApps.swift` and
-`Assets.xcassets/Hearth` are copies. Edit the originals in `~/Developer/hearthkit` and run its
-`sync.sh`.
+These are copies: in `Services/Hearth/`, `HearthShared.swift`, `HearthApps.swift`,
+`HearthSync.swift`, `HearthPicker.swift`, `HearthIconLibrary.swift`, `HearthAccount.swift` and the
+four `HearthHousehold*.swift` files, plus `Assets.xcassets/Hearth`. Edit the originals in
+`~/Developer/hearthkit` and run `bash sync.sh` there; never edit a copy. App-specific Hearth code
+(such as `HearthLink.swift`) also lives in `Services/Hearth/` and isn't touched by the sync.
+
+## Study groups
+
+Groups, their members' weekly progress, shared highlights and reflections, replies, reactions and
+the weekly question live on the shared Hearth API (hearth-api, `src/hearken/`), reached through
+`GroupStore.shared` (`Services/Groups/`). They need a Hearth account: `HearthAPI` keeps the
+Supabase session from Sign in with Apple, shared with the other Hearth apps (`HearthAccounts`).
+
+- **Only what's shared leaves the device.** The server gets what a member shares to a group and
+  their progress on the group's plan, never their other highlights, notes, bookmarks or plans.
+  Say so where people share (the join sheet, the create sheet).
+- **Writes that can be repeated go through `sendOrQueue`** (progress, reactions, settings) or
+  carry a `clientId` (posts, replies, questions), so a retry or the offline outbox never
+  duplicates anything.
+- **Replies are two levels deep.** A reply to a reply joins the same top-level reply (the server
+  enforces it); the thread view mentions who it answers.
+- **Weekly question answers stay hidden until you answer** when the question says so. Never show
+  hidden answers or their replies before the server does (`answersVisible`).
+- **Notifications come from the server** (APNs, per-group settings in `NotifyPrefs`). Don't post
+  local notifications for group activity.
+- **Screenshot mode** never calls the API: `GroupDemo.swift` has the demo groups, thread and
+  answers.
+- **Moving from CloudKit** (`GroupMigration`): groups made in Hearken 1.x move on the owner's
+  device and members claim their seat. Keep that code until a release removes the old zones.
+

@@ -307,6 +307,12 @@ final class AccountService {
         UserDefaults.standard.removeObject(forKey: Keys.sharedSignIn)
         status = .signedOut
         HearthLink.shared.update()
+        // Study groups belong to the Hearth account: forget them on this device too.
+        Task { @MainActor in
+            await GroupStore.shared.disablePushToken()
+            await HearthConnection.shared.signOut()
+            GroupStore.shared.forget()
+        }
     }
 
     /// Sign Out in Settings: signs out of Hearken and of the other Hearth apps on this device

@@ -8,7 +8,7 @@ import Foundation
 /// SwiftData's CloudKit sync has no public "fetch now" call: iOS schedules imports itself
 /// (on launch, on returning to the app, and when CloudKit's silent push says another device
 /// changed something). So a refresh syncs the iCloud key-value store (highlight legend,
-/// profile photo, settings), reloads study groups straight from CloudKit, and waits for the
+/// profile photo, settings), reloads study groups from the Hearth API, and waits for the
 /// next SwiftData import to finish, or about 6 seconds, whichever comes first.
 @MainActor
 enum CloudRefresh {
@@ -18,9 +18,13 @@ enum CloudRefresh {
     static func refresh() async {
         // Screenshot mode (Debug) and previews never touch iCloud.
         guard AppConfig.cloudSyncEnabled, !ScreenshotMode.isOn else { return }
-        // Not signed in to iCloud (or iCloud is restricted): there's nothing to fetch.
+        // Not signed in to iCloud (or iCloud is restricted): there's nothing to fetch, but study
+        // groups (on the Hearth API, not iCloud) still refresh.
         let status = try? await CKContainer(identifier: AppConfig.cloudKitContainerID).accountStatus()
-        guard status == .available else { return }
+        guard status == .available else {
+            await GroupStore.shared.refresh()
+            return
+        }
 
         NSUbiquitousKeyValueStore.default.synchronize()
         let started = Date.now
