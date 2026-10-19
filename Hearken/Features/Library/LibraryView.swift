@@ -249,6 +249,11 @@ struct LibraryView: View {
     }
 
     private func importBook(toShelf shelfID: String?) {
+        // Importing needs Hearken Plus or Hearth+: the paywall, not the Files picker.
+        guard importer.canImport else {
+            importer.paywallRequested = true
+            return
+        }
         importShelfID = shelfID
         pickingFiles = true
     }

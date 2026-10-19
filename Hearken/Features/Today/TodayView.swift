@@ -29,6 +29,8 @@ struct TodayView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 22) {
                     HeaderTitle("Today")
+                    // Only shows when a Hearken Plus or Hearth+ renewal has failed.
+                    HearthBillingBanner()
                     if let plan, let planState {
                         // A running plan leads; the Daily Challenge steps down to a row.
                         PlanTodayCard(state: planState, enrollment: plan)

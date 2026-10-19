@@ -157,6 +157,7 @@ private struct ListenPlayerChrome: ViewModifier {
 /// (Chapters heard to the end are marked read by the engine itself, so that works for Siri too.)
 struct ListenSideEffects: ViewModifier {
     @Environment(ContentService.self) private var scripture
+    @State private var engine = ListenEngine.shared
 
     func body(content: Content) -> some View {
         content
@@ -164,5 +165,11 @@ struct ListenSideEffects: ViewModifier {
                 ListenEngine.shared.attach(content: scripture)
                 ListenEngine.shared.restoreIfRecent()
             }
+            // Listen needs Hearken Plus or Hearth+; every way of starting it lands here.
+            .hearthPaywall(isPresented: $engine.paywallRequested, feature: HearthPaywallFeature(
+                "Listen",
+                detail: "Hear any chapter read aloud in a natural voice, on the go and on the lock screen.",
+                symbol: "headphones"
+            ))
     }
 }

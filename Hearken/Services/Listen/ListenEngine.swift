@@ -66,6 +66,12 @@ final class ListenEngine: NSObject {
     private(set) var preview: VoicePreview?
     /// Why the natural voice last failed, shown in Settings.
     private(set) var naturalVoiceError: String?
+    /// Someone asked to listen without Hearken Plus or Hearth+ (from the reader, a plan, Siri,
+    /// the Watch or a link); ListenSideEffects shows the paywall instead.
+    var paywallRequested = false
+
+    /// Listen is part of Hearken Plus and Hearth+. Reading itself is always free.
+    private var canListen: Bool { HearthPurchases.shared.isUnlocked }
 
     // MARK: Settings (saved)
 
@@ -236,6 +242,10 @@ final class ListenEngine: NSObject {
     /// Starts listening to `chapterIDs` in order, from `verse` in the first one.
     func start(chapterIDs: [String], fromVerse verse: Int? = nil, source: ListenSource = .book) {
         guard let first = chapterIDs.first else { return }
+        guard canListen else {
+            paywallRequested = true
+            return
+        }
         upNext = Array(chapterIDs.dropFirst())
         self.source = source
         // Skip chapters whose text isn't imported yet.
@@ -287,6 +297,12 @@ final class ListenEngine: NSObject {
 
     func play() {
         guard isActive else { return }
+        // A chapter restored after the plan lapsed, or the lock screen's play button.
+        guard canListen else {
+            stop()
+            paywallRequested = true
+            return
+        }
         activateSession()
         installRemoteCommands()
         if reachedEnd {

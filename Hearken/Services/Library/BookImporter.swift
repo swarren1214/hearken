@@ -82,6 +82,12 @@ final class BookImporter {
     var failureMessage: String?
     /// Set when books are added, so the app can show the Library.
     var addedToken = 0
+    /// Someone tried to import without Hearken Plus or Hearth+ (Files, the Share sheet or a drop);
+    /// RootTabView shows the paywall. Books already imported always stay readable.
+    var paywallRequested = false
+
+    /// Importing your own books and PDFs is part of Hearken Plus and Hearth+.
+    var canImport: Bool { HearthPurchases.shared.isUnlocked }
 
     @ObservationIgnored private var container: ModelContainer?
     @ObservationIgnored private var preparing: [String: Task<Void, Never>] = [:]
@@ -97,6 +103,10 @@ final class BookImporter {
     /// and reads its details, filling in its row. Files picked while the sheet is open join it.
     func inspect(_ urls: [URL], shelfID: String? = nil) {
         guard !urls.isEmpty else { return }
+        guard canImport else {
+            paywallRequested = true
+            return
+        }
         let known = knownHashes()
         let drafts = urls.map { url in
             ImportDraft(id: UUID().uuidString, fileName: url.lastPathComponent, format: Self.guessFormat(url) ?? .epub)
@@ -144,6 +154,10 @@ final class BookImporter {
     func inspect(providers: [NSItemProvider], shelfID: String? = nil) -> Bool {
         let accepted = providers.filter { provider in Self.contentTypes.contains { provider.hasItemConformingToTypeIdentifier($0.identifier) } }
         guard !accepted.isEmpty else { return false }
+        guard canImport else {
+            paywallRequested = true
+            return false
+        }
         isReading = true
         Task {
             var urls: [URL] = []

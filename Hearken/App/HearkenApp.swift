@@ -36,6 +36,28 @@ struct HearkenApp: App {
         BookImporter.shared.resumeUnfinished()
         // The reader's one-time tips.
         ReaderTips.configure()
+        // Hearken Plus and Hearth+ (RevenueCat), and the household's plan through the Hearth API.
+        Self.configurePurchases()
+    }
+
+    /// Reading, study and Explain are always free; Listen, starting or joining study groups,
+    /// the games beyond the Daily Challenge, and imported books need Hearken
+    /// Plus or Hearth+. Skipped until the RevenueCat key is filled in.
+    private static func configurePurchases() {
+        let purchases = HearthPurchases.shared
+        if ScreenshotMode.isOn { purchases.previewUnlocked = true }
+        guard AppConfig.revenueCatAPIKey != "REVENUECAT_PUBLIC_KEY" else { return }
+        purchases.configure(
+            app: .hearken,
+            apiKey: AppConfig.revenueCatAPIKey,
+            apiBaseURL: AppConfig.apiBaseURL,
+            accessToken: {
+                let api = HearthAPI.shared
+                guard await api.isConnected else { return nil }
+                return try? await api.accessToken()
+            },
+            signInButton: { AnyView(HearthSignInButton()) }
+        )
     }
 
     var body: some Scene {

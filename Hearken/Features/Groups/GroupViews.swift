@@ -128,6 +128,17 @@ struct MemberAvatar: View {
     }
 }
 
+// MARK: - Hearken Plus
+
+extension HearthPaywallFeature {
+    /// Starting and joining study groups need Hearken Plus or Hearth+; members keep reading theirs.
+    static let studyGroups = HearthPaywallFeature(
+        "Study groups",
+        detail: "Start a group or join one with a code, and read the same plan together with family and friends.",
+        symbol: "person.3.fill"
+    )
+}
+
 // MARK: - Signing in
 
 /// Sign in with Apple for the Hearth account study groups need. Also records the Apple sign-in
@@ -171,6 +182,7 @@ struct GroupsSection: View {
 
     @State private var creating = false
     @State private var joining = false
+    @State private var showsPaywall = false
 
     var body: some View {
         let store = GroupStore.shared
@@ -182,8 +194,8 @@ struct GroupsSection: View {
                     Spacer()
                     if !store.needsAccount, !store.groups.isEmpty {
                         Menu {
-                            Button("New Group", menuIcon: "plus") { creating = true }
-                            Button("Join with Code", menuIcon: "ticket") { joining = true }
+                            Button("New Group", menuIcon: "plus") { startCreating() }
+                            Button("Join with Code", menuIcon: "ticket") { startJoining() }
                         } label: {
                             Label("Add Group", systemImage: "plus")
                                 .labelStyle(.iconOnly)
@@ -223,7 +235,18 @@ struct GroupsSection: View {
             .sheet(isPresented: $joining) {
                 JoinGroupSheet(code: nil)
             }
+            .hearthPaywall(isPresented: $showsPaywall, feature: HearthPaywallFeature.studyGroups)
         }
+    }
+
+    /// Starting a group needs Hearken Plus or Hearth+.
+    private func startCreating() {
+        if HearthPurchases.shared.isUnlocked { creating = true } else { showsPaywall = true }
+    }
+
+    /// Joining one does too (an invite link still shows who's inviting first: JoinGroupSheet).
+    private func startJoining() {
+        if HearthPurchases.shared.isUnlocked { joining = true } else { showsPaywall = true }
     }
 
     private var emptyCard: some View {
@@ -246,14 +269,14 @@ struct GroupsSection: View {
     }
 
     private var startButton: some View {
-        Button { creating = true } label: {
+        Button { startCreating() } label: {
             Label("Start a Group", systemImage: "plus").font(.subheadline.weight(.semibold)).frame(maxWidth: .infinity)
         }
         .buttonStyle(.glassProminent)
     }
 
     private var joinButton: some View {
-        Button { joining = true } label: {
+        Button { startJoining() } label: {
             Label("Join with Code", systemImage: "ticket").font(.subheadline.weight(.semibold)).frame(maxWidth: .infinity)
         }
         .buttonStyle(.glass)
@@ -352,6 +375,7 @@ struct CreateGroupSheet: View {
     @State private var working = false
     @State private var errorMessage: String?
     @State private var createdID: String?
+    @State private var showsPaywall = false
 
     private static let symbols = ["house.fill", "person.3.fill", "book.fill", "flame.fill", "leaf.fill", "star.fill", "heart.fill", "sun.max.fill"]
 
@@ -379,6 +403,7 @@ struct CreateGroupSheet: View {
             }
         }
         .tint(Accent.color)
+        .hearthPaywall(isPresented: $showsPaywall, feature: HearthPaywallFeature.studyGroups)
         .onAppear {
             if let defaultPlanID, defaultPlanID == ReadingPlan.customID ? customPlan != nil : ReadingPlanCatalog.plans.contains(where: { $0.id == defaultPlanID }) {
                 planID = defaultPlanID
@@ -450,6 +475,8 @@ struct CreateGroupSheet: View {
             )
             withAnimation(.snappy) { createdID = id }
             _ = await PlanReminders.requestPermission()
+        } catch where GroupStore.needsPlan(error) {
+            showsPaywall = true
         } catch {
             errorMessage = GroupStore.describe(error, action: "create the group")
         }
@@ -536,6 +563,7 @@ struct JoinGroupSheet: View {
     @State private var looking = false
     @State private var joining = false
     @State private var errorMessage: String?
+    @State private var showsPaywall = false
 
     var body: some View {
         NavigationStack {
@@ -574,6 +602,7 @@ struct JoinGroupSheet: View {
             }
         }
         .tint(Accent.color)
+        .hearthPaywall(isPresented: $showsPaywall, feature: HearthPaywallFeature.studyGroups)
         .task(id: "\(code ?? "")|\(HearthConnection.shared.isConnected)") {
             if let code, HearthConnection.shared.isConnected { await look(up: code) }
         }
@@ -705,10 +734,17 @@ struct JoinGroupSheet: View {
                 GroupStore.shared.openGroupID = preview.groupId
                 GroupStore.shared.pendingInviteCode = nil
             } else {
+                // Joining needs Hearken Plus or Hearth+; the invite stays open behind the paywall.
+                guard HearthPurchases.shared.isUnlocked else {
+                    showsPaywall = true
+                    return
+                }
                 try await GroupStore.shared.join(code: code)
                 _ = await PlanReminders.requestPermission()
             }
             dismiss()
+        } catch where GroupStore.needsPlan(error) {
+            showsPaywall = true
         } catch {
             errorMessage = GroupStore.describe(error)
         }

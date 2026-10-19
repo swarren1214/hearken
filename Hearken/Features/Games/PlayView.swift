@@ -14,6 +14,9 @@ struct PlayView: View {
     @Query private var grants: [RankGrant]
     @State private var activeGame: GameRequest?
     @State private var mapQuest: MapQuestCategory?
+    /// Quick Play and Map Quest need Hearken Plus or Hearth+; the Daily Challenge and Spaced
+    /// Review are always free.
+    @State private var showsPaywall = false
     /// Quick Play cards grow with the text size, up to most of the screen's width.
     @ScaledMetric(relativeTo: .subheadline) private var quickPlayWidth: CGFloat = 140
 
@@ -65,6 +68,21 @@ struct PlayView: View {
         }
         .fullScreenCover(item: $activeGame) { GameView(request: $0) }
         .fullScreenCover(item: $mapQuest) { MapQuestView(category: $0) }
+        .hearthPaywall(isPresented: $showsPaywall, feature: HearthPaywallFeature(
+            "Every game",
+            detail: "Quick Play and Map Quest, and each new game as it arrives. The Daily Challenge and Spaced Review stay free.",
+            symbol: "gamecontroller.fill"
+        ))
+    }
+
+    private var gamesUnlocked: Bool { HearthPurchases.shared.isUnlocked }
+
+    /// A small lock on a game card that needs Hearken Plus or Hearth+.
+    private func lockBadge(onColor: Bool) -> some View {
+        Image(systemName: "lock.fill")
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(onColor ? AnyShapeStyle(.white) : AnyShapeStyle(.secondary))
+            .accessibilityLabel("Needs Hearken Plus or Hearth+")
     }
 
     // MARK: Map Quest
@@ -92,13 +110,17 @@ struct PlayView: View {
             .max()
 
         return Button {
-            mapQuest = category
+            if gamesUnlocked { mapQuest = category } else { showsPaywall = true }
         } label: {
             VStack(alignment: .leading, spacing: 12) {
-                Image(systemName: category.symbol)
-                    .font(.title2)
-                    .frame(width: 44, height: 44)
-                    .background(.white.opacity(0.2), in: .rect(cornerRadius: 12))
+                HStack(alignment: .top) {
+                    Image(systemName: category.symbol)
+                        .font(.title2)
+                        .frame(width: 44, height: 44)
+                        .background(.white.opacity(0.2), in: .rect(cornerRadius: 12))
+                    Spacer(minLength: 0)
+                    if !gamesUnlocked { lockBadge(onColor: true) }
+                }
                 VStack(alignment: .leading, spacing: 3) {
                     Text(category.title)
                         .font(.headline)
@@ -231,13 +253,19 @@ struct PlayView: View {
                 HStack(spacing: 10) {
                     ForEach(modes) { mode in
                         Button {
+                            guard gamesUnlocked else {
+                                showsPaywall = true
+                                return
+                            }
                             activeGame = GameRequest(title: mode.name, kind: .review, subjectID: nil, questions: Array(content.questions.shuffled().prefix(10)))
                         } label: {
                             VStack(alignment: .leading, spacing: 10) {
                                 HStack(alignment: .top) {
                                     SymbolTile(systemName: mode.symbol, size: 38)
                                     Spacer()
-                                    if !mode.available {
+                                    if mode.available, !gamesUnlocked {
+                                        lockBadge(onColor: false)
+                                    } else if !mode.available {
                                         Text("Soon")
                                             .font(.caption2.weight(.semibold))
                                             .foregroundStyle(.secondary)

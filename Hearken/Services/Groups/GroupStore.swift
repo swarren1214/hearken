@@ -702,6 +702,13 @@ final class GroupStore {
         return trimmed.isEmpty ? Self.initials(name) : String(trimmed.prefix(3))
     }
 
+    /// The server wants Hearken Plus or Hearth+ for this (starting or joining a group): show the
+    /// paywall instead of an error. Members can always read the groups they're already in.
+    static func needsPlan(_ error: Error) -> Bool {
+        guard let error = error as? HearthAPI.APIError else { return false }
+        return error.status == 402 || error.code == "ENTITLEMENT_REQUIRED"
+    }
+
     /// A plain message for people; the detail goes to the log.
     static func describe(_ error: Error, action: String = "load") -> String {
         Logger(subsystem: "com.stephenwarren.hearken", category: "groups")

@@ -31,6 +31,10 @@ struct SettingsView: View {
     @State private var tipsReset = false
     /// The sign-in another Hearth app shared, offered as "Continue as <name>".
     @State private var sharedSignIn: HearthSharedAppleID?
+    /// The tip being bought, for its button's spinner.
+    @State private var tipping: String?
+    @State private var tipThanks = false
+    @State private var tipPending = false
     private var hearth: HearthLink { HearthLink.shared }
 
     var body: some View {
@@ -173,6 +177,8 @@ struct SettingsView: View {
                 }
             }
 
+            supportSection
+
             Section("About") {
                 LabeledContent("Version", value: Bundle.main.appVersion)
                 Link("Terms of Use", destination: AppConfig.termsURL)
@@ -205,6 +211,16 @@ struct SettingsView: View {
             Button("Cancel", role: .cancel) {}
         } message: {
             Text("This also signs you out of your other Hearth apps on this iPhone. Your notes, highlights and progress stay on this device and in iCloud.")
+        }
+        .alert("Thank you!", isPresented: $tipThanks) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Your tip helps keep Hearken free for everyone who studies with it, with no ads. It means a lot.")
+        }
+        .alert("Waiting for Approval", isPresented: $tipPending) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Your tip will go through once it's approved. Thank you for thinking of Hearken.")
         }
         .alert("Something went wrong", isPresented: Binding(get: { errorMessage != nil }, set: { if !$0 { errorMessage = nil } })) {
             Button("OK", role: .cancel) {}
@@ -285,7 +301,20 @@ struct SettingsView: View {
                 }
             }
         } header: {
-            Text("Account")
+            HStack {
+                Text("Account")
+                Spacer()
+                // "HEARTH+" or "HEARKEN PLUS" beside the signed-in person.
+                if account.isSignedIn { HearthMemberBadge() }
+            }
+        }
+
+        Section {
+            HearthMembershipRow()
+        } header: {
+            Text("Membership")
+        } footer: {
+            Text("Reading, study, quizzes, Explain and your own notes are always free. Plus adds Listen, study groups, more games and your own books.")
         }
 
         Section("iCloud") {
@@ -323,6 +352,61 @@ struct SettingsView: View {
                 .listRowInsets(EdgeInsets())
                 .listRowBackground(Color.clear)
             }
+        }
+    }
+
+    // MARK: Tips
+
+    /// One-time tips, for people who'd like to give something. Hidden when there are none to offer.
+    @ViewBuilder
+    private var supportSection: some View {
+        let tips = HearthPurchases.shared.tips
+        if !tips.isEmpty {
+            Section {
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: 10) { tipButtons(tips) }
+                    VStack(spacing: 10) { tipButtons(tips) }
+                }
+                .padding(.vertical, 4)
+            } header: {
+                Text("Support Hearken")
+            } footer: {
+                Text("A one-time tip helps keep Hearken growing and free to read. It doesn't unlock anything, just our thanks.")
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func tipButtons(_ tips: [HearthPlan]) -> some View {
+        ForEach(tips) { tip in
+            Button {
+                Task { await buy(tip) }
+            } label: {
+                Group {
+                    if tipping == tip.id {
+                        ProgressView()
+                    } else {
+                        Text(tip.price).monospacedDigit()
+                    }
+                }
+                .font(.headline)
+                .frame(maxWidth: .infinity, minHeight: 28)
+            }
+            .buttonStyle(.glass)
+            .tint(Accent.color)
+            .disabled(tipping != nil)
+            .accessibilityLabel("Tip \(tip.price)")
+        }
+    }
+
+    private func buy(_ tip: HearthPlan) async {
+        tipping = tip.id
+        defer { tipping = nil }
+        switch await HearthPurchases.shared.purchase(tip) {
+        case .purchased: tipThanks = true
+        case .pending: tipPending = true
+        case .cancelled: break
+        case .failed(let message): errorMessage = message
         }
     }
 

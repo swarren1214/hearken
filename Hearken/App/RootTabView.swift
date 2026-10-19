@@ -140,6 +140,12 @@ struct RootTabView: View {
         .onChange(of: importer.addedToken) {
             selection = .scriptures
         }
+        // Importing books needs Hearken Plus or Hearth+.
+        .hearthPaywall(isPresented: $importer.paywallRequested, feature: HearthPaywallFeature(
+            "Your own books",
+            detail: "Bring EPUBs and PDFs into your Library and read them with highlights, notes and Listen.",
+            symbol: "books.vertical.fill"
+        ))
         // A "book is ready" notification: open the book.
         .onChange(of: navigator.pendingBookID, initial: true) { _, bookID in
             guard let bookID else { return }

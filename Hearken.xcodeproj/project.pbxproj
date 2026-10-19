@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		4E4B00000000000000000105 /* KokoroSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 4E4B00000000000000000103 /* KokoroSwift */; };
 		4E4B00000000000000000106 /* MLX in Frameworks */ = {isa = PBXBuildFile; productRef = 4E4B00000000000000000104 /* MLX */; };
+		ADE3B94DDF2E64A78BC4507B /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = BCFC66DB393F55C09B0D5BC5 /* RevenueCat */; };
 		D832485B3079D80E002B3903 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D832485A3079D80E002B3903 /* WidgetKit.framework */; };
 		D832485D3079D80E002B3903 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D832485C3079D80E002B3903 /* SwiftUI.framework */; };
 		D83248683079D810002B3903 /* HearkenWidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D83248583079D80E002B3903 /* HearkenWidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -165,6 +166,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ADE3B94DDF2E64A78BC4507B /* RevenueCat in Frameworks */,
 				4E4B00000000000000000105 /* KokoroSwift in Frameworks */,
 				4E4B00000000000000000106 /* MLX in Frameworks */,
 			);
@@ -269,6 +271,7 @@
 			);
 			name = Hearken;
 			packageProductDependencies = (
+				BCFC66DB393F55C09B0D5BC5 /* RevenueCat */,
 				4E4B00000000000000000103 /* KokoroSwift */,
 				4E4B00000000000000000104 /* MLX */,
 			);
@@ -405,6 +408,7 @@
 			mainGroup = 4E4B00000000000000000002;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				1CFA3096E99E10989AC761CE /* XCRemoteSwiftPackageReference "purchases-ios-spm" */,
 				4E4B00000000000000000101 /* XCLocalSwiftPackageReference "Packages/KokoroSwift" */,
 				4E4B00000000000000000102 /* XCRemoteSwiftPackageReference "mlx-swift" */,
 			);
@@ -1146,6 +1150,14 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		1CFA3096E99E10989AC761CE /* XCRemoteSwiftPackageReference "purchases-ios-spm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RevenueCat/purchases-ios-spm";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
 		4E4B00000000000000000102 /* XCRemoteSwiftPackageReference "mlx-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/ml-explore/mlx-swift";
@@ -1166,6 +1178,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 4E4B00000000000000000102 /* XCRemoteSwiftPackageReference "mlx-swift" */;
 			productName = MLX;
+		};
+		BCFC66DB393F55C09B0D5BC5 /* RevenueCat */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1CFA3096E99E10989AC761CE /* XCRemoteSwiftPackageReference "purchases-ios-spm" */;
+			productName = RevenueCat;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

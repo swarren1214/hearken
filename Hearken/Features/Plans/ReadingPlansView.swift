@@ -347,6 +347,7 @@ struct PlanDetailView: View {
     @State private var month = Date.now
     @State private var confirmEnd = false
     @State private var creatingGroup = false
+    @State private var showsGroupPaywall = false
 
     var body: some View {
         let read = PlanReading.readSet(progress)
@@ -373,7 +374,10 @@ struct PlanDetailView: View {
                         CheckMenu([
                             CheckMenuItem.button("Reschedule", systemImage: "calendar.badge.clock", isDisabled: state.daysBehind == 0) { reschedule(state) },
                             CheckMenuItem.toggle("Daily Reminder", systemImage: "bell", isOn: reminderBinding),
-                        ] + (AppConfig.cloudSyncEnabled ? [CheckMenuItem.button("Read with Others", systemImage: "person.3") { creatingGroup = true }] : []) + [
+                        ] + (AppConfig.cloudSyncEnabled ? [CheckMenuItem.button("Read with Others", systemImage: "person.3") {
+                            // Starting a group needs Hearken Plus or Hearth+.
+                            if HearthPurchases.shared.isUnlocked { creatingGroup = true } else { showsGroupPaywall = true }
+                        }] : []) + [
                             CheckMenuItem.divider,
                             CheckMenuItem.button("End Plan", systemImage: "xmark.circle", role: .destructive) { confirmEnd = true },
                         ]) {
@@ -391,6 +395,7 @@ struct PlanDetailView: View {
         .sheet(isPresented: $creatingGroup) {
             CreateGroupSheet(defaultPlanID: enrollment.planID, customPlan: ReadingPlanCatalog.plan(for: enrollment).flatMap { $0.isCustom ? $0 : nil })
         }
+        .hearthPaywall(isPresented: $showsGroupPaywall, feature: HearthPaywallFeature.studyGroups)
         .alert("End this plan?", isPresented: $confirmEnd) {
             Button("End Plan", role: .destructive) {
                 enrollment.endedAt = .now

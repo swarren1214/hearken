@@ -14,6 +14,10 @@ enum AppConfig {
     nonisolated static let supabaseURL = URL(string: "https://kvhvsztvfpydhfpzicyy.supabase.co")!
     nonisolated static let supabasePublishableKey = "sb_publishable_j0eyoaQiN3fogFINKooaDA_V0yjXkgY"
 
+    /// RevenueCat's public SDK key for Hearken (Hearken Plus, Hearth+ and tips). The same key in
+    /// Debug. Until the real `appl_…` key is filled in, purchases stay off (see `HearkenApp`).
+    nonisolated static let revenueCatAPIKey = "appl_lwbZGMslpUCfXbmaXsSrZUdMbss"
+
     static let termsURL = URL(string: "http://hearkenstudy.com/terms.html")!
     static let privacyURL = URL(string: "http://hearkenstudy.com/privacy.html")!
     static let supportURL = URL(string: "http://hearkenstudy.com/support.html")!
