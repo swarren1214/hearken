@@ -59,49 +59,91 @@ struct ReaderRoute: Hashable {
     let chapterID: String
 }
 
-/// Shows plan reminders while the app is open, and opens the chapter when one is tapped.
+/// Shows plan reminders while the app is open, and opens what a tapped notification is about.
+///
+/// Uses the completion-handler forms of the delegate methods, and calls the handlers on the
+/// main thread. With the async forms, Swift calls UIKit's completion handler from whatever
+/// thread the work finished on; UIKit's handler then updates the app snapshot off the main
+/// thread and aborts (build 27: a tapped notification launching Hearken crashed it).
 final class NotificationRouter: NSObject, UNUserNotificationCenterDelegate, @unchecked Sendable {
     static let shared = NotificationRouter()
 
-    nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
-        let info = response.notification.request.content.userInfo
+    /// What a tapped notification asks for, read from it up front so only plain values cross
+    /// to the main actor.
+    private enum Tap: Sendable {
+        case reviewAnswer(questionID: String, picked: Int, correctIndex: Int, options: [String], explanation: String, reference: String)
+        case book(String)
+        case group(id: String, kind: String?, targetType: String?, targetID: String?)
+        case legacyGroup(String)
+        case chapter(String)
+        case none
+    }
+
+    nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse,
+                                            withCompletionHandler completionHandler: @escaping () -> Void) {
+        let tap = Self.tap(info: response.notification.request.content.userInfo, action: response.actionIdentifier)
+        nonisolated(unsafe) let done = completionHandler
+        Task { @MainActor in
+            await Self.handle(tap)
+            done()
+        }
+    }
+
+    nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification,
+                                            withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        let isGroup = notification.request.content.userInfo["hearken"] != nil
+        nonisolated(unsafe) let done = completionHandler
+        Task { @MainActor in
+            // Show it first; a study group notification then brings the group up to date.
+            done([.banner, .sound])
+            if isGroup { await GroupStore.shared.refresh() }
+        }
+    }
+
+    private nonisolated static func tap(info: [AnyHashable: Any], action: String) -> Tap {
         // An answer button on a review question (Settings › Review Questions), on iPhone or Apple Watch.
         if let questionID = info[ReviewNotifications.Key.questionID] as? String {
-            let action = response.actionIdentifier
             guard action.hasPrefix(ReviewNotifications.actionPrefix),
                   let picked = Int(action.dropFirst(ReviewNotifications.actionPrefix.count))
-            else { return } // Tapped rather than answered: just open the app.
-            let correctIndex = info[ReviewNotifications.Key.answer] as? Int ?? -1
-            let options = info[ReviewNotifications.Key.options] as? [String] ?? []
-            let explanation = info[ReviewNotifications.Key.explanation] as? String ?? ""
-            let reference = info[ReviewNotifications.Key.reference] as? String ?? ""
+            else { return .none } // Tapped rather than answered: just open the app.
+            return .reviewAnswer(
+                questionID: questionID, picked: picked,
+                correctIndex: info[ReviewNotifications.Key.answer] as? Int ?? -1,
+                options: info[ReviewNotifications.Key.options] as? [String] ?? [],
+                explanation: info[ReviewNotifications.Key.explanation] as? String ?? "",
+                reference: info[ReviewNotifications.Key.reference] as? String ?? ""
+            )
+        }
+        if let bookID = info["bookID"] as? String { return .book(bookID) }
+        if let hearken = info["hearken"] as? [String: Any], let groupID = hearken["groupId"] as? String {
+            // A study group notification (from the Hearth API): open what it's about.
+            return .group(id: groupID, kind: hearken["kind"] as? String,
+                          targetType: hearken["targetType"] as? String, targetID: hearken["targetId"] as? String)
+        }
+        if let groupID = info["groupID"] as? String { return .legacyGroup(groupID) }
+        if let chapterID = info["chapterID"] as? String { return .chapter(chapterID) }
+        return .none
+    }
+
+    @MainActor
+    private static func handle(_ tap: Tap) async {
+        switch tap {
+        case let .reviewAnswer(questionID, picked, correctIndex, options, explanation, reference):
             await ReviewNotifications.answer(
                 questionID: questionID, picked: picked, correctIndex: correctIndex,
                 options: options, explanation: explanation, reference: reference
             )
-            return
+        case .book(let bookID):
+            AppNavigator.shared.pendingBookID = bookID
+        case let .group(id, kind, targetType, targetID):
+            GroupStore.shared.open(groupID: id, kind: kind, targetType: targetType, targetID: targetID)
+        case .legacyGroup(let groupID):
+            GroupStore.shared.openGroupID = groupID
+        case .chapter(let chapterID):
+            AppNavigator.shared.open(chapterID: chapterID)
+        case .none:
+            break
         }
-        if let bookID = info["bookID"] as? String {
-            await MainActor.run { AppNavigator.shared.pendingBookID = bookID }
-        } else if let hearken = info["hearken"] as? [String: Any], let groupID = hearken["groupId"] as? String {
-            // A study group notification (from the Hearth API): open what it's about.
-            let kind = hearken["kind"] as? String
-            let targetType = hearken["targetType"] as? String
-            let targetID = hearken["targetId"] as? String
-            await MainActor.run { GroupStore.shared.open(groupID: groupID, kind: kind, targetType: targetType, targetID: targetID) }
-        } else if let groupID = info["groupID"] as? String {
-            await MainActor.run { GroupStore.shared.openGroupID = groupID }
-        } else if let chapterID = info["chapterID"] as? String {
-            await MainActor.run { AppNavigator.shared.open(chapterID: chapterID) }
-        }
-    }
-
-    nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification) async -> UNNotificationPresentationOptions {
-        // A study group notification while Hearken is open: bring the group up to date too.
-        if notification.request.content.userInfo["hearken"] != nil {
-            await GroupStore.shared.refresh()
-        }
-        return [.banner, .sound]
     }
 }
 

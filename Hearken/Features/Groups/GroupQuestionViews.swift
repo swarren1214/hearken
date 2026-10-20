@@ -9,6 +9,9 @@ struct QuestionCard: View {
     let onAnswer: () -> Void
     let onOpen: () -> Void
 
+    @State private var reporting: GroupReportTarget?
+    @State private var blocking: GroupBlockTarget?
+
     var body: some View {
         let me = GroupStore.shared.myUserID
         let answered = question.myAnswer != nil || (me.map(question.answeredUserIDs.contains) ?? false)
@@ -57,6 +60,14 @@ struct QuestionCard: View {
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color(.secondarySystemGroupedBackground), in: .rect(cornerRadius: 22))
+        .contextMenu {
+            if question.authorID != me, me != nil {
+                Button("Report…", menuIcon: "exclamationmark.bubble") {
+                    reporting = GroupReportTarget(kind: .question, targetID: question.id, groupID: group.id)
+                }
+            }
+        }
+        .groupSafety(reporting: $reporting, blocking: $blocking)
     }
 
     private func status(answered: Bool) -> String {
@@ -399,6 +410,8 @@ struct QuestionDetailView: View {
     let groupID: String
 
     @State private var answering: GroupStore.Question?
+    @State private var reporting: GroupReportTarget?
+    @State private var blocking: GroupBlockTarget?
 
     var body: some View {
         let store = GroupStore.shared
@@ -450,6 +463,7 @@ struct QuestionDetailView: View {
             .sheet(item: $answering) { question in
                 AnswerSheet(groupID: groupID, question: question)
             }
+            .groupSafety(reporting: $reporting, blocking: $blocking)
         } else {
             ContentUnavailableView("No Question This Week", systemImage: "questionmark.bubble",
                                    description: Text("When the group's owner or a leader asks one, it shows here."))
@@ -481,6 +495,13 @@ struct QuestionDetailView: View {
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color(.secondarySystemGroupedBackground), in: .rect(cornerRadius: 22))
+        .contextMenu {
+            if question.authorID != me, me != nil {
+                Button("Report…", menuIcon: "exclamationmark.bubble") {
+                    reporting = GroupReportTarget(kind: .question, targetID: question.id, groupID: group.id)
+                }
+            }
+        }
     }
 
     private func footnote(_ question: GroupStore.Question, missing: [GroupStore.Member]) -> String {
@@ -523,6 +544,9 @@ struct AnswerCard: View {
     /// Earlier questions show answers without reacting or replying.
     var interactive = true
 
+    @State private var reporting: GroupReportTarget?
+    @State private var blocking: GroupBlockTarget?
+
     var body: some View {
         let mine = answer.userID == me
         VStack(alignment: .leading, spacing: 8) {
@@ -564,6 +588,17 @@ struct AnswerCard: View {
         .overlay {
             if mine { RoundedRectangle(cornerRadius: 20).strokeBorder(Accent.color.opacity(0.35), lineWidth: 2) }
         }
+        .contextMenu {
+            if !mine, me != nil {
+                Button("Report…", menuIcon: "exclamationmark.bubble") {
+                    reporting = GroupReportTarget(kind: .answer, targetID: answer.id, groupID: group.id)
+                }
+                Button("Block \(groupFirstName(answer.authorName))", menuIcon: "hand.raised", role: .destructive) {
+                    blocking = GroupBlockTarget(userID: answer.userID, name: answer.authorName)
+                }
+            }
+        }
+        .groupSafety(reporting: $reporting, blocking: $blocking)
     }
 }
 
@@ -632,7 +667,7 @@ struct EarlierQuestionsView: View {
             .accessibilityHint(open ? "Hides the answers" : "Shows the answers")
             if open {
                 if question.answersVisible {
-                    ForEach(question.answers) { answer in
+                    ForEach(question.answers.filter { !GroupStore.shared.isBlocked($0.userID) }) { answer in
                         AnswerCard(answer: answer, group: group, me: me, interactive: false)
                     }
                 } else {

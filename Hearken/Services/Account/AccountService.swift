@@ -6,7 +6,9 @@ import OSLog
 import SwiftData
 
 /// Sign in with Apple is the only way to sign in. The Apple user ID is kept in the
-/// Keychain; the user's data itself lives in their own iCloud (see AppConfig).
+/// Keychain. The user's study data (notes, highlights, plans, progress) lives in their own
+/// iCloud (see AppConfig); study groups and the Hearth account they need live on Hearth's
+/// server (`HearthAPI`, api.hearthapps.com).
 ///
 /// The sign-in is shared with the other Hearth apps on this device (`HearthAccounts.appleID()`;
 /// Apple's user ID is the same in every app from the same team): Hearken can continue as the
@@ -22,12 +24,19 @@ final class AccountService {
         case unexpectedCredential
         case couldNotSave
         case sharedSignInExpired
+        /// The server refused to delete the account: the person still manages a BigTable
+        /// household with other people in it.
+        case householdHasMembers
+        /// Deleting the Hearth account failed; nothing was deleted.
+        case deleteFailed(String)
 
         var errorDescription: String? {
             switch self {
             case .unexpectedCredential: "Sign in with Apple returned an unexpected credential."
             case .couldNotSave: "Your sign-in couldn't be saved on this device. Please try again."
             case .sharedSignInExpired: "That sign-in is no longer valid. Please sign in with Apple instead."
+            case .householdHasMembers: "Remove the other people from your household in BigTable first."
+            case .deleteFailed(let message): message
             }
         }
     }
@@ -117,7 +126,8 @@ final class AccountService {
             return
         }
         HearthLink.shared.start(account: self)
-        guard let userID = KeychainStore.read(Keys.userID) else {
+        // Off the main thread: at launch this used to block the main thread on securityd.
+        guard let userID = await KeychainStore.readOffMain(Keys.userID) else {
             log.info("refresh: no saved Apple user ID, signed out")
             status = .signedOut
             HearthLink.shared.update()
@@ -149,7 +159,7 @@ final class AccountService {
             status = .signedIn
         }
         #endif
-        followSharedSignIn()
+        await followSharedSignIn(userID: userID)
         HearthLink.shared.update()
         await refreshICloudStatus()
     }
@@ -246,12 +256,18 @@ final class AccountService {
 
     /// Keeps Hearken's sign-in and the shared one together: shares a sign-in made before the
     /// apps shared one, picks up a name only another app got from Apple, and signs out here
-    /// when another Hearth app signed out everywhere. Runs on launch, on returning to the
-    /// foreground and whenever another app writes.
-    func followSharedSignIn() {
-        guard !ScreenshotMode.isOn, isSignedIn, let userID = KeychainStore.read(Keys.userID) else { return }
+    /// when another Hearth app signed out everywhere. Runs from `refresh()`, on launch and on
+    /// returning to the foreground.
+    ///
+    /// `userID` is the one `refresh()` just read. The shared sign-in is read off the main thread
+    /// (it's in the shared Keychain too).
+    private func followSharedSignIn(userID: String) async {
+        guard !ScreenshotMode.isOn, isSignedIn else { return }
+        let shared = await Task.detached(priority: .userInitiated) { HearthAccounts.appleID() }.value
+        // Signed out while that was being read: nothing to follow.
+        guard isSignedIn else { return }
         let wasShared = UserDefaults.standard.bool(forKey: Keys.sharedSignIn)
-        switch HearthAccounts.appleID() {
+        switch shared {
         case let shared? where shared.userID == userID:
             if !wasShared { UserDefaults.standard.set(true, forKey: Keys.sharedSignIn) }
             if displayName == nil, let name = shared.fullName, !name.isEmpty {
@@ -322,17 +338,66 @@ final class AccountService {
         HearthAccounts.signOutEverywhere()
     }
 
-    /// Deletes everything the app stores for this user and signs out.
+    /// Settings › Delete Account (signed in) or Delete All Data (signed out).
     ///
-    /// Still to do (see the plan's Open questions): revoke the Sign in with Apple token
-    /// through the small revocation endpoint, and delete the user's CloudKit zone once sync is on.
-    func deleteAccount(context: ModelContext) throws {
-        try Persistence.eraseAll(in: context)
+    /// Signed in: first deletes the Hearth account on the server (`DELETE /v1/me`), which removes
+    /// it for every Hearth app, along with what this person wrote in study groups (groups they own
+    /// pass to another member). If that fails nothing is deleted and the error is thrown. Then
+    /// erases Hearken's data here and in iCloud, and signs out of every Hearth app on this device.
+    ///
+    /// Signed out: erases Hearken's data here and in iCloud only; nothing is sent anywhere.
+    func deleteAccount(context: ModelContext) async throws {
+        let deletingAccount = isSignedIn && !ScreenshotMode.isOn
+        if deletingAccount {
+            do {
+                _ = try await HearthAPI.shared.data("DELETE", "/v1/me")
+                log.info("deleteAccount: Hearth account deleted")
+                // The session belongs to the deleted account: forget it before anything else
+                // (such as turning off the push token) tries to use it.
+                await HearthAPI.shared.signOut()
+            } catch HearthAPI.ClientError.notConnected {
+                // No Hearth session on this device (signed in with Apple before study groups, or
+                // never connected): there's no server account this device can reach.
+                log.notice("deleteAccount: no Hearth session, deleting local data only")
+            } catch {
+                log.error("deleteAccount: server deletion failed: \(String(describing: error), privacy: .public)")
+                throw Self.deletionError(error)
+            }
+        }
+        var eraseError: (any Error)?
+        do {
+            try Persistence.eraseAll(in: context)
+        } catch {
+            eraseError = error
+        }
         UserDefaults.standard.removeObject(forKey: Keys.displayName)
         UserDefaults.standard.removeObject(forKey: Keys.email)
         displayName = nil
         email = nil
         setAvatar(nil)
-        if isSignedIn { signOutEverywhere() } else { signOut() }
+        if deletingAccount {
+            GroupStore.shared.forget()
+            signOutEverywhere()
+        } else if isSignedIn {
+            signOut()
+        }
+        if let eraseError { throw eraseError }
+    }
+
+    /// A readable message for a failed account deletion.
+    private static func deletionError(_ error: any Error) -> AccountError {
+        if let error = error as? HearthAPI.APIError {
+            if error.code == "HOUSEHOLD_HAS_MEMBERS" { return .householdHasMembers }
+            return .deleteFailed(error.status >= 500
+                                 ? "Hearth is having trouble right now, so your account wasn't deleted. Try again in a moment."
+                                 : error.message)
+        }
+        if GroupOutbox.isOffline(error) {
+            return .deleteFailed("You're offline, so your account wasn't deleted. Try again when you're back online.")
+        }
+        if let error = error as? HearthAPI.ClientError, let message = error.errorDescription {
+            return .deleteFailed(message)
+        }
+        return .deleteFailed("Your account couldn't be deleted right now. Try again in a moment.")
     }
 }

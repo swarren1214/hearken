@@ -1029,6 +1029,8 @@ struct GroupItemCard: View {
     var showsReplies = true
 
     @Environment(ContentService.self) private var content
+    @State private var reporting: GroupReportTarget?
+    @State private var blocking: GroupBlockTarget?
 
     var body: some View {
         let mine = item.authorID == me
@@ -1079,6 +1081,14 @@ struct GroupItemCard: View {
         .padding(16)
         .background(Color(.secondarySystemGroupedBackground), in: .rect(cornerRadius: 20))
         .contextMenu {
+            if !mine, me != nil {
+                Button("Report…", menuIcon: "exclamationmark.bubble") {
+                    reporting = GroupReportTarget(kind: .post, targetID: item.id, groupID: group.id)
+                }
+                Button("Block \(groupFirstName(item.authorName))", menuIcon: "hand.raised", role: .destructive) {
+                    blocking = GroupBlockTarget(userID: item.authorID, name: item.authorName)
+                }
+            }
             if mine || group.canModerate {
                 Button(role: .destructive) {
                     Task { await GroupStore.shared.delete(item, from: group) }
@@ -1088,6 +1098,7 @@ struct GroupItemCard: View {
             }
         }
         .tint(Color.primary)
+        .groupSafety(reporting: $reporting, blocking: $blocking)
     }
 
     private var reactions: some View {
@@ -1199,6 +1210,8 @@ private struct GroupMembersSheet: View {
     @State private var errorMessage: String?
     @State private var confirmReset = false
     @State private var removing: GroupStore.Member?
+    @State private var reporting: GroupReportTarget?
+    @State private var blocking: GroupBlockTarget?
 
     var body: some View {
         let store = GroupStore.shared
@@ -1263,6 +1276,7 @@ private struct GroupMembersSheet: View {
             } message: {
                 Text("They'll stop seeing the group. What they shared stays.")
             }
+            .groupSafety(reporting: $reporting, blocking: $blocking)
         }
         .tint(Accent.color)
     }
@@ -1274,21 +1288,40 @@ private struct GroupMembersSheet: View {
             MemberAvatar(name: member.name, initials: member.initials, size: 36)
             VStack(alignment: .leading, spacing: 2) {
                 Text(member.userID == me ? "\(member.name) (You)" : member.name)
-                Text(member.pending ? "Still on the iCloud version" : member.role.title)
+                Text(member.pending ? "Still on the iCloud version"
+                     : GroupStore.shared.isBlocked(member.userID) ? "\(member.role.title) · Blocked" : member.role.title)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
             Spacer(minLength: 0)
-            if group.isOwner, member.userID != me, !member.pending {
+            if member.userID != me, me != nil, !member.pending {
                 Menu {
-                    if member.role == .leader {
-                        Button("Make Member", menuIcon: "person") { Task { await setRole(.member, member) } }
-                    } else {
-                        Button("Make Leader", menuIcon: "star") { Task { await setRole(.leader, member) } }
+                    if group.isOwner {
+                        Section {
+                            if member.role == .leader {
+                                Button("Make Member", menuIcon: "person") { Task { await setRole(.member, member) } }
+                            } else {
+                                Button("Make Leader", menuIcon: "star") { Task { await setRole(.leader, member) } }
+                            }
+                            Button("Make Owner", menuIcon: "crown") { Task { await setRole(.owner, member) } }
+                        }
                     }
-                    Button("Make Owner", menuIcon: "crown") { Task { await setRole(.owner, member) } }
+                    Section {
+                        Button("Report…", menuIcon: "exclamationmark.bubble") {
+                            reporting = GroupReportTarget(kind: .member, targetID: member.userID, groupID: group.id)
+                        }
+                        if GroupStore.shared.isBlocked(member.userID) {
+                            Button("Unblock \(member.firstName)", menuIcon: "hand.raised.slash") {
+                                Task { await unblock(member) }
+                            }
+                        } else {
+                            Button("Block \(member.firstName)", menuIcon: "hand.raised", role: .destructive) {
+                                blocking = GroupBlockTarget(userID: member.userID, name: member.name)
+                            }
+                        }
+                    }
                 } label: {
-                    Label("Role", systemImage: "ellipsis.circle").labelStyle(.iconOnly)
+                    Label(group.isOwner ? "Role and More" : "More", systemImage: "ellipsis.circle").labelStyle(.iconOnly)
                 }
                 .tint(Color.primary)
             }
@@ -1310,6 +1343,10 @@ private struct GroupMembersSheet: View {
         guard let group = GroupStore.shared.group(groupID) else { return }
         do { try await GroupStore.shared.remove(member, from: group) } catch { errorMessage = GroupStore.describe(error, action: "remove them") }
         removing = nil
+    }
+
+    private func unblock(_ member: GroupStore.Member) async {
+        do { try await GroupStore.shared.unblock(userID: member.userID) } catch { errorMessage = GroupStore.describe(error, action: "unblock them") }
     }
 
     private func resetInvite() async {

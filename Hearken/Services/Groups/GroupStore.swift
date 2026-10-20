@@ -28,6 +28,11 @@ final class GroupStore {
     private(set) var needsAccount = false
     /// iCloud groups I'm in whose owner hasn't moved them to the new study groups yet.
     private(set) var waitingGroups: [WaitingGroup] = []
+    /// People I blocked (Hearth user ids). Their posts, replies and answers are left out of
+    /// everything the groups show, here as well as on the server.
+    private(set) var blockedUserIDs: Set<String> = []
+    /// The names of people I blocked as last seen, for Settings › Blocked People.
+    private(set) var blockedNames: [String: String] = [:]
     /// An invite code from a link or the Join sheet, waiting for the person to choose Join.
     var pendingInviteCode: String?
     /// A group to open (after joining, or from a notification).
@@ -52,6 +57,7 @@ final class GroupStore {
     private let log = Logger(subsystem: "com.stephenwarren.hearken", category: "groups")
 
     init() {
+        loadBlockedFromDisk()
         loadCache()
     }
 
@@ -99,6 +105,8 @@ final class GroupStore {
             // Someone else signed in: nothing from the last person's groups stays on screen.
             groups = []
             outbox.clear()
+            blockedUserIDs = []
+            blockedNames = [:]
         }
         myUserID = me
         needsAccount = false
@@ -107,9 +115,11 @@ final class GroupStore {
             // Groups that were in iCloud move to the server the first time each member's
             // device gets here (see GroupMigration).
             waitingGroups = await GroupMigration.run(store: self)
+            // Who I've blocked, before the groups, so their content never shows.
+            await loadBlocks()
             let data = try await api.data("GET", "/v1/hearken/groups")
             let list = try GroupCoding.decoder.decode(GroupList.self, from: data)
-            groups = Self.sorted(list.items)
+            groups = Self.sorted(list.items.map { withoutBlocked($0) })
             saveCache(data, userID: me)
             lastError = nil
         } catch HearthAPI.ClientError.notConnected {
@@ -144,6 +154,7 @@ final class GroupStore {
     }
 
     private func replace(_ group: StudyGroup) {
+        let group = withoutBlocked(group)
         if let index = groups.firstIndex(where: { $0.id == group.id }) {
             groups[index] = group
         } else {
@@ -162,7 +173,7 @@ final class GroupStore {
     private func loadCache() {
         guard !ScreenshotMode.isOn, let url = Self.cacheURL, let data = try? Data(contentsOf: url),
               let list = try? GroupCoding.decoder.decode(GroupList.self, from: data) else { return }
-        groups = Self.sorted(list.items)
+        groups = Self.sorted(list.items.map { withoutBlocked($0) })
         myUserID = UserDefaults.standard.string(forKey: Self.cacheUserKey)
     }
 
@@ -452,7 +463,7 @@ final class GroupStore {
     func comments(on target: TargetType, id targetID: String, in groupID: String) async throws -> [Comment] {
         if ScreenshotMode.isOn { return Self.demoComments(target: targetID) }
         return try await send("GET", "/v1/hearken/groups/\(groupID)/comments?targetType=\(target.rawValue)&targetId=\(targetID)",
-                              as: CommentList.self).items
+                              as: CommentList.self).items.filter { !blockedUserIDs.contains($0.authorID) }
     }
 
     private nonisolated struct CommentBody: Encodable {
@@ -545,8 +556,9 @@ final class GroupStore {
             revealDemoAnswers(text, groupID: group.id)
             return
         }
-        let updated = try await send("PUT", "/v1/hearken/groups/\(group.id)/questions/\(question.id)/answer",
-                                     body: AnswerBody(body: text, authorName: Self.clean(profile.name)), as: Question.self)
+        let answered = try await send("PUT", "/v1/hearken/groups/\(group.id)/questions/\(question.id)/answer",
+                                      body: AnswerBody(body: text, authorName: Self.clean(profile.name)), as: Question.self)
+        let updated = withoutBlocked(answered)
         update(group.id) { if $0.question?.id == updated.id { $0.question = updated } }
     }
 
@@ -555,7 +567,7 @@ final class GroupStore {
     /// Every question the group has had, newest first.
     func questions(in group: StudyGroup) async throws -> [Question] {
         if ScreenshotMode.isOn { return group.question.map { [$0] } ?? [] }
-        return try await send("GET", "/v1/hearken/groups/\(group.id)/questions", as: QuestionList.self).items
+        return try await send("GET", "/v1/hearken/groups/\(group.id)/questions", as: QuestionList.self).items.map { withoutBlocked($0) }
     }
 
     // MARK: Notifications
@@ -640,30 +652,165 @@ final class GroupStore {
         await sendPushToken()
     }
 
-    /// Delete Account: hands owned groups on and removes everything I wrote, then forgets the
-    /// groups on this device.
-    func deleteMyData() async {
-        if !ScreenshotMode.isOn {
-            do {
-                try await send("DELETE", "/v1/hearken/me")
-            } catch {
-                log.error("delete my data failed: \(String(describing: error), privacy: .public)")
-            }
-        }
-        forget()
-    }
+    // Delete Account calls `DELETE /v1/me` (AccountService.deleteAccount), which also does the
+    // study group cleanup (owned groups pass to another member; what I wrote is removed), then
+    // `forget()` here.
 
-    /// Signed out: nothing from this person's groups stays on the device.
+    /// Signed out (or the account was deleted): nothing from this person's groups stays on the device.
     func forget() {
         groups = []
         myUserID = nil
         outbox.clear()
         clearCache()
+        blockedUserIDs = []
+        blockedNames = [:]
+        UserDefaults.standard.removeObject(forKey: Self.blockedKey)
+        UserDefaults.standard.removeObject(forKey: Self.blockedNamesKey)
     }
 
-    /// Kept for Settings › Delete Account.
-    func leaveAll() async {
-        await deleteMyData()
+    // MARK: Blocking
+
+    private nonisolated struct BlockList: Decodable { let userIDs: [String] }
+
+    private static let blockedKey = "groups.blocked.v1"
+    private static let blockedNamesKey = "groups.blockedNames.v1"
+
+    /// Loads who I've blocked (`GET /v1/hearken/blocks`). Runs with every group load; a failure
+    /// keeps the last list.
+    func loadBlocks() async {
+        guard !ScreenshotMode.isOn else { return }
+        do {
+            let list = try await send("GET", "/v1/hearken/blocks", as: BlockList.self)
+            setBlocked(Set(list.userIDs))
+        } catch {
+            log.error("loading blocks failed: \(String(describing: error), privacy: .public)")
+        }
+    }
+
+    /// Blocks someone: their posts, replies and answers disappear for me at once (the server
+    /// leaves them out of my group reads too). `name` is kept for Settings › Blocked People.
+    func block(userID: String, name: String) async throws {
+        guard userID != myUserID, !userID.isEmpty else { return }
+        if !ScreenshotMode.isOn {
+            try await send("PUT", "/v1/hearken/blocks/\(Self.pathComponent(userID))")
+        }
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !trimmed.isEmpty {
+            blockedNames[userID] = trimmed
+            UserDefaults.standard.set(blockedNames, forKey: Self.blockedNamesKey)
+        }
+        setBlocked(blockedUserIDs.union([userID]))
+    }
+
+    /// Unblocks someone, then reloads so what they shared shows again.
+    func unblock(userID: String) async throws {
+        if !ScreenshotMode.isOn {
+            try await send("DELETE", "/v1/hearken/blocks/\(Self.pathComponent(userID))")
+        }
+        var remaining = blockedUserIDs
+        remaining.remove(userID)
+        setBlocked(remaining)
+        blockedNames[userID] = nil
+        UserDefaults.standard.set(blockedNames, forKey: Self.blockedNamesKey)
+        await refresh()
+    }
+
+    func isBlocked(_ userID: String) -> Bool { blockedUserIDs.contains(userID) }
+
+    /// The name to show for someone I blocked.
+    func blockedName(_ userID: String) -> String {
+        if let name = blockedNames[userID], !name.isEmpty { return name }
+        for group in groups {
+            if let member = group.members.first(where: { $0.userID == userID }) { return member.name }
+        }
+        return "Someone you blocked"
+    }
+
+    private func setBlocked(_ ids: Set<String>) {
+        blockedUserIDs = ids
+        UserDefaults.standard.set(Array(ids), forKey: Self.blockedKey)
+        if !ids.isEmpty { groups = groups.map { withoutBlocked($0) } }
+    }
+
+    private func loadBlockedFromDisk() {
+        guard !ScreenshotMode.isOn else { return }
+        blockedUserIDs = Set(UserDefaults.standard.stringArray(forKey: Self.blockedKey) ?? [])
+        blockedNames = (UserDefaults.standard.dictionary(forKey: Self.blockedNamesKey) as? [String: String]) ?? [:]
+    }
+
+    /// A group without the posts, reply previews and answers of people I blocked.
+    func withoutBlocked(_ group: StudyGroup) -> StudyGroup {
+        guard !blockedUserIDs.isEmpty else { return group }
+        var group = group
+        group.items.removeAll { blockedUserIDs.contains($0.authorID) }
+        for index in group.items.indices {
+            if let latest = group.items[index].latestComment, blockedUserIDs.contains(latest.authorID) {
+                group.items[index].latestComment = nil
+            }
+        }
+        if let question = group.question {
+            group.question = withoutBlocked(question)
+        }
+        return group
+    }
+
+    /// A question without the answers of people I blocked.
+    func withoutBlocked(_ question: Question) -> Question {
+        guard !blockedUserIDs.isEmpty else { return question }
+        var question = question
+        question.answers.removeAll { blockedUserIDs.contains($0.userID) }
+        return question
+    }
+
+    private static func pathComponent(_ id: String) -> String {
+        id.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? id
+    }
+
+    // MARK: Reporting
+
+    /// What's being reported (`kind` in `POST /v1/reports`).
+    nonisolated enum ReportKind: String, Encodable, Sendable {
+        /// A shared highlight or reflection.
+        case post
+        case comment, answer, question, member
+    }
+
+    nonisolated enum ReportReason: String, Encodable, CaseIterable, Identifiable, Sendable {
+        case spam, harassment, hate, sexual, violence
+        case selfHarm = "self_harm"
+        case other
+
+        var id: String { rawValue }
+
+        var title: String {
+            switch self {
+            case .spam: "Spam"
+            case .harassment: "Harassment or bullying"
+            case .hate: "Hate"
+            case .sexual: "Sexual content"
+            case .violence: "Violence or threats"
+            case .selfHarm: "Self-harm"
+            case .other: "Something else"
+            }
+        }
+    }
+
+    private nonisolated struct ReportBody: Encodable {
+        let app: String
+        let kind: ReportKind
+        let targetId: String
+        let groupId: String?
+        let reason: ReportReason
+        let details: String?
+    }
+
+    /// Reports something in a group to Hearth (`POST /v1/reports`).
+    func report(_ kind: ReportKind, targetID: String, groupID: String, reason: ReportReason, details: String) async throws {
+        guard !ScreenshotMode.isOn else { return }
+        let trimmed = details.trimmingCharacters(in: .whitespacesAndNewlines)
+        let body = ReportBody(app: "hearken", kind: kind, targetId: targetID, groupId: groupID, reason: reason,
+                              details: trimmed.isEmpty ? nil : String(trimmed.prefix(1000)))
+        try await send("POST", "/v1/reports", body: body)
     }
 
     // MARK: Screenshot mode

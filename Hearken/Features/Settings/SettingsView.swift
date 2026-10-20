@@ -184,6 +184,9 @@ struct SettingsView: View {
                 Link("Terms of Use", destination: AppConfig.termsURL)
                 Link("Privacy Policy", destination: AppConfig.privacyURL)
                 Link("Support", destination: AppConfig.supportURL)
+                Link(destination: AppConfig.supportEmailURL) {
+                    LabeledContent("Email", value: AppConfig.supportEmail)
+                }
                 // Kokoro's model and voices are Apache 2.0, which asks for attribution.
                 Link(destination: URL(string: "https://huggingface.co/hexgrad/Kokoro-82M")!) {
                     LabeledContent("Natural Voices", value: "Kokoro · Apache 2.0")
@@ -199,11 +202,13 @@ struct SettingsView: View {
                 SheetDoneButton { dismiss() }
             }
         }
-        .alert(account.isSignedIn ? "Delete your Hearken account?" : "Delete all your Hearken data?", isPresented: $confirmDelete) {
-            Button(account.isSignedIn ? "Delete Account and Data" : "Delete All Data", role: .destructive) { deleteAccount() }
+        .alert(account.isSignedIn ? "Delete your Hearth account?" : "Delete all your Hearken data?", isPresented: $confirmDelete) {
+            Button(account.isSignedIn ? "Delete Account" : "Delete All Data", role: .destructive) { deleteAccount() }
             Button("Cancel", role: .cancel) {}
         } message: {
-            Text("This removes your notes, highlights, plans and progress from this device and from iCloud, deletes the study groups you created and leaves the ones you joined. It can't be undone.")
+            Text(account.isSignedIn
+                 ? "This deletes your Hearth account, which your other Hearth apps use too, and everything it keeps on Hearth's servers. You leave your study groups and what you shared in them is deleted; groups you own pass to another member. Your notes, highlights, plans and progress are removed from this device and from iCloud, and you're signed out of your Hearth apps on this iPhone. A Hearken Plus or Hearth+ subscription isn't canceled; cancel it in Settings › Apple Account › Subscriptions. This can't be undone."
+                 : "This removes your notes, highlights, plans and progress from this device and from iCloud. It can't be undone.")
         }
         .alert("Sign out of Hearken?", isPresented: $confirmSignOut) {
             // Also signs out of the other Hearth apps on this iPhone (one shared sign-in).
@@ -239,7 +244,7 @@ struct SettingsView: View {
                 profile: account.isSignedIn
                     ? HearthAccountProfile(name: account.displayName, email: account.email, photo: account.avatarData ?? hearth.sharedAvatar)
                     : nil,
-                pitch: "Optional: signing in adds your name and photo to your profile and study groups, and your other Hearth apps recognize you. Every feature works without it."
+                pitch: "Optional: signing in adds your name to your profile and lets your other Hearth apps recognize you. Study groups need it (they show your name and initials, never your photo); everything else works without it."
             ) {
                 if let shared = sharedSignIn {
                     SharedSignInButton(shared: shared) {
@@ -315,6 +320,25 @@ struct SettingsView: View {
             Text("Membership")
         } footer: {
             Text("Reading, study, quizzes, Explain and your own notes are always free. Plus adds Listen, study groups, more games and your own books.")
+        }
+
+        if account.isSignedIn, HearthConnection.shared.isConnected || !GroupStore.shared.blockedUserIDs.isEmpty {
+            Section {
+                NavigationLink {
+                    BlockedPeopleView()
+                } label: {
+                    LabeledContent {
+                        let count = GroupStore.shared.blockedUserIDs.count
+                        if count > 0 { Text("\(count)") }
+                    } label: {
+                        Label("Blocked People", systemImage: "hand.raised")
+                    }
+                }
+            } header: {
+                Text("Study Groups")
+            } footer: {
+                Text("You don't see posts, replies or answers from people you block.")
+            }
         }
 
         Section("iCloud") {
@@ -473,12 +497,13 @@ struct SettingsView: View {
         return palette[seed % palette.count]
     }
 
+    /// Signed in: deletes the Hearth account on the server (which also takes care of study
+    /// groups), then the data here and in iCloud, and signs out everywhere. If the server call
+    /// fails, nothing is deleted and the error shows. Signed out: local data only, no server call.
     private func deleteAccount() {
         Task {
-            // First the shared groups (they live in iCloud, not on this device), then everything else.
-            await GroupStore.shared.leaveAll()
             do {
-                try account.deleteAccount(context: modelContext)
+                try await account.deleteAccount(context: modelContext)
             } catch {
                 errorMessage = error.localizedDescription
             }

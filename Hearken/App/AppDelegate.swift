@@ -20,10 +20,18 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         Task { @MainActor in await GroupStore.shared.updatePushToken(deviceToken) }
     }
 
-    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any]) async -> UIBackgroundFetchResult {
-        guard GroupStore.isGroupNotification(userInfo) else { return .noData }
-        await GroupStore.shared.refresh()
-        return .newData
+    /// The completion-handler form, called back on the main thread (see `NotificationRouter`:
+    /// the async form can call UIKit back from a background thread).
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+                     fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        guard GroupStore.isGroupNotification(userInfo) else {
+            completionHandler(.noData)
+            return
+        }
+        Task { @MainActor in
+            await GroupStore.shared.refresh()
+            completionHandler(.newData)
+        }
     }
 
     func application(_ application: UIApplication, configurationForConnecting session: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {

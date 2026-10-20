@@ -1,6 +1,7 @@
 import Foundation
 
-/// App-wide settings: iCloud, links shown in Settings, and the disclaimer.
+/// App-wide settings: iCloud, the Hearth API (study groups), links shown in Settings, and the
+/// disclaimer.
 enum AppConfig {
     /// Highlights, notes, progress and XP sync through the person's private CloudKit database.
     /// Needs the iCloud (CloudKit), Push Notifications and Background Modes › Remote
@@ -18,9 +19,12 @@ enum AppConfig {
     /// Debug. Until the real `appl_…` key is filled in, purchases stay off (see `HearkenApp`).
     nonisolated static let revenueCatAPIKey = "appl_lwbZGMslpUCfXbmaXsSrZUdMbss"
 
-    static let termsURL = URL(string: "http://hearkenstudy.com/terms.html")!
-    static let privacyURL = URL(string: "http://hearkenstudy.com/privacy.html")!
-    static let supportURL = URL(string: "http://hearkenstudy.com/support.html")!
+    /// The Hearth apps share one set of legal pages and one support address.
+    static let termsURL = URL(string: "https://hearthapps.com/terms")!
+    static let privacyURL = URL(string: "https://hearthapps.com/privacy")!
+    static let supportURL = URL(string: "https://hearthapps.com/support")!
+    static let supportEmail = "support@hearthapps.com"
+    static let supportEmailURL = URL(string: "mailto:support@hearthapps.com?subject=Hearken")!
 
     static let disclaimer = "Hearken is an independent study app. It is not made, sponsored or endorsed by The Church of Jesus Christ of Latter-day Saints."
 }

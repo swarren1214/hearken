@@ -6,7 +6,7 @@ import SwiftUI
 struct GroupThreadView: View {
     let route: ThreadRoute
 
-    @State private var comments: [GroupStore.Comment] = []
+    @State private var loadedComments: [GroupStore.Comment] = []
     @State private var loaded = false
     @State private var errorMessage: String?
     @State private var text = ""
@@ -15,6 +15,8 @@ struct GroupThreadView: View {
     @State private var mentionsEveryone = false
     @State private var sending = false
     @State private var deleting: GroupStore.Comment?
+    @State private var reporting: GroupReportTarget?
+    @State private var blocking: GroupBlockTarget?
     @FocusState private var focused: Bool
 
     var body: some View {
@@ -25,6 +27,12 @@ struct GroupThreadView: View {
             ContentUnavailableView("Group Unavailable", systemImage: "person.3",
                                    description: Text("You may have left this group, or it was deleted."))
         }
+    }
+
+    /// The replies, without those of people I blocked (blocked since they loaded).
+    private var comments: [GroupStore.Comment] {
+        let blocked = GroupStore.shared.blockedUserIDs
+        return blocked.isEmpty ? loadedComments : loadedComments.filter { !blocked.contains($0.authorID) }
     }
 
     private func page(_ group: GroupStore.StudyGroup, me: String?) -> some View {
@@ -86,6 +94,7 @@ struct GroupThreadView: View {
         } message: {
             Text(deleting?.parentID == nil ? "Replies to it are deleted too." : "")
         }
+        .groupSafety(reporting: $reporting, blocking: $blocking)
     }
 
     // MARK: Replies
@@ -134,6 +143,14 @@ struct GroupThreadView: View {
         .contentShape(.rect)
         .contextMenu {
             Button("Reply", menuIcon: "arrowshape.turn.up.left") { startReply(to: comment) }
+            if comment.authorID != me, me != nil {
+                Button("Report…", menuIcon: "exclamationmark.bubble") {
+                    reporting = GroupReportTarget(kind: .comment, targetID: comment.id, groupID: group.id)
+                }
+                Button("Block \(groupFirstName(comment.authorName))", menuIcon: "hand.raised", role: .destructive) {
+                    blocking = GroupBlockTarget(userID: comment.authorID, name: comment.authorName)
+                }
+            }
             if comment.authorID == me || group.canModerate {
                 Button(role: .destructive) { deleting = comment } label: {
                     Label { Text("Delete") } icon: { Image.redTrash }
@@ -268,7 +285,7 @@ struct GroupThreadView: View {
 
     private func load() async {
         do {
-            comments = try await GroupStore.shared.comments(on: route.target, id: route.targetID, in: route.groupID)
+            loadedComments = try await GroupStore.shared.comments(on: route.target, id: route.targetID, in: route.groupID)
             errorMessage = nil
         } catch {
             errorMessage = GroupStore.describe(error, action: "load the replies")
@@ -288,7 +305,7 @@ struct GroupThreadView: View {
                 body, on: route.target, id: route.targetID, parentID: replyingTo.map { $0.parentID ?? $0.id },
                 mentions: Array(Set(mentioned)), mentionsEveryone: mentionsEveryone && body.contains("@everyone"), in: group.id
             )
-            withAnimation(.snappy) { comments.append(comment) }
+            withAnimation(.snappy) { loadedComments.append(comment) }
             text = ""
             replyingTo = nil
             mentions = [:]
@@ -303,7 +320,7 @@ struct GroupThreadView: View {
     private func delete(_ comment: GroupStore.Comment) async {
         do {
             try await GroupStore.shared.deleteComment(comment, in: route.groupID)
-            withAnimation(.snappy) { comments.removeAll { $0.id == comment.id || $0.parentID == comment.id } }
+            withAnimation(.snappy) { loadedComments.removeAll { $0.id == comment.id || $0.parentID == comment.id } }
         } catch {
             errorMessage = GroupStore.describe(error, action: "delete that")
         }
@@ -311,10 +328,10 @@ struct GroupThreadView: View {
     }
 
     private func toggleHeart(on comment: GroupStore.Comment, in group: GroupStore.StudyGroup, me: String?) async {
-        guard let me, let index = comments.firstIndex(where: { $0.id == comment.id }) else { return }
-        let on = !comments[index].reactions.contains { $0.userID == me && $0.kind == .heart }
-        comments[index].reactions.removeAll { $0.userID == me && $0.kind == .heart }
-        if on { comments[index].reactions.append(GroupStore.Reaction(kind: .heart, userID: me)) }
+        guard let me, let index = loadedComments.firstIndex(where: { $0.id == comment.id }) else { return }
+        let on = !loadedComments[index].reactions.contains { $0.userID == me && $0.kind == .heart }
+        loadedComments[index].reactions.removeAll { $0.userID == me && $0.kind == .heart }
+        if on { loadedComments[index].reactions.append(GroupStore.Reaction(kind: .heart, userID: me)) }
         await GroupStore.shared.setReaction(.heart, on: on, target: .comment, id: comment.id, in: group.id)
     }
 }

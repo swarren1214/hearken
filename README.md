@@ -2,8 +2,18 @@
 
 A native iPhone and iPad app for studying the scriptures: seven subjects with mastery meters,
 games, a library, and a reader built for highlighting and notes. SwiftUI with Liquid Glass,
-SwiftData for user data, Sign in with Apple as the only login, and the user's own iCloud as
-the only backend.
+SwiftData for user data, and Sign in with Apple as the only login.
+
+Where data lives:
+
+- **The user's own iCloud** (CloudKit, private database): notes, highlights, bookmarks, plans,
+  reading progress and XP. These never go to a Hearth server.
+- **Hearth's server** (hearth-api at `api.hearthapps.com`, signed in through Hearth's Supabase
+  project with the same Sign in with Apple): the **Hearth account** and **study groups**. A group
+  member's display name and initials, their progress on the group's plan, and the highlights,
+  reflections, replies, answers and questions they share to a group are stored there, along with
+  reports and blocks. Settings › Delete Account deletes the Hearth account (`DELETE /v1/me`).
+- **RevenueCat**: Hearken Plus / Hearth+ purchases and tips, linked to the Hearth account.
 
 Requires Xcode 26 and iOS 26.
 
