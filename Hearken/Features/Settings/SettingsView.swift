@@ -196,7 +196,7 @@ struct SettingsView: View {
         .navigationTitle("Settings")
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
-                Button("Done", systemImage: "checkmark") { dismiss() }
+                SheetDoneButton { dismiss() }
             }
         }
         .alert(account.isSignedIn ? "Delete your Hearken account?" : "Delete all your Hearken data?", isPresented: $confirmDelete) {

@@ -21,7 +21,7 @@ struct PDFPagesView: View {
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .confirmationAction) {
-                        Button("Done", systemImage: "checkmark") { dismiss() }
+                        SheetDoneButton { dismiss() }
                     }
                 }
                 .overlay(alignment: .bottom) {

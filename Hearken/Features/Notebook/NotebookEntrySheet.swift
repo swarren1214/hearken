@@ -73,8 +73,7 @@ struct NotebookEntrySheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Close", systemImage: "xmark", role: .close) { dismiss() }
-                        .tint(Color.primary)
+                    SheetCancelButton("Close") { dismiss() }
                 }
                 ToolbarItem(placement: .primaryAction) {
                     ShareLink(item: shareText) {

@@ -251,7 +251,7 @@ private struct ReadingBody: View {
                 ReaderView(chapterID: target.chapterID, verse: target.verse)
                     .toolbar {
                         ToolbarItem(placement: .confirmationAction) {
-                            Button("Done", systemImage: "checkmark") { reader = nil }
+                            SheetDoneButton { reader = nil }
                         }
                     }
             }

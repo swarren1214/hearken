@@ -115,7 +115,7 @@ struct GameView: View {
                 ReaderView(chapterID: link.chapterID)
                     .toolbar {
                         ToolbarItem(placement: .confirmationAction) {
-                            Button("Done", systemImage: "checkmark") { readerLink = nil }
+                            SheetDoneButton { readerLink = nil }
                         }
                     }
             }

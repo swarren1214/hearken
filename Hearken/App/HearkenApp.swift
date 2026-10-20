@@ -63,6 +63,8 @@ struct HearkenApp: App {
     var body: some Scene {
         WindowGroup {
             AppRoot()
+                // The Hearth launch splash.
+                .hearthSplash(.hearken, isEnabled: !ScreenshotMode.isOn)
                 .environment(content)
                 .environment(account)
                 .environment(legend)

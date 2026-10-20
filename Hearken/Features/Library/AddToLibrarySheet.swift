@@ -46,7 +46,7 @@ struct AddToLibrarySheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel", systemImage: "xmark", role: .cancel) {
+                    SheetCancelButton {
                         if let batch { importer.cancel(batch) }
                     }
                 }

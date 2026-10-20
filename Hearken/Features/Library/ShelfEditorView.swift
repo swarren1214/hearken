@@ -55,7 +55,7 @@ struct ShelfEditorView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Done", systemImage: "checkmark") {
+                    SheetDoneButton {
                         commitNames()
                         dismiss()
                     }
@@ -201,7 +201,7 @@ struct DeleteShelfSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel", systemImage: "xmark", role: .cancel) { dismiss() }
+                    SheetCancelButton { dismiss() }
                 }
             }
             .safeAreaInset(edge: .bottom) {

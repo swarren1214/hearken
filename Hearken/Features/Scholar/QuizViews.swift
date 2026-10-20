@@ -303,7 +303,7 @@ struct QuizRunnerView: View {
             .background(Color(.systemGroupedBackground))
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Close", systemImage: "xmark", role: .close) { dismiss() }
+                    SheetCancelButton("Close") { dismiss() }
                 }
             }
             .navigationBarTitleDisplayMode(.inline)

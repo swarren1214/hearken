@@ -61,5 +61,10 @@
 		<string>processing</string>
 		<string>remote-notification</string>
 	</array>
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIColorName</key>
+		<string>Hearth/splash-hearken</string>
+	</dict>
 </dict>
 </plist>

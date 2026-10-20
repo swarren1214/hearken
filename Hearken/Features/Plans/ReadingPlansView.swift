@@ -261,8 +261,7 @@ struct PlanStartSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel", systemImage: "xmark", role: .close) { dismiss() }
-                        .tint(Color.primary)
+                    SheetCancelButton { dismiss() }
                 }
             }
             .safeAreaInset(edge: .bottom) {

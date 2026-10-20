@@ -125,8 +125,7 @@ struct NotebookView: View {
         .toolbar {
             if showsClose {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Close", systemImage: "xmark", role: .close) { dismiss() }
-                        .tint(Color.primary)
+                    SheetCancelButton("Close") { dismiss() }
                 }
             }
 

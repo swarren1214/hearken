@@ -141,8 +141,7 @@ struct BookmarksSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Close", systemImage: "xmark", role: .close) { dismiss() }
-                        .tint(Color.primary)
+                    SheetCancelButton("Close") { dismiss() }
                 }
                 if current != nil {
                     ToolbarItem(placement: .primaryAction) {
@@ -355,7 +354,7 @@ struct BookmarkEditor: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
-                Button("Save", systemImage: "checkmark", role: .confirm, action: save)
+                SheetDoneButton("Save", action: save)
                     .disabled(location == nil)
             }
         }

@@ -51,8 +51,7 @@ struct ExplainSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Close", systemImage: "xmark", role: .close) { dismiss() }
-                        .tint(Color.primary)
+                    SheetCancelButton("Close") { dismiss() }
                 }
                 ToolbarItem(placement: .principal) {
                     Label("Explain", systemImage: "sparkles")
