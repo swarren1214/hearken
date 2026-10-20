@@ -254,6 +254,13 @@ final class AccountService {
         HearthLink.shared.update()
     }
 
+    /// Re-reads the other Hearth apps' shared sign-in, after one of them changed it
+    /// (HearthLink calls this when another app writes to the shared store).
+    func followSharedSignIn() async {
+        guard let userID = await KeychainStore.readOffMain(Keys.userID) else { return }
+        await followSharedSignIn(userID: userID)
+    }
+
     /// Keeps Hearken's sign-in and the shared one together: shares a sign-in made before the
     /// apps shared one, picks up a name only another app got from Apple, and signs out here
     /// when another Hearth app signed out everywhere. Runs from `refresh()`, on launch and on

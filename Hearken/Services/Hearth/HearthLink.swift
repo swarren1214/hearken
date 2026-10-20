@@ -37,7 +37,7 @@ final class HearthLink {
     /// Another Hearth app (or Hearken itself) wrote something: a sign-out everywhere, or a new
     /// photo of the reader.
     private func otherAppChanged() {
-        account?.followSharedSignIn()
+        if let account { Task { await account.followSharedSignIn() } }
         reloadSharedAvatar()
         claimReaderIfNeeded()
     }
