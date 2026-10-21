@@ -97,7 +97,7 @@ struct BadgesView: View {
                 } else {
                     Text(attainable ? "\(state == .next ? "Next" : "Locked") · needs \(rank.requirement(xp: progress.threshold(rank)))" : "Not offered yet · this path's later stages are coming")
                         .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(state == .next ? Color.accentColor : .secondary)
+                        .foregroundStyle(state == .next ? Color.primary : .secondary)
                     if attainable {
                         Text("You have \(progress.xp.formatted()) XP and \(progress.completedStages) of \(rank.requiredStages) stages complete.")
                             .font(.footnote)

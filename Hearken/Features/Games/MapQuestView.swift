@@ -93,7 +93,8 @@ struct MapQuestView: View {
         }
         .sensoryFeedback(.selection, trigger: index)
         .onAppear { prepareChoices() }
-        // The Check button follows the app's accent; the chevrons, back and map style icons use the text color.
+        // The Check button follows the app's accent; the chevrons, back and map style icons, and the
+        // text-only glass buttons, use the text color.
         .tint(Accent.color)
     }
 
@@ -277,6 +278,7 @@ struct MapQuestView: View {
                         .padding(.vertical, 4)
                 }
                 .buttonStyle(.glass)
+                .tint(Color.primary)
             }
         }
     }
@@ -341,6 +343,7 @@ struct MapQuestView: View {
             HStack(spacing: 10) {
                 Button("Done") { dismiss() }
                     .buttonStyle(.glass)
+                    .tint(Color.primary)
                     .controlSize(.large)
                 Button {
                     playAgain()

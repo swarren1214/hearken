@@ -1,8 +1,9 @@
 import SwiftUI
 
 // Hearken's menus with checkmarks. The system menu always draws its checkmark on the left;
-// these draw it on the right in the app's accent color, with each item's icon (in the text
-// color) on the left. They open as a small glass popover from their button, like a menu.
+// these draw it on the right in the text color (never the app's color), with each item's
+// icon (also in the text color) on the left. They open as a small glass popover from their
+// button, like a menu.
 //
 //   CheckMenu([
 //       .button("Reschedule", systemImage: "calendar.badge.clock") { … },
@@ -184,8 +185,6 @@ struct CheckMenuList: View {
         .frame(minWidth: 220)
         .frame(height: min(max(contentHeight, 44), Self.maxHeight))
         .fixedSize(horizontal: true, vertical: false)
-        // The checkmark uses the app's accent, even where the menu's button is tinted gray.
-        .tint(Accent.color)
         .presentationCompactAdaptation(.popover)
     }
 
@@ -253,7 +252,7 @@ struct CheckMenuList: View {
                 Spacer(minLength: 24)
                 Image(systemName: "checkmark")
                     .font(.body.weight(.semibold))
-                    .foregroundStyle(.tint)
+                    .foregroundStyle(Color.primary)
                     .opacity(checked ? 1 : 0)
                     .accessibilityHidden(true)
             }

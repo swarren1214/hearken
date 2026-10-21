@@ -56,7 +56,7 @@ struct ListenMiniPlayer: View {
                             HStack(spacing: 5) {
                                 Image(systemName: "waveform")
                                     .symbolEffect(.variableColor.iterative, isActive: engine.isPlaying)
-                                    .foregroundStyle(.tint)
+                                    .foregroundStyle(.secondary)
                                 Text("\(engine.voiceName) · \(ListenFormat.speed(engine.speed))")
                             }
                             .font(.caption)

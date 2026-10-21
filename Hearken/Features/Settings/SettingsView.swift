@@ -113,6 +113,8 @@ struct SettingsView: View {
                 } label: {
                     Label("Badges", systemImage: "medal")
                 }
+                // The icon matches the title, not the accent (the Stepper and Toggle keep it).
+                .tint(Color.primary)
                 Stepper(value: $dailyGoal, in: 5...60, step: 5) {
                     LabeledContent("Daily Goal", value: "\(dailyGoal) min")
                 }
@@ -156,6 +158,7 @@ struct SettingsView: View {
                      ? "Reader tips reappear after you next open Hearken, the next time you reach each feature."
                      : "Reader tips reappear the next time you reach each feature.")
             }
+            .tint(Color.primary)
 
             Section {
                 NavigationLink {
@@ -168,6 +171,7 @@ struct SettingsView: View {
             } footer: {
                 Text("Your family, the same in every Hearth app. Caloma shows whose reading is whose on the family calendar.")
             }
+            .tint(Color.primary)
 
             Section {
                 NavigationLink {
@@ -195,6 +199,7 @@ struct SettingsView: View {
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
+            .tint(Color.primary)
         }
         .navigationTitle("Settings")
         .toolbar {
@@ -339,6 +344,7 @@ struct SettingsView: View {
             } footer: {
                 Text("You don't see posts, replies or answers from people you block.")
             }
+            .tint(Color.primary)
         }
 
         Section("iCloud") {
@@ -417,7 +423,7 @@ struct SettingsView: View {
                 .frame(maxWidth: .infinity, minHeight: 28)
             }
             .buttonStyle(.glass)
-            .tint(Accent.color)
+            .tint(Color.primary)
             .disabled(tipping != nil)
             .accessibilityLabel("Tip \(tip.price)")
         }

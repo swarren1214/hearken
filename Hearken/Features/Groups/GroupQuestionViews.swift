@@ -20,7 +20,7 @@ struct QuestionCard: View {
             AdaptiveStack {
                 Label("THIS WEEK'S QUESTION", systemImage: "questionmark.bubble")
                     .font(.caption.weight(.bold))
-                    .foregroundStyle(.tint)
+                    .foregroundStyle(.secondary)
                 Spacer(minLength: 8)
                 Text("from \(question.authorID == me ? "you" : groupFirstName(question.authorName)) · \(question.postAt.formatted(.dateTime.weekday(.abbreviated)))")
                     .font(.footnote)
@@ -48,6 +48,7 @@ struct QuestionCard: View {
                     Text("See Answers").font(.headline).frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.glass)
+                .tint(Color.primary)
                 .controlSize(.large)
             } else {
                 Button(action: onAnswer) {
@@ -95,7 +96,7 @@ struct AskQuestionPrompt: View {
                     Text("Give everyone something to talk about").font(.footnote).foregroundStyle(.secondary)
                 }
                 Spacer(minLength: 0)
-                Image(systemName: "plus.circle.fill").font(.title2).foregroundStyle(.tint)
+                Image(systemName: "plus.circle.fill").font(.title2).foregroundStyle(.primary)
             }
             .padding(16)
             .background(Color(.secondarySystemGroupedBackground), in: .rect(cornerRadius: 22))
@@ -218,6 +219,7 @@ struct AskQuestionSheet: View {
                         Text("Now").tag(Timing.now)
                         Text("Monday Morning").tag(Timing.monday)
                     }
+                    .tint(Color.primary)
                     Toggle("Hide answers until you answer", isOn: $hideAnswers)
                 } footer: {
                     Text("Everyone in \(group?.name ?? "the group") is notified when it posts. \(hideAnswers ? "Each person sees the others' answers once they've posted their own." : "")")
@@ -321,6 +323,7 @@ struct AnswerSheet: View {
                                     .font(.subheadline.weight(.semibold))
                             }
                             .buttonStyle(.borderless)
+                            .tint(Color.primary)
                         }
                     }
                     .padding(.horizontal, 4)
@@ -485,7 +488,7 @@ struct QuestionDetailView: View {
                     .tint(Accent.color)
                 Text("\(question.answerCount) of \(total) answered")
                     .font(.footnote.weight(.semibold))
-                    .foregroundStyle(.tint)
+                    .foregroundStyle(.secondary)
                     .fixedSize()
             }
             Text(footnote(question, missing: missing))
@@ -571,7 +574,7 @@ struct AnswerCard: View {
                                 Text(answer.commentCount > 0 ? "\(answer.commentCount)" : "Reply").monospacedDigit()
                             }
                             .font(.footnote.weight(.semibold))
-                            .foregroundStyle(answer.commentCount > 0 ? AnyShapeStyle(Accent.color) : AnyShapeStyle(.secondary))
+                            .foregroundStyle(answer.commentCount > 0 ? AnyShapeStyle(.primary) : AnyShapeStyle(.secondary))
                             .padding(.horizontal, 10)
                             .frame(minHeight: 30)
                             .background(answer.commentCount > 0 ? AnyShapeStyle(Accent.color.opacity(0.12)) : AnyShapeStyle(.quaternary.opacity(0.6)), in: Capsule())
@@ -658,7 +661,7 @@ struct EarlierQuestionsView: View {
                         .multilineTextAlignment(.leading)
                     Text("\(question.answerCount) \(question.answerCount == 1 ? "answer" : "answers")")
                         .font(.footnote.weight(.semibold))
-                        .foregroundStyle(.tint)
+                        .foregroundStyle(.secondary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .contentShape(.rect)

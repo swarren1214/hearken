@@ -318,7 +318,7 @@ private struct GroupRow: View {
                 if group.questionWaiting(for: me) {
                     Label("This week's question is waiting", systemImage: "questionmark.bubble.fill")
                         .font(.footnote.weight(.semibold))
-                        .foregroundStyle(.tint)
+                        .foregroundStyle(.primary)
                 } else {
                     Text(group.members.count <= 1 ? (group.plan?.title ?? "") : "\(readToday) of \(group.members.count) read today")
                         .font(.footnote)
@@ -932,7 +932,7 @@ struct GroupDetailView: View {
                 Spacer(minLength: 8)
                 Text("\(readToday) of \(group.members.count) read today")
                     .font(.footnote.weight(.semibold))
-                    .foregroundStyle(.tint)
+                    .foregroundStyle(.secondary)
             }
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 72), spacing: 8)], spacing: 14) {
                 ForEach(group.members) { member in
@@ -1069,7 +1069,7 @@ struct GroupItemCard: View {
                                 .multilineTextAlignment(.leading)
                             Text(item.commentCount == 1 ? "View reply" : "View all \(item.commentCount) replies")
                                 .font(.footnote.weight(.semibold))
-                                .foregroundStyle(.tint)
+                                .foregroundStyle(.primary)
                         }
                         Spacer(minLength: 0)
                     }
@@ -1121,7 +1121,7 @@ struct GroupItemCard: View {
                     Text(item.commentCount > 0 ? "\(item.commentCount)" : "Reply").monospacedDigit()
                 }
                 .font(.footnote.weight(.semibold))
-                .foregroundStyle(item.commentCount > 0 ? AnyShapeStyle(Accent.color) : AnyShapeStyle(.secondary))
+                .foregroundStyle(item.commentCount > 0 ? AnyShapeStyle(.primary) : AnyShapeStyle(.secondary))
                 .padding(.horizontal, 10)
                 .frame(minHeight: 30)
                 .background(item.commentCount > 0 ? AnyShapeStyle(Accent.color.opacity(0.12)) : AnyShapeStyle(.quaternary.opacity(0.6)), in: Capsule())
@@ -1141,6 +1141,7 @@ struct GroupItemCard: View {
                     .font(.footnote.weight(.semibold))
             }
             .buttonStyle(.borderless)
+            .tint(Color.primary)
         }
     }
 
@@ -1176,11 +1177,11 @@ struct ReactionChip: View {
         Button(action: action) {
             HStack(spacing: 5) {
                 Image(systemName: mine ? symbol + ".fill" : symbol)
-                    .foregroundStyle(mine ? color : .secondary)
                 if !all.isEmpty { Text("\(all.count)").monospacedDigit() }
             }
             .font(.footnote.weight(.semibold))
-            .foregroundStyle(.secondary)
+            // Icon and count share one color: the reaction's color when it's yours.
+            .foregroundStyle(mine ? color : .secondary)
             .padding(.horizontal, compact ? 4 : 10)
             .frame(minHeight: compact ? 28 : 30)
             .background(compact ? AnyShapeStyle(.clear) : (mine ? AnyShapeStyle(color.opacity(0.14)) : AnyShapeStyle(.quaternary.opacity(0.6))), in: Capsule())
@@ -1449,6 +1450,7 @@ struct GroupVerseSheet: View {
                                 }
                             }
                             .buttonStyle(.borderless)
+                            .tint(Color.primary)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(16)

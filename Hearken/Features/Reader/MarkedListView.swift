@@ -22,7 +22,7 @@ struct MarkedListView: View {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(content.reference(chapterID: note.chapterID, verse: note.verse))
                                     .font(.footnote.weight(.semibold))
-                                    .foregroundStyle(.tint)
+                                    .foregroundStyle(.secondary)
                                 Text(note.body).lineLimit(3)
                                 if !note.tags.isEmpty {
                                     Text(note.tags.map { "#\($0)" }.joined(separator: " "))

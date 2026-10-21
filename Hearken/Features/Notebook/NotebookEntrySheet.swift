@@ -246,6 +246,7 @@ struct NotebookEntrySheet: View {
 
                 Button("Edit Note", systemImage: "pencil") { editingNote = true }
                     .disabled(noteVerse == nil)
+                    .tint(Color.primary)
 
                 Button(role: .destructive) {
                     modelContext.delete(note)
@@ -258,6 +259,7 @@ struct NotebookEntrySheet: View {
             } else {
                 Button("Add Note", systemImage: "square.and.pencil") { editingNote = true }
                     .disabled(noteVerse == nil)
+                    .tint(Color.primary)
             }
         } header: {
             Text("Note")

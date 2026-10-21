@@ -97,7 +97,7 @@ struct BookmarksSheet: View {
                             } icon: {
                                 Image(systemName: "plus.circle.fill")
                                     .font(.title2)
-                                    .foregroundStyle(.tint)
+                                    .foregroundStyle(.primary)
                             }
                         }
                     }
@@ -175,7 +175,6 @@ struct BookmarksSheet: View {
             HStack(spacing: 12) {
                 Image(systemName: "bookmark.fill")
                     .font(.title3)
-                    .foregroundStyle(Accent.color)
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 6) {
                         Text(bookmark.displayName(in: content))
@@ -184,7 +183,7 @@ struct BookmarksSheet: View {
                         if here {
                             Text("HERE")
                                 .font(.caption2.weight(.bold))
-                                .foregroundStyle(Accent.color)
+                                .foregroundStyle(.primary)
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 2)
                                 .background(Accent.color.opacity(0.15), in: Capsule())
@@ -225,8 +224,7 @@ struct BookmarksSheet: View {
                 Label { Text("Delete") } icon: { Image.redTrash }
             }
         }
-        // Menu icons follow the row's tint: black or white, not the accent. (The bookmark icon
-        // and HERE badge above use the accent explicitly.)
+        // Menu icons follow the row's tint: black or white, not the accent.
         .tint(Color.primary)
     }
 
@@ -286,7 +284,7 @@ struct BookmarkEditor: View {
                     VStack(alignment: .leading, spacing: 6) {
                         Label(reference(location), systemImage: "bookmark.fill")
                             .font(.headline)
-                            .labelStyle(TintedIconLabelStyle())
+                            .labelStyle(SecondaryIconLabelStyle())
                         if let text = content.chapter(location.chapterID)?.verses.first(where: { $0.number == location.verse })?.text {
                             Text(text)
                                 .font(.scripture(size: 15))
@@ -307,6 +305,7 @@ struct BookmarkEditor: View {
                             } label: {
                                 Label("Move Here", systemImage: "arrow.down.to.line")
                             }
+                            .tint(Color.primary)
                         }
                         .accessibilityHint("Moves this bookmark to where you're reading now. Save to keep it.")
                     }
@@ -317,6 +316,7 @@ struct BookmarkEditor: View {
                         } label: {
                             Label("Go to Bookmark", systemImage: "arrow.right")
                         }
+                        .tint(Color.primary)
                     }
                 }
             } header: {
@@ -387,11 +387,11 @@ extension Image {
     }
 }
 
-/// A label whose icon takes the accent color while the title keeps the primary color.
-private struct TintedIconLabelStyle: LabelStyle {
+/// A label whose icon is secondary while the title keeps the primary color.
+private struct SecondaryIconLabelStyle: LabelStyle {
     func makeBody(configuration: Configuration) -> some View {
         HStack(spacing: 8) {
-            configuration.icon.foregroundStyle(.tint)
+            configuration.icon.foregroundStyle(.secondary)
             configuration.title
         }
     }
@@ -405,7 +405,7 @@ struct BookmarkAddedPill: View {
     var body: some View {
         HStack(spacing: 10) {
             Image(systemName: "bookmark.fill")
-                .foregroundStyle(.tint)
+                .foregroundStyle(.secondary)
             Text("Bookmarked \(reference)")
                 .font(.subheadline.weight(.semibold))
                 .lineLimit(1)

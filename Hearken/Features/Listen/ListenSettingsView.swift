@@ -26,6 +26,7 @@ struct ListenSettingsView: View {
                     voiceRow(option)
                 }
                 Button("Get Better System Voices") { showsVoiceHelp = true }
+                    .tint(Color.primary)
             } header: {
                 Text("System Voices")
             } footer: {
@@ -41,6 +42,7 @@ struct ListenSettingsView: View {
                             reload()
                         }
                     }
+                    .tint(Color.primary)
                 } footer: {
                     Text("Hear scripture in your own voice. Make a Personal Voice in the Settings app under Accessibility › Personal Voice.")
                 }
@@ -154,6 +156,7 @@ struct ListenSettingsView: View {
                 } label: {
                     Label("Download Natural Voices", systemImage: "arrow.down.circle")
                 }
+                .tint(Color.primary)
             } header: {
                 Text("Natural Voices")
             } footer: {
@@ -162,6 +165,7 @@ struct ListenSettingsView: View {
         case .failed(let message):
             Section {
                 Button("Try Again") { model.download() }
+                    .tint(Color.primary)
             } header: {
                 Text("Natural Voices")
             } footer: {
@@ -201,7 +205,6 @@ struct ListenSettingsView: View {
             HStack(spacing: 12) {
                 Image(systemName: male ? "person.fill" : "person")
                     .font(.body.weight(.semibold))
-                    .foregroundStyle(.tint)
                     .frame(width: 24)
                 VStack(alignment: .leading, spacing: 1) {
                     Text(male ? "Male Voices" : "Female Voices")
@@ -262,7 +265,7 @@ struct ListenSettingsView: View {
                 HStack(spacing: 12) {
                     Image(systemName: "checkmark")
                         .font(.body.weight(.semibold))
-                        .foregroundStyle(.tint)
+                        .foregroundStyle(.primary)
                         .opacity(selected ? 1 : 0)
                         .frame(width: 20)
                     VStack(alignment: .leading, spacing: 1) {
@@ -278,7 +281,7 @@ struct ListenSettingsView: View {
                             .padding(.horizontal, 8)
                             .padding(.vertical, 3)
                             .background(.tint.opacity(0.16), in: .rect(cornerRadius: 7))
-                            .foregroundStyle(.tint)
+                            .foregroundStyle(.primary)
                     }
                 }
                 .contentShape(.rect)
@@ -301,7 +304,7 @@ struct ListenSettingsView: View {
                 HStack(spacing: 12) {
                     Image(systemName: "checkmark")
                         .font(.body.weight(.semibold))
-                        .foregroundStyle(.tint)
+                        .foregroundStyle(.primary)
                         .opacity(selected ? 1 : 0)
                         .frame(width: 20)
                     VStack(alignment: .leading, spacing: 1) {
@@ -316,7 +319,7 @@ struct ListenSettingsView: View {
                         .padding(.horizontal, 8)
                         .padding(.vertical, 3)
                         .background(option.tier == .premium ? AnyShapeStyle(.tint.opacity(0.16)) : AnyShapeStyle(.quaternary), in: .rect(cornerRadius: 7))
-                        .foregroundStyle(option.tier == .premium ? AnyShapeStyle(.tint) : AnyShapeStyle(.secondary))
+                        .foregroundStyle(option.tier == .premium ? AnyShapeStyle(.primary) : AnyShapeStyle(.secondary))
                 }
                 .contentShape(.rect)
             }
@@ -353,17 +356,17 @@ struct VoicePreviewButton: View {
                     } else if preview != nil {
                         Image(systemName: "waveform.circle.fill")
                             .symbolEffect(.variableColor.iterative.reversing, options: .repeating, isActive: true)
-                            .foregroundStyle(.tint)
+                            .foregroundStyle(.primary)
                     } else {
                         Image(systemName: "play.circle.fill")
-                            .foregroundStyle(title == nil ? AnyShapeStyle(.secondary) : AnyShapeStyle(.tint))
+                            .foregroundStyle(title == nil ? AnyShapeStyle(.secondary) : AnyShapeStyle(.primary))
                     }
                 }
                 .font(.title2)
                 .frame(width: 32, height: 32)
                 if let title {
                     Text(preview == nil ? title : "Stop")
-                        .foregroundStyle(.tint)
+                        .foregroundStyle(.primary)
                 }
             }
             .contentShape(.rect)

@@ -336,7 +336,7 @@ struct GroupThreadView: View {
     }
 }
 
-/// Reply text with its @mentions in the app's color.
+/// Reply text with its @mentions in bold (the text color, not the app's color).
 struct MentionText: View {
     let text: String
 
@@ -350,7 +350,6 @@ struct MentionText: View {
         while let match = rest.firstMatch(of: #/@[\p{L}\p{N}_]+/#) {
             result += AttributedString(String(rest[rest.startIndex..<match.range.lowerBound]))
             var mention = AttributedString(String(match.output))
-            mention.foregroundColor = Accent.color
             mention.font = .body.weight(.semibold)
             result += mention
             rest = rest[match.range.upperBound...]

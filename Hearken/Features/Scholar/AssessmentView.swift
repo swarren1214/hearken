@@ -112,7 +112,7 @@ struct AssessmentView: View {
     }
 
     private func fact(_ symbol: String, _ text: String) -> some View {
-        Label { Text(text) } icon: { Image(systemName: symbol).foregroundStyle(.tint) }
+        Label { Text(text) } icon: { Image(systemName: symbol).foregroundStyle(.secondary) }
             .font(.body)
     }
 
@@ -184,6 +184,7 @@ struct AssessmentView: View {
                     Button { index -= 1 } label: { Text("Back").frame(maxWidth: .infinity) }
                         .buttonStyle(.glass)
                         .controlSize(.large)
+                        .tint(Color.primary)
                 }
                 Button {
                     textFocused = false
@@ -324,7 +325,7 @@ struct AssessmentView: View {
                     if earnedXP > 0 {
                         Text("+\(earnedXP) XP")
                             .font(.subheadline.weight(.bold))
-                            .foregroundStyle(.tint)
+                            .foregroundStyle(.primary)
                             .padding(.horizontal, 12)
                             .frame(height: 30)
                             .background(.tint.opacity(0.14), in: Capsule())
@@ -351,6 +352,7 @@ struct AssessmentView: View {
                     Button { start() } label: { Text("Retake").frame(maxWidth: .infinity) }
                         .buttonStyle(.glass)
                         .controlSize(.large)
+                        .tint(Color.primary)
                 }
                 .padding(.bottom, 16)
             }
@@ -385,7 +387,7 @@ struct AssessmentView: View {
                 Text(answer.feedback).font(.footnote)
             }
             if let reference = question.reference {
-                Text(reference).font(.caption).foregroundStyle(.tint)
+                Text(reference).font(.caption).foregroundStyle(.secondary)
             }
         }
         .padding(14)

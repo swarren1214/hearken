@@ -97,7 +97,7 @@ private struct LearningItemContent: View {
         VStack(alignment: .leading, spacing: 6) {
             Text("\(item.kindName.uppercased()) · \(item.required ? "REQUIRED" : "OPTIONAL") · \(progress.isAwarded(item) ? "XP EARNED" : "+\(item.xp) XP")")
                 .font(.caption.weight(.bold))
-                .foregroundStyle(.tint)
+                .foregroundStyle(.secondary)
             Text(item.title).font(.title2.bold())
             if let minutes = item.minutes {
                 Text("About \(minutes) min").font(.footnote).foregroundStyle(.secondary)
@@ -164,6 +164,7 @@ private struct LearningItemContent: View {
                 Label("Open in Reader", systemImage: "book")
             }
             .buttonStyle(.glass)
+            .tint(Color.primary)
         }
         .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -177,7 +178,7 @@ private struct LearningItemContent: View {
                 .foregroundStyle(.secondary)
             Text(source.title).font(.headline)
             if let perspective = source.note {
-                Text(perspective).font(.caption.weight(.semibold)).foregroundStyle(.tint)
+                Text(perspective).font(.caption.weight(.semibold)).foregroundStyle(.secondary)
             }
             Text("Read it in Safari, then come back and write your response.")
                 .font(.subheadline)
@@ -187,6 +188,7 @@ private struct LearningItemContent: View {
                     Label("Open Reading", systemImage: "arrow.up.right")
                 }
                 .buttonStyle(.glass)
+                .tint(Color.primary)
             }
         }
         .padding(18)
@@ -208,6 +210,7 @@ private struct LearningItemContent: View {
                     if let transcript = video.transcriptURL {
                         Link(destination: transcript) { Label("Transcript", systemImage: "text.alignleft") }
                             .buttonStyle(.glass)
+                            .tint(Color.primary)
                     }
                     if let alternativeID = item.alternativeItemID, let alternative = path.item(alternativeID) {
                         NavigationLink {
@@ -216,6 +219,7 @@ private struct LearningItemContent: View {
                             Label("Read Instead", systemImage: "doc.text")
                         }
                         .buttonStyle(.glass)
+                        .tint(Color.primary)
                     }
                 }
                 Text("Watching or reading the alternative both complete this item. Either way, write the response below; it earns its XP once.")
@@ -283,6 +287,7 @@ private struct LearningItemContent: View {
                     reviewNote = nil
                 }
                 .frame(maxWidth: .infinity)
+                .tint(Color.primary)
             }
         }
         .padding(18)
@@ -306,6 +311,7 @@ private struct LearningItemContent: View {
                     response = completion.response
                     editing = true
                 }
+                .tint(Color.primary)
                 Spacer()
                 Button("Mark Not Done", role: .destructive) {
                     ScholarLedger(context: modelContext).clear(item, in: path)

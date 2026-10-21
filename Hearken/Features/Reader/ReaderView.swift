@@ -130,7 +130,7 @@ struct ReaderView: View {
                             startListening(fromStart: false)
                         }
                     }
-                    .tint(listeningHere ? Accent.color : Color.primary)
+                    .tint(Color.primary)
                     .accessibilityHint(listeningHere
                         ? "Turns Listen off. Touch and hold to pause instead."
                         : "Reads the chapter aloud. Touch and hold for more options.")
@@ -808,7 +808,7 @@ struct ReaderPage: View {
             HStack(spacing: 10) {
                 Image(systemName: read ? "checkmark.circle.fill" : "circle")
                     .font(.title3)
-                    .foregroundStyle(read ? AnyShapeStyle(.tint) : AnyShapeStyle(.secondary))
+                    .foregroundStyle(read ? AnyShapeStyle(.primary) : AnyShapeStyle(.secondary))
                     .contentTransition(.symbolEffect(.replace))
                 Text(read ? "Chapter read" : "Mark as read")
                     .font(.body.weight(.medium))

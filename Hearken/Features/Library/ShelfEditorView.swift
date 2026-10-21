@@ -33,6 +33,7 @@ struct ShelfEditorView: View {
                     Button(action: addShelf) {
                         Label("New Shelf", systemImage: "plus.circle.fill")
                     }
+                    .tint(Color.primary)
                 } header: {
                     Text("Shelves")
                 } footer: {
@@ -45,6 +46,7 @@ struct ShelfEditorView: View {
                         Button("Put Back Removed Books", systemImage: "arrow.uturn.backward") {
                             withAnimation { LibraryStore.restoreHiddenWorks(in: modelContext) }
                         }
+                        .tint(Color.primary)
                     } footer: {
                         Text(ListFormatter.localizedString(byJoining: hidden.map(\.title)))
                     }
@@ -259,7 +261,7 @@ struct DeleteShelfSheet: View {
                 Spacer(minLength: 12)
                 Image(systemName: "checkmark")
                     .font(.body.weight(.semibold))
-                    .foregroundStyle(Accent.color)
+                    .foregroundStyle(destructive ? Color.red : Color.primary)
                     .opacity(selected ? 1 : 0)
                     .accessibilityHidden(true)
             }

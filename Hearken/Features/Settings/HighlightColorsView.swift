@@ -26,6 +26,7 @@ struct HighlightColorsView: View {
 
                 if legend.canAdd {
                     Button("Add Color", systemImage: "plus.circle.fill") { legend.addNextColor() }
+                        .tint(Color.primary)
                 }
             } header: {
                 Text("Your Legend")
@@ -47,7 +48,8 @@ struct HighlightColorsView: View {
             }
         }
         .navigationTitle("Highlight Colors")
-        .toolbar { EditButton() }
+        // Not a confirm button: the text color, not the app's (AGENT.md).
+        .toolbar { EditButton().tint(.primary) }
     }
 
     private func nameBinding(for hue: HighlightHue) -> Binding<String> {

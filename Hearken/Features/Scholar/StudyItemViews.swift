@@ -58,7 +58,7 @@ private struct StudyHeader: View {
         VStack(alignment: .leading, spacing: 6) {
             Text("\(item.kindName.uppercased()) · \(item.required ? "REQUIRED" : "OPTIONAL") · \(progress.isAwarded(item) ? "XP EARNED" : "+\(item.xp) XP")")
                 .font(.caption.weight(.bold))
-                .foregroundStyle(.tint)
+                .foregroundStyle(.secondary)
             Text(item.title).font(.title2.bold())
             if let minutes = item.minutes {
                 Text("About \(minutes) min").font(.footnote).foregroundStyle(.secondary)
@@ -208,7 +208,7 @@ private struct ReadingBody: View {
                     Text("Look for").font(.footnote.weight(.semibold)).foregroundStyle(.secondary)
                     ForEach(focus, id: \.self) { question in
                         HStack(alignment: .firstTextBaseline, spacing: 8) {
-                            Image(systemName: "eye").font(.footnote).foregroundStyle(.tint).accessibilityHidden(true)
+                            Image(systemName: "eye").font(.footnote).foregroundStyle(.secondary).accessibilityHidden(true)
                             Text(question).font(.subheadline)
                         }
                     }
@@ -236,6 +236,7 @@ private struct ReadingBody: View {
                 if progress.isDone(item) {
                     Button(action: start) { label }
                         .buttonStyle(.glass)
+                        .tint(Color.primary)
                         .controlSize(.large)
                         .disabled(!unlocked)
                 } else {
@@ -285,6 +286,7 @@ private struct ReadingBody: View {
                 Label("Open in Reader", systemImage: "book")
             }
             .buttonStyle(.glass)
+            .tint(Color.primary)
         }
         .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -298,7 +300,7 @@ private struct ReadingBody: View {
                 .foregroundStyle(.secondary)
             Text(source.title).font(.headline)
             if let note = source.note {
-                Text(note).font(.caption.weight(.semibold)).foregroundStyle(.tint)
+                Text(note).font(.caption.weight(.semibold)).foregroundStyle(.secondary)
             }
             Text("Read the whole page, then take the quiz.")
                 .font(.subheadline)
@@ -310,6 +312,7 @@ private struct ReadingBody: View {
                     Label("Open Reading", systemImage: "arrow.up.right")
                 }
                 .buttonStyle(.glass)
+                .tint(Color.primary)
             }
         }
         .padding(18)

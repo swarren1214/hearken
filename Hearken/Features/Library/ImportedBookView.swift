@@ -37,6 +37,7 @@ struct ImportedBookView: View {
                         Text("Hearken couldn't find readable text in this file.")
                     } actions: {
                         Button("Try Again") { BookImporter.shared.retry(book) }
+                            .tint(Color.primary)
                     }
                 }
             } else {
@@ -144,6 +145,7 @@ struct ImportedBookView: View {
                     if let pages = originalPages(book, startPage: 1) {
                         Button("Original Pages", systemImage: "doc.richtext") { originalPages = pages }
                             .buttonStyle(.glass)
+                            .tint(Color.primary)
                     }
                 }
                 .frame(maxWidth: .infinity)
@@ -175,7 +177,7 @@ struct ImportedBookView: View {
                             Spacer(minLength: 8)
                             if read.contains(id) {
                                 Image(systemName: "checkmark.circle.fill")
-                                    .foregroundStyle(.tint)
+                                    .foregroundStyle(.secondary)
                                     .accessibilityLabel("Read")
                             } else if id == resume.id && resume.started {
                                 Circle().fill(.tint).frame(width: 8, height: 8)

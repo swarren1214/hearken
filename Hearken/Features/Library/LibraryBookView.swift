@@ -333,7 +333,7 @@ struct BreadcrumbBar: View {
                             if let action = crumb.action, !isLast {
                                 Button(crumb.title, action: action)
                                     .buttonStyle(.plain)
-                                    .foregroundStyle(.tint)
+                                    .foregroundStyle(.secondary)
                                     .padding(.vertical, 6)
                             } else {
                                 Text(crumb.title)

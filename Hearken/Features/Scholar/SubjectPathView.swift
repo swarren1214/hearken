@@ -215,7 +215,7 @@ private struct SubjectPathContent: View {
             HStack {
                 Text(stageLabel(stage))
                     .font(.caption.weight(.bold))
-                    .foregroundStyle(.tint)
+                    .foregroundStyle(.secondary)
                 Spacer()
                 Text("In progress").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
             }
@@ -244,7 +244,7 @@ private struct SubjectPathContent: View {
                 HStack(spacing: 12) {
                     Image(systemName: passed ? "checkmark" : open ? "checklist" : "lock.fill")
                         .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(passed ? Feedback.correct : open ? Color.accentColor : .secondary)
+                        .foregroundStyle(passed ? Feedback.correct : open ? Color.primary : .secondary)
                         .frame(width: 40, height: 40)
                         .background(Color(.tertiarySystemFill), in: Circle())
                     VStack(alignment: .leading, spacing: 2) {

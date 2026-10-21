@@ -165,6 +165,7 @@ struct SearchView: View {
                     Button("Clear") { recentStorage = "" }
                         .font(.footnote)
                         .textCase(nil)
+                        .tint(Color.primary)
                 }
             }
         }
@@ -195,6 +196,7 @@ struct SearchView: View {
                     Label(reference.title, systemImage: "arrow.right.circle.fill")
                         .font(.headline)
                 }
+                .tint(Color.primary)
             }
         }
 
@@ -232,7 +234,7 @@ struct SearchView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(hit.reference)
                                 .font(.footnote.weight(.semibold))
-                                .foregroundStyle(.tint)
+                                .foregroundStyle(.secondary)
                             Text(emphasized(hit.verse.text))
                                 .font(.scripture(size: 16))
                                 .lineLimit(4)

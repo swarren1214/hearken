@@ -51,7 +51,7 @@ private struct CourseContent: View {
                     if let stage {
                         Text("STAGE \(stage.number) · COURSE \(course.number)")
                             .font(.caption.weight(.bold))
-                            .foregroundStyle(.tint)
+                            .foregroundStyle(.secondary)
                     }
                     Text(course.title).font(.title2.bold()).foregroundStyle(.primary)
                     Text(course.summary).font(.subheadline).foregroundStyle(.secondary)
@@ -75,7 +75,7 @@ private struct CourseContent: View {
                                 HStack(alignment: .firstTextBaseline, spacing: 8) {
                                     Image(systemName: "checkmark.circle.fill")
                                         .font(.subheadline)
-                                        .foregroundStyle(.tint)
+                                        .foregroundStyle(.secondary)
                                         .accessibilityHidden(true)
                                     Text(objective).font(.subheadline)
                                 }
@@ -102,7 +102,7 @@ private struct CourseContent: View {
                         HStack(spacing: 12) {
                             Image(systemName: status.checkpointPassed ? "checkmark.circle.fill" : "checklist")
                                 .font(.title3)
-                                .foregroundStyle(status.checkpointPassed ? Feedback.correct : Color.accentColor)
+                                .foregroundStyle(.primary)
                                 .frame(width: 34)
                             VStack(alignment: .leading, spacing: 2) {
                                 Text("Course checkpoint").font(.body.weight(.semibold)).foregroundStyle(.primary)

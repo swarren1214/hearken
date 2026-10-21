@@ -80,7 +80,7 @@ struct ExplainSheet: View {
         VStack(alignment: .leading, spacing: 6) {
             Text(request.reference)
                 .font(.footnote.weight(.semibold))
-                .foregroundStyle(.tint)
+                .foregroundStyle(.secondary)
             Text(request.selectedText)
                 .font(.scripture(size: 16))
                 .foregroundStyle(.secondary)
@@ -157,7 +157,7 @@ struct ExplainSheet: View {
                                     VStack(alignment: .leading, spacing: 3) {
                                         Text(passage.reference)
                                             .font(.subheadline.weight(.semibold))
-                                            .foregroundStyle(.tint)
+                                            .foregroundStyle(.primary)
                                         Text(passage.text)
                                             .font(.scripture(size: 15))
                                             .foregroundStyle(.secondary)
@@ -220,6 +220,7 @@ struct ExplainSheet: View {
                     Label("Open \(request.chapterTitle) in Gospel Library", systemImage: "arrow.up.right.square")
                         .font(.subheadline.weight(.semibold))
                 }
+                .tint(Color.primary)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

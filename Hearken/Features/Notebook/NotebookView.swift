@@ -262,7 +262,7 @@ struct NotebookView: View {
                     HStack(spacing: 6) {
                         Image(systemName: "books.vertical.fill")
                         Text(entries.first?.bookTitle ?? LibraryCatalog.location(ofChapter: bookID + ".1")?.book.title ?? "This Book")
-                        Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
+                        Image(systemName: "xmark.circle.fill")
                     }
                     .font(.subheadline.weight(.semibold))
                 }
@@ -332,7 +332,7 @@ struct NotebookView: View {
 
     private func row(_ entry: NotebookEntry) -> some View {
         Button { selected = entry } label: {
-            NotebookCard(entry: entry, meaning: entry.hue.map { legend.name(for: $0) }, accent: Accent.color)
+            NotebookCard(entry: entry, meaning: entry.hue.map { legend.name(for: $0) })
         }
         .buttonStyle(.plain)
         .listRowBackground(Color.clear)
@@ -417,6 +417,7 @@ struct NotebookView: View {
                             bookID = nil
                         }
                     }
+                    .tint(Color.primary)
                 }
             } else {
                 ContentUnavailableView.search(text: trimmedQuery)
@@ -434,8 +435,6 @@ struct NotebookView: View {
 struct NotebookCard: View {
     let entry: NotebookEntry
     let meaning: String?
-    /// Explicit, because the row's tint is set to primary for its menu icons.
-    let accent: Color
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -451,7 +450,6 @@ struct NotebookCard: View {
                     HStack(alignment: .firstTextBaseline, spacing: 8) {
                         Image(systemName: "note.text")
                             .font(.footnote)
-                            .foregroundStyle(accent)
                         Text(entry.note?.body ?? "")
                             .font(.subheadline)
                             .lineLimit(4)
@@ -478,7 +476,7 @@ struct NotebookCard: View {
         HStack(spacing: 8) {
             Text(entry.reference)
                 .font(.subheadline.weight(.bold))
-                .foregroundStyle(accent)
+                .foregroundStyle(.primary)
                 .lineLimit(1)
             if let hue = entry.hue {
                 tag {

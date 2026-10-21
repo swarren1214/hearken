@@ -113,7 +113,7 @@ struct BankQuestionView: View {
                     }) {
                         HStack(spacing: 8) {
                             Text(chosen.flatMap { right[$0] } ?? "Choose a match")
-                                .foregroundStyle(chosen == nil ? Color.accentColor : .primary)
+                                .foregroundStyle(chosen == nil ? Color.secondary : .primary)
                                 .multilineTextAlignment(.leading)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             Image(systemName: reveal ? (correct ? Feedback.correctSymbol : Feedback.incorrectSymbol) : "chevron.up.chevron.down")
@@ -174,7 +174,7 @@ struct InlineCheckView: View {
         VStack(alignment: .leading, spacing: 14) {
             Label(isPassed ? "Check · done" : "Check yourself", systemImage: isPassed ? Feedback.correctSymbol : "questionmark.circle")
                 .font(.caption.weight(.bold))
-                .foregroundStyle(isPassed ? Feedback.correct : Color.accentColor)
+                .foregroundStyle(isPassed ? Feedback.correct : Color.secondary)
             BankQuestionView(question: question, layout: layout, answer: $answer, reveal: result == true || isPassed, disabled: isPassed)
             if isPassed || result == true {
                 Text(question.explanation).font(.subheadline).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
@@ -346,7 +346,7 @@ struct QuizRunnerView: View {
     }
 
     private func fact(_ symbol: String, _ text: String) -> some View {
-        Label { Text(text) } icon: { Image(systemName: symbol).foregroundStyle(.tint) }
+        Label { Text(text) } icon: { Image(systemName: symbol).foregroundStyle(.secondary) }
             .font(.body)
     }
 
@@ -396,6 +396,7 @@ struct QuizRunnerView: View {
                     Button { index -= 1 } label: { Text("Back").frame(maxWidth: .infinity) }
                         .buttonStyle(.glass)
                         .controlSize(.large)
+                        .tint(Color.primary)
                 }
                 Button {
                     if index + 1 < questions.count {
@@ -475,6 +476,7 @@ struct QuizRunnerView: View {
                     Button { start() } label: { Text("Retake").frame(maxWidth: .infinity) }
                         .buttonStyle(.glass)
                         .controlSize(.large)
+                        .tint(Color.primary)
                     Button { dismiss() } label: { Text("Done").frame(maxWidth: .infinity) }
                         .buttonStyle(.glassProminent)
                         .controlSize(.large)

@@ -129,6 +129,7 @@ struct GameView: View {
             Button("Close", systemImage: "xmark") { dismiss() }
                 .labelStyle(.iconOnly)
                 .buttonStyle(.glass)
+                .tint(Color.primary)
                 .buttonBorderShape(.circle)
                 .controlSize(.large)
 
@@ -146,7 +147,7 @@ struct GameView: View {
             Text("+\(xpEarned) XP")
                 .font(.subheadline.weight(.bold).monospacedDigit())
                 .contentTransition(.numericText())
-                .foregroundStyle(.tint)
+                .foregroundStyle(.primary)
                 .lineLimit(1)
                 .fixedSize()
                 .padding(.horizontal, 10)
@@ -273,6 +274,7 @@ struct GameView: View {
                         .frame(maxWidth: dynamicTypeSize.isAccessibilitySize ? .infinity : nil)
                 }
                 .buttonStyle(.glass)
+                .tint(Color.primary)
                 .controlSize(.large)
             }
             Button {
@@ -356,6 +358,7 @@ struct GameView: View {
                     .controlSize(.large)
                 Button { restart() } label: { Text("Play Again").frame(maxWidth: .infinity) }
                     .buttonStyle(.glass)
+                    .tint(Color.primary)
                     .controlSize(.large)
             }
             .padding(.horizontal, 16)

@@ -115,7 +115,7 @@ struct GroupReportSheet: View {
                                     if reason == option {
                                         Image(systemName: "checkmark")
                                             .font(.body.weight(.semibold))
-                                            .foregroundStyle(.tint)
+                                            .foregroundStyle(.primary)
                                     }
                                 }
                                 .contentShape(.rect)

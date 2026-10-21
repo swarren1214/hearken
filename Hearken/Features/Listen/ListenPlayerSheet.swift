@@ -102,7 +102,7 @@ struct ListenPlayerSheet: View {
                 .padding(.horizontal, 14)
                 .frame(height: 32)
                 .background(.tint.opacity(0.14), in: Capsule())
-                .foregroundStyle(.tint)
+                .foregroundStyle(.primary)
                 .padding(.top, 6)
         case .notDownloaded, .failed:
             NavigationLink(value: ListenSettingsRoute()) {
@@ -113,7 +113,7 @@ struct ListenPlayerSheet: View {
                     .background(.tint.opacity(0.14), in: Capsule())
             }
             .buttonStyle(.plain)
-            .foregroundStyle(.tint)
+            .foregroundStyle(.primary)
             .padding(.top, 6)
         default:
             EmptyView()

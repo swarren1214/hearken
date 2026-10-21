@@ -217,7 +217,7 @@ struct PlayView: View {
                 if !due.isEmpty {
                     Text("Review · \(max(1, due.count / 3)) min")
                         .font(.footnote.weight(.semibold))
-                        .foregroundStyle(.tint)
+                        .foregroundStyle(.primary)
                 }
             }
             .padding(16)

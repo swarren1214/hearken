@@ -477,7 +477,7 @@ struct PlanDetailView: View {
         VStack(alignment: .leading, spacing: 10) {
             Label("You finished \(state.plan.title)", systemImage: "checkmark.seal.fill")
                 .font(.headline)
-                .foregroundStyle(.tint)
+                .foregroundStyle(.primary)
             Text("All \(state.chaptersTotal) chapters read. Finish the plan to start another.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
@@ -508,14 +508,14 @@ struct PlanDetailView: View {
                         HStack(spacing: 12) {
                             Text(label(for: day, today: state.today))
                                 .font(.subheadline.weight(.semibold))
-                                .foregroundStyle(day.date == state.today ? AnyShapeStyle(.tint) : AnyShapeStyle(.secondary))
+                                .foregroundStyle(day.date == state.today ? AnyShapeStyle(.primary) : AnyShapeStyle(.secondary))
                                 .frame(width: 76, alignment: .leading)
                             Text(PlanFormat.range(day.chapterIDs))
                                 .font(.scripture(size: 17, weight: .semibold))
                                 .lineLimit(1)
                             Spacer(minLength: 8)
                             if state.isDone(day) {
-                                Image(systemName: "checkmark.circle.fill").foregroundStyle(.tint)
+                                Image(systemName: "checkmark.circle.fill").foregroundStyle(.secondary)
                                     .accessibilityLabel("Read")
                             } else {
                                 Text("\(day.minutes) min").font(.subheadline).foregroundStyle(.secondary)

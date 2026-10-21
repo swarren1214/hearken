@@ -60,6 +60,7 @@ struct WelcomeView: View {
 
                 Button("Skip for Now") { tour.skip() }
                     .font(.body.weight(.medium))
+                    .tint(Color.primary)
                     .padding(.vertical, 6)
                     .keyboardShortcut(.cancelAction)
             }
