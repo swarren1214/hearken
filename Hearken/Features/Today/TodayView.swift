@@ -12,7 +12,6 @@ struct TodayView: View {
     @Query(sort: \PlanEnrollment.createdAt, order: .reverse) private var enrollments: [PlanEnrollment]
     @Query private var awards: [SubjectAward]
     @Query private var grants: [RankGrant]
-    @State private var showSettings = false
     @State private var activeGame: GameRequest?
 
     private let mastery = MasteryService()
@@ -25,6 +24,9 @@ struct TodayView: View {
         let plan = PlanReading.active(enrollments)
         let planState = plan.flatMap { PlanEngine.shared.state(for: $0, content: content, read: PlanReading.readSet(progress)) }
 
+        // The page's width comes from outside the scroll view, so it always matches the window
+        // (containerRelativeFrame here could keep a stale width after the iPad rotated or resized).
+        GeometryReader { page in
         ScrollViewReader { proxy in
             ScrollView {
                 VStack(alignment: .leading, spacing: 22) {
@@ -42,13 +44,13 @@ struct TodayView: View {
                     GroupsSection(defaultPlanID: plan?.planID, customPlan: planState.flatMap { $0.plan.isCustom ? $0.plan : nil })
                     progressCard(totalXP: totalXP)
                     continueReading
-                        .id(TourController.Step.today)
-                        .tourTarget(.today)
+                        .id(HearkenTour.today)
+                        .hearthTourTarget(HearkenTour.today)
                     subjectsSection(snapshot: snapshot)
                 }
                 // Exactly the screen's width (less the margins): a row that comes out too wide for
                 // very large text can't widen the page and push every other section off its edges.
-                .containerRelativeFrame(.horizontal, alignment: .leading) { width, _ in max(width - 32, 0) }
+                .frame(width: max(page.size.width - 32, 0), alignment: .leading)
                 .padding(.horizontal, 16)
                 .padding(.bottom, 24)
             }
@@ -70,28 +72,26 @@ struct TodayView: View {
                     .accessibilityLabel("\(streak) day streak")
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Profile and settings", systemImage: "person.crop.circle") { showSettings = true }
-                        .tint(.white)
+                    // The profile photo, as in every Hearth app (HearthProfile.swift).
+                    HearthProfileButton()
                 }
-            }
-            .sheet(isPresented: $showSettings) {
-                NavigationStack { SettingsView() }
             }
             .fullScreenCover(item: $activeGame) { request in
                 GameView(request: request)
             }
             // The tour's first step points at Continue Reading; bring it on screen first.
-            .onChange(of: TourController.shared.step) { _, step in
-                guard step == .today else { return }
-                withAnimation { proxy.scrollTo(TourController.Step.today, anchor: .center) }
+            .onChange(of: HearthTour.shared.step?.id) { _, id in
+                guard id == HearkenTour.today else { return }
+                withAnimation { proxy.scrollTo(HearkenTour.today, anchor: .center) }
             }
             // The tour ended with Start Reading: open where they left off.
-            .onChange(of: TourController.shared.startReadingRequested) { _, requested in
+            .onChange(of: HearthTour.shared.finishRequested) { _, requested in
                 guard requested else { return }
-                TourController.shared.startReadingRequested = false
+                HearthTour.shared.finishRequested = false
                 let last = progress.max(by: { $0.updatedAt < $1.updatedAt })
                 AppNavigator.shared.open(chapterID: last?.chapterID ?? content.defaultChapterID)
             }
+        }
         }
     }
 

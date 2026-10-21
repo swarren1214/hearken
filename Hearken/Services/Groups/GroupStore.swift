@@ -861,14 +861,16 @@ final class GroupStore {
         Logger(subsystem: "com.stephenwarren.hearken", category: "groups")
             .error("\(action, privacy: .public) failed: \(String(describing: error), privacy: .public)")
         if let error = error as? HearthAPI.APIError {
+            // An expired sign-in or too many requests: say what to do.
+            if error.status == 401 || error.status == 429, let message = FriendlyError.knownMessage(error) { return message }
             // The API's messages are written for people, except for outages.
-            return error.status >= 500 ? "Study groups are having trouble right now. Try again in a moment." : error.message
+            if error.status >= 500 || error.message.isEmpty { return "Study groups are having trouble right now. Try again in a moment." }
+            return error.message
         }
-        if let error = error as? HearthAPI.ClientError {
-            return error.errorDescription ?? "Sign in with Apple to use study groups."
-        }
-        if GroupOutbox.isOffline(error) {
-            return "You're offline. Try again when you're back online."
+        // Offline, not signed in, or a reply Hearken didn't understand.
+        if error is HearthAPI.ClientError || GroupOutbox.isOffline(error) || error is DecodingError,
+           let message = FriendlyError.knownMessage(error) {
+            return message
         }
         return "Study groups couldn't \(action) right now. Try again in a moment."
     }

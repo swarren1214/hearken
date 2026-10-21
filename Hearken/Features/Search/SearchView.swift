@@ -49,7 +49,7 @@ struct SearchTab: View {
             prompt: "Verses, references, subjects"
         )
         // Not during the tour: the keyboard would cover its card.
-        .onAppear { if !TourController.shared.isActive { activateSearch() } }
+        .onAppear { if !HearthTour.shared.isActive { activateSearch() } }
         .searchScopes($scope, activation: .onSearchPresentation) {
             ForEach(SearchScope.allCases) { Text($0.title).tag($0) }
         }

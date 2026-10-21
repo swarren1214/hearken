@@ -5,7 +5,6 @@ import SwiftData
 import SwiftUI
 
 struct SettingsView: View {
-    @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) private var colorScheme
     @Environment(AccountService.self) private var account
@@ -38,182 +37,43 @@ struct SettingsView: View {
     private var hearth: HearthLink { HearthLink.shared }
 
     var body: some View {
-        Form {
+        // The shared Hearth Profile (HearthProfile.swift), with Hearken's own sections in the middle.
+        HearthProfileView(
+            app: .hearken,
+            profile: accountProfile,
+            sync: HearthProfileSync(summary: "Your highlights, notes and progress", sharing: syncSharing) {
+                syncSnapshot
+            } syncNow: {
+                await sync.syncNow(context: modelContext)
+                await CloudRefresh.refresh()
+            },
+            erase: HearthProfileErase(
+                app: .hearken,
+                message: "This removes your notes, highlights, plans and progress from this device and from iCloud. Your Hearth account, study groups and household aren't affected. It can't be undone."
+            ) {
+                do {
+                    try Persistence.eraseAll(in: modelContext)
+                } catch {
+                    errorMessage = FriendlyError.message(error, action: "erase your data")
+                }
+            }
+        ) {
             accountSection
-
-            Section {
-                AppearancePicker(selection: $appearance)
-            } header: {
-                Text("Appearance")
-            } footer: {
-                Text("System follows your iPhone's Light and Dark setting, including scheduled switching.")
-            }
-
-            Section {
-                VerseRow(
-                    verse: Verse(id: "preview", number: 27, text: "But behold, if ye will awake and arouse your faculties, even to an experiment upon my words, and exercise a particle of faith."),
-                    highlight: nil,
-                    showNumber: showVerseNumbers,
-                    fontSize: CGFloat(textSize),
-                    isSelected: false
-                )
-                .animation(.snappy, value: textSize)
-                .accessibilityLabel("Preview of scripture text")
-                HStack(spacing: 12) {
-                    Image(systemName: "textformat.size.smaller").accessibilityHidden(true)
-                    Slider(value: $textSize, in: 15...28, step: 1) {
-                        Text("Scripture Text Size")
-                    }
-                    .accessibilityValue("\(Int(textSize)) points")
-                    Image(systemName: "textformat.size.larger").accessibilityHidden(true)
-                }
-                .foregroundStyle(.secondary)
-            } header: {
-                HStack {
-                    Text("Text Size")
-                    Spacer()
-                    Text("\(Int(textSize)) pt").monospacedDigit()
-                }
-            } footer: {
-                Text("Alma 32:27. Also adjustable from the … menu in the reader.")
-            }
-
-            Section("Reading") {
-                NavigationLink {
-                    HighlightColorsView()
-                } label: {
-                    HStack {
-                        Text("Highlight Colors")
-                        Spacer()
-                        HStack(spacing: -4) {
-                            ForEach(legend.entries.prefix(4)) { entry in
-                                Circle()
-                                    .fill(entry.hue.color)
-                                    .frame(width: 14, height: 14)
-                                    .overlay(Circle().stroke(Color(.secondarySystemGroupedBackground), lineWidth: 2))
-                            }
-                        }
-                        Text("\(legend.entries.count)").foregroundStyle(.secondary)
-                    }
-                }
-                NavigationLink {
-                    ListenSettingsView()
-                } label: {
-                    LabeledContent("Listening", value: ListenEngine.shared.voiceName)
-                }
-                Toggle("Verse Numbers", isOn: $showVerseNumbers)
-                CheckPicker("Layout", selection: $readerLayout, options: ReaderLayout.allCases.map {
-                    .init(value: $0, title: $0.title, systemImage: $0.symbol)
-                })
-            }
-
-            Section("Study") {
-                NavigationLink {
-                    BadgesView()
-                } label: {
-                    Label("Badges", systemImage: "medal")
-                }
-                // The icon matches the title, not the accent (the Stepper and Toggle keep it).
-                .tint(Color.primary)
-                Stepper(value: $dailyGoal, in: 5...60, step: 5) {
-                    LabeledContent("Daily Goal", value: "\(dailyGoal) min")
-                }
-                Toggle("Study Reminder", isOn: reminderBinding)
-            }
-
-            Section {
-                Toggle("Review Questions", isOn: reviewBinding)
-                if reviewNotifications {
-                    DatePicker("Time", selection: reviewTimeBinding, displayedComponents: .hourAndMinute)
-                }
-            } footer: {
-                Text("A daily Spaced Review question you can answer right from the notification, on iPhone or Apple Watch.")
-            }
-
-            #if DEBUG
-            Section {
-                Toggle("Unlock All Courses", isOn: $unlockAllCourses)
-            } header: {
-                Text("Developer")
-            } footer: {
-                Text("Debug builds only. Opens every Scholar Path course and check so a path can be reviewed end to end. XP and rank rules are unchanged.")
-            }
-            #endif
-
-            Section {
-                Button("Take the Tour Again", systemImage: "hand.point.up.left") {
-                    dismiss()
-                    // Starts once the Settings sheet has finished closing.
-                    TourController.shared.start(skippingWelcome: true, after: .milliseconds(600))
-                }
-                Button(tipsReset ? "Tips Will Show Again" : "Show All Tips Again", systemImage: tipsReset ? "checkmark" : "lightbulb") {
-                    UserDefaults.standard.set(true, forKey: SettingsKey.tipsResetPending)
-                    withAnimation { tipsReset = true }
-                }
-                .disabled(tipsReset)
-            } header: {
-                Text("Help")
-            } footer: {
-                Text(tipsReset
-                     ? "Reader tips reappear after you next open Hearken, the next time you reach each feature."
-                     : "Reader tips reappear the next time you reach each feature.")
-            }
-            .tint(Color.primary)
-
-            Section {
-                NavigationLink {
-                    HearthHouseholdView(accent: Accent.color)
-                } label: {
-                    Label(HearthHouseholdStore.shared.exists ? "Family" : "Set Up Hearth Household", systemImage: "house.lodge")
-                }
-            } header: {
-                Text("Household")
-            } footer: {
-                Text("Your family, the same in every Hearth app. Caloma shows whose reading is whose on the family calendar.")
-            }
-            .tint(Color.primary)
-
-            Section {
-                NavigationLink {
-                    HearthAppsView(current: .hearken)
-                } label: {
-                    HearthAppsRowLabel(current: .hearken)
-                }
-            }
-
-            supportSection
-
-            Section("About") {
-                LabeledContent("Version", value: Bundle.main.appVersion)
-                Link("Terms of Use", destination: AppConfig.termsURL)
-                Link("Privacy Policy", destination: AppConfig.privacyURL)
-                Link("Support", destination: AppConfig.supportURL)
-                Link(destination: AppConfig.supportEmailURL) {
-                    LabeledContent("Email", value: AppConfig.supportEmail)
-                }
-                // Kokoro's model and voices are Apache 2.0, which asks for attribution.
-                Link(destination: URL(string: "https://huggingface.co/hexgrad/Kokoro-82M")!) {
-                    LabeledContent("Natural Voices", value: "Kokoro · Apache 2.0")
-                }
-                Text(AppConfig.disclaimer)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            }
-            .tint(Color.primary)
+        } settings: {
+            hearkenSections
+        } data: {
+        } about: {
+            // Kokoro's model and voices are Apache 2.0, which asks for attribution.
+            Link("Natural voices: Kokoro · Apache 2.0", destination: URL(string: "https://huggingface.co/hexgrad/Kokoro-82M")!)
+                .tint(Color.secondary)
+            Text(AppConfig.disclaimer)
         }
-        .navigationTitle("Settings")
-        .toolbar {
-            ToolbarItem(placement: .confirmationAction) {
-                SheetDoneButton { dismiss() }
-            }
-        }
-        .alert(account.isSignedIn ? "Delete your Hearth account?" : "Delete all your Hearken data?", isPresented: $confirmDelete) {
-            Button(account.isSignedIn ? "Delete Account" : "Delete All Data", role: .destructive) { deleteAccount() }
+        // Delete Account is only offered when signed in (Erase Hearken Data covers signed out).
+        .alert("Delete your Hearth account?", isPresented: $confirmDelete) {
+            Button("Delete Account", role: .destructive) { deleteAccount() }
             Button("Cancel", role: .cancel) {}
         } message: {
-            Text(account.isSignedIn
-                 ? "This deletes your Hearth account, which your other Hearth apps use too, and everything it keeps on Hearth's servers. You leave your study groups and what you shared in them is deleted; groups you own pass to another member. Your notes, highlights, plans and progress are removed from this device and from iCloud, and you're signed out of your Hearth apps on this iPhone. A Hearken Plus or Hearth+ subscription isn't canceled; cancel it in Settings › Apple Account › Subscriptions. This can't be undone."
-                 : "This removes your notes, highlights, plans and progress from this device and from iCloud. It can't be undone.")
+            Text("This deletes your Hearth account, which your other Hearth apps use too, and everything it keeps on Hearth's servers. You leave your study groups and what you shared in them is deleted; groups you own pass to another member. Your notes, highlights, plans and progress are removed from this device and from iCloud, and you're signed out of your Hearth apps on this iPhone. A Hearken Plus or Hearth+ subscription isn't canceled; cancel it in Settings › Apple Account › Subscriptions. This can't be undone.")
         }
         .alert("Sign out of Hearken?", isPresented: $confirmSignOut) {
             // Also signs out of the other Hearth apps on this iPhone (one shared sign-in).
@@ -239,7 +99,159 @@ struct SettingsView: View {
         }
     }
 
+    /// Hearken's own settings: appearance, text, reading, study and tips.
+    @ViewBuilder
+    private var hearkenSections: some View {
+        Section {
+            AppearancePicker(selection: $appearance)
+        } header: {
+            Text("Appearance")
+        } footer: {
+            Text("System follows your iPhone's Light and Dark setting, including scheduled switching.")
+        }
+
+        Section {
+            VerseRow(
+                verse: Verse(id: "preview", number: 27, text: "But behold, if ye will awake and arouse your faculties, even to an experiment upon my words, and exercise a particle of faith."),
+                highlight: nil,
+                showNumber: showVerseNumbers,
+                fontSize: CGFloat(textSize),
+                isSelected: false
+            )
+            .animation(.snappy, value: textSize)
+            .accessibilityLabel("Preview of scripture text")
+            HStack(spacing: 12) {
+                Image(systemName: "textformat.size.smaller").accessibilityHidden(true)
+                Slider(value: $textSize, in: 15...28, step: 1) {
+                    Text("Scripture Text Size")
+                }
+                .accessibilityValue("\(Int(textSize)) points")
+                Image(systemName: "textformat.size.larger").accessibilityHidden(true)
+            }
+            .foregroundStyle(.secondary)
+        } header: {
+            HStack {
+                Text("Text Size")
+                Spacer()
+                Text("\(Int(textSize)) pt").monospacedDigit()
+            }
+        } footer: {
+            Text("Alma 32:27. Also adjustable from the … menu in the reader.")
+        }
+
+        Section("Reading") {
+            NavigationLink {
+                HighlightColorsView()
+            } label: {
+                HStack {
+                    Text("Highlight Colors")
+                    Spacer()
+                    HStack(spacing: -4) {
+                        ForEach(legend.entries.prefix(4)) { entry in
+                            Circle()
+                                .fill(entry.hue.color)
+                                .frame(width: 14, height: 14)
+                                .overlay(Circle().stroke(Color(.secondarySystemGroupedBackground), lineWidth: 2))
+                        }
+                    }
+                    Text("\(legend.entries.count)").foregroundStyle(.secondary)
+                }
+            }
+            NavigationLink {
+                ListenSettingsView()
+            } label: {
+                LabeledContent("Listening", value: ListenEngine.shared.voiceName)
+            }
+            Toggle("Verse Numbers", isOn: $showVerseNumbers)
+            CheckPicker("Layout", selection: $readerLayout, options: ReaderLayout.allCases.map {
+                .init(value: $0, title: $0.title, systemImage: $0.symbol)
+            })
+        }
+
+        Section("Study") {
+            NavigationLink {
+                BadgesView()
+            } label: {
+                Label("Badges", systemImage: "medal")
+            }
+            // The icon matches the title, not the accent (the Stepper and Toggle keep it).
+            .tint(Color.primary)
+            Stepper(value: $dailyGoal, in: 5...60, step: 5) {
+                LabeledContent("Daily Goal", value: "\(dailyGoal) min")
+            }
+            Toggle("Study Reminder", isOn: reminderBinding)
+        }
+
+        Section {
+            Toggle("Review Questions", isOn: reviewBinding)
+            if reviewNotifications {
+                DatePicker("Time", selection: reviewTimeBinding, displayedComponents: .hourAndMinute)
+            }
+        } footer: {
+            Text("A daily Spaced Review question you can answer right from the notification, on iPhone or Apple Watch.")
+        }
+
+        #if DEBUG
+        Section {
+            Toggle("Unlock All Courses", isOn: $unlockAllCourses)
+        } header: {
+            Text("Developer")
+        } footer: {
+            Text("Debug builds only. Opens every Scholar Path course and check so a path can be reviewed end to end. XP and rank rules are unchanged.")
+        }
+        #endif
+
+        if account.isSignedIn, HearthConnection.shared.isConnected || !GroupStore.shared.blockedUserIDs.isEmpty {
+            Section {
+                NavigationLink {
+                    BlockedPeopleView()
+                } label: {
+                    LabeledContent {
+                        let count = GroupStore.shared.blockedUserIDs.count
+                        if count > 0 { Text("\(count)") }
+                    } label: {
+                        Label("Blocked People", systemImage: "hand.raised")
+                    }
+                }
+            } header: {
+                Text("Study Groups")
+            } footer: {
+                Text("You don't see posts, replies or answers from people you block.")
+            }
+            .tint(Color.primary)
+        }
+
+        Section {
+            Button(tipsReset ? "Tips Will Show Again" : "Show All Tips Again", systemImage: tipsReset ? "checkmark" : "lightbulb") {
+                UserDefaults.standard.set(true, forKey: SettingsKey.tipsResetPending)
+                withAnimation { tipsReset = true }
+            }
+            .disabled(tipsReset)
+        } header: {
+            Text("Tips")
+        } footer: {
+            Text(tipsReset
+                 ? "Reader tips reappear after you next open Hearken, the next time you reach each feature."
+                 : "Reader tips reappear the next time you reach each feature.")
+        }
+        .tint(Color.primary)
+
+        supportSection
+    }
+
+    /// Who's signed in, for the account card at the top (nil shows Sign in with Apple).
+    private var accountProfile: HearthAccountProfile? {
+        guard account.isSignedIn else { return nil }
+        return HearthAccountProfile(name: account.displayName, email: account.email, photo: account.avatarData ?? hearth.sharedAvatar)
+    }
+
     // MARK: Account
+
+    /// A photo is set: their household photo when they're in a household, else Hearken's own.
+    private var hasProfilePhoto: Bool {
+        if let me = HearthHouseholdStore.shared.me { return me.photo != nil }
+        return account.avatarData != nil
+    }
 
     @ViewBuilder
     private var accountSection: some View {
@@ -273,18 +285,19 @@ struct SettingsView: View {
                             }
                         } catch let error as ASAuthorizationError where error.code == .canceled {
                         } catch {
-                            errorMessage = error.localizedDescription
+                            errorMessage = FriendlyError.signIn(error)
                         }
                     }
                     .signInWithAppleButtonStyle(colorScheme == .dark ? .white : .black)
                 }
             } rows: {
                 PhotosPicker(selection: $avatarItem, matching: .images) {
-                    HearthAccountRow(account.avatarData == nil ? "Add Profile Photo" : "Change Profile Photo", systemImage: "camera", showsChevron: false)
+                    HearthAccountRow(hasProfilePhoto ? "Change Profile Photo" : "Add Profile Photo", systemImage: "camera", showsChevron: false)
                 }
                 .buttonStyle(.plain)
-                if account.avatarData != nil {
+                if hasProfilePhoto {
                     Button(role: .destructive) {
+                        if let me = HearthHouseholdStore.shared.me { HearthHouseholdStore.shared.setPhoto(nil, for: me.id) }
                         account.setAvatar(nil)
                     } label: {
                         HearthAccountRow("Remove Photo", systemImage: "trash", showsChevron: false)
@@ -300,12 +313,23 @@ struct SettingsView: View {
             .task(id: account.isSignedIn) {
                 sharedSignIn = account.isSignedIn ? nil : await account.sharedSignInToOffer()
             }
+            .task(id: HearthHouseholdStore.shared.me?.photo) {
+                // Once the household has their photo (Hearken's older one was adopted, or they
+                // chose one in another app), Hearken's own copy goes.
+                if HearthHouseholdStore.shared.me?.photo != nil, account.avatarData != nil { account.setAvatar(nil) }
+            }
             .onChange(of: avatarItem) { _, item in
                 guard let item else { return }
                 Task {
                     if let data = try? await item.loadTransferable(type: Data.self),
                        let jpeg = AccountAvatar.thumbnail(from: data) {
-                        account.setAvatar(jpeg)
+                        // Their household photo, the one every Hearth app shows; Hearken keeps
+                        // its own copy only for someone not in a household.
+                        if let me = HearthHouseholdStore.shared.me, HearthHouseholdStore.shared.setPhoto(jpeg, for: me.id) {
+                            account.setAvatar(nil)
+                        } else {
+                            account.setAvatar(jpeg)
+                        }
                     }
                     avatarItem = nil
                 }
@@ -319,70 +343,6 @@ struct SettingsView: View {
             }
         }
 
-        Section {
-            HearthMembershipRow()
-        } header: {
-            Text("Membership")
-        } footer: {
-            Text("Reading, study, quizzes, Explain and your own notes are always free. Plus adds Listen, study groups, more games and your own books.")
-        }
-
-        if account.isSignedIn, HearthConnection.shared.isConnected || !GroupStore.shared.blockedUserIDs.isEmpty {
-            Section {
-                NavigationLink {
-                    BlockedPeopleView()
-                } label: {
-                    LabeledContent {
-                        let count = GroupStore.shared.blockedUserIDs.count
-                        if count > 0 { Text("\(count)") }
-                    } label: {
-                        Label("Blocked People", systemImage: "hand.raised")
-                    }
-                }
-            } header: {
-                Text("Study Groups")
-            } footer: {
-                Text("You don't see posts, replies or answers from people you block.")
-            }
-            .tint(Color.primary)
-        }
-
-        Section("iCloud") {
-            HearthSyncCard(
-                app: .hearken,
-                snapshot: syncSnapshot,
-                summary: "Your highlights, notes and progress",
-                sharing: syncSharing
-            ) {
-                await sync.syncNow(context: modelContext)
-                await CloudRefresh.refresh()
-            }
-            .hearthSyncCardRow()
-        }
-
-        // Signed in, Delete Account is in the account section; signed out, the data can still go.
-        if !account.isSignedIn {
-            Section {
-                Button(role: .destructive) {
-                    confirmDelete = true
-                } label: {
-                    Label("Delete All Data", systemImage: "trash")
-                        // Inside a Form the icon would pick up the accent; keep it white like the text.
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.glassProminent)
-                .tint(.red)
-                .controlSize(.large)
-                .buttonBorderShape(.capsule)
-                // The row clips its content, and glass draws slightly past its frame (and grows
-                // when pressed), so leave a little room or the capsule's round ends get cut flat.
-                .padding(.horizontal, 6)
-                .padding(.vertical, 6)
-                .listRowInsets(EdgeInsets())
-                .listRowBackground(Color.clear)
-            }
-        }
     }
 
     // MARK: Tips
@@ -511,7 +471,7 @@ struct SettingsView: View {
             do {
                 try await account.deleteAccount(context: modelContext)
             } catch {
-                errorMessage = error.localizedDescription
+                errorMessage = FriendlyError.message(error, action: "delete your account")
             }
         }
     }

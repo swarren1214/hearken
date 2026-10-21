@@ -367,7 +367,6 @@ private struct ChapterGrid: View {
     let onShowNotebook: (String) -> Void
 
     @Environment(\.modelContext) private var modelContext
-    @Environment(AccountService.self) private var account
     @Query private var records: [ReadingProgress]
 
     private let mastery = MasteryService()

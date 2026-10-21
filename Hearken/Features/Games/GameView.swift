@@ -25,7 +25,6 @@ struct GameView: View {
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-    @Environment(AccountService.self) private var account
 
     @State private var questions: [Question]
     @State private var index = 0

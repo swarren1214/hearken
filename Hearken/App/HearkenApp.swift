@@ -87,12 +87,12 @@ struct AppRoot: View {
         RootTabView()
             .tint(Accent.color)
             .fullScreenCover(isPresented: showOnboarding) {
-                SignInView {
+                // First run (Features/Onboarding/OnboardingView.swift): it ends by starting the
+                // tour or opening the reader, so nothing starts the tour here.
+                OnboardingView {
                     onboardingDone = true
-                    // A new install: show them around once the sign-in screen is gone.
-                    TourController.shared.startAfterSignIn()
                 }
-                .tint(Accent.color)
+                .interactiveDismissDisabled()
             }
             .task {
                 await account.refresh()

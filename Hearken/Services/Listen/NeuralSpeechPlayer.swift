@@ -131,7 +131,7 @@ final class NeuralSpeechPlayer {
             do {
                 samples = try await KokoroSynth.shared.synthesize(KokoroText.prepare(text), voice: voice, tuning: tuning, gpu: isForeground)
             } catch {
-                if current == sampleGeneration { onError(error.localizedDescription) }
+                if current == sampleGeneration { onError(FriendlyError.voicePlayback(error)) }
                 return
             }
             guard current == sampleGeneration else { return }
@@ -191,7 +191,7 @@ final class NeuralSpeechPlayer {
                     samples = try await KokoroSynth.shared.synthesize(piece, voice: voice, tuning: tuning, gpu: isForeground)
                 } catch {
                     guard current == generation else { return }
-                    onError(item.index, error.localizedDescription)
+                    onError(item.index, FriendlyError.voicePlayback(error))
                     return
                 }
                 guard !Task.isCancelled, current == generation else { return }

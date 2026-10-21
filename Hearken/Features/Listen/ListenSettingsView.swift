@@ -104,7 +104,7 @@ struct ListenSettingsView: View {
                 Text("Natural Voices")
             } footer: {
                 if let error = engine.naturalVoiceError {
-                    Text("The natural voice couldn't play: \(error)")
+                    Text("The natural voice couldn’t play. \(error)")
                         .foregroundStyle(.red)
                 }
             }

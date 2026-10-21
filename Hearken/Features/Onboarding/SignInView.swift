@@ -10,6 +10,8 @@ struct SignInView: View {
     @Environment(AccountService.self) private var account
     @State private var signedIn = false
     @State private var errorMessage: String?
+    /// The nonce for the Hearth API sign-in that rides along with Sign in with Apple.
+    @State private var appleNonce: String?
     /// The sign-in another Hearth app shared, once Apple says it's still good.
     @State private var sharedSignIn: HearthSharedAppleID?
     /// The screen's height, to fit short screens (iPhone Duo's outer display, iPhone SE).
@@ -118,14 +120,22 @@ struct SignInView: View {
             } else {
                 SignInWithAppleButton(.signIn) { request in
                     request.requestedScopes = [.fullName, .email]
+                    // The same sign-in also signs in to the Hearth account, as in Settings, so
+                    // the other Hearth apps (and study groups) see it.
+                    appleNonce = HearthAPI.prepareAppleRequest(request)
                 } onCompletion: { result in
                     do {
                         try account.completeSignIn(result)
+                        if case .success(let authorization) = result,
+                           let credential = authorization.credential as? ASAuthorizationAppleIDCredential {
+                            let nonce = appleNonce
+                            Task { await HearthConnection.shared.connect(credential: credential, nonce: nonce) }
+                        }
                         withAnimation { signedIn = true }
                     } catch let error as ASAuthorizationError where error.code == .canceled {
                         // The person closed the sheet; nothing to report.
                     } catch {
-                        errorMessage = error.localizedDescription
+                        errorMessage = FriendlyError.signIn(error)
                     }
                 }
                 .modifier(AdaptiveSignInStyle())
@@ -178,7 +188,7 @@ struct SharedSignInButton: View {
                     try await account.continueWithSharedSignIn(shared)
                     onSignedIn()
                 } catch {
-                    onFailed(error.localizedDescription)
+                    onFailed(FriendlyError.signIn(error))
                 }
                 working = false
             }

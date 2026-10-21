@@ -46,7 +46,7 @@ actor HearthAPI {
         var errorDescription: String? {
             switch self {
             case .notConnected: "Sign in with Apple to use study groups."
-            case .invalidResponse: "The Hearth service returned an invalid response."
+            case .invalidResponse: "Hearth is having trouble right now. Try again in a moment."
             case .service(let message), .rejected(let message): message
             case .rateLimited: "Too many requests just now. Try again in a minute."
             case .missingAppleToken: "Apple did not provide an identity token. Please try again."
@@ -154,6 +154,8 @@ actor HearthAPI {
 
     /// A valid access token. `renew` forces a refresh, after the API rejected the current one.
     func accessToken(renew: Bool = false) async throws -> String {
+        // Another Hearth app may have switched accounts or signed out (one Keychain read).
+        if renewal == nil { followSharedSession() }
         if !renew, let authSession, authSession.user.isAnonymous != true,
            authSession.expiresAt > Int(Date().timeIntervalSince1970) + 60 {
             return authSession.accessToken
@@ -188,6 +190,9 @@ actor HearthAPI {
                 do { return try await refresh(adopted.refreshToken) } catch ClientError.rejected {}
             }
             Self.log.notice("Refresh token rejected (\(message, privacy: .public)); signing out of the Hearth API")
+            // Dead in every app (only when Supabase says the refresh token itself is invalid, not
+            // for any other 4xx): remove it from the shared sign-in too, if it's still there.
+            if Self.isDeadRefreshToken(message) { HearthAccounts.discardSession(ifRefreshToken: authSession?.refreshToken ?? current.refreshToken) }
             Self.markDead(refreshToken: authSession?.refreshToken ?? current.refreshToken)
             forgetSession()
             throw ClientError.notConnected
@@ -198,7 +203,13 @@ actor HearthAPI {
         let body = try JSONSerialization.data(withJSONObject: ["refresh_token": refreshToken])
         let refreshed: AuthSession = try await auth(path: "/auth/v1/token?grant_type=refresh_token", body: body)
         store(refreshed)
-        share(refreshed)
+        // Someone else signed in in another app while this was on its way: never write this
+        // account back over theirs (the next look follows them).
+        // (No shared session, but it was this account's: signed out elsewhere meanwhile.)
+        let sharedNow = HearthAccounts.session()
+        let mayShare = sharedNow.map { $0.userID == refreshed.user.id }
+            ?? (UserDefaults.standard.string(forKey: Self.sharedUserKey) != refreshed.user.id)
+        if mayShare { share(refreshed) } else { followSharedSession() }
         return refreshed
     }
 
@@ -321,6 +332,12 @@ actor HearthAPI {
         SHA256.hash(data: Data(token.utf8)).map { String(format: "%02x", $0) }.joined()
     }
 
+    /// Supabase's answer when the refresh token itself is no good ("Invalid Refresh Token: …"),
+    /// as opposed to any other rejected request.
+    private nonisolated static func isDeadRefreshToken(_ message: String) -> Bool {
+        message.localizedCaseInsensitiveContains("refresh token") || message.localizedCaseInsensitiveContains("invalid_grant")
+    }
+
     private nonisolated static func markDead(refreshToken: String) {
         UserDefaults.standard.set(tokenHash(refreshToken), forKey: deadTokenKey)
     }
@@ -380,7 +397,7 @@ actor HearthAPI {
 
     private nonisolated static func authMessage(from data: Data, status: Int) -> String {
         let detail = try? JSONDecoder().decode(AuthError.self, from: data)
-        return detail?.message ?? detail?.msg ?? detail?.errorDescription ?? "The sign-in service returned HTTP \(status)."
+        return detail?.message ?? detail?.msg ?? detail?.errorDescription ?? "Hearth couldn’t sign you in right now. Try again in a moment."
     }
 
     private nonisolated static func apiError(from data: Data, status: Int) -> APIError {
@@ -405,6 +422,8 @@ final class HearthConnection {
     var errorMessage: String?
 
     @ObservationIgnored private var observer: NSObjectProtocol?
+    /// The Hearth account the study groups on screen belong to.
+    @ObservationIgnored private var connectedUserID: String?
 
     /// Re-reads the session, following the other Hearth apps.
     func update() async {
@@ -421,11 +440,21 @@ final class HearthConnection {
         }
         let api = HearthAPI.shared
         await api.followSharedSession()
-        let connected = await api.isConnected
+        let userID = await api.userID
+        let connected = userID != nil
         let changed = connected != isConnected
+        // Another Hearth app switched accounts: the groups (and push token) were the old one's.
+        let switched = connected && isConnected && connectedUserID != nil && userID != connectedUserID
         isConnected = connected
+        connectedUserID = userID
         hasChecked = true
-        if changed { await GroupStore.shared.refresh() }
+        if switched {
+            GroupStore.shared.forget()
+            await GroupStore.shared.refresh()
+            await GroupStore.shared.didConnect()
+        } else if changed {
+            await GroupStore.shared.refresh()
+        }
     }
 
     /// The second half of a Sign in with Apple button that asked for a nonce
@@ -439,7 +468,7 @@ final class HearthConnection {
         } catch {
             Logger(subsystem: "com.stephenwarren.hearken", category: "hearth-api")
                 .error("Hearth sign-in failed: \(String(describing: error), privacy: .public)")
-            errorMessage = (error as? LocalizedError)?.errorDescription ?? "Couldn't sign in. Try again in a moment."
+            errorMessage = FriendlyError.signIn(error)
         }
         await update()
         await GroupStore.shared.refresh()

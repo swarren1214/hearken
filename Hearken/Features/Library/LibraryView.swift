@@ -51,7 +51,7 @@ struct LibraryView: View {
                     .padding(.horizontal, 16)
                 ForEach(shelves) { shelf in
                     shelfRow(shelf, progress: progress)
-                        .tourTarget(.library, isEnabled: shelf.id == shelves.first?.id)
+                        .hearthTourTarget(HearkenTour.library, isEnabled: shelf.id == shelves.first?.id)
                 }
             }
             .padding(.top, 4)
@@ -98,6 +98,10 @@ struct LibraryView: View {
                     Label("Reading Plans", systemImage: "calendar")
                 }
                 .tint(.white)
+            }
+            // The profile photo, always last, as in every Hearth app.
+            ToolbarItem(placement: .topBarTrailing) {
+                HearthProfileButton()
             }
     }
 

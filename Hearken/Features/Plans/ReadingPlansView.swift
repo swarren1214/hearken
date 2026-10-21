@@ -15,7 +15,6 @@ enum PlanReading {
 /// Library › Reading Plans: your plan, then the plans you can start.
 struct ReadingPlansView: View {
     @Environment(ContentService.self) private var content
-    @Environment(AccountService.self) private var account
     @Query(sort: \PlanEnrollment.createdAt, order: .reverse) private var enrollments: [PlanEnrollment]
     @Query private var progress: [ReadingProgress]
     @AppStorage(SettingsKey.onboardingDone) private var onboardingDone = false
@@ -686,6 +685,11 @@ struct PlanTodayCard: View {
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
+    /// Liquid Glass with a dark tint, so the card bridges the color header and the gray cards below it.
+    private static let glassTint = Color(red: 0.06, green: 0.08, blue: 0.12).opacity(0.3)
+    /// "N days behind", in a warm color that stands out on the glass.
+    private static let behindColor = Color(red: 1, green: 0.82, blue: 0.54)
+
     var body: some View {
         let day = state.currentDay
         let todayDone = day.map(state.isDone) ?? true
@@ -696,13 +700,13 @@ struct PlanTodayCard: View {
                 VStack(alignment: .leading, spacing: 3) {
                     Text(state.plan.title.uppercased())
                         .font(.caption.weight(.bold))
-                        .opacity(0.9)
-                    Text(dayLine(day))
+                        .opacity(0.78)
+                    dayText(day)
                         .font(.subheadline.weight(.semibold))
                 }
                 Spacer()
                 ZStack {
-                    Circle().stroke(.white.opacity(0.28), lineWidth: 6)
+                    Circle().stroke(.white.opacity(0.22), lineWidth: 6)
                     Circle().trim(from: 0, to: state.fraction)
                         .stroke(.white, style: StrokeStyle(lineWidth: 6, lineCap: .round))
                         .rotationEffect(.degrees(-90))
@@ -723,14 +727,14 @@ struct PlanTodayCard: View {
                     .fixedSize(horizontal: false, vertical: dynamicTypeSize.isAccessibilitySize)
                 Text(detailLine(day, todayDone: todayDone))
                     .font(.subheadline)
-                    .opacity(0.9)
+                    .opacity(0.85)
             }
 
             if let day, !state.isFinished {
                 HStack(spacing: 6) {
                     ForEach(day.chapterIDs, id: \.self) { id in
                         Capsule()
-                            .fill(.white.opacity(state.read.contains(id) ? 1 : 0.35))
+                            .fill(.white.opacity(state.read.contains(id) ? 1 : 0.22))
                             .frame(height: 6)
                     }
                 }
@@ -751,12 +755,13 @@ struct PlanTodayCard: View {
             }
         }
         .foregroundStyle(.white)
-        .padding(18)
-        .background(Accent.color.gradient, in: .rect(cornerRadius: 26))
+        .padding(20)
+        .glassEffect(.regular.tint(Self.glassTint), in: .rect(cornerRadius: 28, style: .continuous))
     }
 
     /// Read, Listen and View Plan. Listen drops its title when the row is tight.
     private func actionRow(todayDone: Bool, listenTitle: Bool) -> some View {
+        GlassEffectContainer(spacing: 10) {
         HStack(spacing: 10) {
             if let next = state.nextChapterID, !state.isFinished {
                 readButton(next, todayDone: todayDone, fills: false)
@@ -765,16 +770,19 @@ struct PlanTodayCard: View {
             Spacer(minLength: 0)
             viewPlanButton(fills: false)
         }
+        }
     }
 
     /// The same buttons one under another, each the card's width, for when a row won't fit.
     private func actionColumn(todayDone: Bool) -> some View {
+        GlassEffectContainer(spacing: 10) {
         VStack(spacing: 10) {
             if let next = state.nextChapterID, !state.isFinished {
                 readButton(next, todayDone: todayDone, fills: true)
                 listenButton(showsTitle: true, fills: true)
             }
             viewPlanButton(fills: true)
+        }
         }
     }
 
@@ -787,9 +795,9 @@ struct PlanTodayCard: View {
                 .font(.subheadline.weight(.semibold))
                 .padding(.horizontal, 16)
                 .padding(.vertical, fills ? 8 : 0)
-                .frame(maxWidth: fills ? .infinity : nil, minHeight: 40)
-                .background(.white, in: Capsule())
-                .foregroundStyle(Accent.color)
+                .frame(maxWidth: fills ? .infinity : nil, minHeight: 44)
+                .foregroundStyle(.white)
+                .glassEffect(.regular.tint(Accent.color).interactive(), in: .capsule)
         }
         .buttonStyle(.plain)
         .fixedSize(horizontal: !fills, vertical: false)
@@ -803,8 +811,8 @@ struct PlanTodayCard: View {
                 .symbolEffect(.pulse, isActive: isListening && ListenEngine.shared.isPlaying)
                 .padding(.horizontal, showsTitle ? 16 : 0)
                 .padding(.vertical, fills ? 8 : 0)
-                .frame(minWidth: 40, maxWidth: fills ? .infinity : nil, minHeight: 40)
-                .background(.white.opacity(0.2), in: Capsule())
+                .frame(minWidth: 44, maxWidth: fills ? .infinity : nil, minHeight: 44)
+                .glassEffect(.regular.interactive(), in: .capsule)
         }
         .buttonStyle(.plain)
         .fixedSize(horizontal: !fills, vertical: false)
@@ -819,8 +827,8 @@ struct PlanTodayCard: View {
                 .font(.subheadline.weight(.semibold))
                 .padding(.horizontal, 14)
                 .padding(.vertical, fills ? 8 : 0)
-                .frame(maxWidth: fills ? .infinity : nil, minHeight: 40)
-                .background(.white.opacity(0.2), in: Capsule())
+                .frame(maxWidth: fills ? .infinity : nil, minHeight: 44)
+                .glassEffect(.regular.interactive(), in: .capsule)
         }
         .buttonStyle(.plain)
         .fixedSize(horizontal: !fills, vertical: false)
@@ -860,6 +868,12 @@ struct PlanTodayCard: View {
             return "No reading today · next \(day.date.formatted(.dateTime.weekday(.wide)))"
         }
         return "Day \(day.number) of \(state.totalDays) · \(state.statusLine)"
+    }
+
+    /// The day line, with "N days behind" in the warm color when reading is overdue.
+    private func dayText(_ day: PlanDay?) -> Text {
+        guard let day, !state.isFinished, state.isReadingDayToday, state.daysBehind > 0 else { return Text(dayLine(day)) }
+        return Text("Day \(day.number) of \(state.totalDays) · \(Text(state.statusLine).foregroundStyle(Self.behindColor))")
     }
 
     private func detailLine(_ day: PlanDay?, todayDone: Bool) -> String {

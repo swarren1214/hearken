@@ -19,7 +19,6 @@ struct RootTabView: View {
     @State private var libraryPath = NavigationPath()
     @State private var navigator = AppNavigator.shared
     @State private var groups = GroupStore.shared
-    @State private var tour = TourController.shared
     @State private var importer = BookImporter.shared
     @Environment(ContentService.self) private var content
     @Environment(\.horizontalSizeClass) private var sizeClass
@@ -79,6 +78,8 @@ struct RootTabView: View {
         // iPad: a top tab bar that opens into a sidebar on the left. iPhone: the usual bottom tab bar.
         .tabViewStyle(.sidebarAdaptable)
         .tabBarMinimizeBehavior(.onScrollDown)
+        // Profile, opened by the photo at the top right of every main screen.
+        .hearthProfile { SettingsView() }
         // Debug: marketing screenshots (scripts/screenshots.sh). Does nothing otherwise.
         .screenshotStage(selection: $selection, todayPath: $todayPath, playPath: $playPath, libraryPath: $libraryPath)
         // Scholar Path: the unlock celebration for each newly earned rank.
@@ -117,20 +118,17 @@ struct RootTabView: View {
             groups.openThread = nil
             groups.openGroupID = nil
         }
-        // The first-run tour: the Welcome sheet, then each step shows its tab at its top level.
-        .sheet(isPresented: $tour.showsWelcome) {
-            WelcomeView()
-        }
-        .onChange(of: tour.step) { _, step in
-            guard let step else { return }
-            selection = step.tab
-            switch step.tab {
+        // The tour (HearthTour.swift): the Welcome sheet, then each step shows its tab at its
+        // top level. It starts after sign-in on a new install (HearkenApp), not here.
+        .hearthTour(app: .hearken, steps: HearkenTour.steps, finishTitle: "Start Reading", doneKey: SettingsKey.tourDone, autoStart: false) { step in
+            let tab = HearkenTour.tab(for: step)
+            selection = tab
+            switch tab {
             case .today: todayPath = NavigationPath()
             case .play: playPath = NavigationPath()
             default: break
             }
         }
-        .overlay { TourOverlay() }
         // Importing books: every way in (Files, Share sheet, drag and drop) lands on one sheet.
         .sheet(item: Binding(get: { importer.batch }, set: { value in
             if value == nil, let batch = importer.batch { importer.cancel(batch) }

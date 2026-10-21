@@ -123,7 +123,7 @@ final class BookImporter {
                     result = try await Self.read(url, bookID: draft.id, known: known)
                 } catch {
                     var failed = draft
-                    failed.state = .failed(error.localizedDescription)
+                    failed.state = .failed((error as? ReadError)?.errorDescription ?? FriendlyError.importReason(error))
                     result = failed
                 }
                 finishReading(result)
@@ -372,7 +372,7 @@ final class BookImporter {
             try? book.modelContext?.save()
             library.refresh()
             var failure: String?
-            if case .failure(let error) = result { failure = error.localizedDescription }
+            if case .failure(let error) = result { failure = FriendlyError.importReason(error) }
             notifyIfAway(book, failure: failure)
             if book.status == .ready { BookRefiner.shared.refine(bookID) }
         }

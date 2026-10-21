@@ -29,6 +29,9 @@ struct PlayView: View {
         let badges = Set(grants.map { "\($0.subjectID)|\($0.rankRaw)" }).count
         let streak = MasteryMath.streak(activityDates: xpEvents.map(\.createdAt), now: .now)
 
+        // The page's width comes from outside the scroll view, so it always matches the window
+        // (containerRelativeFrame here could keep a stale width after the iPad rotated or resized).
+        GeometryReader { page in
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 HeaderTitle("Play", subtitle: "\(accountXP.formatted()) XP · \(badges) badge\(badges == 1 ? "" : "s")")
@@ -38,7 +41,7 @@ struct PlayView: View {
                     reviewCard(snapshot: snapshot)
                 }
                 .fixedSize(horizontal: false, vertical: true)
-                .tourTarget(.play)
+                .hearthTourTarget(HearkenTour.play)
 
                 quickPlay
                 mapQuestSection
@@ -46,7 +49,7 @@ struct PlayView: View {
             }
             // Exactly the screen's width (less the margins), so nothing too wide for very large
             // text can widen the page. (Quick Play scrolls sideways inside it, as before.)
-            .containerRelativeFrame(.horizontal, alignment: .leading) { width, _ in max(width - 32, 0) }
+            .frame(width: max(page.size.width - 32, 0), alignment: .leading)
             .padding(.horizontal, 16)
             .padding(.bottom, 24)
         }
@@ -65,6 +68,10 @@ struct PlayView: View {
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel("\(streak) day streak")
             }
+            // The profile photo, always last, as in every Hearth app.
+            ToolbarItem(placement: .topBarTrailing) {
+                HearthProfileButton()
+            }
         }
         .fullScreenCover(item: $activeGame) { GameView(request: $0) }
         .fullScreenCover(item: $mapQuest) { MapQuestView(category: $0) }
@@ -73,6 +80,7 @@ struct PlayView: View {
             detail: "Quick Play and Map Quest, and each new game as it arrives. The Daily Challenge and Spaced Review stay free.",
             symbol: "gamecontroller.fill"
         ))
+        }
     }
 
     private var gamesUnlocked: Bool { HearthPurchases.shared.isUnlocked }

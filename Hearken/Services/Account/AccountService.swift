@@ -32,7 +32,7 @@ final class AccountService {
 
         var errorDescription: String? {
             switch self {
-            case .unexpectedCredential: "Sign in with Apple returned an unexpected credential."
+            case .unexpectedCredential: "The sign-in didn’t finish. Try Sign in with Apple again."
             case .couldNotSave: "Your sign-in couldn't be saved on this device. Please try again."
             case .sharedSignInExpired: "That sign-in is no longer valid. Please sign in with Apple instead."
             case .householdHasMembers: "Remove the other people from your household in BigTable first."
@@ -288,9 +288,19 @@ final class AccountService {
         case nil:
             // Signed in before the apps shared a sign-in.
             shareSignIn(userID: userID)
-        default:
-            // Another Apple Account is signed in to the other apps; leave Hearken's alone.
-            break
+        case let shared?:
+            // Another Hearth app signed in as someone else: follow it, so every Hearth app shows
+            // the same person (one sign-in for the Hearth apps).
+            log.info("followSharedSignIn: another Hearth app switched accounts")
+            guard KeychainStore.save(shared.userID, for: Keys.userID) else { return }
+            displayName = shared.fullName.flatMap { $0.isEmpty ? nil : $0 }
+            email = shared.email.flatMap { $0.isEmpty ? nil : $0 }
+            for (key, value) in [(Keys.displayName, displayName), (Keys.email, email)] {
+                if let value { UserDefaults.standard.set(value, forKey: key) } else { UserDefaults.standard.removeObject(forKey: key) }
+            }
+            UserDefaults.standard.set(true, forKey: Keys.sharedSignIn)
+            HearthLink.shared.update()
+            Task { @MainActor in await HearthConnection.shared.update() }
         }
     }
 
@@ -402,8 +412,8 @@ final class AccountService {
         if GroupOutbox.isOffline(error) {
             return .deleteFailed("You're offline, so your account wasn't deleted. Try again when you're back online.")
         }
-        if let error = error as? HearthAPI.ClientError, let message = error.errorDescription {
-            return .deleteFailed(message)
+        if error is HearthAPI.ClientError, let message = FriendlyError.knownMessage(error) {
+            return .deleteFailed("Your account wasn’t deleted. \(message)")
         }
         return .deleteFailed("Your account couldn't be deleted right now. Try again in a moment.")
     }
