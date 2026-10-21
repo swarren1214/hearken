@@ -152,11 +152,12 @@ struct RootTabView: View {
             libraryPath.append(ImportedBookRoute(bookID: bookID))
             navigator.pendingBookID = nil
         }
-        .alert("Couldn't Import", isPresented: Binding(get: { importer.failureMessage != nil }, set: { if !$0 { importer.failureMessage = nil } })) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text(importer.failureMessage ?? "")
-        }
+        // Above any open sheet, not waiting behind it (HearthProfile.swift).
+        .hearthNotice(
+            "Couldn't Import",
+            isPresented: Binding(get: { importer.failureMessage != nil }, set: { if !$0 { importer.failureMessage = nil } }),
+            message: importer.failureMessage
+        )
         .overlay {
             if importer.isReading {
                 VStack(spacing: 10) {

@@ -1,6 +1,5 @@
 import AuthenticationServices
 import CloudKit
-import PhotosUI
 import SwiftData
 import SwiftUI
 
@@ -12,7 +11,6 @@ struct SettingsView: View {
     @Environment(SyncService.self) private var sync
 
     @AppStorage(ScholarDebug.unlockAllKey) private var unlockAllCourses = false
-    @AppStorage(SettingsKey.appearance) private var appearance: AppearanceOption = .system
     @AppStorage(SettingsKey.scriptureTextSize) private var textSize: Double = 20
     @AppStorage(SettingsKey.showVerseNumbers) private var showVerseNumbers = true
     @AppStorage(SettingsKey.readerLayout) private var readerLayout: ReaderLayout = .scroll
@@ -25,8 +23,9 @@ struct SettingsView: View {
     @State private var confirmSignOut = false
     /// The nonce for the Sign in with Apple request, which also signs in to the Hearth API.
     @State private var appleNonce: String?
-    @State private var avatarItem: PhotosPickerItem?
     @State private var errorMessage: String?
+    /// An error from signing in or deleting the account, shown over the account section.
+    @State private var accountError: String?
     @State private var tipsReset = false
     /// The sign-in another Hearth app shared, offered as "Continue as <name>".
     @State private var sharedSignIn: HearthSharedAppleID?
@@ -68,20 +67,6 @@ struct SettingsView: View {
                 .tint(Color.secondary)
             Text(AppConfig.disclaimer)
         }
-        // Delete Account is only offered when signed in (Erase Hearken Data covers signed out).
-        .alert("Delete your Hearth account?", isPresented: $confirmDelete) {
-            Button("Delete Account", role: .destructive) { deleteAccount() }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("This deletes your Hearth account, which your other Hearth apps use too, and everything it keeps on Hearth's servers. You leave your study groups and what you shared in them is deleted; groups you own pass to another member. Your notes, highlights, plans and progress are removed from this device and from iCloud, and you're signed out of your Hearth apps on this iPhone. A Hearken Plus or Hearth+ subscription isn't canceled; cancel it in Settings › Apple Account › Subscriptions. This can't be undone.")
-        }
-        .alert("Sign out of Hearken?", isPresented: $confirmSignOut) {
-            // Also signs out of the other Hearth apps on this iPhone (one shared sign-in).
-            Button("Sign Out", role: .destructive) { account.signOutEverywhere() }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("This also signs you out of your other Hearth apps on this iPhone. Your notes, highlights and progress stay on this device and in iCloud.")
-        }
         .alert("Thank you!", isPresented: $tipThanks) {
             Button("OK", role: .cancel) {}
         } message: {
@@ -99,17 +84,10 @@ struct SettingsView: View {
         }
     }
 
-    /// Hearken's own settings: appearance, text, reading, study and tips.
+    /// Hearken's own settings: text, reading, study and tips. (Appearance is in the shared
+    /// Profile, HearthProfile.swift.)
     @ViewBuilder
     private var hearkenSections: some View {
-        Section {
-            AppearancePicker(selection: $appearance)
-        } header: {
-            Text("Appearance")
-        } footer: {
-            Text("System follows your iPhone's Light and Dark setting, including scheduled switching.")
-        }
-
         Section {
             VerseRow(
                 verse: Verse(id: "preview", number: 27, text: "But behold, if ye will awake and arouse your faculties, even to an experiment upon my words, and exercise a particle of faith."),
@@ -247,12 +225,6 @@ struct SettingsView: View {
 
     // MARK: Account
 
-    /// A photo is set: their household photo when they're in a household, else Hearken's own.
-    private var hasProfilePhoto: Bool {
-        if let me = HearthHouseholdStore.shared.me { return me.photo != nil }
-        return account.avatarData != nil
-    }
-
     @ViewBuilder
     private var accountSection: some View {
         Section {
@@ -268,7 +240,7 @@ struct SettingsView: View {
                         sharedSignIn = nil
                     } onFailed: { message in
                         sharedSignIn = nil
-                        errorMessage = message
+                        accountError = message
                     }
                 } else {
                     SignInWithAppleButton(.signIn) { request in
@@ -285,24 +257,10 @@ struct SettingsView: View {
                             }
                         } catch let error as ASAuthorizationError where error.code == .canceled {
                         } catch {
-                            errorMessage = FriendlyError.signIn(error)
+                            accountError = FriendlyError.signIn(error)
                         }
                     }
                     .signInWithAppleButtonStyle(colorScheme == .dark ? .white : .black)
-                }
-            } rows: {
-                PhotosPicker(selection: $avatarItem, matching: .images) {
-                    HearthAccountRow(hasProfilePhoto ? "Change Profile Photo" : "Add Profile Photo", systemImage: "camera", showsChevron: false)
-                }
-                .buttonStyle(.plain)
-                if hasProfilePhoto {
-                    Button(role: .destructive) {
-                        if let me = HearthHouseholdStore.shared.me { HearthHouseholdStore.shared.setPhoto(nil, for: me.id) }
-                        account.setAvatar(nil)
-                    } label: {
-                        HearthAccountRow("Remove Photo", systemImage: "trash", showsChevron: false)
-                    }
-                    .buttonStyle(.plain)
                 }
             } onSignOut: {
                 confirmSignOut = true
@@ -310,6 +268,27 @@ struct SettingsView: View {
                 confirmDelete = true
             }
             .hearthAccountSectionRow()
+            // These ride with the section, not with Profile: signed in, the section is on the
+            // pushed Hearth Account page, and an alert on Profile would wait behind it.
+            // Delete Account is only offered when signed in (Erase Hearken Data covers signed out).
+            .alert("Delete your Hearth account?", isPresented: $confirmDelete) {
+                Button("Delete Account", role: .destructive) { deleteAccount() }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("This deletes your Hearth account, which your other Hearth apps use too, and everything it keeps on Hearth's servers. You leave your study groups and what you shared in them is deleted; groups you own pass to another member. Your notes, highlights, plans and progress are removed from this device and from iCloud, and you're signed out of your Hearth apps on this iPhone. A Hearken Plus or Hearth+ subscription isn't canceled; cancel it in Settings › Apple Account › Subscriptions. This can't be undone.")
+            }
+            .alert("Sign out of Hearken?", isPresented: $confirmSignOut) {
+                // Also signs out of the other Hearth apps on this iPhone (one shared sign-in).
+                Button("Sign Out", role: .destructive) { account.signOutEverywhere() }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("This also signs you out of your other Hearth apps on this iPhone. Your notes, highlights and progress stay on this device and in iCloud.")
+            }
+            .alert("Something went wrong", isPresented: Binding(get: { accountError != nil }, set: { if !$0 { accountError = nil } })) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(accountError ?? "")
+            }
             .task(id: account.isSignedIn) {
                 sharedSignIn = account.isSignedIn ? nil : await account.sharedSignInToOffer()
             }
@@ -317,22 +296,6 @@ struct SettingsView: View {
                 // Once the household has their photo (Hearken's older one was adopted, or they
                 // chose one in another app), Hearken's own copy goes.
                 if HearthHouseholdStore.shared.me?.photo != nil, account.avatarData != nil { account.setAvatar(nil) }
-            }
-            .onChange(of: avatarItem) { _, item in
-                guard let item else { return }
-                Task {
-                    if let data = try? await item.loadTransferable(type: Data.self),
-                       let jpeg = AccountAvatar.thumbnail(from: data) {
-                        // Their household photo, the one every Hearth app shows; Hearken keeps
-                        // its own copy only for someone not in a household.
-                        if let me = HearthHouseholdStore.shared.me, HearthHouseholdStore.shared.setPhoto(jpeg, for: me.id) {
-                            account.setAvatar(nil)
-                        } else {
-                            account.setAvatar(jpeg)
-                        }
-                    }
-                    avatarItem = nil
-                }
             }
         } header: {
             HStack {
@@ -471,7 +434,7 @@ struct SettingsView: View {
             do {
                 try await account.deleteAccount(context: modelContext)
             } catch {
-                errorMessage = FriendlyError.message(error, action: "delete your account")
+                accountError = FriendlyError.message(error, action: "delete your account")
             }
         }
     }
@@ -519,95 +482,6 @@ struct SettingsView: View {
                 }
             }
         )
-    }
-}
-
-/// Three thumbnails (System, Light, Dark) with radio buttons, matching the design.
-private struct AppearancePicker: View {
-    @Binding var selection: AppearanceOption
-
-    var body: some View {
-        HStack(spacing: 12) {
-            ForEach(AppearanceOption.allCases) { option in
-                let isSelected = option == selection
-                Button {
-                    selection = option
-                } label: {
-                    VStack(spacing: 8) {
-                        AppearanceThumbnail(option: option)
-                            .overlay {
-                                RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                    .strokeBorder(isSelected ? AnyShapeStyle(.tint) : AnyShapeStyle(Color(.separator)),
-                                                  lineWidth: isSelected ? 3 : 0.5)
-                            }
-                        Text(option.name)
-                            .font(.subheadline.weight(.medium))
-                            .foregroundStyle(.primary)
-                        Image(systemName: isSelected ? "largecircle.fill.circle" : "circle")
-                            .font(.title3)
-                            .foregroundStyle(isSelected ? AnyShapeStyle(.tint) : AnyShapeStyle(Color(.tertiaryLabel)))
-                    }
-                    .frame(maxWidth: .infinity)
-                    .contentShape(.rect)
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel(option.name)
-                .accessibilityAddTraits(isSelected ? .isSelected : [])
-            }
-        }
-        .padding(.vertical, 6)
-        .sensoryFeedback(.selection, trigger: selection)
-    }
-}
-
-/// A miniature screen: a title bar and two cards, in light, dark, or split for System.
-private struct AppearanceThumbnail: View {
-    let option: AppearanceOption
-
-    private struct Palette {
-        let background: Color
-        let card: Color
-        let bar: Color
-    }
-
-    private static let light = Palette(background: Color(white: 0.95), card: .white, bar: Color(white: 0.82))
-    private static let dark = Palette(background: Color(white: 0.11), card: Color(white: 0.23), bar: Color(white: 0.4))
-
-    var body: some View {
-        Group {
-            switch option {
-            case .light:
-                screen(Self.light)
-            case .dark:
-                screen(Self.dark)
-            case .system:
-                screen(Self.light)
-                    .overlay(alignment: .trailing) {
-                        GeometryReader { proxy in
-                            screen(Self.dark)
-                                .mask(alignment: .trailing) {
-                                    Rectangle().frame(width: proxy.size.width / 2)
-                                }
-                        }
-                    }
-            }
-        }
-        .frame(height: 120)
-        .clipShape(.rect(cornerRadius: 14, style: .continuous))
-        .accessibilityHidden(true)
-    }
-
-    private func screen(_ palette: Palette) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Capsule().fill(palette.bar).frame(width: 46, height: 10)
-            RoundedRectangle(cornerRadius: 7, style: .continuous).fill(palette.card).frame(height: 32)
-            RoundedRectangle(cornerRadius: 7, style: .continuous).fill(palette.card).frame(height: 32)
-            Spacer(minLength: 0)
-        }
-        .padding(.horizontal, 10)
-        .padding(.top, 12)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(palette.background)
     }
 }
 

@@ -1,3 +1,4 @@
+import Combine
 import SwiftData
 import SwiftUI
 import TipKit
@@ -76,12 +77,14 @@ struct HearkenApp: App {
     }
 }
 
-/// Applies the tint and appearance, gates first launch on sign-in, and re-checks the account.
+/// Applies the tint, gates first launch on sign-in, and re-checks the account.
 struct AppRoot: View {
     @Environment(AccountService.self) private var account
     @Environment(\.scenePhase) private var scenePhase
-    @AppStorage(SettingsKey.appearance) private var appearance: AppearanceOption = .system
     @AppStorage(SettingsKey.onboardingDone) private var onboardingDone = false
+    /// A new install asks iCloud first whether this person already onboarded on another device,
+    /// so their iPad doesn't make them do it again.
+    @State private var cloudChecked = UserDefaults.standard.bool(forKey: SettingsKey.onboardingDone) || ScreenshotMode.isOn
 
     var body: some View {
         RootTabView()
@@ -93,6 +96,19 @@ struct AppRoot: View {
                     onboardingDone = true
                 }
                 .interactiveDismissDisabled()
+            }
+            .task {
+                if onboardingDone {
+                    // Also for people who onboarded before iCloud remembered it.
+                    if !ScreenshotMode.isOn { HearthOnboarding.rememberInCloud(.hearken) }
+                } else if await HearthOnboarding.waitForOtherDevices(.hearken, timeout: .seconds(3)) {
+                    skipOnboarding()
+                }
+                cloudChecked = true
+            }
+            // Finished on another device while onboarding is showing here.
+            .onReceive(NotificationCenter.default.publisher(for: NSUbiquitousKeyValueStore.didChangeExternallyNotification).receive(on: RunLoop.main)) { _ in
+                if !onboardingDone, !ScreenshotMode.isOn, HearthOnboarding.isDoneOnAnotherDevice(.hearken) { skipOnboarding() }
             }
             .task {
                 await account.refresh()
@@ -118,12 +134,8 @@ struct AppRoot: View {
             .modifier(ReviewSideEffects())
             .modifier(GroupSideEffects())
             .modifier(ListenSideEffects())
-            .onChange(of: appearance, initial: true) { _, option in
-                applyAppearance(option)
-            }
             .onChange(of: scenePhase) { _, phase in
                 if phase == .active {
-                    applyAppearance(appearance)
                     Task { await account.refresh() }
                     // Untitled parts of imported books get titles while the app is open.
                     BookRefiner.shared.refineAll()
@@ -131,22 +143,13 @@ struct AppRoot: View {
             }
     }
 
-    /// Sets the style on every window, so sheets and full-screen covers follow it too.
-    /// (preferredColorScheme only reaches the presentation it's applied in.)
-    private func applyAppearance(_ option: AppearanceOption) {
-        let style: UIUserInterfaceStyle = switch option {
-        case .system: .unspecified
-        case .light: .light
-        case .dark: .dark
-        }
-        for case let scene as UIWindowScene in UIApplication.shared.connectedScenes {
-            for window in scene.windows {
-                window.overrideUserInterfaceStyle = style
-            }
-        }
+    /// Onboarding's done for this person on another device: none of it here.
+    private func skipOnboarding() {
+        HearthOnboarding.finishWithoutSteps(.hearken)
+        onboardingDone = true
     }
 
     private var showOnboarding: Binding<Bool> {
-        Binding(get: { !onboardingDone }, set: { onboardingDone = !$0 })
+        Binding(get: { cloudChecked && !onboardingDone }, set: { onboardingDone = !$0 })
     }
 }

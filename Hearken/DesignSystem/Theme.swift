@@ -3,7 +3,6 @@ import UIKit
 
 /// Keys for settings stored with @AppStorage. Keep every key here so views stay in sync.
 enum SettingsKey {
-    static let appearance = "settings.appearance"
     static let scriptureTextSize = "settings.scriptureTextSize"
     static let showVerseNumbers = "settings.showVerseNumbers"
     static let readerLayout = "settings.readerLayout"
@@ -34,22 +33,6 @@ enum ReaderLayout: String, CaseIterable, Identifiable {
 /// Hearken's tint everywhere. (It used to be a setting, Accent Color.)
 enum Accent {
     static let color = Color(hex: 0x0A7AFF)
-}
-
-/// Settings › Appearance.
-enum AppearanceOption: String, CaseIterable, Identifiable {
-    case system, light, dark
-
-    var id: String { rawValue }
-    var name: String { rawValue.capitalized }
-
-    var colorScheme: ColorScheme? {
-        switch self {
-        case .system: nil
-        case .light: .light
-        case .dark: .dark
-        }
-    }
 }
 
 /// Answer feedback colors. Never the accent color, and always paired with a symbol.

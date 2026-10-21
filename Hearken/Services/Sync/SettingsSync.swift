@@ -19,6 +19,9 @@ final class SettingsSync {
         SettingsKey.dailyGoalMinutes,
         SettingsKey.pencilHue,
         SettingsKey.pencilStyle,
+        // Seen the tour: not again on their next device (onboarding follows them through
+        // HearthKit's `HearthOnboarding`).
+        SettingsKey.tourDone,
     ]
 
     private let defaults = UserDefaults.standard

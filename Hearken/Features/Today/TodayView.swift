@@ -57,7 +57,8 @@ struct TodayView: View {
             .refreshable { await CloudRefresh.refresh() }
             .colorHeader("Today")
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
+                // The streak, then the profile photo, together at the top right, as on Play.
+                ToolbarItem(placement: .topBarTrailing) {
                     HStack(spacing: 4) {
                         Image(systemName: "flame.fill")
                         Text("\(streak)")
