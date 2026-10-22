@@ -174,8 +174,7 @@ struct DeleteShelfSheet: View {
                          ? "“\(shelf.name)” has a book on it. Choose where it goes."
                          : "“\(shelf.name)” has \(count) books on it. Choose where they go.")
                         .foregroundStyle(.secondary)
-                        .listRowBackground(Color.clear)
-                        .listRowInsets(EdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4))
+                        .hearthBareRow()
                 }
 
                 if !targets.isEmpty {

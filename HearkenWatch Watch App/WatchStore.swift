@@ -54,24 +54,26 @@ struct ListenState: Equatable {
 
 /// The watch's link to Hearken on the iPhone. Receives the plan snapshot and Listen's state,
 /// saves the snapshot for the Smart Stack widget, and sends Listen commands.
+/// In screenshot mode it holds demo content instead and never talks to the iPhone.
 @Observable
 final class WatchStore: NSObject {
     static let shared = WatchStore()
 
-    private(set) var plan: PlanSnapshot? = PlanSnapshotStore.load()
-    private(set) var listen = ListenState()
+    private(set) var plan: PlanSnapshot? = ScreenshotMode.isOn ? ScreenshotDemo.plan : PlanSnapshotStore.load()
+    private(set) var listen = ScreenshotMode.isOn ? ScreenshotDemo.listen : ListenState()
     /// The reference of the verse just bookmarked, shown briefly on the remote.
     var marked: String?
     /// Shown when the iPhone can't be reached.
     var problem: String?
 
     func activate() {
-        guard WCSession.isSupported() else { return }
+        guard !ScreenshotMode.isOn, WCSession.isSupported() else { return }
         WCSession.default.delegate = self
         WCSession.default.activate()
     }
 
     func send(_ command: WatchMessage.Command, value: Double? = nil) {
+        guard !ScreenshotMode.isOn else { return }
         let session = WCSession.default
         guard session.activationState == .activated, session.isReachable else {
             problem = "Can't reach your iPhone right now."

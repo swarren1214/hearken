@@ -16,12 +16,18 @@ struct HearkenWatchApp: App {
     }
 }
 
-/// Two pages, Digital Crown to move between them. Opens on the remote while something's playing.
+/// Two pages, Digital Crown to move between them. Opens on the remote while something's playing,
+/// or in screenshot mode on the page asked for (`-Screen`).
 struct WatchRoot: View {
     enum Page: Hashable { case today, listen }
 
     @Environment(WatchStore.self) private var store
-    @State private var page: Page = WatchStore.shared.listen.active ? .listen : .today
+    @State private var page: Page = WatchRoot.firstPage
+
+    private static var firstPage: Page {
+        if ScreenshotMode.isOn { return ScreenshotMode.screen == .listen ? .listen : .today }
+        return WatchStore.shared.listen.active ? .listen : .today
+    }
 
     var body: some View {
         TabView(selection: $page) {
