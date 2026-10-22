@@ -37,6 +37,11 @@ struct GameView: View {
     @State private var ringProgress = 0.0
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    /// iPhone Duo: the outer display gets a 2×2 answer grid and the streak on the rail; Laptop
+    /// puts the question on the upright half and big answers on the flat half. The game's state
+    /// (question, answer, score) lives here, above every pose, so it carries across.
+    @Environment(\.hearthDuoPose) private var pose
+    @Query private var xpEvents: [XPEvent]
 
     private let mastery = MasteryService()
 
@@ -65,12 +70,48 @@ struct GameView: View {
     private var score: Int { results.filter { $0 }.count }
 
     var body: some View {
+        // A navigation stack only so the outer display's rail can carry the streak (its one item;
+        // Close stays in the pinned header). The bar stays hidden everywhere else.
+        NavigationStack {
+            game
+                .navigationTitle(request.title)
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar(pose == .outer ? .visible : .hidden, for: .navigationBar)
+                .toolbar {
+                    if pose == .outer {
+                        // The streak is the rail's one item.
+                        ToolbarItem(placement: .primaryAction) {
+                            Label("\(streak)-Day Streak", systemImage: "flame.fill")
+                                .foregroundStyle(.primary)
+                                .accessibilityLabel("\(streak) day streak")
+                        }
+                    }
+                }
+        }
+    }
+
+    private var streak: Int {
+        MasteryMath.streak(activityDates: xpEvents.map(\.createdAt), now: .now)
+    }
+
+    /// Answers in an even grid on the outer display and in Laptop (one thumb, or big targets on
+    /// the flat half); a single column elsewhere and at accessibility text sizes.
+    private var usesAnswerGrid: Bool {
+        (pose == .outer || pose == .laptop) && !dynamicTypeSize.isAccessibilitySize
+    }
+
+    private var game: some View {
         Group {
             if finished {
                 resultsView
             } else if let current {
-                questionView(current)
-                    .id(index) // Fresh scroll position for each question.
+                if pose == .laptop {
+                    laptopQuestionView(current)
+                        .id(index)
+                } else {
+                    questionView(current)
+                        .id(index) // Fresh scroll position for each question.
+                }
             } else {
                 ContentUnavailableView("No questions yet", systemImage: "questionmark.circle", description: Text("Questions for this subject are coming soon."))
             }
@@ -178,23 +219,9 @@ struct GameView: View {
         ScrollViewReader { proxy in
             ScrollView {
                 VStack(alignment: .leading, spacing: 22) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("\(request.title.uppercased()) · \(index + 1) OF \(questions.count)")
-                            .font(.footnote.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                        Text(question.prompt)
-                            .font(.title2.bold())
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
+                    questionHeading(question)
 
-                    VStack(spacing: 10) {
-                        ForEach(question.options.indices, id: \.self) { option in
-                            AnswerButton(text: question.options[option], state: answerState(option, question: question)) {
-                                choose(option, question: question)
-                            }
-                            .disabled(picked != nil)
-                        }
-                    }
+                    answers(question, minHeight: 58)
 
                     if let picked {
                         feedbackCard(correct: picked == question.answer, question: question)
@@ -223,6 +250,72 @@ struct GameView: View {
                     }
                 }
             }
+        }
+        .animation(.snappy, value: picked)
+    }
+
+    private func questionHeading(_ question: Question) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("\(request.title.uppercased()) · \(index + 1) OF \(questions.count)")
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(.secondary)
+            Text(question.prompt)
+                .font(.title2.bold())
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    @ViewBuilder
+    private func answers(_ question: Question, minHeight: CGFloat) -> some View {
+        if usesAnswerGrid {
+            LazyVGrid(columns: HearthEvenColumns.flexible(2, spacing: 10), spacing: 10) {
+                answerButtons(question, minHeight: minHeight)
+            }
+        } else {
+            VStack(spacing: 10) {
+                answerButtons(question, minHeight: minHeight)
+            }
+        }
+    }
+
+    private func answerButtons(_ question: Question, minHeight: CGFloat) -> some View {
+        ForEach(question.options.indices, id: \.self) { option in
+            AnswerButton(text: question.options[option], state: answerState(option, question: question), minHeight: minHeight) {
+                choose(option, question: question)
+            }
+            .disabled(picked != nil)
+        }
+    }
+
+    /// Laptop (partly folded, set down): the question and its explanation on the upright half,
+    /// 84 pt answers in an even grid and Continue on the flat half, like a handheld game.
+    private func laptopQuestionView(_ question: Question) -> some View {
+        HearthFoldOverlay {
+            VStack(spacing: 0) {
+                answers(question, minHeight: 84)
+                    .padding(.horizontal, 16)
+                    .padding(.top, 12)
+                if picked != nil {
+                    actionBar(question)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .background(Color(.systemGroupedBackground))
+        } content: {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    questionHeading(question)
+                    if let picked {
+                        feedbackCard(correct: picked == question.answer, question: question)
+                            .transition(.opacity)
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+                .padding(.bottom, 16)
+            }
+            .scrollBounceBehavior(.basedOnSize)
         }
         .animation(.snappy, value: picked)
     }
@@ -455,6 +548,8 @@ private struct AnswerButton: View {
 
     let text: String
     let state: Mark
+    /// 58 pt normally; 84 pt on the flat half in Laptop.
+    var minHeight: CGFloat = 58
     let action: () -> Void
 
     var body: some View {
@@ -481,7 +576,7 @@ private struct AnswerButton: View {
             }
             .padding(.horizontal, 18)
             .padding(.vertical, 12)
-            .frame(minHeight: 58)
+            .frame(maxWidth: .infinity, minHeight: minHeight)
             .background(background, in: .rect(cornerRadius: 18))
             .overlay {
                 RoundedRectangle(cornerRadius: 18)

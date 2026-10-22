@@ -10,6 +10,10 @@ struct ExplainSheet: View {
     var onOpenPassage: (BookmarkTarget) -> Void
     /// Save text as a note on the first selected verse. Returns false if that needs sign-in.
     var onSaveNote: (String) -> Bool
+    /// iPhone Duo Book: shown on the reader's right-hand page instead of in a sheet, with its own
+    /// small header (no navigation stack of its own), closed with `onClose`.
+    var inline = false
+    var onClose: (() -> Void)?
 
     @Environment(\.dismiss) private var dismiss
     @State private var model: ExplainModel
@@ -19,52 +23,45 @@ struct ExplainSheet: View {
     @State private var copied = false
     @FocusState private var questionFocused: Bool
 
-    init(request: ExplainRequest, onOpenPassage: @escaping (BookmarkTarget) -> Void, onSaveNote: @escaping (String) -> Bool) {
+    init(
+        request: ExplainRequest,
+        onOpenPassage: @escaping (BookmarkTarget) -> Void,
+        onSaveNote: @escaping (String) -> Bool,
+        inline: Bool = false,
+        onClose: (() -> Void)? = nil
+    ) {
         self.request = request
         self.onOpenPassage = onOpenPassage
         self.onSaveNote = onSaveNote
+        self.inline = inline
+        self.onClose = onClose
         _model = State(initialValue: ExplainModel(request: request))
     }
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 14) {
-                    quote
-                    switch model.phase {
-                    case .unavailable(let message), .failed(let message):
-                        notice(message)
-                    case .generating, .done:
-                        explanation
-                    }
-                    relatedSection
-                    followUps
-                    disclaimer
+        Group {
+            if inline {
+                VStack(spacing: 0) {
+                    inlineHeader
+                    scrollingContent
                 }
-                .padding(.horizontal, 16)
-                .padding(.top, 4)
-                .padding(.bottom, 24)
-                .animation(.snappy, value: model.phase)
-            }
-            .background(Color(.systemGroupedBackground))
-            .safeAreaInset(edge: .bottom) { bottomBar }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    SheetCancelButton("Close") { dismiss() }
-                }
-                ToolbarItem(placement: .principal) {
-                    Label("Explain", systemImage: "sparkles")
-                        .labelStyle(.titleAndIcon)
-                        .font(.headline)
-                }
-                ToolbarItem(placement: .primaryAction) {
-                    Button("Copy", systemImage: copied ? "checkmark" : "doc.on.doc") {
-                        UIPasteboard.general.string = "\(request.reference)\n\n\(model.plainText)"
-                        copied = true
-                    }
-                    .tint(Color.primary)
-                    .disabled(model.phase != .done)
+            } else {
+                NavigationStack {
+                    scrollingContent
+                        .navigationBarTitleDisplayMode(.inline)
+                        .toolbar {
+                            ToolbarItem(placement: .cancellationAction) {
+                                SheetCancelButton("Close") { close() }
+                            }
+                            ToolbarItem(placement: .principal) {
+                                Label("Explain", systemImage: "sparkles")
+                                    .labelStyle(.titleAndIcon)
+                                    .font(.headline)
+                            }
+                            ToolbarItem(placement: .primaryAction) {
+                                copyButton
+                            }
+                        }
                 }
             }
         }
@@ -72,6 +69,62 @@ struct ExplainSheet: View {
         .task { await model.start() }
         .sensoryFeedback(.success, trigger: saved) { _, new in new }
         .sensoryFeedback(.success, trigger: copied) { _, new in new }
+    }
+
+    private func close() {
+        if inline { onClose?() } else { dismiss() }
+    }
+
+    private var copyButton: some View {
+        Button("Copy", systemImage: copied ? "checkmark" : "doc.on.doc") {
+            UIPasteboard.general.string = "\(request.reference)\n\n\(model.plainText)"
+            copied = true
+        }
+        .tint(Color.primary)
+        .disabled(model.phase != .done)
+    }
+
+    /// Inline (Book): Close, the title, and Copy, in a row at the top of the page.
+    private var inlineHeader: some View {
+        HStack(spacing: 12) {
+            SheetCancelButton("Close") { close() }
+                .buttonStyle(.glass)
+                .buttonBorderShape(.circle)
+            Spacer(minLength: 0)
+            Label("Explain", systemImage: "sparkles")
+                .labelStyle(.titleAndIcon)
+                .font(.headline)
+            Spacer(minLength: 0)
+            copyButton
+                .labelStyle(.iconOnly)
+                .buttonStyle(.glass)
+                .buttonBorderShape(.circle)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+    }
+
+    private var scrollingContent: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 14) {
+                quote
+                switch model.phase {
+                case .unavailable(let message), .failed(let message):
+                    notice(message)
+                case .generating, .done:
+                    explanation
+                }
+                relatedSection
+                followUps
+                disclaimer
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 4)
+            .padding(.bottom, 24)
+            .animation(.snappy, value: model.phase)
+        }
+        .background(Color(.systemGroupedBackground))
+        .safeAreaInset(edge: .bottom) { bottomBar }
     }
 
     // MARK: Sections
@@ -150,7 +203,7 @@ struct ExplainSheet: View {
                     VStack(spacing: 0) {
                         ForEach(model.related) { passage in
                             Button {
-                                dismiss()
+                                close()
                                 onOpenPassage(BookmarkTarget(chapterID: passage.chapterID, verse: passage.verse))
                             } label: {
                                 HStack(alignment: .top, spacing: 10) {

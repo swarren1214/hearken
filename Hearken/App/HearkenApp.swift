@@ -72,6 +72,9 @@ struct HearkenApp: App {
                 .environment(sync)
                 // Decode scripture in the background, so search and long plans never stall.
                 .task { await content.preloadVolumes() }
+                // iPhone Duo: reads the pose (outer display, open, Book, Laptop) for the whole
+                // window and passes it down as `\.hearthDuoPose` (HearthDuo.swift).
+                .hearthDuoPose()
         }
         .modelContainer(container)
     }

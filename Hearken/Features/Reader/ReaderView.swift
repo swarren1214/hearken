@@ -60,6 +60,21 @@ struct ReaderView: View {
     @AppStorage(SettingsKey.onboardingDone) private var onboardingDone = false
     @State private var listen = ListenEngine.shared
     @State private var originalPages: OriginalPages?
+    @Environment(\.dismiss) private var dismiss
+    /// iPhone Duo. `pose` is what the device is doing; `layoutPose` is what the reader is laid
+    /// out for. It follows `pose`, but only after noting the verse on screen, so opening,
+    /// closing or folding the device never loses your place (see `adoptPose`).
+    @Environment(\.hearthDuoPose) private var pose
+    @State private var layoutPose: HearthDuoPose = .standard
+    /// Explain, kept here so it stays open across poses: a sheet, or the right page in Book.
+    @State private var explainRequest: ExplainRequest?
+    /// Book: the verse whose note or highlight was tapped on the right page.
+    @State private var markedVerse: Int?
+    /// Open wide: Highlight and Explain on the rail act on the page's selection.
+    @State private var command: ReaderCommand?
+    @State private var hasSelection = false
+    /// Tent: the verse board (HearthGlanceBoard), opened by the person.
+    @State private var verseBoard: VerseBoardItem?
 
     /// Opens `chapterID`, scrolled (or paged) to `verse` when given.
     init(chapterID: String, verse: Int? = nil) {
@@ -71,7 +86,8 @@ struct ReaderView: View {
         bookmarks.contains { $0.chapterID == chapterID }
     }
 
-    var body: some View {
+    /// The chapter's text. Its identity follows the chapter and each jump.
+    private var page: some View {
         ReaderPage(
             chapterID: chapterID,
             layout: layout,
@@ -79,16 +95,65 @@ struct ReaderView: View {
             initialVerse: targetVerse,
             probe: probe,
             onOpenBookmark: openBookmark(atVerse:),
-            onOpenPassage: go(to:)
+            onOpenPassage: go(to:),
+            explainRequest: $explainRequest,
+            duoPose: layoutPose,
+            markedVerse: layoutPose == .book ? markedVerse : nil,
+            command: command,
+            onSelectionChange: { hasSelection = $0 }
         ) { id, atEnd in
             startsAtEnd = atEnd
             targetVerse = nil
+            markedVerse = nil
             chapterID = id
         }
-            .id("\(chapterID)#\(jumpToken)")
+        .id("\(chapterID)#\(jumpToken)")
+    }
+
+    /// iPhone Duo layouts. Open wide: the book's chapters beside the text. Book: the text on the
+    /// left page (no bars), the notebook and Explain on the right. Everywhere else: the text.
+    @ViewBuilder
+    private var poseLayout: some View {
+        switch layoutPose {
+        case .openWide:
+            HearthFoldSplit(axes: .horizontal) {
+                ReaderChapterPane(chapterID: chapterID) { id in
+                    startsAtEnd = false
+                    targetVerse = nil
+                    chapterID = id
+                }
+            } secondary: {
+                page
+            }
+        case .book:
+            HearthFoldSplit {
+                page
+            } secondary: {
+                ReaderNotebookPane(
+                    chapterID: chapterID,
+                    header: AnyView(bookHeader),
+                    explainRequest: $explainRequest,
+                    onMark: mark(verse:),
+                    onOpenPassage: go(to:)
+                )
+            }
+        default:
+            page
+        }
+    }
+
+    var body: some View {
+        poseLayout
             .navigationTitle(content.title(forChapter: chapterID))
             .navigationBarTitleDisplayMode(.inline)
             .task(id: chapterID) { ReaderTips.chapterOpened() }
+            // Book: the text page has no bars at all, like paper; its controls are on the right page.
+            .toolbarVisibility(layoutPose == .book ? .hidden : .automatic, for: .navigationBar)
+            .toolbarVisibility(layoutPose == .book ? .hidden : .automatic, for: .tabBar)
+            // On first appear (old == new) the page hasn't scrolled to `targetVerse` yet, so keep it.
+            .onChange(of: pose, initial: true) { old, new in adoptPose(new, keepsPlace: old != new) }
+            // A note's mark belongs to its chapter.
+            .onChange(of: chapterID) { markedVerse = nil }
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     ReaderLocationPill(title: content.title(forChapter: chapterID), expanded: showsLocation) {
@@ -108,32 +173,31 @@ struct ReaderView: View {
                     }
                 }
 
-                ToolbarItem(placement: .topBarTrailing) {
-                    // Tap: listen from here, or (already listening to this chapter) turn Listen off.
-                    // Touch and hold for more, including pause and resume.
-                    Menu {
-                        if listeningHere {
-                            Button(listen.isPlaying ? "Pause" : "Resume", menuIcon: listen.isPlaying ? "pause" : "play") { listen.toggle() }
-                        }
-                        Button("Listen from Here", menuIcon: "headphones") { startListening(fromStart: false) }
-                        Button("Listen from the Beginning", menuIcon: "backward.end") { startListening(fromStart: true) }
-                        if listen.isActive {
-                            Button("Stop Listening", menuIcon: "stop", role: .destructive) { listen.stop() }
-                        }
-                    } label: {
-                        Label(listeningHere ? "Stop Listening" : "Listen", systemImage: "headphones")
-                            .symbolEffect(.pulse, isActive: listeningHere && listen.isPlaying)
-                    } primaryAction: {
-                        if listeningHere {
-                            listen.stop()
-                        } else {
-                            startListening(fromStart: false)
+                if layoutPose == .openWide {
+                    // Open wide: Highlight and Explain for the selection, on the rail.
+                    ToolbarItemGroup(placement: .primaryAction) {
+                        Button("Highlight", systemImage: "highlighter") { command = ReaderCommand(kind: .highlight) }
+                            .tint(Color.primary)
+                            .disabled(!hasSelection)
+                        if ExplainEngine.shared.isOffered {
+                            // On-device AI; Explain is always free.
+                            Button("Explain", systemImage: "sparkles") { command = ReaderCommand(kind: .explain) }
+                                .tint(Color.primary)
+                                .disabled(!hasSelection)
                         }
                     }
-                    .tint(Color.primary)
-                    .accessibilityHint(listeningHere
-                        ? "Turns Listen off. Touch and hold to pause instead."
-                        : "Reads the chapter aloud. Touch and hold for more options.")
+                }
+
+                if layoutPose == .outer {
+                    // Outer display (standing as a tent): the verse board.
+                    ToolbarItem(placement: .primaryAction) {
+                        HearthGlanceBoardButton(title: "Verse Board", systemImage: "rectangle.inset.filled") { openVerseBoard() }
+                            .tint(Color.primary)
+                    }
+                }
+
+                ToolbarItem(placement: .topBarTrailing) {
+                    listenMenu
                     // From the second chapter opened: Listen, with Try It.
                     .popoverTip(ListenTip(), arrowEdge: .top) { action in
                         if action.id == ListenTip.tryIt { startListening(fromStart: true) }
@@ -153,7 +217,7 @@ struct ReaderView: View {
                     }
                     .tint(Color.primary)
                     .accessibilityHint("Shows your bookmarks. Touch and hold to bookmark this page.")
-                    .popover(item: $bookmarksSheet, arrowEdge: .top) { presentation in
+                    .popover(item: layoutPose == .book ? Binding<BookmarksPresentation?>.constant(nil) : $bookmarksSheet, arrowEdge: .top) { presentation in
                         BookmarksSheet(
                             workID: LibraryCatalog.location(ofChapter: chapterID)?.work.id,
                             current: presentation.here,
@@ -167,24 +231,7 @@ struct ReaderView: View {
                 }
 
                 ToolbarItem(placement: .topBarTrailing) {
-                    CheckMenu([
-                        CheckMenuItem.header("Text Size · \(Int(textSize)) pt"),
-                        // Two buttons side by side that leave the menu open between taps.
-                        CheckMenuItem.stepper(CheckMenuStepper(
-                            decreaseTitle: "Smaller", decreaseImage: "textformat.size.smaller",
-                            increaseTitle: "Larger", increaseImage: "textformat.size.larger",
-                            canDecrease: textSize > 15, canIncrease: textSize < 28,
-                            decrease: { textSize = max(15, textSize - 1) },
-                            increase: { textSize = min(28, textSize + 1) }
-                        )),
-                        CheckMenuItem.divider,
-                        CheckMenuItem.header("Layout"),
-                    ] + ReaderLayout.allCases.map { option in
-                        CheckMenuItem.choice(option.title, systemImage: option.symbol, isSelected: option == layout) { layout = option }
-                    }) {
-                        Label("Reader Options", systemImage: "ellipsis")
-                    }
-                    .tint(Color.primary)
+                    optionsMenu
                 }
             }
             .overlay(alignment: .top) {
@@ -242,6 +289,19 @@ struct ReaderView: View {
             .fullScreenCover(item: $originalPages) { pages in
                 PDFPagesView(url: pages.url, title: pages.title, startPage: pages.startPage)
             }
+            .fullScreenCover(item: $verseBoard) { item in
+                VerseGlanceBoard(reference: item.reference, text: item.text)
+            }
+            // Book: the toolbar (and the bookmarks popover on it) is hidden, so bookmarks open as a sheet.
+            .sheet(item: layoutPose == .book ? $bookmarksSheet : Binding<BookmarksPresentation?>.constant(nil)) { presentation in
+                BookmarksSheet(
+                    workID: LibraryCatalog.location(ofChapter: chapterID)?.work.id,
+                    current: presentation.here,
+                    startRoute: presentation.route,
+                    onGo: go(to:)
+                )
+                .presentationDetents([.medium, .large])
+            }
             // Listen mode moved on to the next chapter: turn the reader with it.
             .onChange(of: listen.chapterID) { old, new in
                 guard let new, old == chapterID, new != chapterID else { return }
@@ -249,6 +309,138 @@ struct ReaderView: View {
                 targetVerse = nil
                 chapterID = new
             }
+    }
+
+    // MARK: Controls
+
+    /// Tap: listen from here, or (already listening to this chapter) turn Listen off.
+    /// Touch and hold for more, including pause and resume.
+    private var listenMenu: some View {
+        Menu {
+            if listeningHere {
+                Button(listen.isPlaying ? "Pause" : "Resume", menuIcon: listen.isPlaying ? "pause" : "play") { listen.toggle() }
+            }
+            Button("Listen from Here", menuIcon: "headphones") { startListening(fromStart: false) }
+            Button("Listen from the Beginning", menuIcon: "backward.end") { startListening(fromStart: true) }
+            if listen.isActive {
+                Button("Stop Listening", menuIcon: "stop", role: .destructive) { listen.stop() }
+            }
+        } label: {
+            Label(listeningHere ? "Stop Listening" : "Listen", systemImage: "headphones")
+                .symbolEffect(.pulse, isActive: listeningHere && listen.isPlaying)
+        } primaryAction: {
+            if listeningHere {
+                listen.stop()
+            } else {
+                startListening(fromStart: false)
+            }
+        }
+        .tint(Color.primary)
+        .accessibilityHint(listeningHere
+            ? "Turns Listen off. Touch and hold to pause instead."
+            : "Reads the chapter aloud. Touch and hold for more options.")
+    }
+
+    /// Reading Options: text size, layout, and the verse board.
+    private var optionsMenu: some View {
+        CheckMenu(optionsItems) {
+            Label("Reader Options", systemImage: "ellipsis")
+        }
+        .tint(Color.primary)
+    }
+
+    private var optionsItems: [CheckMenuItem] {
+        let size: [CheckMenuItem] = [
+            CheckMenuItem.header("Text Size · \(Int(textSize)) pt"),
+            // Two buttons side by side that leave the menu open between taps.
+            CheckMenuItem.stepper(CheckMenuStepper(
+                decreaseTitle: "Smaller", decreaseImage: "textformat.size.smaller",
+                increaseTitle: "Larger", increaseImage: "textformat.size.larger",
+                canDecrease: textSize > 15, canIncrease: textSize < 28,
+                decrease: { textSize = max(15, textSize - 1) },
+                increase: { textSize = min(28, textSize + 1) }
+            )),
+            CheckMenuItem.divider,
+            CheckMenuItem.header("Layout"),
+        ]
+        let layouts: [CheckMenuItem] = ReaderLayout.allCases.map { option in
+            CheckMenuItem.choice(option.title, systemImage: option.symbol, isSelected: option == layout) { layout = option }
+        }
+        let board: [CheckMenuItem] = [
+            CheckMenuItem.divider,
+            // A big, across-the-room view of one verse (for a device standing on a desk).
+            CheckMenuItem.button("Verse Board", systemImage: "rectangle.inset.filled") { openVerseBoard() },
+        ]
+        return size + layouts + board
+    }
+
+    /// Book: the right page's top row, since the text page has no bars. Back, where you are
+    /// (tap for any chapter), Original Pages (imported PDFs), Listen, Bookmarks and Reader Options.
+    private var bookHeader: some View {
+        HStack(spacing: 14) {
+            Button("Back", systemImage: "chevron.backward") { dismiss() }
+            Spacer(minLength: 0)
+            ReaderLocationPill(title: content.title(forChapter: chapterID), expanded: showsLocation) {
+                withAnimation(.snappy) { showsLocation.toggle() }
+            }
+            Spacer(minLength: 0)
+            if let pages = originalPagesHere {
+                // An imported PDF's printed pages, as on the (hidden) toolbar.
+                Button("Original Pages", systemImage: "doc.richtext") { originalPages = pages }
+            }
+            listenMenu
+            Button("Bookmarks", systemImage: chapterHasBookmark ? "bookmark.fill" : "bookmark") { openBookmarks() }
+            optionsMenu
+        }
+        .labelStyle(.iconOnly)
+        .font(.title3)
+        .tint(Color.primary)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+    }
+
+    // MARK: iPhone Duo
+
+    /// Lays the reader out for a new pose. When the layout really changes (the text moves into
+    /// or out of a split), the verse on screen is noted first and the new page opens on it.
+    private func adoptPose(_ new: HearthDuoPose, keepsPlace: Bool) {
+        guard new != layoutPose else { return }
+        func split(_ pose: HearthDuoPose) -> Int {
+            switch pose {
+            case .openWide: 1
+            case .book: 2
+            default: 0
+            }
+        }
+        if keepsPlace, split(new) != split(layoutPose), let verse = probe.topVerse() {
+            startsAtEnd = false
+            targetVerse = verse
+        }
+        if new != .book { markedVerse = nil }
+        layoutPose = new
+    }
+
+    /// Book: a note or highlight on the right page was tapped. Mark its verse on the left page
+    /// and bring it into view.
+    private func mark(verse: Int) {
+        markedVerse = verse
+        if layout == .pages {
+            targetVerse = verse
+            jumpToken += 1
+        } else {
+            probe.reveal(verse: verse, animated: true)
+        }
+    }
+
+    /// The verse board shows the selected verse, or the one at the top of the page.
+    private func openVerseBoard() {
+        guard let chapter = content.chapter(chapterID) else { return }
+        let number = probe.selectedVerse ?? probe.topVerse() ?? chapter.verses.first?.number ?? 1
+        guard let verse = chapter.verses.first(where: { $0.number == number }) ?? chapter.verses.first else { return }
+        verseBoard = VerseBoardItem(
+            reference: content.reference(chapterID: chapterID, verse: verse.number),
+            text: verse.text
+        )
     }
 
     // MARK: Original pages
@@ -333,6 +525,16 @@ struct ReaderPage: View {
     let onOpenPassage: (BookmarkTarget) -> Void
     /// Page Turn only: called after a page turn crosses into the previous or next chapter.
     let onTurnChapter: (_ chapterID: String, _ atEnd: Bool) -> Void
+    /// Explain for a selection, owned by the reader so it survives a change of pose.
+    @Binding var explainRequest: ExplainRequest?
+    /// iPhone Duo: the pose the reader is laid out for.
+    let duoPose: HearthDuoPose
+    /// Book: a verse marked from the notebook page, drawn with a soft wash.
+    let markedVerse: Int?
+    /// Open wide: Highlight or Explain from the rail.
+    let command: ReaderCommand?
+    /// Whether text is selected, for the rail's Highlight and Explain.
+    let onSelectionChange: (Bool) -> Void
 
     @Environment(ContentService.self) private var content
     @Environment(HighlightLegend.self) private var legend
@@ -364,7 +566,6 @@ struct ReaderPage: View {
     @State private var pencilErasing = false
     @State private var pendingStyle: HighlightStyle?
     @State private var noteTarget: NoteTarget?
-    @State private var explainRequest: ExplainRequest?
     /// A selection waiting for the person to pick which study group to share it with.
     @State private var groupShare: GroupShareDraft?
     /// A verse whose study-group marker was tapped.
@@ -392,8 +593,18 @@ struct ReaderPage: View {
         probe: ReaderProbe? = nil,
         onOpenBookmark: @escaping (Int) -> Void = { _ in },
         onOpenPassage: @escaping (BookmarkTarget) -> Void = { _ in },
+        explainRequest: Binding<ExplainRequest?>,
+        duoPose: HearthDuoPose = .standard,
+        markedVerse: Int? = nil,
+        command: ReaderCommand? = nil,
+        onSelectionChange: @escaping (Bool) -> Void = { _ in },
         onTurnChapter: @escaping (_ chapterID: String, _ atEnd: Bool) -> Void = { _, _ in }
     ) {
+        _explainRequest = explainRequest
+        self.duoPose = duoPose
+        self.markedVerse = markedVerse
+        self.command = command
+        self.onSelectionChange = onSelectionChange
         self.chapterID = chapterID
         self.layout = layout
         self.startsAtEnd = startsAtEnd
@@ -430,6 +641,9 @@ struct ReaderPage: View {
                     .padding(.horizontal, 24)
                     // Room to scroll the last lines above the Pencil palette.
                     .padding(.bottom, pencilOn ? 160 : 40)
+                    // iPhone Duo open wide: a comfortable line length instead of stretching.
+                    .frame(maxWidth: duoPose == .openWide ? CGFloat(720) : CGFloat.infinity)
+                    .frame(maxWidth: .infinity)
                 }
                 // Scrolling away from a selection dismisses it, like Books.
                 .onScrollPhaseChange { _, phase in
@@ -464,6 +678,18 @@ struct ReaderPage: View {
         .sensoryFeedback(.selection, trigger: selection?.start)
         .onChange(of: selection?.start.verse, initial: true) { _, verse in
             probe?.selectedVerse = verse
+            onSelectionChange(verse != nil)
+        }
+        .onChange(of: command) { _, command in
+            // Highlight or Explain from the rail (iPhone Duo open wide), for the selection.
+            guard let command, let selection else { return }
+            switch command.kind {
+            case .highlight:
+                let existing = existingHighlight(for: selection)
+                pick(existing?.hue ?? legend.entries.first?.hue ?? .yellow, selection: selection, existing: existing)
+            case .explain:
+                explain(selection)
+            }
         }
         .onChange(of: listen.isPlaying) { _, playing in
             if playing { followsListening = true }
@@ -483,7 +709,8 @@ struct ReaderPage: View {
             progress.lastVerse = start.verse
             progress.updatedAt = .now
         }
-        .sheet(item: $explainRequest) { request in
+        // In Book, Explain opens on the right page instead (ReaderNotebookPane).
+        .sheet(item: duoPose == .book ? Binding<ExplainRequest?>.constant(nil) : $explainRequest) { request in
             ExplainSheet(request: request, onOpenPassage: onOpenPassage, onSaveNote: saveExplanation)
                 .presentationDetents(horizontalSizeClass == .regular ? [.large] : [.medium, .large])
                 .presentationSizing(.form)
@@ -565,6 +792,7 @@ struct ReaderPage: View {
             key.combine(bookmarks.map(\.verse).sorted())
             key.combine(groupVerses.sorted())
             key.combine(pencilOn ? nil : speakingVerse)
+            key.combine(markedVerse)
         }
         return layoutCache.layout(for: key.finalize()) { buildTextLayout(verses, interactive: interactive) }
     }
@@ -580,7 +808,8 @@ struct ReaderPage: View {
             bookmarkVerses: interactive ? Set(bookmarks.map(\.verse)) : [],
             groupVerses: interactive ? groupVerses : [],
             // Not while drawing with Pencil: rebuilding the text each verse would wipe a stroke in progress.
-            speakingVerse: interactive && !pencilOn ? speakingVerse : nil
+            // Book: a verse marked from the notebook gets the same soft wash.
+            speakingVerse: interactive && !pencilOn ? (speakingVerse ?? markedVerse) : nil
         )
     }
 

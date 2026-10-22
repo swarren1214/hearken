@@ -57,10 +57,13 @@ struct PlayView: View {
         .colorHeader("Play")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                HStack(spacing: 4) {
-                    Image(systemName: "flame.fill")
+                // A Label (title and symbol), so the iPhone Duo's rail can show it.
+                Label {
                     Text("\(streak)").monospacedDigit()
+                } icon: {
+                    Image(systemName: "flame.fill")
                 }
+                .labelStyle(.titleAndIcon)
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(.white)
                 .padding(.horizontal, 8)
@@ -73,7 +76,7 @@ struct PlayView: View {
                 HearthProfileButton()
             }
         }
-        .fullScreenCover(item: $activeGame) { GameView(request: $0) }
+        .fullScreenCover(item: $activeGame) { GameView(request: $0).hearthDuoPose() }
         .fullScreenCover(item: $mapQuest) { MapQuestView(category: $0) }
         .hearthPaywall(isPresented: $showsPaywall, feature: HearthPaywallFeature(
             "Every game",

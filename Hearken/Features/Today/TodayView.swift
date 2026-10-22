@@ -59,12 +59,15 @@ struct TodayView: View {
             .toolbar {
                 // The streak, then the profile photo, together at the top right, as on Play.
                 ToolbarItem(placement: .topBarTrailing) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "flame.fill")
+                    // A Label (title and symbol), so the iPhone Duo's rail can show it.
+                    Label {
                         Text("\(streak)")
                             .monospacedDigit()
                             .contentTransition(.numericText())
+                    } icon: {
+                        Image(systemName: "flame.fill")
                     }
+                    .labelStyle(.titleAndIcon)
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 8)
@@ -78,7 +81,10 @@ struct TodayView: View {
                 }
             }
             .fullScreenCover(item: $activeGame) { request in
+                // A full-screen cover takes the presenter out of the window, so the game reads
+                // the iPhone Duo pose itself (outer display, Laptop) while it's open.
                 GameView(request: request)
+                    .hearthDuoPose()
             }
             // The tour's first step points at Continue Reading; bring it on screen first.
             .onChange(of: HearthTour.shared.step?.id) { _, id in

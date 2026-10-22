@@ -376,6 +376,8 @@ struct CreateGroupSheet: View {
     @State private var errorMessage: String?
     @State private var createdID: String?
     @State private var showsPaywall = false
+    /// The icon grid's width, for an even number of columns (a fold never splits an icon).
+    @State private var iconGridWidth: CGFloat = 0
 
     private static let symbols = ["house.fill", "person.3.fill", "book.fill", "flame.fill", "leaf.fill", "star.fill", "heart.fill", "sun.max.fill"]
 
@@ -418,7 +420,7 @@ struct CreateGroupSheet: View {
                     .submitLabel(.done)
             }
             Section("Icon") {
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 52), spacing: 12)], spacing: 12) {
+                LazyVGrid(columns: HearthEvenColumns.flexible(HearthEvenColumns.count(for: iconGridWidth, minimumCellWidth: 64, maximum: 8), spacing: 12), spacing: 12) {
                     ForEach(Self.symbols, id: \.self) { item in
                         Button { symbol = item } label: {
                             Image(systemName: item)
@@ -432,6 +434,7 @@ struct CreateGroupSheet: View {
                         .accessibilityAddTraits(item == symbol ? .isSelected : [])
                     }
                 }
+                .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { iconGridWidth = $0 }
                 .padding(.vertical, 4)
             }
             Section {
@@ -771,6 +774,8 @@ struct GroupDetailView: View {
     @State private var showEarlier = false
     @State private var errorMessage: String?
     @FocusState private var composing: Bool
+    /// The members grid's width, for an even number of columns (a fold never splits a member).
+    @State private var memberGridWidth: CGFloat = 0
 
     var body: some View {
         let store = GroupStore.shared
@@ -934,7 +939,7 @@ struct GroupDetailView: View {
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(.secondary)
             }
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 72), spacing: 8)], spacing: 14) {
+            LazyVGrid(columns: HearthEvenColumns.flexible(HearthEvenColumns.count(for: memberGridWidth, minimumCellWidth: 80, maximum: 8), spacing: 8), spacing: 14) {
                 ForEach(group.members) { member in
                     let current = member.weekStart.map { Calendar.current.isDate($0, inSameDayAs: week.start) } ?? false
                     let read = current ? member.weekRead : 0
@@ -965,6 +970,7 @@ struct GroupDetailView: View {
                     .accessibilityLabel("\(member.userID == me ? "You" : member.name): \(read) of \(total) chapters this week\(member.doneToday ? ", read today" : "")")
                 }
             }
+            .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { memberGridWidth = $0 }
         }
         .padding(16)
         .background(Color(.secondarySystemGroupedBackground), in: .rect(cornerRadius: 22))
