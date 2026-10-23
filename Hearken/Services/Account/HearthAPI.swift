@@ -208,7 +208,7 @@ actor HearthAPI {
         // (No shared session, but it was this account's: signed out elsewhere meanwhile.)
         let sharedNow = HearthAccounts.session()
         let mayShare = sharedNow.map { $0.userID == refreshed.user.id }
-            ?? (UserDefaults.standard.string(forKey: Self.sharedUserKey) != refreshed.user.id)
+            ?? (!HearthAccounts.sessionIsGone || UserDefaults.standard.string(forKey: Self.sharedUserKey) != refreshed.user.id)
         if mayShare { share(refreshed) } else { followSharedSession() }
         return refreshed
     }
@@ -285,7 +285,9 @@ actor HearthAPI {
                 store(Self.authSession(from: shared))
                 defaults.set(shared.userID, forKey: Self.sharedUserKey)
             }
-        } else if let current = authSession, isConnected {
+        } else if HearthAccounts.sessionIsGone, let current = authSession, isConnected {
+            // (Only when it's really gone: a sign-in the Keychain can't read right now isn't a
+            // sign-out.)
             if defaults.string(forKey: Self.sharedUserKey) == current.user.id {
                 // Shared once, now gone: signed out in another Hearth app.
                 forgetSession()

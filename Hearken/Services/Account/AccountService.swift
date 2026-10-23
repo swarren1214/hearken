@@ -270,9 +270,11 @@ final class AccountService {
     /// (it's in the shared Keychain too).
     private func followSharedSignIn(userID: String) async {
         guard !ScreenshotMode.isOn, isSignedIn else { return }
-        let shared = await Task.detached(priority: .userInitiated) { HearthAccounts.appleID() }.value
+        let (shared, gone) = await Task.detached(priority: .userInitiated) { (HearthAccounts.appleID(), HearthAccounts.appleIDIsGone) }.value
         // Signed out while that was being read: nothing to follow.
         guard isSignedIn else { return }
+        // There but unreadable just now (or written by a newer app): not a sign-out.
+        if shared == nil, !gone { return }
         let wasShared = UserDefaults.standard.bool(forKey: Keys.sharedSignIn)
         switch shared {
         case let shared? where shared.userID == userID:
