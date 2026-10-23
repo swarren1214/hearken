@@ -94,7 +94,11 @@ struct RootTabView: View {
         // Listen mode: the mini player above the tab bar, and the full player sheet.
         .listenPlayer()
         // Widgets (hearken://read/<chapter>), plan reminders, Siri and Shortcuts open a chapter here.
-        .onOpenURL { navigator.handle($0) }
+        // Household invitations (HearthInviteLink) open the join sheet.
+        .onOpenURL { url in
+            if HearthInviteLink.open(url) { return }
+            navigator.handle(url)
+        }
         .onChange(of: navigator.pendingChapterID, initial: true) { _, chapterID in
             guard let chapterID else { return }
             selection = .today
