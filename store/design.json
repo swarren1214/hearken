@@ -1,0 +1,525 @@
+{
+  "accentHex" : "#3B74D9",
+  "ascAppID" : "",
+  "ascAppName" : "",
+  "inkHex" : "#2A5DB8",
+  "listings" : {
+
+  },
+  "live" : {
+
+  },
+  "locale" : "en-US",
+  "sets" : {
+    "artHeader" : {
+      "captures" : [
+
+      ],
+      "devices" : [
+        {
+          "aspect" : 1,
+          "baseWidth" : 0,
+          "capture" : "screenshots\/iPhone-18-Pro\/dark\/01-today.png",
+          "flipped" : false,
+          "groupID" : "9CFA6954-F38E-4ED5-859D-0146B7212CCC",
+          "hidden" : false,
+          "id" : "975AE9E1-15F9-4C20-A3FB-89690A5550B3",
+          "imagePath" : "",
+          "kind" : "device",
+          "locked" : false,
+          "name" : "",
+          "opacity" : 1,
+          "renderID" : "render-f6bcd037",
+          "rotation" : 0,
+          "scale" : 1.5868051020127742,
+          "shadow" : true,
+          "x" : 1606,
+          "y" : 341
+        },
+        {
+          "aspect" : 1,
+          "baseWidth" : 0,
+          "capture" : "screenshots\/iPhone-18-Pro\/dark\/02-reader.png",
+          "flipped" : false,
+          "groupID" : "9CFA6954-F38E-4ED5-859D-0146B7212CCC",
+          "hidden" : false,
+          "id" : "84402151-DBF0-4F6F-92AC-DE2F938980F0",
+          "imagePath" : "",
+          "kind" : "device",
+          "locked" : false,
+          "name" : "",
+          "opacity" : 1,
+          "renderID" : "render-f6bcd037",
+          "rotation" : 0,
+          "scale" : 1.8014096265771122,
+          "shadow" : true,
+          "x" : 2517,
+          "y" : 462
+        },
+        {
+          "aspect" : 1,
+          "baseWidth" : 0,
+          "capture" : "screenshots\/iPhone-18-Pro\/dark\/03-listen.png",
+          "flipped" : false,
+          "groupID" : "9CFA6954-F38E-4ED5-859D-0146B7212CCC",
+          "hidden" : false,
+          "id" : "8E43361A-B0FC-41C4-B87C-44B6BB027CCA",
+          "imagePath" : "",
+          "kind" : "device",
+          "locked" : false,
+          "name" : "",
+          "opacity" : 1,
+          "renderID" : "render-f6bcd037",
+          "rotation" : 0,
+          "scale" : 1.8901497118467723,
+          "shadow" : true,
+          "x" : 2067,
+          "y" : 25
+        }
+      ],
+      "frames" : [
+        {
+          "id" : "02F6DFA5-8DD4-47FC-85DE-FF4557C35976",
+          "line1" : "Read with purpose.",
+          "line2" : "Remember what you learn.",
+          "look" : "accent",
+          "showIcon" : false,
+          "subhead" : ""
+        }
+      ],
+      "layerGroups" : [
+        {
+          "id" : "9CFA6954-F38E-4ED5-859D-0146B7212CCC",
+          "name" : "Group 1"
+        }
+      ],
+      "linked" : [
+
+      ],
+      "publish" : true
+    },
+    "artSearch" : {
+      "captures" : [
+
+      ],
+      "devices" : [
+        {
+          "aspect" : 1,
+          "baseWidth" : 0,
+          "capture" : "screenshots\/iPhone-18-Pro\/dark\/01-today.png",
+          "flipped" : false,
+          "hidden" : false,
+          "id" : "5C5D9B3D-A5B1-47C4-8BA1-5FCACE72BF9A",
+          "imagePath" : "",
+          "kind" : "device",
+          "locked" : false,
+          "name" : "",
+          "opacity" : 1,
+          "renderID" : "render-f6bcd037",
+          "rotation" : 0,
+          "scale" : 1.9270638416783026,
+          "shadow" : true,
+          "x" : 1596.4314803244897,
+          "y" : 581.9999999999999
+        },
+        {
+          "aspect" : 1,
+          "baseWidth" : 0,
+          "capture" : "screenshots\/iPhone-18-Pro\/dark\/02-reader.png",
+          "flipped" : false,
+          "hidden" : false,
+          "id" : "4E208EF0-5E6C-492B-9EB1-21419CB1B570",
+          "imagePath" : "",
+          "kind" : "device",
+          "locked" : false,
+          "name" : "",
+          "opacity" : 1,
+          "renderID" : "render-f6bcd037",
+          "rotation" : 0,
+          "scale" : 1.9855162474480224,
+          "shadow" : true,
+          "x" : 2790,
+          "y" : 829
+        },
+        {
+          "aspect" : 1,
+          "baseWidth" : 0,
+          "capture" : "screenshots\/iPhone-18-Pro\/dark\/03-listen.png",
+          "flipped" : false,
+          "hidden" : false,
+          "id" : "FFCA41BA-A23B-4B11-A844-8CFD067EA813",
+          "imagePath" : "",
+          "kind" : "device",
+          "locked" : false,
+          "name" : "",
+          "opacity" : 1,
+          "renderID" : "render-f6bcd037",
+          "rotation" : 0,
+          "scale" : 2.15,
+          "shadow" : true,
+          "x" : 2240,
+          "y" : 170
+        }
+      ],
+      "frames" : [
+        {
+          "id" : "5B7DCAF1-EA23-42EA-A028-39D37B009D28",
+          "line1" : "Read with purpose.",
+          "line2" : "Remember what you learn.",
+          "look" : "tint",
+          "showIcon" : true,
+          "subhead" : "Mark up every verse and watch your mastery grow."
+        }
+      ],
+      "layerGroups" : [
+
+      ],
+      "linked" : [
+
+      ],
+      "publish" : true
+    },
+    "duoOuter" : {
+      "captures" : [
+
+      ],
+      "devices" : [
+        {
+          "aspect" : 1,
+          "baseWidth" : 0,
+          "capture" : "",
+          "flipped" : false,
+          "hidden" : false,
+          "id" : "4590CC67-A861-4892-8A17-9AAA061D871D",
+          "imagePath" : "",
+          "kind" : "device",
+          "locked" : false,
+          "name" : "",
+          "opacity" : 1,
+          "renderID" : "render-13c1dea3",
+          "rotation" : 0,
+          "scale" : 1.977205539639103,
+          "shadow" : true,
+          "x" : 140,
+          "y" : 639
+        },
+        {
+          "aspect" : 1,
+          "baseWidth" : 0,
+          "capture" : "",
+          "flipped" : false,
+          "hidden" : false,
+          "id" : "A01AE928-9B80-4575-9A4C-9EE11E3884E8",
+          "imagePath" : "",
+          "kind" : "device",
+          "locked" : false,
+          "name" : "",
+          "opacity" : 1,
+          "renderID" : "render-f7e3c805",
+          "rotation" : 0,
+          "scale" : 1,
+          "shadow" : true,
+          "x" : 1857,
+          "y" : 544
+        },
+        {
+          "aspect" : 1,
+          "baseWidth" : 0,
+          "capture" : "",
+          "flipped" : false,
+          "hidden" : false,
+          "id" : "FDF7569D-80C6-412E-BA7F-02EE49B07A68",
+          "imagePath" : "",
+          "kind" : "device",
+          "locked" : false,
+          "name" : "",
+          "opacity" : 1,
+          "renderID" : "render-f7e3c805",
+          "rotation" : 0,
+          "scale" : 1.2512193589706353,
+          "shadow" : true,
+          "x" : 3020,
+          "y" : 520
+        }
+      ],
+      "frames" : [
+        {
+          "id" : "BB21FB9A-3B7C-4F56-9398-F1940B009F2D",
+          "line1" : "Read with purpose.",
+          "line2" : "Remember what you learn.",
+          "look" : "accent",
+          "showIcon" : true,
+          "subhead" : "Mark up every verse and watch your mastery grow."
+        },
+        {
+          "id" : "CF855281-AF21-4D0C-A8E1-7D013009A27A",
+          "line1" : "Mastery",
+          "line2" : "you can see.",
+          "look" : "tint",
+          "showIcon" : false,
+          "subhead" : "Rings for every subject, earned through recall."
+        },
+        {
+          "id" : "E54CA78C-68E4-455F-A506-625ECDF6DC8E",
+          "line1" : "Games that teach.",
+          "line2" : "Streaks that stick.",
+          "look" : "tint",
+          "showIcon" : false,
+          "subhead" : "Daily Challenge, Chronology and Spaced Review."
+        }
+      ],
+      "layerGroups" : [
+
+      ],
+      "linked" : [
+        true,
+        false
+      ],
+      "publish" : false
+    },
+    "ipad" : {
+      "captures" : [
+
+      ],
+      "devices" : [
+        {
+          "aspect" : 1,
+          "baseWidth" : 0,
+          "capture" : "screenshots\/iPad-Air-13-inch-(M4)\/dark\/01-today.png",
+          "flipped" : false,
+          "hidden" : false,
+          "id" : "661D7720-D965-4D99-89DF-FC9AD331ABDC",
+          "imagePath" : "",
+          "kind" : "device",
+          "locked" : false,
+          "name" : "",
+          "opacity" : 1,
+          "renderID" : "render-d9393411",
+          "rotation" : 0,
+          "scale" : 1.329356931626691,
+          "shadow" : true,
+          "x" : 419,
+          "y" : 765
+        },
+        {
+          "aspect" : 1,
+          "baseWidth" : 0,
+          "capture" : "screenshots\/iPad-Air-13-inch-(M4)\/dark\/02-reader.png",
+          "flipped" : false,
+          "hidden" : false,
+          "id" : "EF59CC64-06CD-497C-B619-50B49906B39E",
+          "imagePath" : "",
+          "kind" : "device",
+          "locked" : false,
+          "name" : "",
+          "opacity" : 1,
+          "renderID" : "render-261559ba",
+          "rotation" : 0,
+          "scale" : 1.3029918214678682,
+          "shadow" : true,
+          "x" : 4209,
+          "y" : 610
+        },
+        {
+          "aspect" : 1,
+          "baseWidth" : 0,
+          "capture" : "screenshots\/iPad-Air-13-inch-(M4)\/dark\/03-listen.png",
+          "flipped" : false,
+          "hidden" : false,
+          "id" : "C508DC19-A632-464B-812B-0F29C02B6195",
+          "imagePath" : "",
+          "kind" : "device",
+          "locked" : false,
+          "name" : "",
+          "opacity" : 1,
+          "renderID" : "render-d9393411",
+          "rotation" : 0,
+          "scale" : 1.4471402955943038,
+          "shadow" : true,
+          "x" : 1876,
+          "y" : 608
+        }
+      ],
+      "frames" : [
+        {
+          "id" : "23AA953B-C6EF-4C1A-8C86-5E3C3DF4E757",
+          "line1" : "Read with purpose.",
+          "line2" : "Remember what you learn.",
+          "look" : "accent",
+          "showIcon" : true,
+          "subhead" : "Mark up every verse and watch your mastery grow."
+        },
+        {
+          "id" : "A0E8CD68-7479-4D74-AC54-7A50507B3DF2",
+          "line1" : "Mastery",
+          "line2" : "you can see.",
+          "look" : "tint",
+          "showIcon" : false,
+          "subhead" : "Rings for every subject, earned through recall."
+        },
+        {
+          "id" : "9EEC675A-3D8C-42D3-B88F-F0AF96B4065B",
+          "line1" : "Games that teach.",
+          "line2" : "Streaks that stick.",
+          "look" : "tint",
+          "showIcon" : false,
+          "subhead" : "Daily Challenge, Chronology and Spaced Review."
+        }
+      ],
+      "layerGroups" : [
+
+      ],
+      "linked" : [
+        true,
+        false
+      ],
+      "publish" : true
+    },
+    "iphone" : {
+      "captures" : [
+
+      ],
+      "devices" : [
+        {
+          "aspect" : 1,
+          "baseWidth" : 0,
+          "capture" : "screenshots\/iPhone-18-Pro\/dark\/01-today.png",
+          "flipped" : false,
+          "hidden" : false,
+          "id" : "4EA3ACE8-9C99-4505-87F3-2A011BF2710B",
+          "imagePath" : "",
+          "kind" : "device",
+          "locked" : false,
+          "name" : "",
+          "opacity" : 1,
+          "renderID" : "render-f6bcd037",
+          "rotation" : 0,
+          "scale" : 1.85,
+          "shadow" : true,
+          "x" : 787,
+          "y" : 746
+        },
+        {
+          "aspect" : 1,
+          "baseWidth" : 0,
+          "capture" : "screenshots\/iPhone-18-Pro\/dark\/02-reader.png",
+          "flipped" : false,
+          "hidden" : false,
+          "id" : "CAF83609-0830-4B3E-BF31-421BA7C8A1EE",
+          "imagePath" : "",
+          "kind" : "device",
+          "locked" : false,
+          "name" : "",
+          "opacity" : 1,
+          "renderID" : "render-f6bcd037",
+          "rotation" : 0,
+          "scale" : 1.85,
+          "shadow" : true,
+          "x" : -188,
+          "y" : 732
+        },
+        {
+          "aspect" : 1,
+          "baseWidth" : 0,
+          "capture" : "screenshots\/iPhone-18-Pro\/dark\/03-listen.png",
+          "flipped" : false,
+          "hidden" : false,
+          "id" : "3375B602-9AA5-4267-8704-FBE777142BA5",
+          "imagePath" : "",
+          "kind" : "device",
+          "locked" : false,
+          "name" : "",
+          "opacity" : 1,
+          "renderID" : "render-041fceb4",
+          "rotation" : 0,
+          "scale" : 1,
+          "shadow" : true,
+          "x" : 2778,
+          "y" : 617
+        },
+        {
+          "aspect" : 1,
+          "baseWidth" : 0,
+          "capture" : "screenshots\/iPhone-18-Pro\/dark\/04-group.png",
+          "flipped" : false,
+          "hidden" : false,
+          "id" : "EE9C6EB4-D70D-4AAE-8CCB-63A1AE82E5A4",
+          "imagePath" : "",
+          "kind" : "device",
+          "locked" : false,
+          "name" : "",
+          "opacity" : 1,
+          "renderID" : "render-4d02fad1",
+          "rotation" : 0,
+          "scale" : 1,
+          "shadow" : true,
+          "x" : 4098,
+          "y" : 484
+        }
+      ],
+      "frames" : [
+        {
+          "id" : "7ED13628-F360-4FB5-B469-C68D6ECAD856",
+          "line1" : "Read with purpose.",
+          "line2" : "Remember what you learn.",
+          "look" : "accent",
+          "showIcon" : true,
+          "subhead" : "Mark up every verse and watch your mastery grow."
+        },
+        {
+          "id" : "D366B3C3-C519-475E-8CDF-7E0C08CB351F",
+          "line1" : "Mastery",
+          "line2" : "you can see.",
+          "look" : "tint",
+          "showIcon" : false,
+          "subhead" : "Rings for every subject, earned through recall."
+        },
+        {
+          "id" : "09D6A12A-4F33-47BA-B537-2FE6E5A37E8E",
+          "line1" : "Games that teach.",
+          "line2" : "Streaks that stick.",
+          "look" : "tint",
+          "showIcon" : false,
+          "subhead" : "Daily Challenge, Chronology and Spaced Review."
+        },
+        {
+          "id" : "84838102-4255-415C-AA3F-B981516B307A",
+          "line1" : "Study together.",
+          "line2" : "Week by week.",
+          "look" : "tint",
+          "showIcon" : false,
+          "subhead" : "Read one plan and answer the weekly question."
+        }
+      ],
+      "layerGroups" : [
+
+      ],
+      "linked" : [
+        true,
+        false,
+        false
+      ],
+      "publish" : true
+    },
+    "watch" : {
+      "captures" : [
+        "screenshots\/Apple-Watch-Series-12-(46mm)\/dark\/01-today.png",
+        "screenshots\/Apple-Watch-Series-12-(46mm)\/dark\/02-listen.png"
+      ],
+      "devices" : [
+
+      ],
+      "frames" : [
+
+      ],
+      "layerGroups" : [
+
+      ],
+      "linked" : [
+
+      ],
+      "publish" : true
+    }
+  },
+  "tintHex" : "#EBF1FC"
+}
